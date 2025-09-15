@@ -18,8 +18,10 @@ struct ContentView: View {
         sunday: 4
     )
 
+    private let title = "My Habit"
+
     var body: some View {
-        WeekView(week: sampleWeek)
+        WeekView(title: title, week: sampleWeek)
             .padding()
     }
 }

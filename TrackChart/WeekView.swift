@@ -8,11 +8,12 @@
 import SwiftUI
 
 struct WeekView: View {
+    let title: String
     let week: Week
 
     var body: some View {
         VStack {
-            Text("My Habit")
+            Text(title)
             CounterView()
             WeeklyChartView(week: week)
         }
@@ -21,6 +22,7 @@ struct WeekView: View {
 
 #Preview {
     WeekView(
+        title: "My Habit",
         week: Week(
             monday: 4,
             tuesday: 8,
