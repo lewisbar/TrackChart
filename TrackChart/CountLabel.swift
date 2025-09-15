@@ -14,16 +14,18 @@ struct CountLabel: View {
     
     var body: some View {
         Text("\(count)")
-            .font(Font(countLabelFont))
+            .font(swiftUIFont)
             .frame(minWidth: labelWidth)
         .padding(.horizontal, 10)
     }
 
-    private var countLabelFont: UIFont { UIFont.preferredFont(forTextStyle: .title2) }
-
     private var labelWidth: CGFloat {
-        CGFloat(count.numberOfDigits()) * countLabelFont.maxCharacterWidth()
+        CGFloat(count.numberOfDigits()) * uiFont.maxCharacterWidth()
     }
+
+    @ScaledMetric(relativeTo: .title2) private var scaledFontSize: CGFloat = 22
+    var uiFont: UIFont { UIFontMetrics(forTextStyle: .title2).scaledFont(for: UIFont.systemFont(ofSize: scaledFontSize)) }
+    var swiftUIFont: Font { .title2 }
 }
 
 #Preview {

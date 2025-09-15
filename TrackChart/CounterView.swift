@@ -15,12 +15,24 @@ struct CounterView: View {
     var body: some View {
         HStack {
             deleteButton
+                .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+
             Spacer()
+
             minusButton
+                .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+
             CountLabel(count: count)
+                .dynamicTypeSize(...DynamicTypeSize.accessibility3)
+
             plusButton
+                .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+
             Spacer()
+
             submitButton
+                .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+
         }
     }
 
