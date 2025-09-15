@@ -14,8 +14,13 @@ struct ContentView: View {
     @State private var todaysValue = 5
 
     var body: some View {
-        WeekView(title: title, values: sampleValues, todaysValue: $todaysValue, submitValue: { sampleValues.append($0) })
+        WeekView(title: title, values: sampleValues, todaysValue: $todaysValue, submitValue: submitValue)
             .padding()
+    }
+
+    private func submitValue(_ value: Int) {
+        sampleValues.append(value)
+        todaysValue = 0
     }
 }
 
