@@ -10,7 +10,7 @@ import SwiftUI
 struct ContentView: View {
     @State private var sampleValues = [1, 4, 3, 5, 2, 7, 8, 4, 6]
 
-    private let title = "My Habit"
+    private let title = "TrackChart"
     @State private var todaysValue = 5
 
     var body: some View {
