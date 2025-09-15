@@ -8,14 +8,32 @@
 import SwiftUI
 import Charts
 
-struct Day: Identifiable {
+private struct Day: Identifiable {
     let id = UUID()
     let name: String
     let value: Int
 }
 
+private extension Week {
+    var days: [Day] {
+        [
+            Day(name: "Mon", value: monday),
+            Day(name: "Tue", value: tuesday),
+            Day(name: "Wed", value: wednesday),
+            Day(name: "Thu", value: thursday),
+            Day(name: "Fri", value: friday),
+            Day(name: "Sat", value: saturday),
+            Day(name: "Sun", value: sunday)
+        ]
+    }
+}
+
 struct WeeklyChartView: View {
-    let days: [Day]
+    private let days: [Day]
+
+    init(week: Week) {
+        days = week.days
+    }
 
     var body: some View {
         Chart {
@@ -27,15 +45,13 @@ struct WeeklyChartView: View {
 }
 
 #Preview {
-    let days = [
-        Day(name: "Monday", value: 4),
-        Day(name: "Tuesday", value: 11),
-        Day(name: "Wednesday", value: 2),
-        Day(name: "Thursday", value: 5),
-        Day(name: "Friday", value: 9),
-        Day(name: "Saturday", value: 7),
-        Day(name: "Sunday", value: 13)
-    ]
-
-    WeeklyChartView(days: days)
+    WeeklyChartView(week: Week(
+        monday: 4,
+        tuesday: 8,
+        wednesday: 7,
+        thursday: 9,
+        friday: 5,
+        saturday: 6,
+        sunday: 10
+    ))
 }
