@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CounterView: View {
-    @State private var count = 0
+    @Binding var count: Int
 
     var body: some View {
         Stepper(
@@ -24,5 +24,5 @@ struct CounterView: View {
 }
 
 #Preview {
-    CounterView()
+    CounterView(count: .constant(4))
 }

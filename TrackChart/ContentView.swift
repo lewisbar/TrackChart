@@ -19,9 +19,10 @@ struct ContentView: View {
     )
 
     private let title = "My Habit"
+    @State private var todaysValue = 5
 
     var body: some View {
-        WeekView(title: title, week: sampleWeek)
+        WeekView(title: title, week: sampleWeek, todaysValue: $todaysValue)
             .padding()
     }
 }

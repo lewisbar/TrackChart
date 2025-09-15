@@ -10,17 +10,20 @@ import SwiftUI
 struct WeekView: View {
     let title: String
     let week: Week
+    @Binding var todaysValue: Int
 
     var body: some View {
         VStack {
             Text(title)
-            CounterView()
+            CounterView(count: $todaysValue)
             WeeklyChartView(week: week)
         }
     }
 }
 
 #Preview {
+    @Previewable @State var count = 5
+    
     WeekView(
         title: "My Habit",
         week: Week(
@@ -31,6 +34,7 @@ struct WeekView: View {
             friday: 5,
             saturday: 6,
             sunday: 10
-        )
+        ),
+        todaysValue: $count
     )
 }
