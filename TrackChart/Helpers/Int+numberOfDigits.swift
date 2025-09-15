@@ -8,7 +8,8 @@
 import Foundation
 
 extension Int {
-     func numberOfDigits() -> Int {
+    /// Calculates number of digits for a given number. The minus sign is counted as a digit, too.
+    func numberOfDigits() -> Int {
         if self == 0 { return 1 } // Special case: 0 has 1 digit
 
         var digitCount = Int(log10(abs(Double(self))) + 1)

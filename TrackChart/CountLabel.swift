@@ -9,7 +9,6 @@ import SwiftUI
 
 /// A label that keeps a consistent width for every digit count.
 /// For example, it will have an equal width for the numbers 10 to 99.
-/// A minus prefix for negative numbers will also be taken into account.
 struct CountLabel: View {
     let count: Int
     
