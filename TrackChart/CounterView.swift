@@ -17,45 +17,11 @@ struct CounterView: View {
             deleteButton
             Spacer()
             minusButton
-            countLabel
+            CountLabel(count: count)
             plusButton
             Spacer()
             submitButton
         }
-    }
-
-    private var countLabel: some View {
-        Text("\(count)")
-            .font(Font(countLabelFont))
-            .frame(minWidth: labelWidth)
-            .padding(.horizontal, 10)
-    }
-
-    private var labelWidth: CGFloat {
-        CGFloat(digitCount) * labelFontCharacterWidth
-    }
-
-    private var digitCount: Int {
-        if count == 0 { return 1 } // Special case: 0 has 1 digit
-        var digitCount = Int(log10(abs(Double(count))) + 1)
-        if count < 0 {
-            digitCount += 1  // Account for the minus sign
-        }
-        return digitCount
-    }
-
-    private var labelFontCharacterWidth: CGFloat { maxCharacterWidth(for: countLabelFont) }
-    private var countLabelFont: UIFont { UIFont.preferredFont(forTextStyle: .title2) }
-
-    private func maxCharacterWidth(for font: UIFont) -> CGFloat {
-        let characters = "0123456789-" // Include digits and minus for negative numbers
-        let maxWidth = characters.map { char in
-            NSAttributedString(
-                string: String(char),
-                attributes: [.font: font]
-            ).size().width
-        }.max() ?? 0
-        return ceil(maxWidth) // Round up for safety
     }
 
     private var plusButton: some View {
