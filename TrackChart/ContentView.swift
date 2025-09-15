@@ -8,14 +8,19 @@
 import SwiftUI
 
 struct ContentView: View {
+    private let sampleWeek = Week(
+        monday: 2,
+        tuesday: 1,
+        wednesday: 3,
+        thursday: 5,
+        friday: 4,
+        saturday: 5,
+        sunday: 4
+    )
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
+        WeekView(week: sampleWeek)
+            .padding()
     }
 }
 
