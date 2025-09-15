@@ -9,10 +9,12 @@ import SwiftUI
 
 struct CounterView: View {
     @State private var count = 0
-    let submit: (Int) -> Void
+    let submitNewValue: (Int) -> Void
+    let deleteLastValue: () -> Void
 
     var body: some View {
         HStack {
+            deleteButton
             stepper
             submitButton
         }
@@ -38,7 +40,7 @@ struct CounterView: View {
 
     private var submitButton: some View {
         Button(action: {
-            submit(count)
+            submitNewValue(count)
             count = 0
         }) {
             Image(systemName: "checkmark")
@@ -48,9 +50,21 @@ struct CounterView: View {
                 .background(Circle().fill(.white).shadow(radius: 2))
         }
     }
+
+    private var deleteButton: some View {
+        Button(action: {
+            deleteLastValue()
+        }) {
+            Image(systemName: "xmark")
+                .foregroundColor(.red)
+                .font(.title2)
+                .padding(10)
+                .background(Circle().fill(.white).shadow(radius: 2))
+        }
+    }
 }
 
 #Preview {
-    CounterView(submit: { _ in })
+    CounterView(submitNewValue: { _ in }, deleteLastValue: {})
 //        .environment(\.layoutDirection, .rightToLeft)
 }

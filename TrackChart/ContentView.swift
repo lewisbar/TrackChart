@@ -12,12 +12,17 @@ struct ContentView: View {
     private let title = "TrackChart"
 
     var body: some View {
-        MainView(title: title, values: sampleValues, submitValue: submitValue)
+        MainView(title: title, values: sampleValues, submitNewValue: submitNewValue, deleteLastValue: deleteLastValue)
             .padding()
     }
 
-    private func submitValue(_ value: Int) {
+    private func submitNewValue(_ value: Int) {
         sampleValues.append(value)
+    }
+
+    private func deleteLastValue() {
+        guard !sampleValues.isEmpty else { return }
+        sampleValues.removeLast()
     }
 }
 
