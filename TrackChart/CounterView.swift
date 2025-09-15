@@ -21,15 +21,19 @@ struct CounterView: View {
     private var stepper: some View {
         Stepper(
             label: {
-                Text("\(count)")
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-                    .padding(.trailing, 4)
+                stepperLabel
             }, onIncrement: {
                 count += 1
             }, onDecrement: {
                 count -= 1
             }
         )
+    }
+
+    private var stepperLabel: some View {
+        Text("\(count)")
+            .frame(maxWidth: .infinity, alignment: .trailing)
+            .padding(.trailing, 4)
     }
 
     private var submitButton: some View {
