@@ -25,56 +25,37 @@ struct CounterView: View {
     }
 
     private var plusButton: some View {
-        Button(action: {
-            count += 1
-        }) {
-            Image(systemName: "plus")
-                .foregroundColor(.green)
-                .font(.title2)
-                .frame(minWidth: 24, minHeight: 24)
-                .padding(10)
-                .background(Circle().fill(.white).shadow(radius: 2))
-        }
+        CircleButton(
+            action: { count += 1 },
+            image: Image(systemName: "plus"),
+            color: .green
+        )
     }
 
     private var minusButton: some View {
-        Button(action: {
-            count -= 1
-        }) {
-            Image(systemName: "minus")
-                .foregroundColor(.red)
-                .font(.title2)
-                .frame(minWidth: 24, minHeight: 24)
-                .padding(10)
-                .background(Circle().fill(.white).shadow(radius: 2))
-        }
+        CircleButton(
+            action: { count -= 1 },
+            image: Image(systemName: "minus"),
+            color: .red
+        )
     }
 
     private var submitButton: some View {
-        Button(action: {
-            submitNewValue(count)
-            count = 0
-        }) {
-            Image(systemName: "checkmark")
-                .foregroundColor(.green)
-                .font(.title2)
-                .frame(minWidth: 24, minHeight: 24)
-                .padding(10)
-                .background(Circle().fill(.white).shadow(radius: 2))
-        }
+        CircleButton(
+            action: {
+                submitNewValue(count)
+                count = 0
+            },
+            image: Image(systemName: "checkmark"),
+            color: .green)
     }
 
     private var deleteButton: some View {
-        Button(action: {
-            deleteLastValue()
-        }) {
-            Image(systemName: "xmark")
-                .foregroundColor(.red)
-                .font(.title2)
-                .frame(minWidth: 24, minHeight: 24)
-                .padding(10)
-                .background(Circle().fill(.white).shadow(radius: 2))
-        }
+        CircleButton(
+            action: deleteLastValue,
+            image: Image(systemName: "xmark"),
+            color: .red
+        )
     }
 }
 
