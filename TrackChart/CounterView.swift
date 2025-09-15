@@ -22,6 +22,8 @@ struct CounterView: View {
         Stepper(
             label: {
                 Text("\(count)")
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+                    .padding(.trailing, 4)
             }, onIncrement: {
                 count += 1
             }, onDecrement: {
@@ -47,4 +49,5 @@ struct CounterView: View {
     @Previewable @State var count = 4
 
     CounterView(count: $count, submit: { _ in count = 0 })
+//        .environment(\.layoutDirection, .rightToLeft)
 }
