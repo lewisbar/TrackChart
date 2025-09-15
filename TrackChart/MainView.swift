@@ -1,5 +1,5 @@
 //
-//  WeekView.swift
+//  MainView.swift
 //  TrackChart
 //
 //  Created by Lennart Wisbar on 15.09.25.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct WeekView: View {
+struct MainView: View {
     let title: String
     let values: [Int]
     @Binding var todaysValue: Int
@@ -25,7 +25,7 @@ struct WeekView: View {
 #Preview {
     @Previewable @State var count = 5
     
-    WeekView(
+    MainView(
         title: "My Habit",
         values: [0, 1, 4, 2, 5, 3, 6, 5],
         todaysValue: $count,

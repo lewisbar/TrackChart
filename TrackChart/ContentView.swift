@@ -14,7 +14,7 @@ struct ContentView: View {
     @State private var todaysValue = 5
 
     var body: some View {
-        WeekView(title: title, values: sampleValues, todaysValue: $todaysValue, submitValue: submitValue)
+        MainView(title: title, values: sampleValues, todaysValue: $todaysValue, submitValue: submitValue)
             .padding()
     }
 
