@@ -9,14 +9,14 @@ import SwiftUI
 
 struct WeekView: View {
     let title: String
-    let week: Week
+    let values: [Int]
     @Binding var todaysValue: Int
 
     var body: some View {
         VStack {
             Text(title)
             CounterView(count: $todaysValue)
-            WeeklyChartView(week: week)
+            ChartView(values: values)
         }
     }
 }
@@ -26,15 +26,7 @@ struct WeekView: View {
     
     WeekView(
         title: "My Habit",
-        week: Week(
-            monday: 4,
-            tuesday: 8,
-            wednesday: 7,
-            thursday: 9,
-            friday: 5,
-            saturday: 6,
-            sunday: 10
-        ),
+        values: [0, 1, 4, 2, 5, 3, 6, 5],
         todaysValue: $count
     )
 }
