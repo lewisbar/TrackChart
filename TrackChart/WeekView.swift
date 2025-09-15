@@ -11,11 +11,12 @@ struct WeekView: View {
     let title: String
     let values: [Int]
     @Binding var todaysValue: Int
+    let submitValue: (Int) -> Void
 
     var body: some View {
         VStack {
             Text(title)
-            CounterView(count: $todaysValue)
+            CounterView(count: $todaysValue, submit: submitValue)
             ChartView(values: values)
         }
     }
@@ -27,6 +28,7 @@ struct WeekView: View {
     WeekView(
         title: "My Habit",
         values: [0, 1, 4, 2, 5, 3, 6, 5],
-        todaysValue: $count
+        todaysValue: $count,
+        submitValue: { _ in count = 0 }
     )
 }
