@@ -10,13 +10,12 @@ import SwiftUI
 struct MainView: View {
     let title: String
     let values: [Int]
-    @Binding var todaysValue: Int
     let submitValue: (Int) -> Void
 
     var body: some View {
         VStack {
             Text(title)
-            CounterView(count: $todaysValue, submit: submitValue)
+            CounterView(submit: submitValue)
             ChartView(values: values)
         }
     }
@@ -28,7 +27,6 @@ struct MainView: View {
     MainView(
         title: "My Habit",
         values: [0, 1, 4, 2, 5, 3, 6, 5],
-        todaysValue: $count,
         submitValue: { _ in count = 0 }
     )
 }

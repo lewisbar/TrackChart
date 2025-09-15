@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CounterView: View {
-    @Binding var count: Int
+    @State private var count = 0
     let submit: (Int) -> Void
 
     var body: some View {
@@ -35,6 +35,7 @@ struct CounterView: View {
     private var submitButton: some View {
         Button(action: {
             submit(count)
+            count = 0
         }) {
             Image(systemName: "checkmark")
                 .foregroundColor(.green)
@@ -46,8 +47,6 @@ struct CounterView: View {
 }
 
 #Preview {
-    @Previewable @State var count = 4
-
-    CounterView(count: $count, submit: { _ in count = 0 })
+    CounterView(submit: { _ in })
 //        .environment(\.layoutDirection, .rightToLeft)
 }
