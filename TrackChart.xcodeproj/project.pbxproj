@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		305005652E79B95A00DEF76D /* Persistence.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3050055D2E79B95900DEF76D /* Persistence.framework */; };
+		305005882E7A152000DEF76D /* Persistence.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3050055D2E79B95900DEF76D /* Persistence.framework */; };
+		305005892E7A152000DEF76D /* Persistence.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3050055D2E79B95900DEF76D /* Persistence.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -25,7 +27,28 @@
 			remoteGlobalIDString = 3050055C2E79B95900DEF76D;
 			remoteInfo = Store;
 		};
+		3050058A2E7A152000DEF76D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 30BDE06C2E7854DF00199C93 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3050055C2E79B95900DEF76D;
+			remoteInfo = Persistence;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		3050058C2E7A152000DEF76D /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				305005892E7A152000DEF76D /* Persistence.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		30438AD02E7990AF00F3C852 /* TrackChartTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TrackChartTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -97,12 +120,20 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				305005882E7A152000DEF76D /* Persistence.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		305005872E7A152000DEF76D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		30BDE06B2E7854DF00199C93 = {
 			isa = PBXGroup;
 			children = (
@@ -110,6 +141,7 @@
 				30438AD12E7990AF00F3C852 /* TrackChartTests */,
 				3050055E2E79B95900DEF76D /* Persistence */,
 				305005682E79B95A00DEF76D /* PersistenceTests */,
+				305005872E7A152000DEF76D /* Frameworks */,
 				30BDE0752E7854E000199C93 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -214,10 +246,12 @@
 				30BDE0702E7854E000199C93 /* Sources */,
 				30BDE0712E7854E000199C93 /* Frameworks */,
 				30BDE0722E7854E000199C93 /* Resources */,
+				3050058C2E7A152000DEF76D /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				3050058B2E7A152000DEF76D /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				30BDE0762E7854E000199C93 /* TrackChart */,
@@ -350,6 +384,11 @@
 			target = 3050055C2E79B95900DEF76D /* Persistence */;
 			targetProxy = 305005662E79B95A00DEF76D /* PBXContainerItemProxy */;
 		};
+		3050058B2E7A152000DEF76D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3050055C2E79B95900DEF76D /* Persistence */;
+			targetProxy = 3050058A2E7A152000DEF76D /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -419,6 +458,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "macosx iphonesimulator iphoneos";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -458,6 +498,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "macosx iphonesimulator iphoneos";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_VERSION = 5.0;
