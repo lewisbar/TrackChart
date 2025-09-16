@@ -7,28 +7,26 @@
 
 import SwiftUI
 
-struct ContentView: View {
-    @Binding var values: [Int]
-    private let title = "TrackChart"
+struct ContentView<MainView: View>: View {
+    @ViewBuilder let mainView: () -> MainView
 
     var body: some View {
-        MainView(title: title, values: values, submitNewValue: submitNewValue, deleteLastValue: deleteLastValue)
+        mainView()
             .padding()
-    }
-
-    private func submitNewValue(_ value: Int) {
-        values.append(value)
-    }
-
-    private func deleteLastValue() {
-        guard !values.isEmpty else { return }
-        values.removeLast()
     }
 }
 
 #Preview {
-    @Previewable @State var values = [1, 3, 2, 5, 4, 6, 9, 4]
-    
-    ContentView(values: $values)
-//        .environment(\.layoutDirection, .rightToLeft)
+    @Previewable @State var values = [1, 2, 4, 5, 2, 4, 7, 1]
+
+    ContentView(
+        mainView: {
+            MainView(title: "Title", counterView: {
+                CounterView(
+                    submitNewValue: { values.append($0) },
+                    deleteLastValue: { values.removeLast() })},
+                     chartView: { ChartView(values: values) }
+            )
+        }
+    )
 }

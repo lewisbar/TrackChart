@@ -7,28 +7,27 @@
 
 import SwiftUI
 
-struct MainView: View {
+struct MainView<CounterView: View, ChartView: View>: View {
     let title: String
-    let values: [Int]
-    let submitNewValue: (Int) -> Void
-    let deleteLastValue: () -> Void
+    @ViewBuilder let counterView: () -> CounterView
+    @ViewBuilder let chartView: () -> ChartView
 
     var body: some View {
         VStack {
             Text(title).font(.title2).padding(.bottom, 4)
-            CounterView(submitNewValue: submitNewValue, deleteLastValue: deleteLastValue)
-            ChartView(values: values)
+            counterView()
+            chartView()
         }
     }
 }
 
 #Preview {
     @Previewable @State var count = 5
-    
+    @Previewable @State var values = [5, 6, 8, 2, 4, 3, 5, 2]
+
     MainView(
         title: "My Habit",
-        values: [0, 1, 4, 2, 5, 3, 6, 5],
-        submitNewValue: { _ in count = 0 },
-        deleteLastValue: {}
+        counterView: { CounterView(submitNewValue: { values.append($0) }, deleteLastValue: { values.removeLast() }) },
+        chartView: { ChartView(values: values)}
     )
 }
