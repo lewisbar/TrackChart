@@ -16,6 +16,7 @@ class Store {
     }
 
     func removeLastValue() {
+        guard !values.isEmpty else { return }
         values.removeLast()
     }
 }
@@ -49,6 +50,14 @@ struct StoreTests {
 
         sut.removeLastValue()
         #expect(sut.values == [4])
+
+        sut.removeLastValue()
+        #expect(sut.values == [])
+    }
+
+    @Test func removeLastValue_whenEmpty_doesNotCrash() {
+        let sut = Store()
+        #expect(sut.values == [])
 
         sut.removeLastValue()
         #expect(sut.values == [])
