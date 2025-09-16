@@ -5,7 +5,7 @@
 //  Created by Lennart Wisbar on 16.09.25.
 //
 
-public class UserDefaultsPersistenceService {
+public class UserDefaultsPersistenceService: PersistenceService {
     private let userDefaults: UserDefaults
     private let key: String
 
