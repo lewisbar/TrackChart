@@ -1,40 +1,14 @@
 //
-//  StoreTests.swift
-//  StoreTests
+//  ValueStoreTests.swift
+//  PersistenceTests
 //
 //  Created by Lennart Wisbar on 16.09.25.
 //
 
 import Testing
-import Store
+import Persistence
 
-protocol PersistenceService {
-    func load() -> [Int]
-    func save(_ values: [Int])
-}
-
-class Store {
-    private(set) var values: [Int]
-    private let persistenceService: PersistenceService?
-
-    init(persistenceService: PersistenceService? = nil) {
-        self.persistenceService = persistenceService
-        values = persistenceService?.load() ?? []
-    }
-
-    func add(_ value: Int) {
-        values.append(value)
-        persistenceService?.save(values)
-    }
-
-    func removeLastValue() {
-        guard !values.isEmpty else { return }
-        values.removeLast()
-        persistenceService?.save(values)
-    }
-}
-
-class StoreTests {
+class ValueStoreTests {
     @Test func startsEmpty() {
         let (sut, _) = makeSUT()
         #expect(sut.values == [])
@@ -105,10 +79,10 @@ class StoreTests {
 
     // MARK: - Helpers
 
-    private func makeSUT(withValues stubbedValues: [Int] = []) -> (sut: Store, persistenceService: PersistenceServiceSpy) {
+    private func makeSUT(withValues stubbedValues: [Int] = []) -> (sut: ValueStore, persistenceService: PersistenceServiceSpy) {
         let persistenceService = PersistenceServiceSpy()
         persistenceService.values = stubbedValues
-        let sut = Store(persistenceService: persistenceService)
+        let sut = ValueStore(persistenceService: persistenceService)
 
         weakSUT = sut
         weakPersistenceService = persistenceService
@@ -116,7 +90,7 @@ class StoreTests {
         return (sut, persistenceService)
     }
 
-    private weak var weakSUT: Store?
+    private weak var weakSUT: ValueStore?
     private weak var weakPersistenceService: PersistenceServiceSpy?
 
     deinit {
