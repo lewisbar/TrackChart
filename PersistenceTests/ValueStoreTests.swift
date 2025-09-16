@@ -77,6 +77,24 @@ class ValueStoreTests {
         #expect(persistenceService.savedValues == [[1, 2]])
     }
 
+    @Test func isObservable() async throws {
+        let (sut, _) = makeSUT()
+        let tracker = ObservationTracker()
+
+        withObservationTracking {
+            _ = sut.values
+        } onChange: {
+            Task { await tracker.setTriggered() }
+        }
+
+        sut.add(5)
+
+        try await Task.sleep(for: .milliseconds(10))
+        let triggered = await tracker.getTriggered()
+        #expect(triggered, "Expected observation to be triggered after adding value")
+        #expect(sut.values == [5], "Expected values to be [5], got \(sut.values)")
+    }
+
     // MARK: - Helpers
 
     private func makeSUT(withValues stubbedValues: [Int] = []) -> (sut: ValueStore, persistenceService: PersistenceServiceSpy) {
@@ -113,4 +131,10 @@ private class PersistenceServiceSpy: PersistenceService {
     func save(_ values: [Int]) {
         savedValues.append(values)
     }
+}
+
+private actor ObservationTracker {
+    var triggered = false
+    func setTriggered() { triggered = true }
+    func getTriggered() -> Bool { triggered }
 }

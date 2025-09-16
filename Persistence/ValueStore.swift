@@ -7,6 +7,7 @@
 
 import Foundation
 
+@Observable
 public class ValueStore {
     private(set) public var values: [Int]
 
