@@ -24,6 +24,7 @@ class Store {
 
     func add(_ value: Int) {
         values.append(value)
+        persistenceService?.save()
     }
 
     func removeLastValue() {
@@ -83,6 +84,22 @@ struct StoreTests {
         #expect(sut.values == stubbedValues)
         #expect(persistenceService.loadCallCount == 1)
         #expect(persistenceService.saveCallCount == 0)
+    }
+
+    @Test func add_savesValues() {
+        let stubbedValues = [3, 7, 9, 1]
+        let persistenceService = PersistenceServiceSpy()
+        persistenceService.values = stubbedValues
+        let sut = Store(persistenceService: persistenceService)
+        #expect(sut.values == stubbedValues)
+        #expect(persistenceService.loadCallCount == 1)
+        #expect(persistenceService.saveCallCount == 0)
+
+        sut.add(5)
+
+        #expect(sut.values == stubbedValues + [5])
+        #expect(persistenceService.loadCallCount == 1)
+        #expect(persistenceService.saveCallCount == 1)
     }
 }
 
