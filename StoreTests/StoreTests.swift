@@ -14,6 +14,10 @@ class Store {
     func add(_ value: Int) {
         values.append(value)
     }
+
+    func removeLastValue() {
+        values.removeLast()
+    }
 }
 
 struct StoreTests {
@@ -31,5 +35,22 @@ struct StoreTests {
 
         sut.add(2)
         #expect(sut.values == [4, 2])
+    }
+
+    @Test func removeLastValue_removesIt() {
+        let sut = Store()
+        #expect(sut.values == [])
+
+        sut.add(4)
+        #expect(sut.values == [4])
+
+        sut.add(2)
+        #expect(sut.values == [4, 2])
+
+        sut.removeLastValue()
+        #expect(sut.values == [4])
+
+        sut.removeLastValue()
+        #expect(sut.values == [])
     }
 }
