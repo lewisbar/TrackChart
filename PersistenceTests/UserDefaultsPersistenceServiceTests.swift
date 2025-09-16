@@ -20,6 +20,10 @@ class UserDefaultsPersistenceService {
     func save(_ values: [Int]) {
         userDefaults.set(values, forKey: key)
     }
+
+    func load() -> [Int] {
+        []
+    }
 }
 
 @Suite(.serialized)
@@ -53,6 +57,14 @@ class UserDefaultsPersistenceServiceTests {
         sut.save(values)
 
         #expect(storedData() as? [Int] == values)
+    }
+
+    @Test func load_whenNothingIsStored_returnsEmpty() {
+        let sut = makeSUT()
+
+        let loadedValues = sut.load()
+
+        #expect(loadedValues == [])
     }
 
     // MARK: - Helpers
