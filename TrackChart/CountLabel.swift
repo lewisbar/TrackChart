@@ -20,7 +20,7 @@ struct CountLabel: View {
     }
 
     private var labelWidth: CGFloat {
-        CGFloat(count.numberOfDigits()) * uiFont.maxCharacterWidth()
+        CGFloat(count.numberOfCharacters()) * uiFont.maxCharacterWidth()
     }
 
     @ScaledMetric(relativeTo: .title2) private var scaledFontSize: CGFloat = 22
