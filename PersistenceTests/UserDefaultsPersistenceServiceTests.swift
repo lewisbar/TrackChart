@@ -22,30 +22,54 @@ class UserDefaultsPersistenceService {
     }
 }
 
-struct UserDefaultsPersistenceServiceTests {
+@Suite(.serialized)
+class UserDefaultsPersistenceServiceTests {
+    let suiteName = UUID().uuidString
+    let userDefaults: UserDefaults
+
+    private let testKey = #file
+    private weak var weakSUT: UserDefaultsPersistenceService?
+
+    init() {
+        userDefaults = UserDefaults(suiteName: suiteName)!
+        cleanUp()
+    }
+
+    deinit {
+        cleanUp()
+        #expect(weakSUT == nil, "Instance should have been deallocated. Potential memory leak.")
+    }
+
     @Test func init_doesNotSave() {
-        let key = #file
-        let userDefaults = UserDefaults(suiteName: #function)!
-
-        let _ = UserDefaultsPersistenceService(key: key, userDefaults: userDefaults)
-        let storedData = userDefaults.array(forKey: key)
-
-        #expect(storedData == nil)
+        let _ = makeSUT()
+        #expect(storedData() == nil)
     }
 
     @Test func save_savesData() {
-        let key = #file
-        let suiteName = #function
-        let userDefaults = UserDefaults(suiteName: suiteName)!
         let values = [2, 1, 4, 6, 3]
-
-        let sut = UserDefaultsPersistenceService(key: key, userDefaults: userDefaults)
-        #expect(userDefaults.array(forKey: key) == nil)
+        let sut = makeSUT()
+        #expect(storedData() == nil)
 
         sut.save(values)
 
-        #expect(userDefaults.array(forKey: key) as? [Int] == values)
+        #expect(storedData() as? [Int] == values)
+    }
 
-        userDefaults.removePersistentDomain(forName: #function)
+    // MARK: - Helpers
+
+    private func makeSUT(suiteName: String = #function) -> UserDefaultsPersistenceService {
+        let sut = UserDefaultsPersistenceService(key: testKey, userDefaults: userDefaults)
+
+        weakSUT = sut
+
+        return sut
+    }
+
+    private func storedData() -> [Any]? {
+        userDefaults.array(forKey: testKey)
+    }
+
+    private func cleanUp() {
+        userDefaults.removePersistentDomain(forName: suiteName)
     }
 }
