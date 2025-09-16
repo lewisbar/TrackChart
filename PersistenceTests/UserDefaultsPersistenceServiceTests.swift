@@ -85,7 +85,20 @@ class UserDefaultsPersistenceServiceTests {
         let values1 = [2, 1, 4, 6, 3]
         let values2 = [10, 20, 400]
         let sut = makeSUT()
-        
+
+        sut.save(values1)
+        sut.save(values2)
+
+        let loadedValues = sut.load()
+
+        #expect(loadedValues == values2)
+    }
+
+    @Test func save_empty_whenSomethingIsStored_overwrites() {
+        let values1 = [2, 1, 4, 6, 3]
+        let values2: [Int] = []
+        let sut = makeSUT()
+
         sut.save(values1)
         sut.save(values2)
 
