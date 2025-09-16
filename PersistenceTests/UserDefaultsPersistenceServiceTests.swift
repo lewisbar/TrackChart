@@ -81,6 +81,19 @@ class UserDefaultsPersistenceServiceTests {
         #expect(loadedValues == values)
     }
 
+    @Test func save_whenSomethingIsStored_overwrites() {
+        let values1 = [2, 1, 4, 6, 3]
+        let values2 = [10, 20, 400]
+        let sut = makeSUT()
+        
+        sut.save(values1)
+        sut.save(values2)
+
+        let loadedValues = sut.load()
+
+        #expect(loadedValues == values2)
+    }
+
     // MARK: - Helpers
 
     private func makeSUT(suiteName: String = #function) -> UserDefaultsPersistenceService {
