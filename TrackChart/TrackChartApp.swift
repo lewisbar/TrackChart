@@ -6,17 +6,15 @@
 //
 
 import SwiftUI
+import Persistence
 
 @main
 struct TrackChartApp: App {
-    @State private var dataPoints: [Int] = []
-    private let userDefaultsKey = "DataPoints"
+    @State private var store = ValueStore(persistenceService: UserDefaultsPersistenceService(key: "DataPoints"))
 
     var body: some Scene {
         WindowGroup {
             ContentView(mainView: makeMainView)
-                .onAppear(perform: loadValues)
-                .onChange(of: dataPoints, saveValues)
         }
     }
 
@@ -25,32 +23,10 @@ struct TrackChartApp: App {
     }
 
     private func makeCounterView() -> some View {
-        CounterView(submitNewValue: submitNewValue, deleteLastValue: deleteLastValue)
+        CounterView(submitNewValue: store.add, deleteLastValue: store.removeLastValue)
     }
 
     private func makeChartView() -> some View {
-        ChartView(values: dataPoints)
-    }
-
-    private func loadValues() {
-        guard let loadedData = UserDefaults.standard.array(forKey: userDefaultsKey) as? [Int] else {
-            print("No stored data found")
-            return
-        }
-
-        dataPoints = loadedData
-    }
-
-    private func saveValues() {
-        UserDefaults.standard.set(dataPoints, forKey: userDefaultsKey)
-    }
-
-    private func submitNewValue(_ value: Int) {
-        dataPoints.append(value)
-    }
-
-    private func deleteLastValue() {
-        guard !dataPoints.isEmpty else { return }
-        dataPoints.removeLast()
+        ChartView(values: store.values)
     }
 }
