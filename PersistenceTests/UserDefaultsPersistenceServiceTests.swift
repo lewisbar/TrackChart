@@ -7,24 +7,7 @@
 
 import Testing
 import Foundation
-
-class UserDefaultsPersistenceService {
-    private let userDefaults: UserDefaults
-    private let key: String
-
-    init(key: String, userDefaults: UserDefaults = .standard) {
-        self.key = key
-        self.userDefaults = userDefaults
-    }
-
-    func save(_ values: [Int]) {
-        userDefaults.set(values, forKey: key)
-    }
-
-    func load() -> [Int] {
-        userDefaults.array(forKey: key) as? [Int] ?? []
-    }
-}
+import Persistence
 
 @Suite(.serialized)
 class UserDefaultsPersistenceServiceTests {
