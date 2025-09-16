@@ -10,7 +10,7 @@ import Store
 
 protocol PersistenceService {
     func load() -> [Int]
-    func save()
+    func save(_ values: [Int])
 }
 
 class Store {
@@ -24,12 +24,13 @@ class Store {
 
     func add(_ value: Int) {
         values.append(value)
-        persistenceService?.save()
+        persistenceService?.save(values)
     }
 
     func removeLastValue() {
         guard !values.isEmpty else { return }
         values.removeLast()
+        persistenceService?.save(values)
     }
 }
 
@@ -81,16 +82,25 @@ class StoreTests {
 
         #expect(persistenceService.loadCallCount == 1)
         #expect(sut.values == stubbedValues)
-        #expect(persistenceService.saveCallCount == 0)
+        #expect(persistenceService.savedValues.count == 0)
     }
 
     @Test func add_savesValues() {
         let (sut, persistenceService) = makeSUT()
-        #expect(persistenceService.saveCallCount == 0)
+        #expect(persistenceService.savedValues.count == 0)
 
         sut.add(5)
 
-        #expect(persistenceService.saveCallCount == 1)
+        #expect(persistenceService.savedValues == [[5]])
+    }
+
+    @Test func removeLastValue_savesValues() {
+        let (sut, persistenceService) = makeSUT(withValues: [1, 2, 4])
+        #expect(persistenceService.savedValues.count == 0)
+
+        sut.removeLastValue()
+
+        #expect(persistenceService.savedValues == [[1, 2]])
     }
 
     // MARK: - Helpers
@@ -117,7 +127,7 @@ class StoreTests {
 
 private class PersistenceServiceSpy: PersistenceService {
     private(set) var loadCallCount = 0
-    private(set) var saveCallCount = 0
+    private(set) var savedValues = [[Int]]()
 
     var values: [Int] = []
 
@@ -126,7 +136,7 @@ private class PersistenceServiceSpy: PersistenceService {
         return values
     }
     
-    func save() {
-        saveCallCount += 1
+    func save(_ values: [Int]) {
+        savedValues.append(values)
     }
 }
