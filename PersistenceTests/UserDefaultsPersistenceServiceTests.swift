@@ -2,7 +2,7 @@
 //  UserDefaultsPersistenceServiceTests.swift
 //  PersistenceTests
 //
-//  Created by LennartWisbar on 16.09.25.
+//  Created by Lennart Wisbar on 16.09.25.
 //
 
 import Testing
@@ -28,6 +28,8 @@ class UserDefaultsPersistenceService {
 
 @Suite(.serialized)
 class UserDefaultsPersistenceServiceTests {
+    // MARK: - Setup
+
     let suiteName = UUID().uuidString
     let userDefaults: UserDefaults
 
@@ -43,6 +45,8 @@ class UserDefaultsPersistenceServiceTests {
         cleanUp()
         #expect(weakSUT == nil, "Instance should have been deallocated. Potential memory leak.")
     }
+
+    // MARK: - Actual Tests
 
     @Test func init_doesNotSave() {
         let _ = makeSUT()
@@ -81,9 +85,7 @@ class UserDefaultsPersistenceServiceTests {
 
     private func makeSUT(suiteName: String = #function) -> UserDefaultsPersistenceService {
         let sut = UserDefaultsPersistenceService(key: testKey, userDefaults: userDefaults)
-
         weakSUT = sut
-
         return sut
     }
 
