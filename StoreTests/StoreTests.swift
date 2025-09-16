@@ -33,14 +33,14 @@ class Store {
     }
 }
 
-struct StoreTests {
+class StoreTests {
     @Test func startsEmpty() {
-        let sut = Store()
+        let (sut, _) = makeSUT()
         #expect(sut.values == [])
     }
 
     @Test func add_appendsValue() {
-        let sut = Store()
+        let (sut, _) = makeSUT()
         #expect(sut.values == [])
 
         sut.add(4)
@@ -51,7 +51,7 @@ struct StoreTests {
     }
 
     @Test func removeLastValue_removesIt() {
-        let sut = Store()
+        let (sut, _) = makeSUT()
         #expect(sut.values == [])
 
         sut.add(4)
@@ -68,7 +68,7 @@ struct StoreTests {
     }
 
     @Test func removeLastValue_whenEmpty_doesNotCrash() {
-        let sut = Store()
+        let (sut, _) = makeSUT()
         #expect(sut.values == [])
 
         sut.removeLastValue()
@@ -77,33 +77,43 @@ struct StoreTests {
 
     @Test func init_loadsValues() {
         let stubbedValues = [3, 7, 9, 1]
-        let persistenceService = PersistenceServiceSpy()
-        persistenceService.values = stubbedValues
-        let sut = Store(persistenceService: persistenceService)
+        let (sut, persistenceService) = makeSUT(withValues: stubbedValues)
 
-        #expect(sut.values == stubbedValues)
         #expect(persistenceService.loadCallCount == 1)
+        #expect(sut.values == stubbedValues)
         #expect(persistenceService.saveCallCount == 0)
     }
 
     @Test func add_savesValues() {
-        let stubbedValues = [3, 7, 9, 1]
-        let persistenceService = PersistenceServiceSpy()
-        persistenceService.values = stubbedValues
-        let sut = Store(persistenceService: persistenceService)
-        #expect(sut.values == stubbedValues)
-        #expect(persistenceService.loadCallCount == 1)
+        let (sut, persistenceService) = makeSUT()
         #expect(persistenceService.saveCallCount == 0)
 
         sut.add(5)
 
-        #expect(sut.values == stubbedValues + [5])
-        #expect(persistenceService.loadCallCount == 1)
         #expect(persistenceService.saveCallCount == 1)
     }
-}
 
-// MARK: - Helpers
+    // MARK: - Helpers
+
+    private func makeSUT(withValues stubbedValues: [Int] = []) -> (sut: Store, persistenceService: PersistenceServiceSpy) {
+        let persistenceService = PersistenceServiceSpy()
+        persistenceService.values = stubbedValues
+        let sut = Store(persistenceService: persistenceService)
+
+        weakSUT = sut
+        weakPersistenceService = persistenceService
+
+        return (sut, persistenceService)
+    }
+
+    private weak var weakSUT: Store?
+    private weak var weakPersistenceService: PersistenceServiceSpy?
+
+    deinit {
+        #expect(weakSUT == nil, "Instance should have been deallocated. Potential memory leak.")
+        #expect(weakPersistenceService == nil, "Instance should have been deallocated. Potential memory leak.")
+    }
+}
 
 private class PersistenceServiceSpy: PersistenceService {
     private(set) var loadCallCount = 0
