@@ -8,8 +8,19 @@
 import Testing
 import Store
 
+protocol PersistenceService {
+    func load() -> [Int]
+    func save()
+}
+
 class Store {
-    private(set) var values: [Int] = []
+    private(set) var values: [Int]
+    private let persistenceService: PersistenceService?
+
+    init(persistenceService: PersistenceService? = nil) {
+        self.persistenceService = persistenceService
+        values = persistenceService?.load() ?? []
+    }
 
     func add(_ value: Int) {
         values.append(value)
@@ -61,5 +72,34 @@ struct StoreTests {
 
         sut.removeLastValue()
         #expect(sut.values == [])
+    }
+
+    @Test func init_loadsValues() {
+        let stubbedValues = [3, 7, 9, 1]
+        let persistenceService = PersistenceServiceSpy()
+        persistenceService.values = stubbedValues
+        let sut = Store(persistenceService: persistenceService)
+
+        #expect(sut.values == stubbedValues)
+        #expect(persistenceService.loadCallCount == 1)
+        #expect(persistenceService.saveCallCount == 0)
+    }
+}
+
+// MARK: - Helpers
+
+private class PersistenceServiceSpy: PersistenceService {
+    private(set) var loadCallCount = 0
+    private(set) var saveCallCount = 0
+
+    var values: [Int] = []
+
+    func load() -> [Int] {
+        loadCallCount += 1
+        return values
+    }
+    
+    func save() {
+        saveCallCount += 1
     }
 }
