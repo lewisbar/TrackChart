@@ -22,7 +22,7 @@ class UserDefaultsPersistenceService {
     }
 
     func load() -> [Int] {
-        []
+        userDefaults.array(forKey: key) as? [Int] ?? []
     }
 }
 
@@ -65,6 +65,16 @@ class UserDefaultsPersistenceServiceTests {
         let loadedValues = sut.load()
 
         #expect(loadedValues == [])
+    }
+
+    @Test func load_whenSomethingIsStored_returnsStoredValues() {
+        let values = [2, 1, 4, 6, 3]
+        let sut = makeSUT()
+        sut.save(values)
+
+        let loadedValues = sut.load()
+
+        #expect(loadedValues == values)
     }
 
     // MARK: - Helpers
