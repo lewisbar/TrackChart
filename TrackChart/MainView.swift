@@ -22,7 +22,6 @@ struct MainView<CounterView: View, ChartView: View>: View {
 }
 
 #Preview {
-    @Previewable @State var count = 5
     @Previewable @State var values = [5, 6, 8, 2, 4, 3, 5, 2]
 
     MainView(
