@@ -18,8 +18,8 @@ struct ChartView: View {
     private let dataPoints: [DataPoint]
 
     @State private var xPosition = fallbackValue
+    @State private var visibleLength = 10
     private let maxVisibleLength = 10
-    private var visibleLength: Int { dataPoints.isEmpty ? 1 : max(0, min(totalPoints, maxVisibleLength)) }
     private var homePosition: String { dataPoints.last?.name ?? Self.fallbackValue }
     private var totalPoints: Int { dataPoints.count }
     private let xLabel = "Data point"
@@ -37,7 +37,7 @@ struct ChartView: View {
         }
         .applyScrollingBehavior(
             xLabels: dataPoints.map(\.name),
-            visibleLength: visibleLength,
+            visibleLength: $visibleLength,
             xPosition: $xPosition,
             homePosition: homePosition
         )
@@ -47,7 +47,7 @@ struct ChartView: View {
 private extension View {
     func applyScrollingBehavior(
         xLabels: [String],
-        visibleLength: Int,
+        visibleLength: Binding<Int>,
         xPosition: Binding<String>,
         homePosition: String
     ) -> some View {
@@ -64,14 +64,14 @@ private extension View {
 
 private struct ScrollingBehaviorModifier: ViewModifier {
     let xLabels: [String]
-    let visibleLength: Int
+    @Binding var visibleLength: Int
     @Binding var xPosition: String
     let homePosition: String
 
     func body(content: Content) -> some View {
         content
             .chartXScale(domain: xLabels.isEmpty ? [ChartView.fallbackValue] : xLabels)
-            .chartXVisibleDomain(length: visibleLength)
+            .chartXVisibleDomain(length: max(visibleLength, 1))
             .chartScrollableAxes(.horizontal)
             .chartScrollPosition(x: $xPosition)
             .onAppear { xPosition = homePosition }
