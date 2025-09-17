@@ -21,11 +21,15 @@ struct ContentView<MainView: View>: View {
 
     ContentView(
         mainView: {
-            MainView(title: "Title", counterView: {
-                CounterView(
-                    submitNewValue: { values.append($0) },
-                    deleteLastValue: { values.removeLast() })},
-                     chartView: { ChartView(values: values) }
+            MainView(
+                title: "Title",
+                counterView: {
+                    CounterView(
+                        submitNewValue: { values.append($0) },
+                        deleteLastValue: { values.removeLast() }
+                    )
+                },
+                chartView: { ChartView(values: values) }
             )
         }
     )
