@@ -99,15 +99,15 @@ private struct ZoomingBehaviorModifier: ViewModifier {
                     let newLength = max(5, min(totalPoints, Int(Double(visibleLength) / delta)))
                     visibleLength = newLength
                 })
-            .chartXAxis {
-                AxisMarks(values: stride(from: 0, to: totalPoints, by: max(1, visibleLength / 5)).map { String($0) }) { value in
-                    if let index = Int(value.as(String.self) ?? ChartView.fallbackValue) {
-                        AxisValueLabel("\(index)", anchor: .bottom)
-                        AxisGridLine()
-                        AxisTick()
-                    }
-                }
-            }
+//          .chartXAxis {
+//                AxisMarks(values: stride(from: 0, to: totalPoints, by: max(1, visibleLength / 5)).map { String($0) }) { value in
+//                    if let index = Int(value.as(String.self) ?? ChartView.fallbackValue) {
+//                        AxisValueLabel("\(index)", anchor: .bottom)
+//                        AxisGridLine()
+//                        AxisTick()
+//                    }
+//                }
+//            }
     }
 }
 
