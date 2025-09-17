@@ -26,7 +26,17 @@ struct TrackChartApp: App {
         CounterView(submitNewValue: store.add, deleteLastValue: store.removeLastValue)
     }
 
+    @ViewBuilder
     private func makeChartView() -> some View {
-        ChartView(values: store.values)
+        if !store.values.isEmpty {
+            ChartView(values: store.values)
+        } else {
+            VStack(alignment: .center) {
+                Text("Start adding data points using the buttons above.")
+                    .multilineTextAlignment(.center)
+                    .frame(maxHeight: .infinity, alignment: .center)
+                    .padding(.bottom, 50)
+            }
+        }
     }
 }
