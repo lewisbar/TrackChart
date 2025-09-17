@@ -22,10 +22,8 @@ struct ChartView: View {
     }
 
     var body: some View {
-        Chart {
-            ForEach(dataPoints) { dataPoint in
-                LineMark(x: .value("Data point", dataPoint.name), y: .value("Count", dataPoint.value))
-            }
+        Chart(dataPoints) { dataPoint in
+            LineMark(x: .value("Data point", dataPoint.name), y: .value("Count", dataPoint.value))
         }
     }
 }
