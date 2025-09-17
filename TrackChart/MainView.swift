@@ -15,8 +15,8 @@ struct MainView<CounterView: View, ChartView: View>: View {
     var body: some View {
         VStack {
             Text(title).font(.title2).padding(.bottom, 4)
-            counterView()
             chartView()
+            counterView()
         }
     }
 }

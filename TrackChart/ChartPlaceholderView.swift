@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ChartPlaceholderView: View {
     var body: some View {
-        Text("Start adding data points using the buttons above.")
+        Text("Start adding data points to see chart.")
             .multilineTextAlignment(.center)
             .frame(maxHeight: .infinity, alignment: .center)
             .padding(.bottom, 50)
