@@ -31,6 +31,7 @@ struct ChartView: View {
     var body: some View {
         Chart(dataPoints) { dataPoint in
             LineMark(x: .value("Data point", dataPoint.name), y: .value("Count", dataPoint.value))
+            PointMark(x: .value("Data point", dataPoint.name), y: .value("Count", dataPoint.value))
         }
         .chartXScale(domain: dataPoints.isEmpty ? [Self.fallbackValue] : dataPoints.map { $0.name })
         .chartXVisibleDomain(length: visibleLength)
