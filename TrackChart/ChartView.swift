@@ -23,6 +23,8 @@ struct ChartView: View {
     private var homePosition: String { dataPoints.last?.name ?? Self.fallbackValue }
     private var totalPoints: Int { dataPoints.count }
     private static let fallbackValue = "0"
+    private let xLabel = "Data point"
+    private let yLabel = "Count"
 
     init(values: [Int]) {
         self.dataPoints = values.enumerated().map { index, value in DataPoint(value: value, name: "\(index)") }
@@ -30,8 +32,8 @@ struct ChartView: View {
 
     var body: some View {
         Chart(dataPoints) { dataPoint in
-            LineMark(x: .value("Data point", dataPoint.name), y: .value("Count", dataPoint.value))
-            PointMark(x: .value("Data point", dataPoint.name), y: .value("Count", dataPoint.value))
+            LineMark(x: .value(xLabel, dataPoint.name), y: .value(yLabel, dataPoint.value))
+            PointMark(x: .value(xLabel, dataPoint.name), y: .value(yLabel, dataPoint.value))
         }
         .chartXScale(domain: dataPoints.isEmpty ? [Self.fallbackValue] : dataPoints.map { $0.name })
         .chartXVisibleDomain(length: visibleLength)
