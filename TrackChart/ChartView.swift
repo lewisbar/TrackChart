@@ -94,11 +94,18 @@ private struct ZoomingBehaviorModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .gesture(MagnificationGesture()
-                .onChanged { delta in
-                    let newLength = max(5, min(totalPoints, Int(Double(visibleLength) / delta)))
-                    visibleLength = newLength
-                })
+            .highPriorityGesture(
+                MagnificationGesture()
+                    .onChanged { delta in
+                        let sensitivity = 2.0
+                        let step = 2.0 // Fixed step size for consistent changes
+                        let adjustedDelta = delta > 0 ? pow(delta, 0.3) : 1.0 // Stronger dampening for large deltas
+                        let change = (adjustedDelta - 1.0) * sensitivity * step
+                        let newLength = max(5, min(totalPoints, Int(Double(visibleLength) - change.rounded())))
+                        visibleLength = newLength
+                    },
+                including: .all
+            )
 //          .chartXAxis {
 //                AxisMarks(values: stride(from: 0, to: totalPoints, by: max(1, visibleLength / 5)).map { String($0) }) { value in
 //                    if let index = Int(value.as(String.self) ?? ChartView.fallbackValue) {
