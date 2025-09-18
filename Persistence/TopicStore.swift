@@ -11,32 +11,31 @@ public class TopicStore {
 
     public init(persistenceService: TopicPersistenceService) {
         self.persistenceService = persistenceService
-        load()
     }
 
-    public func load() {
-        topics = persistenceService.load()
+    public func load() throws {
+        topics = try persistenceService.load()
     }
 
-    public func add(_ topic: Topic) {
+    public func add(_ topic: Topic) throws {
         topics.append(topic)
-        persistenceService.create(topic)
+        try persistenceService.create(topic)
     }
 
-    public func update(_ topic: Topic) {
+    public func update(_ topic: Topic) throws {
         guard let index = topics.firstIndex(where: { $0.id == topic.id }) else {
-            add(topic)
+            try add(topic)
             return
         }
 
         topics[index] = topic
-        persistenceService.update(topic)
+        try persistenceService.update(topic)
     }
 
-    public func remove(_ topic: Topic) {
+    public func remove(_ topic: Topic) throws {
         guard let index = topics.firstIndex(where: { $0.id == topic.id }) else { return }
 
         topics.remove(at: index)
-        persistenceService.delete(topic)
+        try persistenceService.delete(topic)
     }
 }

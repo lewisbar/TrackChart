@@ -6,8 +6,8 @@
 //
 
 public protocol TopicPersistenceService {
-    func create(_ topic: Topic)
-    func update(_ topic: Topic)
-    func delete(_ topic: Topic)
-    func load() -> [Topic]
+    func create(_ topic: Topic) throws
+    func update(_ topic: Topic) throws
+    func delete(_ topic: Topic) throws
+    func load() throws -> [Topic]
 }

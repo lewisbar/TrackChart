@@ -9,83 +9,87 @@ import Testing
 import Persistence
 
 class TopicStoreTests {
-    @Test func init_loadsTopics() {
+    @Test func init_doesNotLoadTopics() {
         let topics = sampleTopics()
         let (sut, persistenceService) = makeSUT(with: topics)
 
-        #expect(persistenceService.loadCallCount == 1)
-        #expect(sut.topics == topics)
+        #expect(persistenceService.loadCallCount == 0)
+        #expect(sut.topics.isEmpty)
     }
 
-    @Test func add_addsAndSavesTopic() {
+    @Test func add_addsAndSavesTopic() throws {
         let (sut, persistenceService) = makeSUT()
         let topic1 = sampleTopic1()
         let topic2 = sampleTopic2()
 
-        sut.add(topic1)
+        try sut.add(topic1)
 
         #expect(sut.topics == [topic1])
         #expect(persistenceService.createdTopics == [topic1])
 
-        sut.add(topic2)
+        try sut.add(topic2)
 
         #expect(sut.topics == [topic1, topic2])
         #expect(persistenceService.createdTopics == [topic1, topic2])
     }
 
-    @Test func delete_deletesAlsoFromPersistence() {
+    @Test func delete_deletesAlsoFromPersistence() throws {
         let reducedTopics = sampleTopics()
         let topicToDelete = sampleTopic1()
         var allTopics = reducedTopics
         allTopics.insert(topicToDelete, at: 1)
         let (sut, persistenceService) = makeSUT(with: allTopics)
+        try sut.load()
 
-        sut.remove(topicToDelete)
+        try sut.remove(topicToDelete)
 
         #expect(sut.topics == reducedTopics)
         #expect(persistenceService.deletedTopics == [topicToDelete])
     }
 
-    @Test func delete_whenEmpty_doesNothing() {
+    @Test func delete_whenEmpty_doesNothing() throws {
         let topicToDelete = sampleTopic1()
         let (sut, persistenceService) = makeSUT()
         #expect(sut.topics.isEmpty)
 
-        sut.remove(topicToDelete)
+        try sut.remove(topicToDelete)
 
         #expect(sut.topics.isEmpty)
         #expect(persistenceService.deletedTopics.isEmpty)
     }
 
-    @Test func delete_whenTopicDoesNotExist_doesNothing() {
+    @Test func delete_whenTopicDoesNotExist_doesNothing() throws {
         let topics = sampleTopics()
         let topicToDelete = sampleTopic1()
         let (sut, persistenceService) = makeSUT(with: topics)
+        try sut.load()
 
-        sut.remove(topicToDelete)
+        try sut.remove(topicToDelete)
 
         #expect(sut.topics == topics)
         #expect(persistenceService.deletedTopics.isEmpty)
     }
 
-    @Test func update_whenTopicDoesNotExist_createsNewTopic() {
+    @Test func update_whenTopicDoesNotExist_createsNewTopic() throws {
         let topics = sampleTopics()
         let topicToUpdate = sampleTopic1()
         let (sut, persistenceService) = makeSUT(with: topics)
+        try sut.load()
 
-        sut.update(topicToUpdate)
+        try sut.update(topicToUpdate)
 
         #expect(sut.topics == topics + [topicToUpdate])
         #expect(persistenceService.updatedTopics.isEmpty)
         #expect(persistenceService.createdTopics == [topicToUpdate])
     }
 
-    @Test func update_updatesExistingTopic() {
+    @Test func update_updatesExistingTopic() throws {
         let topics = sampleTopics()
         let topicToUpdate = Topic(id: topics[2].id, name: "new name", entries: [8, 8, -8])
         let (sut, persistenceService) = makeSUT(with: topics)
+        try sut.load()
 
-        sut.update(topicToUpdate)
+        try sut.update(topicToUpdate)
 
         var expectedTopics = topics
         expectedTopics[2] = topicToUpdate
