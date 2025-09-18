@@ -68,7 +68,8 @@ public class UserDefaultsTopicPersistenceService: TopicPersistenceService {
     }
 
     public func delete(_ topic: Topic) throws {
-
+        let topic = UserDefaultsTopic(from: topic)
+        userDefaults.removeObject(forKey: topic.key)
     }
 
     public func load() throws -> [Topic] {
@@ -194,6 +195,26 @@ class UserDefaultsTopicPersistenceServiceTests {
         let updatedLoadedTopics = try sut.load()
 
         #expect(updatedLoadedTopics == [updatedTopic1, updatedTopic2])
+    }
+
+    @Test func delete_deletesTopic() throws {
+        let topic1 = Topic(id: UUID(), name: "a topic", entries: [2, 1, 4, 6, 3])
+        let topic2 = Topic(id: UUID(), name: "another topic", entries: [-31, 7, -4, 0])
+        let sut = makeSUT()
+        #expect(storedTopicIDs() == nil)
+
+        try sut.create(topic1)
+        try sut.create(topic2)
+
+        let firstLoadedTopics = try sut.load()
+
+        #expect(firstLoadedTopics == [topic1, topic2])
+
+        try sut.delete(topic1)
+
+        let reducedLoadedTopics = try sut.load()
+
+        #expect(reducedLoadedTopics == [topic2])
     }
 
     // MARK: - Helpers
