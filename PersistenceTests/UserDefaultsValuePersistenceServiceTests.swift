@@ -1,5 +1,5 @@
 //
-//  UserDefaultsPersistenceServiceTests.swift
+//  UserDefaultsValuePersistenceServiceTests.swift
 //  PersistenceTests
 //
 //  Created by Lennart Wisbar on 16.09.25.
@@ -10,14 +10,14 @@ import Foundation
 import Persistence
 
 @Suite(.serialized)
-class UserDefaultsPersistenceServiceTests {
+class UserDefaultsValuePersistenceServiceTests {
     // MARK: - Setup
 
     let suiteName = UUID().uuidString
     let userDefaults: UserDefaults
 
     private let testKey = #file
-    private weak var weakSUT: UserDefaultsPersistenceService?
+    private weak var weakSUT: UserDefaultsValuePersistenceService?
 
     init() {
         userDefaults = UserDefaults(suiteName: suiteName)!
@@ -92,8 +92,8 @@ class UserDefaultsPersistenceServiceTests {
 
     // MARK: - Helpers
 
-    private func makeSUT(suiteName: String = #function) -> UserDefaultsPersistenceService {
-        let sut = UserDefaultsPersistenceService(key: testKey, userDefaults: userDefaults)
+    private func makeSUT(suiteName: String = #function) -> UserDefaultsValuePersistenceService {
+        let sut = UserDefaultsValuePersistenceService(key: testKey, userDefaults: userDefaults)
         weakSUT = sut
         return sut
     }

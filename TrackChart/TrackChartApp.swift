@@ -10,7 +10,7 @@ import Persistence
 
 @main
 struct TrackChartApp: App {
-    @State private var store = ValueStore(persistenceService: UserDefaultsPersistenceService(key: "DataPoints"))
+    @State private var store = ValueStore(persistenceService: UserDefaultsValuePersistenceService(key: "DataPoints"))
 
     var body: some Scene {
         WindowGroup {
