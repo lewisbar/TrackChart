@@ -114,6 +114,21 @@ class UserDefaultsTopicPersistenceServiceTests {
         #expect(storedTopic(for: id) != nil)
     }
 
+    @Test func create_whenIDAlreadyExists_overwrites() throws {
+        let id = UUID()
+        let firstTopic = Topic(id: id, name: "a topic", entries: [2, 1, 4, 6, 3])
+        let topicWithSameID = Topic(id: id, name: "another topic", entries: [-2, -3, -50])
+        let sut = makeSUT()
+        #expect(storedTopicIDs() == nil)
+
+        try sut.create(firstTopic)
+        try sut.create(topicWithSameID)
+
+        let loadedTopics = try sut.load()
+
+        #expect(loadedTopics == [topicWithSameID])
+    }
+
     @Test func load_whenNothingIsStored_returnsEmpty() throws {
         let sut = makeSUT()
 
@@ -134,21 +149,6 @@ class UserDefaultsTopicPersistenceServiceTests {
         let loadedTopics = try sut.load()
 
         #expect(loadedTopics == [topic1, topic2])
-    }
-
-    @Test func create_whenIDAlreadyExists_overwrites() throws {
-        let id = UUID()
-        let firstTopic = Topic(id: id, name: "a topic", entries: [2, 1, 4, 6, 3])
-        let topicWithSameID = Topic(id: id, name: "another topic", entries: [-2, -3, -50])
-        let sut = makeSUT()
-        #expect(storedTopicIDs() == nil)
-
-        try sut.create(firstTopic)
-        try sut.create(topicWithSameID)
-
-        let loadedTopics = try sut.load()
-
-        #expect(loadedTopics == [topicWithSameID])
     }
 
     // MARK: - Helpers
