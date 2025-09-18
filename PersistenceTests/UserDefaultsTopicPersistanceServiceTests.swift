@@ -58,11 +58,7 @@ public class UserDefaultsTopicPersistenceService: TopicPersistenceService {
     }
 
     public func update(_ topic: Topic) throws {
-        let topic = UserDefaultsTopic(from: topic)
-        let data = try JSONEncoder().encode(topic)
-        userDefaults.set(data, forKey: "topic_\(topic.id)")
-
-        addToIDList(topic.id.uuidString)
+        try create(topic)
     }
 
     public func delete(_ topic: Topic) throws {
