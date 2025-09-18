@@ -21,9 +21,16 @@ protocol TopicPersistenceService {
 
 class TopicStore {
     var topics: [Topic] = []
+    private let persistenceService: TopicPersistenceService
 
     init(persistenceService: TopicPersistenceService) {
+        self.persistenceService = persistenceService
         self.topics = persistenceService.load()
+    }
+
+    func add(_ topic: Topic) {
+        topics.append(topic)
+        persistenceService.create(topic)
     }
 }
 
@@ -37,6 +44,23 @@ struct TopicStoreTests {
 
         #expect(persistenceService.loadCallCount == 1)
         #expect(sut.topics == topics)
+    }
+
+    @Test func add_addsAndSavesTopic() {
+        let persistenceService = TopicPersistenceServiceSpy()
+        let sut = TopicStore(persistenceService: persistenceService)
+        let topic1 = Topic(name: "a topic", entries: [1, 2, 3])
+        let topic2 = Topic(name: "another topic", entries: [45, 67, -89])
+
+        sut.add(topic1)
+
+        #expect(sut.topics == [topic1])
+        #expect(persistenceService.createdTopics == [topic1])
+
+        sut.add(topic2)
+
+        #expect(sut.topics == [topic1, topic2])
+        #expect(persistenceService.createdTopics == [topic1, topic2])
     }
 
     // MARK: - Helpers
