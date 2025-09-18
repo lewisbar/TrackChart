@@ -9,11 +9,6 @@ import Testing
 import Persistence
 
 class ValueStoreTests {
-    @Test func startsEmpty() {
-        let (sut, _) = makeSUT()
-        #expect(sut.values == [])
-    }
-
     @Test func add_appendsValue() {
         let (sut, _) = makeSUT()
         #expect(sut.values == [])
