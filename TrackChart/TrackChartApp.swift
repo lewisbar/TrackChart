@@ -20,12 +20,12 @@ struct TrackChartApp: App {
 
     private func makeTopicListView() -> some View {
         NavigationStack {
-            TopicListView(topics: [TopicVM(name: "Test", info: "\(store.values.count) entries")])
-                .navigationDestination(for: TopicVM.self, destination: makeTopicView)
+            TopicListView(topics: [TopicCellModel(name: "Test", info: "\(store.values.count) entries")])
+                .navigationDestination(for: TopicCellModel.self, destination: makeTopicView)
         }
     }
 
-    private func makeTopicView(for topic: TopicVM) -> some View {
+    private func makeTopicView(for topic: TopicCellModel) -> some View {
         TopicView(title: "TrackChart", counterView: makeCounterView, chartView: makeChartView)
     }
 

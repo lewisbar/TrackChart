@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct TopicListView: View {
-    let topics: [TopicVM]
+    let topics: [TopicCellModel]
 
-    init(topics: [TopicVM]) {
+    init(topics: [TopicCellModel]) {
         self.topics = topics
     }
 
@@ -23,8 +23,8 @@ struct TopicListView: View {
 
 #Preview {
     TopicListView(topics: [
-        TopicVM(name: "Daily Pages Read", info: "15 entries"),
-        TopicVM(name: "Pushups", info: "230 entries"),
-        TopicVM(name: "Hours Studied", info: "32 entries")
+        TopicCellModel(name: "Daily Pages Read", info: "15 entries"),
+        TopicCellModel(name: "Pushups", info: "230 entries"),
+        TopicCellModel(name: "Hours Studied", info: "32 entries")
     ])
 }

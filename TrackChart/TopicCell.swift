@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct TopicCell: View {
-    let topic: TopicVM
+    let topic: TopicCellModel
 
     var body: some View {
         NavigationLink(value: topic, label: label)
@@ -24,5 +24,5 @@ struct TopicCell: View {
 }
 
 #Preview {
-    TopicCell(topic: TopicVM(name: "Daily Pages Read", info: "17 entries"))
+    TopicCell(topic: TopicCellModel(name: "Daily Pages Read", info: "17 entries"))
 }
