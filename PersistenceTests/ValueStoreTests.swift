@@ -117,7 +117,7 @@ class ValueStoreTests {
     }
 }
 
-private class PersistenceServiceSpy: PersistenceService {
+private class PersistenceServiceSpy: SingleTopicPersistenceService {
     private(set) var loadCallCount = 0
     private(set) var savedValues = [[Int]]()
 

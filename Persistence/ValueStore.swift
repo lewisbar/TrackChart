@@ -11,9 +11,9 @@ import Foundation
 public class ValueStore {
     private(set) public var values: [Int]
 
-    private let persistenceService: PersistenceService?
+    private let persistenceService: SingleTopicPersistenceService?
 
-    public init(persistenceService: PersistenceService? = nil) {
+    public init(persistenceService: SingleTopicPersistenceService? = nil) {
         self.persistenceService = persistenceService
         values = persistenceService?.load() ?? []
     }
