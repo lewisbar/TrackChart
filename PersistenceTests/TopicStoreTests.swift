@@ -36,6 +36,11 @@ class TopicStore {
         topics.append(topic)
         persistenceService.create(topic)
     }
+
+    func remove(_ topic: Topic) {
+        topics.removeAll(where: { $0 == topic })
+        persistenceService.delete(topic)
+    }
 }
 
 class TopicStoreTests {
@@ -61,6 +66,18 @@ class TopicStoreTests {
 
         #expect(sut.topics == [topic1, topic2])
         #expect(persistenceService.createdTopics == [topic1, topic2])
+    }
+
+    @Test func delete_deletesAlsoFromPersistence() {
+        var topics = sampleTopics()
+        let topicToDelete = Topic(name: "Topic to delete", entries: [0, 1, 3, 5])
+        topics.insert(topicToDelete, at: 1)
+        let (sut, persistenceService) = makeSUT(with: topics)
+
+        sut.remove(topicToDelete)
+
+        #expect(sut.topics == sampleTopics())
+        #expect(persistenceService.deletedTopics == [topicToDelete])
     }
 
     // MARK: - Helpers
