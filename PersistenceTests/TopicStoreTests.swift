@@ -38,21 +38,17 @@ class TopicStore {
     }
 }
 
-struct TopicStoreTests {
+class TopicStoreTests {
     @Test func init_loadsTopics() {
-        let persistenceService = TopicPersistenceServiceSpy()
         let topics = sampleTopics()
-        persistenceService.stub(topics)
-
-        let sut = TopicStore(persistenceService: persistenceService)
+        let (sut, persistenceService) = makeSUT(with: topics)
 
         #expect(persistenceService.loadCallCount == 1)
         #expect(sut.topics == topics)
     }
 
     @Test func add_addsAndSavesTopic() {
-        let persistenceService = TopicPersistenceServiceSpy()
-        let sut = TopicStore(persistenceService: persistenceService)
+        let (sut, persistenceService) = makeSUT()
         let topic1 = Topic(name: "a topic", entries: [1, 2, 3])
         let topic2 = Topic(name: "another topic", entries: [45, 67, -89])
 
@@ -69,6 +65,17 @@ struct TopicStoreTests {
 
     // MARK: - Helpers
 
+    private func makeSUT(with topics: [Topic] = []) -> (sut: TopicStore, persistenceService: TopicPersistenceServiceSpy) {
+        let persistenceService = TopicPersistenceServiceSpy()
+        persistenceService.stub(topics)
+        let sut = TopicStore(persistenceService: persistenceService)
+
+        weakSUT = sut
+        weakPersistenceService = persistenceService
+
+        return (sut, persistenceService)
+    }
+
     private func sampleTopics() -> [Topic] {
         [
             Topic(name: "Topic 1", entries: [0, 3, 4, 5, 2, 3, 4, -1]),
@@ -78,6 +85,14 @@ struct TopicStoreTests {
             Topic(name: "Topic 5", entries: []),
             Topic(name: "Topic 6", entries: [-12]),
         ]
+    }
+
+    private weak var weakSUT: TopicStore?
+    private weak var weakPersistenceService: TopicPersistenceServiceSpy?
+
+    deinit {
+        #expect(weakSUT == nil, "Instance should have been deallocated. Potential memory leak.")
+        #expect(weakPersistenceService == nil, "Instance should have been deallocated. Potential memory leak.")
     }
 }
 
