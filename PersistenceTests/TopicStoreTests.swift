@@ -38,6 +38,7 @@ class TopicStore {
     }
 
     func remove(_ topic: Topic) {
+        guard topics.contains(topic) else { return }
         topics.removeAll(where: { $0 == topic })
         persistenceService.delete(topic)
     }
@@ -78,6 +79,17 @@ class TopicStoreTests {
 
         #expect(sut.topics == sampleTopics())
         #expect(persistenceService.deletedTopics == [topicToDelete])
+    }
+
+    @Test func delete_whenEmpty_doesNothing() {
+        let topicToDelete = Topic(name: "Topic to delete", entries: [0, 1, 3, 5])
+        let (sut, persistenceService) = makeSUT()
+        #expect(sut.topics == [])
+
+        sut.remove(topicToDelete)
+
+        #expect(sut.topics == [])
+        #expect(persistenceService.deletedTopics == [])
     }
 
     // MARK: - Helpers
