@@ -98,12 +98,12 @@ class TopicStoreTests {
     @Test func delete_whenEmpty_doesNothing() {
         let topicToDelete = sampleTopic1()
         let (sut, persistenceService) = makeSUT()
-        #expect(sut.topics == [])
+        #expect(sut.topics.isEmpty)
 
         sut.remove(topicToDelete)
 
-        #expect(sut.topics == [])
-        #expect(persistenceService.deletedTopics == [])
+        #expect(sut.topics.isEmpty)
+        #expect(persistenceService.deletedTopics.isEmpty)
     }
 
     @Test func delete_whenTopicDoesNotExist_doesNothing() {
@@ -114,7 +114,7 @@ class TopicStoreTests {
         sut.remove(topicToDelete)
 
         #expect(sut.topics == topics)
-        #expect(persistenceService.deletedTopics == [])
+        #expect(persistenceService.deletedTopics.isEmpty)
     }
 
     @Test func update_whenTopicDoesNotExist_createsNewTopic() {
@@ -125,7 +125,7 @@ class TopicStoreTests {
         sut.update(topicToUpdate)
 
         #expect(sut.topics == topics + [topicToUpdate])
-        #expect(persistenceService.updatedTopics == [])
+        #expect(persistenceService.updatedTopics.isEmpty)
         #expect(persistenceService.createdTopics == [topicToUpdate])
     }
 
@@ -140,7 +140,7 @@ class TopicStoreTests {
         expectedTopics[2] = topicToUpdate
         #expect(sut.topics == expectedTopics)
         #expect(persistenceService.updatedTopics == [topicToUpdate])
-        #expect(persistenceService.createdTopics == [])
+        #expect(persistenceService.createdTopics.isEmpty)
     }
 
     // MARK: - Helpers
