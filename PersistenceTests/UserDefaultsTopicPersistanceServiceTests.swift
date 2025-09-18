@@ -58,7 +58,11 @@ public class UserDefaultsTopicPersistenceService: TopicPersistenceService {
     }
 
     public func update(_ topic: Topic) throws {
-        try create(topic)
+        let topic = UserDefaultsTopic(from: topic)
+        let data = try JSONEncoder().encode(topic)
+        userDefaults.set(data, forKey: "topic_\(topic.id)")
+
+        addToIDList(topic.id.uuidString)
     }
 
     public func delete(_ topic: Topic) throws {
@@ -165,6 +169,29 @@ class UserDefaultsTopicPersistenceServiceTests {
         #expect(loadedTopics == [topic1, topic2])
         let storedIDs = storedTopicIDs()?.compactMap { $0 as? String } ?? []
         #expect(storedIDs.contains(topic1.id.uuidString))
+    }
+
+    @Test func update_updatesCorrectTopic() throws {
+        let topic1 = Topic(id: UUID(), name: "a topic", entries: [2, 1, 4, 6, 3])
+        let updatedTopic1 = Topic(id: topic1.id, name: "an updated topic", entries: [2, 1, 4, 6, 3])
+        let topic2 = Topic(id: UUID(), name: "another topic", entries: [-31, 7, -4, 0])
+        let updatedTopic2 = Topic(id: topic2.id, name: "another topic", entries: [-31, 7, -4, 0, 100])
+        let sut = makeSUT()
+        #expect(storedTopicIDs() == nil)
+
+        try sut.create(topic1)
+        try sut.create(topic2)
+
+        let firstLoadedTopics = try sut.load()
+
+        #expect(firstLoadedTopics == [topic1, topic2])
+
+        try sut.update(updatedTopic1)
+        try sut.update(updatedTopic2)
+
+        let updatedLoadedTopics = try sut.load()
+
+        #expect(updatedLoadedTopics == [updatedTopic1, updatedTopic2])
     }
 
     // MARK: - Helpers
