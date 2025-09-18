@@ -92,6 +92,17 @@ class TopicStoreTests {
         #expect(persistenceService.deletedTopics == [])
     }
 
+    @Test func delete_whenTopicDoesNotExist_doesNothing() {
+        let topics = sampleTopics()
+        let topicToDelete = Topic(name: "Topic to delete", entries: [0, 1, 3, 5])
+        let (sut, persistenceService) = makeSUT(with: topics)
+
+        sut.remove(topicToDelete)
+
+        #expect(sut.topics == topics)
+        #expect(persistenceService.deletedTopics == [])
+    }
+
     // MARK: - Helpers
 
     private func makeSUT(with topics: [Topic] = []) -> (sut: TopicStore, persistenceService: TopicPersistenceServiceSpy) {
