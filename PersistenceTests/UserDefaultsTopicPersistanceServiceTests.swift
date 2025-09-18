@@ -32,18 +32,17 @@ public class UserDefaultsTopicPersistenceService: TopicPersistenceService {
 
     public func create(_ topic: Topic) throws {
         let topic = UserDefaultsTopic(from: topic)
-        let encoder = JSONEncoder()
-        let data = try encoder.encode(topic)
+        let data = try JSONEncoder().encode(topic)
         userDefaults.set(data, forKey: "topic_\(topic.id)")
 
         // Fetch or initialize the array of topic IDs
-        var topicIds = userDefaults.array(forKey: topicIDsKey) as? [String] ?? []
+        var topicIDs = userDefaults.array(forKey: topicIDsKey) as? [String] ?? []
 
         // Append the new ID if not already present
         let idString = topic.id.uuidString
-        if !topicIds.contains(idString) {
-            topicIds.append(idString)
-            userDefaults.set(topicIds, forKey: topicIDsKey)
+        if !topicIDs.contains(idString) {
+            topicIDs.append(idString)
+            userDefaults.set(topicIDs, forKey: topicIDsKey)
         }
     }
 
