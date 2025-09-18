@@ -32,18 +32,29 @@ public class UserDefaultsTopicPersistenceService: TopicPersistenceService {
 
     public func create(_ topic: Topic) throws {
         let topic = UserDefaultsTopic(from: topic)
+        try save(topic)
+        addToIDList(topic.id.uuidString)
+    }
+
+    private func save(_ topic: UserDefaultsTopic) throws {
         let data = try JSONEncoder().encode(topic)
         userDefaults.set(data, forKey: "topic_\(topic.id)")
+    }
 
-        // Fetch or initialize the array of topic IDs
-        var topicIDs = userDefaults.array(forKey: topicIDsKey) as? [String] ?? []
+    private func addToIDList(_ id: String) {
+        let existingIDs = loadTopicIDs()
 
-        // Append the new ID if not already present
-        let idString = topic.id.uuidString
-        if !topicIDs.contains(idString) {
-            topicIDs.append(idString)
-            userDefaults.set(topicIDs, forKey: topicIDsKey)
+        if !existingIDs.contains(id) {
+            save(existingIDs + [id])
         }
+    }
+
+    private func loadTopicIDs() -> [String] {
+        userDefaults.array(forKey: topicIDsKey) as? [String] ?? []
+    }
+
+    private func save(_ topicIDs: [String]) {
+        userDefaults.set(topicIDs, forKey: topicIDsKey)
     }
 
     public func update(_ topic: Topic) throws {
@@ -61,10 +72,6 @@ public class UserDefaultsTopicPersistenceService: TopicPersistenceService {
             .compactMap { userDefaults.data(forKey: "topic_\($0)") }
             .compactMap { try JSONDecoder().decode(UserDefaultsTopic.self, from: $0) }
             .map { Topic(id: $0.id, name: $0.name, entries: $0.entries)} ?? []
-    }
-
-    private func updateTopicIDs() {
-        
     }
 }
 
