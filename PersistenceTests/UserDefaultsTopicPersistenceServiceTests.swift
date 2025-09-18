@@ -20,6 +20,12 @@ public class UserDefaultsTopicPersistenceService: TopicPersistenceService {
             self.name = topic.name
             self.entries = topic.entries
         }
+
+        var key: String { Self.key(for: id.uuidString) }
+
+        static func key(for id: String) -> String {
+            "topic_\(id)"
+        }
     }
 
     private let userDefaults: UserDefaults
@@ -38,7 +44,7 @@ public class UserDefaultsTopicPersistenceService: TopicPersistenceService {
 
     private func save(_ topic: UserDefaultsTopic) throws {
         let data = try JSONEncoder().encode(topic)
-        userDefaults.set(data, forKey: "topic_\(topic.id)")
+        userDefaults.set(data, forKey: topic.key)
     }
 
     private func addToIDList(_ id: String) {
@@ -69,7 +75,7 @@ public class UserDefaultsTopicPersistenceService: TopicPersistenceService {
         try userDefaults
             .array(forKey: topicIDsKey)?
             .compactMap { $0 as? String }
-            .compactMap { userDefaults.data(forKey: "topic_\($0)") }
+            .compactMap { userDefaults.data(forKey: UserDefaultsTopic.key(for: $0)) }
             .compactMap { try JSONDecoder().decode(UserDefaultsTopic.self, from: $0) }
             .map { Topic(id: $0.id, name: $0.name, entries: $0.entries)} ?? []
     }
