@@ -58,7 +58,7 @@ public class UserDefaultsTopicPersistenceService: TopicPersistenceService {
     }
 
     public func update(_ topic: Topic) throws {
-
+        try create(topic)
     }
 
     public func delete(_ topic: Topic) throws {
@@ -149,6 +149,22 @@ class UserDefaultsTopicPersistenceServiceTests {
         let loadedTopics = try sut.load()
 
         #expect(loadedTopics == [topic1, topic2])
+    }
+
+    @Test func update_whenTopicDoesNotExist_creates() throws {
+        let topic1 = Topic(id: UUID(), name: "a topic", entries: [2, 1, 4, 6, 3])
+        let topic2 = Topic(id: UUID(), name: "another topic", entries: [-31, 7, -4, 0])
+        let sut = makeSUT()
+        #expect(storedTopicIDs() == nil)
+
+        try sut.create(topic1)
+        try sut.update(topic2)
+
+        let loadedTopics = try sut.load()
+
+        #expect(loadedTopics == [topic1, topic2])
+        let storedIDs = storedTopicIDs()?.compactMap { $0 as? String } ?? []
+        #expect(storedIDs.contains(topic1.id.uuidString))
     }
 
     // MARK: - Helpers
