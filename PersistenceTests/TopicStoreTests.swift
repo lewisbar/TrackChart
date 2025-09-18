@@ -6,8 +6,10 @@
 //
 
 import Testing
+import Foundation
 
 struct Topic: Equatable {
+    let id: UUID
     let name: String
     let entries: [Int]
 }
@@ -37,9 +39,20 @@ class TopicStore {
         persistenceService.create(topic)
     }
 
+    func update(_ topic: Topic) {
+        guard let index = topics.firstIndex(where: { $0.id == topic.id }) else {
+            add(topic)
+            return
+        }
+
+        topics[index] = topic
+        persistenceService.update(topic)
+    }
+
     func remove(_ topic: Topic) {
-        guard topics.contains(topic) else { return }
-        topics.removeAll(where: { $0 == topic })
+        guard let index = topics.firstIndex(where: { $0.id == topic.id }) else { return }
+
+        topics.remove(at: index)
         persistenceService.delete(topic)
     }
 }
@@ -55,8 +68,8 @@ class TopicStoreTests {
 
     @Test func add_addsAndSavesTopic() {
         let (sut, persistenceService) = makeSUT()
-        let topic1 = Topic(name: "a topic", entries: [1, 2, 3])
-        let topic2 = Topic(name: "another topic", entries: [45, 67, -89])
+        let topic1 = sampleTopic1()
+        let topic2 = sampleTopic2()
 
         sut.add(topic1)
 
@@ -70,19 +83,20 @@ class TopicStoreTests {
     }
 
     @Test func delete_deletesAlsoFromPersistence() {
-        var topics = sampleTopics()
-        let topicToDelete = Topic(name: "Topic to delete", entries: [0, 1, 3, 5])
-        topics.insert(topicToDelete, at: 1)
-        let (sut, persistenceService) = makeSUT(with: topics)
+        let reducedTopics = sampleTopics()
+        let topicToDelete = sampleTopic1()
+        var allTopics = reducedTopics
+        allTopics.insert(topicToDelete, at: 1)
+        let (sut, persistenceService) = makeSUT(with: allTopics)
 
         sut.remove(topicToDelete)
 
-        #expect(sut.topics == sampleTopics())
+        #expect(sut.topics == reducedTopics)
         #expect(persistenceService.deletedTopics == [topicToDelete])
     }
 
     @Test func delete_whenEmpty_doesNothing() {
-        let topicToDelete = Topic(name: "Topic to delete", entries: [0, 1, 3, 5])
+        let topicToDelete = sampleTopic1()
         let (sut, persistenceService) = makeSUT()
         #expect(sut.topics == [])
 
@@ -94,13 +108,39 @@ class TopicStoreTests {
 
     @Test func delete_whenTopicDoesNotExist_doesNothing() {
         let topics = sampleTopics()
-        let topicToDelete = Topic(name: "Topic to delete", entries: [0, 1, 3, 5])
+        let topicToDelete = sampleTopic1()
         let (sut, persistenceService) = makeSUT(with: topics)
 
         sut.remove(topicToDelete)
 
         #expect(sut.topics == topics)
         #expect(persistenceService.deletedTopics == [])
+    }
+
+    @Test func update_whenTopicDoesNotExist_createsNewTopic() {
+        let topics = sampleTopics()
+        let topicToUpdate = sampleTopic1()
+        let (sut, persistenceService) = makeSUT(with: topics)
+
+        sut.update(topicToUpdate)
+
+        #expect(sut.topics == topics + [topicToUpdate])
+        #expect(persistenceService.updatedTopics == [])
+        #expect(persistenceService.createdTopics == [topicToUpdate])
+    }
+
+    @Test func update_updatesExistingTopic() {
+        let topics = sampleTopics()
+        let topicToUpdate = Topic(id: topics[2].id, name: "new name", entries: [8, 8, -8])
+        let (sut, persistenceService) = makeSUT(with: topics)
+
+        sut.update(topicToUpdate)
+
+        var expectedTopics = topics
+        expectedTopics[2] = topicToUpdate
+        #expect(sut.topics == expectedTopics)
+        #expect(persistenceService.updatedTopics == [topicToUpdate])
+        #expect(persistenceService.createdTopics == [])
     }
 
     // MARK: - Helpers
@@ -118,13 +158,21 @@ class TopicStoreTests {
 
     private func sampleTopics() -> [Topic] {
         [
-            Topic(name: "Topic 1", entries: [0, 3, 4, 5, 2, 3, 4, -1]),
-            Topic(name: "Topic 2", entries: [-3, 4, 5, 6, 3, 4, 23, -12, 0]),
-            Topic(name: "Topic 3", entries: [100, 200, 1000, -2000, 30, 10]),
-            Topic(name: "Topic 4", entries: [30]),
-            Topic(name: "Topic 5", entries: []),
-            Topic(name: "Topic 6", entries: [-12]),
+            Topic(id: UUID(), name: "Topic 1", entries: [0, 3, 4, 5, 2, 3, 4, -1]),
+            Topic(id: UUID(), name: "Topic 2", entries: [-3, 4, 5, 6, 3, 4, 23, -12, 0]),
+            Topic(id: UUID(), name: "Topic 3", entries: [100, 200, 1000, -2000, 30, 10]),
+            Topic(id: UUID(), name: "Topic 4", entries: [30]),
+            Topic(id: UUID(), name: "Topic 5", entries: []),
+            Topic(id: UUID(), name: "Topic 6", entries: [-12]),
         ]
+    }
+
+    private func sampleTopic1() -> Topic {
+        Topic(id: UUID(), name: "a topic", entries: [1, 2, 3])
+    }
+
+    private func sampleTopic2() -> Topic {
+        Topic(id: UUID(), name: "another topic", entries: [45, 67, 89, -12])
     }
 
     private weak var weakSUT: TopicStore?
