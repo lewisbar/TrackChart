@@ -14,11 +14,18 @@ struct TrackChartApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView(mainView: makeMainView)
+            ContentView(mainView: makeTopicListView)
         }
     }
 
-    private func makeMainView() -> some View {
+    private func makeTopicListView() -> some View {
+        NavigationStack {
+            TopicListView(topics: [TopicVM(name: "Test", info: "\(store.values.count) entries")])
+                .navigationDestination(for: TopicVM.self, destination: makeTopicView)
+        }
+    }
+
+    private func makeTopicView(for topic: TopicVM) -> some View {
         MainView(title: "TrackChart", counterView: makeCounterView, chartView: makeChartView)
     }
 

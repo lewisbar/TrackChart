@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct TopicVM: Identifiable {
+struct TopicVM: Identifiable, Hashable {
     let id = UUID()
     let name: String
     let info: String

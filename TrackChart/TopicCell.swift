@@ -11,6 +11,10 @@ struct TopicCell: View {
     let topic: TopicVM
 
     var body: some View {
+        NavigationLink(value: topic, label: label)
+    }
+
+    private func label() -> some View {
         HStack {
             Text(topic.name)
             Spacer()
