@@ -78,7 +78,7 @@ public class UserDefaultsTopicPersistenceService: TopicPersistenceService {
             .compactMap { $0 as? String }
             .compactMap { userDefaults.data(forKey: UserDefaultsTopic.key(for: $0)) }
             .compactMap { try JSONDecoder().decode(UserDefaultsTopic.self, from: $0) }
-            .map { Topic(id: $0.id, name: $0.name, entries: $0.entries)} ?? []
+            .map { Topic(id: $0.id, name: $0.name, entries: $0.entries) } ?? []
     }
 }
 
@@ -154,7 +154,6 @@ class UserDefaultsTopicPersistenceServiceTests {
         try sut.create(topic2)
 
         let loadedTopics = try sut.load()
-
         #expect(loadedTopics == [topic1, topic2])
     }
 
@@ -186,14 +185,12 @@ class UserDefaultsTopicPersistenceServiceTests {
         try sut.create(topic2)
 
         let firstLoadedTopics = try sut.load()
-
         #expect(firstLoadedTopics == [topic1, topic2])
 
         try sut.update(updatedTopic1)
         try sut.update(updatedTopic2)
 
         let updatedLoadedTopics = try sut.load()
-
         #expect(updatedLoadedTopics == [updatedTopic1, updatedTopic2])
     }
 
@@ -207,13 +204,11 @@ class UserDefaultsTopicPersistenceServiceTests {
         try sut.create(topic2)
 
         let firstLoadedTopics = try sut.load()
-
         #expect(firstLoadedTopics == [topic1, topic2])
 
         try sut.delete(topic1)
 
         let reducedLoadedTopics = try sut.load()
-
         #expect(reducedLoadedTopics == [topic2])
     }
 
@@ -226,13 +221,11 @@ class UserDefaultsTopicPersistenceServiceTests {
         try sut.create(topic1)
 
         let firstLoadedTopics = try sut.load()
-
         #expect(firstLoadedTopics == [topic1])
 
         try sut.delete(topic2)
 
         let reducedLoadedTopics = try sut.load()
-
         #expect(reducedLoadedTopics == [topic1])
     }
 
