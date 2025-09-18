@@ -1,5 +1,5 @@
 //
-//  MainView.swift
+//  TopicView.swift
 //  TrackChart
 //
 //  Created by Lennart Wisbar on 15.09.25.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct MainView<CounterView: View, ChartView: View>: View {
+struct TopicView<CounterView: View, ChartView: View>: View {
     let title: String
     @ViewBuilder let counterView: () -> CounterView
     @ViewBuilder let chartView: () -> ChartView
@@ -24,7 +24,7 @@ struct MainView<CounterView: View, ChartView: View>: View {
 #Preview {
     @Previewable @State var values = [5, 6, 8, 2, 4, 3, 5, 2]
 
-    MainView(
+    TopicView(
         title: "My Habit",
         counterView: { CounterView(submitNewValue: { values.append($0) }, deleteLastValue: { values.removeLast() }) },
         chartView: { ChartView(values: values)}

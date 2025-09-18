@@ -21,7 +21,7 @@ struct ContentView<MainView: View>: View {
 
     ContentView(
         mainView: {
-            MainView(
+            TopicView(
                 title: "Title",
                 counterView: {
                     CounterView(

@@ -26,7 +26,7 @@ struct TrackChartApp: App {
     }
 
     private func makeTopicView(for topic: TopicVM) -> some View {
-        MainView(title: "TrackChart", counterView: makeCounterView, chartView: makeChartView)
+        TopicView(title: "TrackChart", counterView: makeCounterView, chartView: makeChartView)
     }
 
     private func makeCounterView() -> some View {
