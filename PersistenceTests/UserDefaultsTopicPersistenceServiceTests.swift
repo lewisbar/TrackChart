@@ -217,6 +217,25 @@ class UserDefaultsTopicPersistenceServiceTests {
         #expect(reducedLoadedTopics == [topic2])
     }
 
+    @Test func delete_nonExistentTopic_doesNothing() throws {
+        let topic1 = Topic(id: UUID(), name: "a topic", entries: [2, 1, 4, 6, 3])
+        let topic2 = Topic(id: UUID(), name: "another topic", entries: [-31, 7, -4, 0])
+        let sut = makeSUT()
+        #expect(storedTopicIDs() == nil)
+
+        try sut.create(topic1)
+
+        let firstLoadedTopics = try sut.load()
+
+        #expect(firstLoadedTopics == [topic1])
+
+        try sut.delete(topic2)
+
+        let reducedLoadedTopics = try sut.load()
+
+        #expect(reducedLoadedTopics == [topic1])
+    }
+
     // MARK: - Helpers
 
     private func makeSUT(suiteName: String = #function) -> UserDefaultsTopicPersistenceService {
