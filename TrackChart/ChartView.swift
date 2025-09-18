@@ -119,5 +119,5 @@ private struct ZoomingBehaviorModifier: ViewModifier {
 }
 
 #Preview {
-    ChartView(values: [0, 2, 1, 3, 4, 3, 5, 8, 7])
+    ChartView(values: [0, 2, 1, -2, 3, 4, 3, 5, 8, 7])
 }
