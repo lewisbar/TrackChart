@@ -6,56 +6,7 @@
 //
 
 import Testing
-import Foundation
-
-struct Topic: Equatable {
-    let id: UUID
-    let name: String
-    let entries: [Int]
-}
-
-protocol TopicPersistenceService {
-    func create(_ topic: Topic)
-    func update(_ topic: Topic)
-    func delete(_ topic: Topic)
-    func load() -> [Topic]
-}
-
-class TopicStore {
-    var topics: [Topic] = []
-    private let persistenceService: TopicPersistenceService
-
-    init(persistenceService: TopicPersistenceService) {
-        self.persistenceService = persistenceService
-        load()
-    }
-
-    func load() {
-        topics = persistenceService.load()
-    }
-
-    func add(_ topic: Topic) {
-        topics.append(topic)
-        persistenceService.create(topic)
-    }
-
-    func update(_ topic: Topic) {
-        guard let index = topics.firstIndex(where: { $0.id == topic.id }) else {
-            add(topic)
-            return
-        }
-
-        topics[index] = topic
-        persistenceService.update(topic)
-    }
-
-    func remove(_ topic: Topic) {
-        guard let index = topics.firstIndex(where: { $0.id == topic.id }) else { return }
-
-        topics.remove(at: index)
-        persistenceService.delete(topic)
-    }
-}
+import Persistence
 
 class TopicStoreTests {
     @Test func init_loadsTopics() {
