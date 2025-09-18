@@ -25,7 +25,11 @@ class TopicStore {
 
     init(persistenceService: TopicPersistenceService) {
         self.persistenceService = persistenceService
-        self.topics = persistenceService.load()
+        load()
+    }
+
+    func load() {
+        topics = persistenceService.load()
     }
 
     func add(_ topic: Topic) {
