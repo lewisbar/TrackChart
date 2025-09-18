@@ -56,7 +56,14 @@ public class UserDefaultsTopicPersistenceService: TopicPersistenceService {
     }
 
     public func load() throws -> [Topic] {
-        []
+        guard let rawIDs = userDefaults.array(forKey: topicIDsKey) else { return [] }
+        let uuidStrings = rawIDs.compactMap { $0 as? String }
+        let rawTopics = uuidStrings.compactMap { userDefaults.data(forKey: "topic_\($0)") }
+        let userDefaultsTopics = try rawTopics.compactMap {
+            try JSONDecoder().decode(UserDefaultsTopic.self, from: $0)
+        }
+        let topics = userDefaultsTopics.map { Topic(id: $0.id, name: $0.name, entries: $0.entries)}
+        return topics
     }
 
     private func updateTopicIDs() {
@@ -109,6 +116,20 @@ class UserDefaultsTopicPersistenceServiceTests {
         let loadedTopics = try sut.load()
 
         #expect(loadedTopics == [])
+    }
+
+    @Test func load_returnsStoredTopics() throws {
+        let topic1 = Topic(id: UUID(), name: "a topic", entries: [2, 1, 4, 6, 3])
+        let topic2 = Topic(id: UUID(), name: "another topic", entries: [-31, 7, -4, 0])
+        let sut = makeSUT()
+        #expect(storedTopicIDs() == nil)
+
+        try sut.create(topic1)
+        try sut.create(topic2)
+
+        let loadedTopics = try sut.load()
+
+        #expect(loadedTopics == [topic1, topic2])
     }
 
     // MARK: - Helpers
