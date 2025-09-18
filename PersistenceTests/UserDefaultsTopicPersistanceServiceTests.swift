@@ -56,14 +56,12 @@ public class UserDefaultsTopicPersistenceService: TopicPersistenceService {
     }
 
     public func load() throws -> [Topic] {
-        guard let rawIDs = userDefaults.array(forKey: topicIDsKey) else { return [] }
-        let uuidStrings = rawIDs.compactMap { $0 as? String }
-        let rawTopics = uuidStrings.compactMap { userDefaults.data(forKey: "topic_\($0)") }
-        let userDefaultsTopics = try rawTopics.compactMap {
-            try JSONDecoder().decode(UserDefaultsTopic.self, from: $0)
-        }
-        let topics = userDefaultsTopics.map { Topic(id: $0.id, name: $0.name, entries: $0.entries)}
-        return topics
+        try userDefaults
+            .array(forKey: topicIDsKey)?
+            .compactMap { $0 as? String }
+            .compactMap { userDefaults.data(forKey: "topic_\($0)") }
+            .compactMap { try JSONDecoder().decode(UserDefaultsTopic.self, from: $0) }
+            .map { Topic(id: $0.id, name: $0.name, entries: $0.entries)} ?? []
     }
 
     private func updateTopicIDs() {
