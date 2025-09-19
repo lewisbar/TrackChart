@@ -11,6 +11,7 @@ import Persistence
 @main
 struct TrackChartApp: App {
     @State private var topicStore = TopicStore(persistenceService: UserDefaultsTopicPersistenceService(topicIDsKey: "com.trackchart.topics.idlist"))
+    @State private var isTopicCreationViewPresented = false
     @State private var isAlertViewPresented = false
     @State private var alertMessage = (title: "Error", message: "Please try again later. If the error persists, don't hesitate to contact support.")
 
@@ -25,13 +26,14 @@ struct TrackChartApp: App {
                         isAlertViewPresented = true
                     }
                 }
+                .sheet(isPresented: $isTopicCreationViewPresented, content: makeTopicCreationView)
                 .alert(alertMessage.title, isPresented: $isAlertViewPresented, actions: {}, message: { Text(alertMessage.message) })
         }
     }
 
     private func makeTopicListView() -> some View {
         NavigationStack {
-            TopicListView(topics: topicCellModels, createTopic: createTopic, deleteTopic: delete)
+            TopicListView(topics: topicCellModels, startTopicCreation: startTopicCreation, deleteTopic: delete)
                 .navigationDestination(for: TopicCellModel.self, destination: makeTopicView)
         }
     }
@@ -45,6 +47,17 @@ struct TrackChartApp: App {
 
     private func makeTopicCellModel(for topic: Topic) -> TopicCellModel {
         TopicCellModel(id: topic.id, name: topic.name, info: "\(topic.entries.count) entries")
+    }
+
+    private func startTopicCreation() {
+        isTopicCreationViewPresented = true
+    }
+
+    private func makeTopicCreationView() -> some View {
+        TopicCreationView(createTopic: { name in
+            createTopic(withName: name)
+            isTopicCreationViewPresented = false
+        })
     }
 
     private func createTopic(withName name: String) {

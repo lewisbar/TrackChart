@@ -9,27 +9,14 @@ import SwiftUI
 
 struct TopicListView: View {
     let topics: [TopicCellModel]
-    let createTopic: (String) -> Void
+    let startTopicCreation: () -> Void
     let deleteTopic: (TopicCellModel) -> Void
-    @State private var isAddTopicViewPresented = false
-    @State private var newTopicName = "New Topic"
-
-    init(
-        topics: [TopicCellModel],
-        createTopic: @escaping (String) -> Void,
-        deleteTopic: @escaping (TopicCellModel) -> Void
-    ) {
-        self.topics = topics
-        self.createTopic = createTopic
-        self.deleteTopic = deleteTopic
-    }
 
     var body: some View {
         ZStack {
             list(of: topics)
             plusButton
         }
-        .sheet(isPresented: $isAddTopicViewPresented, content: createTopicView)
     }
 
     private func list(of topics: [TopicCellModel]) -> some View {
@@ -49,34 +36,12 @@ struct TopicListView: View {
 
     private var plusButton: some View {
         CircleButton(
-            action: { isAddTopicViewPresented = true },
+            action: startTopicCreation,
             image: Image(systemName: "plus"),
             color: .blue
         )
         .frame(maxHeight: .infinity, alignment: .bottom)
         .padding(.bottom)
-    }
-
-    private func createTopicView() -> some View {
-        HStack {
-            TextField("Enter a name for your topic", text: $newTopicName)
-            submitButton
-        }
-        .frame(maxHeight: .infinity, alignment: .top)
-        .padding()
-        .presentationDetents([.fraction(0.2), .fraction(0.4), .medium, .fraction(0.7), .fraction(0.8), .large])
-        .presentationCompactAdaptation(.none)
-    }
-
-    private var submitButton: some View {
-        CircleButton(
-            action: {
-                createTopic(newTopicName)
-                isAddTopicViewPresented = false
-            },
-            image: Image(systemName: "checkmark"),
-            color: .green
-        )
     }
 }
 
@@ -89,7 +54,7 @@ struct TopicListView: View {
 
     TopicListView(
         topics: topics,
-        createTopic: { topics.append(TopicCellModel(id: UUID(), name: $0, info: "0 entries")) },
+        startTopicCreation: { topics.append(TopicCellModel(id: UUID(), name: "New Topic", info: "0 entries")) },
         deleteTopic: { topic in topics.removeAll(where: { $0.id == topic.id }) }
     )
 }
