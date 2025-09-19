@@ -29,7 +29,7 @@ struct TopicListView: View {
             list(of: topics)
             plusButton
         }
-        .sheet(isPresented: $isAddTopicViewPresented, content: newTopicSheet)
+        .sheet(isPresented: $isAddTopicViewPresented, content: createTopicView)
     }
 
     private func list(of topics: [TopicCellModel]) -> some View {
@@ -57,11 +57,15 @@ struct TopicListView: View {
         .padding(.bottom)
     }
 
-    private func newTopicSheet() -> some View {
+    private func createTopicView() -> some View {
         HStack {
             TextField("Enter a name for your topic", text: $newTopicName)
             submitButton
         }
+        .frame(maxHeight: .infinity, alignment: .top)
+        .padding()
+        .presentationDetents([.fraction(0.2), .fraction(0.4), .medium, .fraction(0.7), .fraction(0.8), .large])
+        .presentationCompactAdaptation(.none)
     }
 
     private var submitButton: some View {
