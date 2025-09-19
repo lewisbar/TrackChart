@@ -26,39 +26,53 @@ struct TopicListView: View {
 
     var body: some View {
         ZStack {
-            List(topics) { topic in
-                TopicCell(topic: topic)
-                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                        Button(
-                            role: .destructive,
-                            action: { deleteTopic(topic) },
-                            label: { Label("Delete", systemImage: "trash") }
-                        )
-                    }
-            }
-            CircleButton(
-                action: { isAddTopicViewPresented = true },
-                image: Image(systemName: "plus"),
-                color: .blue
-            )
-            .frame(maxHeight: .infinity, alignment: .bottom)
-            .padding(.bottom)
+            list(of: topics)
+            plusButton
         }
-        .sheet(isPresented: $isAddTopicViewPresented, content: createTopicSheet)
+        .sheet(isPresented: $isAddTopicViewPresented, content: newTopicSheet)
     }
 
-    private func createTopicSheet() -> some View {
+    private func list(of topics: [TopicCellModel]) -> some View {
+        List(topics) { topic in
+            TopicCell(topic: topic)
+                .swipeActions(edge: .trailing, allowsFullSwipe: true) { deleteButton(for: topic) }
+        }
+    }
+
+    private func deleteButton(for topic: TopicCellModel) -> some View {
+        Button(
+            role: .destructive,
+            action: { deleteTopic(topic) },
+            label: { Label("Delete", systemImage: "trash") }
+        )
+    }
+
+    private var plusButton: some View {
+        CircleButton(
+            action: { isAddTopicViewPresented = true },
+            image: Image(systemName: "plus"),
+            color: .blue
+        )
+        .frame(maxHeight: .infinity, alignment: .bottom)
+        .padding(.bottom)
+    }
+
+    private func newTopicSheet() -> some View {
         HStack {
             TextField("Enter a name for your topic", text: $newTopicName)
-            CircleButton(
-                action: {
-                    createTopic(newTopicName)
-                    isAddTopicViewPresented = false
-                },
-                image: Image(systemName: "checkmark"),
-                color: .green
-            )
+            submitButton
         }
+    }
+
+    private var submitButton: some View {
+        CircleButton(
+            action: {
+                createTopic(newTopicName)
+                isAddTopicViewPresented = false
+            },
+            image: Image(systemName: "checkmark"),
+            color: .green
+        )
     }
 }
 
