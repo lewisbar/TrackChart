@@ -2,7 +2,7 @@
 //  CircleButton.swift
 //  TrackChart
 //
-//  Created by LennartWisbar on 16.09.25.
+//  Created by Lennart Wisbar on 16.09.25.
 //
 
 import SwiftUI
@@ -16,7 +16,7 @@ struct CircleButton: View {
     var body: some View {
         Button(action: action) {
             image
-                .foregroundColor(color)
+                .foregroundStyle(color)
                 .font(.title2)
                 .frame(minWidth: baseSize, minHeight: baseSize)
                 .padding(10)
