@@ -44,4 +44,8 @@ public class TopicStore {
         topics.remove(at: index)
         try persistenceService.delete(topic)
     }
+
+    public func topic(for id: UUID) -> Topic? {
+        topics.first(where: { $0.id == id })
+    }
 }

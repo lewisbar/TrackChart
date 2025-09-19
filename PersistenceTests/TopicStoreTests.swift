@@ -110,6 +110,19 @@ class TopicStoreTests {
         #expect(persistenceService.reorderedTopicLists == [reorderedTopics])
     }
 
+    @Test func topicForID_returnsCorrectTopicWithoutCallingPersistenceService() throws {
+        let topics = sampleTopics()
+        let pickedTopic = topics[3]
+        let (sut, persistenceService) = makeSUT(with: topics)
+        try sut.load()
+        #expect(persistenceService.loadCallCount == 1)
+
+        let requestedTopic = sut.topic(for: pickedTopic.id)
+
+        #expect(requestedTopic == pickedTopic)
+        #expect(persistenceService.loadCallCount == 1)
+    }
+
     @Test func isObservable() async throws {
         let (sut, _) = makeSUT()
         let tracker = ObservationTracker()
