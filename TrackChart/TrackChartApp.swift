@@ -19,18 +19,11 @@ struct TrackChartApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView(mainView: makeTopicListView)
-                .onAppear {
-                    do {
-                        try topicStore.load()
-                    } catch {
-                        alertMessage = ("Error", error.localizedDescription)
-                        isAlertViewPresented = true
-                    }
-                }
+                .onAppear { do { try topicStore.load() } catch { handle(error) } }
                 .onChange(of: topicStore.topics, updateTopicCellModels)
                 .onChange(of: topicCellModels, propagateDeletedAndReorderedCellModelsToStore)
                 .sheet(isPresented: $isTopicCreationViewPresented, content: makeTopicCreationView)
-                .alert(alertMessage.title, isPresented: $isAlertViewPresented, actions: {}, message: { Text(alertMessage.message) })
+                .alert(alertMessage.title, isPresented: $isAlertViewPresented, actions: makeDismissButton, message: { Text(alertMessage.message) })
         }
     }
 
@@ -53,22 +46,12 @@ struct TrackChartApp: App {
 
         topicStore.topics.forEach { topic in
             if !updatedIDs.contains(topic.id) {
-                do {
-                    try topicStore.remove(topic)
-                } catch {
-                    alertMessage = ("Error", error.localizedDescription)
-                    isAlertViewPresented = true
-                }
+                do { try topicStore.remove(topic) } catch { handle(error) }
             }
         }
 
         let reorderedTopics = updatedIDs.compactMap { topicStore.topic(for: $0) }
-        do {
-            try topicStore.reorder(to: reorderedTopics)
-        } catch {
-            alertMessage = ("Error", error.localizedDescription)
-            isAlertViewPresented = true
-        }
+        do { try topicStore.reorder(to: reorderedTopics) } catch { handle(error) }
     }
 
     private func makeTopicCellModel(for topic: Topic) -> TopicCellModel {
@@ -88,23 +71,17 @@ struct TrackChartApp: App {
 
     private func createTopic(withName name: String) {
         let newTopic = Persistence.Topic(id: UUID(), name: name, entries: [])
-        do {
-            try topicStore.add(newTopic)
-        } catch {
-            alertMessage = ("Error", error.localizedDescription)
-            isAlertViewPresented = true
-        }
+        do { try topicStore.add(newTopic) } catch { handle(error) }
+    }
+
+    private func makeDismissButton() -> some View {
+        Button("OK") { isAlertViewPresented = false }
     }
 
     private func delete(_ topicCellModel: TopicCellModel) {
         guard let persistenceTopic = topicStore.topics.first(where: { $0.id == topicCellModel.id }) else { return}
 
-        do {
-            try topicStore.remove(persistenceTopic)
-        } catch {
-            alertMessage = ("Error", error.localizedDescription)
-            isAlertViewPresented = true
-        }
+        do { try topicStore.remove(persistenceTopic) } catch { handle(error) }
     }
 
     @ViewBuilder
@@ -121,22 +98,12 @@ struct TrackChartApp: App {
 
     private func submit(_ newValue: Int, to topic: Topic) {
         let updatedTopic = Topic(id: topic.id, name: topic.name, entries: topic.entries + [newValue])
-        do {
-            try topicStore.update(updatedTopic.persistenceTopic)
-        } catch {
-            alertMessage = ("Error", error.localizedDescription)
-            isAlertViewPresented = true
-        }
+        do { try topicStore.update(updatedTopic.persistenceTopic) } catch { handle(error) }
     }
 
     private func removeLastValue(from topic: Topic) {
         let updatedTopic = Topic(id: topic.id, name: topic.name, entries: topic.entries.dropLast())
-        do {
-            try topicStore.update(updatedTopic.persistenceTopic)
-        } catch {
-            alertMessage = ("Error", error.localizedDescription)
-            isAlertViewPresented = true
-        }
+        do { try topicStore.update(updatedTopic.persistenceTopic) } catch { handle(error) }
     }
 
     @ViewBuilder
@@ -146,6 +113,11 @@ struct TrackChartApp: App {
         } else {
             ChartPlaceholderView()
         }
+    }
+
+    private func handle(_ error: Error) {
+        alertMessage = ("Error", error.localizedDescription)
+        isAlertViewPresented = true
     }
 }
 
