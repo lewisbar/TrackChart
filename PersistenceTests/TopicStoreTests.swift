@@ -98,6 +98,25 @@ class TopicStoreTests {
         #expect(persistenceService.createdTopics.isEmpty)
     }
 
+    @Test func isObservable() async throws {
+        let (sut, _) = makeSUT()
+        let tracker = ObservationTracker()
+
+        withObservationTracking {
+            _ = sut.topics
+        } onChange: {
+            Task { await tracker.setTriggered() }
+        }
+
+        let newTopic = sampleTopic1()
+        try sut.add(newTopic)
+
+        try await Task.sleep(for: .milliseconds(10))
+        let triggered = await tracker.getTriggered()
+        #expect(triggered, "Expected observation to be triggered after adding value")
+        #expect(sut.topics == [newTopic])
+    }
+
     // MARK: - Helpers
 
     private func makeSUT(with topics: [Topic] = []) -> (sut: TopicStore, persistenceService: TopicPersistenceServiceSpy) {
@@ -166,4 +185,10 @@ private class TopicPersistenceServiceSpy: TopicPersistenceService {
     func stub(_ topics: [Topic]) {
         stubbedTopics = topics
     }
+}
+
+private actor ObservationTracker {
+    var triggered = false
+    func setTriggered() { triggered = true }
+    func getTriggered() -> Bool { triggered }
 }

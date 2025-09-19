@@ -5,6 +5,7 @@
 //  Created by LennartWisbar on 18.09.25.
 //
 
+@Observable
 public class TopicStore {
     public var topics: [Topic] = []
     private let persistenceService: TopicPersistenceService
