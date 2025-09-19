@@ -9,19 +9,16 @@ import SwiftUI
 
 struct TopicCreationView: View {
     let createTopic: (String) -> Void
-    @State private var topicName = "New Topic"
+    @State private var topicName = ""
     @FocusState private var isTextFieldFocused: Bool
 
     var body: some View {
         HStack {
-            TextField("Enter a name for your topic", text: $topicName)
-                .focused($isTextFieldFocused)
+            TextField("Enter a name for your topic", text: $topicName).focused($isTextFieldFocused)
             submitButton
         }
         .frame(maxHeight: .infinity, alignment: .top)
         .padding()
-        .presentationDetents([.fraction(0.2), .fraction(0.4), .medium, .fraction(0.7), .fraction(0.8), .large])
-        .presentationCompactAdaptation(.none)
         .onAppear { isTextFieldFocused = true }
     }
 
