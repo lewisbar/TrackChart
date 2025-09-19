@@ -8,7 +8,7 @@
 import Foundation
 
 struct TopicCellModel: Identifiable, Hashable {
-    let id = UUID()
+    let id: UUID
     let name: String
     let info: String
 }

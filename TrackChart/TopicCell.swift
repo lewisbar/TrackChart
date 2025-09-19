@@ -24,5 +24,5 @@ struct TopicCell: View {
 }
 
 #Preview {
-    TopicCell(topic: TopicCellModel(name: "Daily Pages Read", info: "17 entries"))
+    TopicCell(topic: TopicCellModel(id: UUID(), name: "Daily Pages Read", info: "17 entries"))
 }
