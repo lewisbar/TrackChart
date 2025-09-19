@@ -63,6 +63,11 @@ public class UserDefaultsTopicPersistenceService: TopicPersistenceService {
         try create(topic)
     }
 
+    public func reorder(to newOrder: [Topic]) throws {
+        let reorderedIDs = newOrder.map(\.id.uuidString)
+        userDefaults.set(reorderedIDs, forKey: topicIDsKey)
+    }
+
     public func delete(_ topic: Topic) throws {
         let topic = UserDefaultsTopic(from: topic)
         userDefaults.removeObject(forKey: topic.key)

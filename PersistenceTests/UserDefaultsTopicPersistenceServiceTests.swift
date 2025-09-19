@@ -120,6 +120,27 @@ class UserDefaultsTopicPersistenceServiceTests {
         #expect(updatedLoadedTopics == [updatedTopic1, updatedTopic2])
     }
 
+    @Test func reorder_updatesIDList() throws {
+        let topic1 = Topic(id: UUID(), name: "Topic 1", entries: [2, 1, 4, 6, 3])
+        let topic2 = Topic(id: UUID(), name: "Topic 2", entries: [-31, 7, -4, 0])
+        let topic3 = Topic(id: UUID(), name: "Topic 3", entries: [31, -7, 4, 1000, 11])
+        let sut = makeSUT()
+        #expect(storedTopicIDs() == nil)
+
+        try sut.create(topic1)
+        try sut.create(topic2)
+        try sut.create(topic3)
+
+        let firstLoadedTopics = try sut.load()
+        #expect(firstLoadedTopics == [topic1, topic2, topic3])
+
+        let newOrder = [topic3, topic1, topic2]
+        try sut.reorder(to: newOrder)
+
+        let updatedLoadedTopics = try sut.load()
+        #expect(updatedLoadedTopics == newOrder)
+    }
+
     @Test func delete_deletesTopic() throws {
         let topic1 = Topic(id: UUID(), name: "a topic", entries: [2, 1, 4, 6, 3])
         let topic2 = Topic(id: UUID(), name: "another topic", entries: [-31, 7, -4, 0])

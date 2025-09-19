@@ -98,6 +98,18 @@ class TopicStoreTests {
         #expect(persistenceService.createdTopics.isEmpty)
     }
 
+    @Test func updateOrder_updatesOrderOfIDs() throws {
+        let originalTopics = sampleTopics()
+        let reorderedTopics = originalTopics.shuffled()
+        let (sut, persistenceService) = makeSUT(with: originalTopics)
+        try sut.load()
+
+        try sut.reorder(to: reorderedTopics)
+
+        #expect(sut.topics == reorderedTopics)
+        #expect(persistenceService.reorderedTopicLists == [reorderedTopics])
+    }
+
     @Test func isObservable() async throws {
         let (sut, _) = makeSUT()
         let tracker = ObservationTracker()
@@ -162,6 +174,7 @@ private class TopicPersistenceServiceSpy: TopicPersistenceService {
     var createdTopics = [Topic]()
     var updatedTopics = [Topic]()
     var deletedTopics = [Topic]()
+    var reorderedTopicLists = [[Topic]]()
     var loadCallCount = 0
     private(set) var stubbedTopics = [Topic]()
 
@@ -176,7 +189,11 @@ private class TopicPersistenceServiceSpy: TopicPersistenceService {
     func delete(_ topic: Topic) {
         deletedTopics.append(topic)
     }
-    
+
+    func reorder(to newOrder: [Topic]) throws {
+        reorderedTopicLists.append(newOrder)
+    }
+
     func load() -> [Topic] {
         loadCallCount += 1
         return stubbedTopics

@@ -33,6 +33,11 @@ public class TopicStore {
         try persistenceService.update(topic)
     }
 
+    public func reorder(to newOrder: [Topic]) throws {
+        topics = newOrder
+        try persistenceService.reorder(to: newOrder)
+    }
+
     public func remove(_ topic: Topic) throws {
         guard let index = topics.firstIndex(where: { $0.id == topic.id }) else { return }
 
