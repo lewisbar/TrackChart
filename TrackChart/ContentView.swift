@@ -18,11 +18,12 @@ struct ContentView<MainView: View>: View {
 
 #Preview {
     @Previewable @State var values = [1, 2, 4, 5, 2, 4, 7, 1]
+    @Previewable @State var title = "Title"
 
     ContentView(
         mainView: {
             TopicView(
-                title: "Title",
+                title: $title,
                 counterView: {
                     CounterView(
                         submitNewValue: { values.append($0) },

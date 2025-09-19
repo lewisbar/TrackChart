@@ -12,6 +12,8 @@ import Persistence
 struct TrackChartApp: App {
     @State private var topicStore = TopicStore(persistenceService: UserDefaultsTopicPersistenceService(topicIDsKey: "com.trackchart.topics.idlist"))
     @State private var topicCellModels = [TopicCellModel]()
+    @State private var currentTopic: Topic?
+    @State private var currentTopicName: String = ""
     @State private var isTopicCreationViewPresented = false
     @State private var isAlertViewPresented = false
     @State private var alertMessage = (title: "Error", message: "Please try again later. If the error persists, don't hesitate to contact support.")
@@ -88,7 +90,12 @@ struct TrackChartApp: App {
     private func makeTopicView(for topicCellModel: TopicCellModel) -> some View {
         if let persistenceTopic = topicStore.topics.first(where: { $0.id == topicCellModel.id }) {
             let topic = Topic(from: persistenceTopic)
-            TopicView(title: topic.name, counterView: { makeCounterView(for: topic) }, chartView: { makeChartView(for: topic) })
+
+            TopicView(title: $currentTopicName, counterView: { makeCounterView(for: topic) }, chartView: { makeChartView(for: topic) })
+                .onAppear {
+                    currentTopic = topic
+                    currentTopicName = topic.name
+                }
         }
     }
 
