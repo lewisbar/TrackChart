@@ -8,9 +8,8 @@
 import SwiftUI
 
 struct TopicListView: View {
-    let topics: [TopicCellModel]
+    @Binding var topics: [TopicCellModel]
     let startTopicCreation: () -> Void
-    let deleteTopic: (TopicCellModel) -> Void
 
     var body: some View {
         ZStack {
@@ -20,18 +19,9 @@ struct TopicListView: View {
     }
 
     private func list(of topics: [TopicCellModel]) -> some View {
-        List(topics) { topic in
+        List($topics, editActions: .all) { $topic in
             TopicCell(topic: topic)
-                .swipeActions(edge: .trailing, allowsFullSwipe: true) { deleteButton(for: topic) }
         }
-    }
-
-    private func deleteButton(for topic: TopicCellModel) -> some View {
-        Button(
-            role: .destructive,
-            action: { deleteTopic(topic) },
-            label: { Label("Delete", systemImage: "trash") }
-        )
     }
 
     private var plusButton: some View {
@@ -53,8 +43,7 @@ struct TopicListView: View {
     ]
 
     TopicListView(
-        topics: topics,
-        startTopicCreation: { topics.append(TopicCellModel(id: UUID(), name: "New Topic", info: "0 entries")) },
-        deleteTopic: { topic in topics.removeAll(where: { $0.id == topic.id }) }
+        topics: $topics,
+        startTopicCreation: { topics.append(TopicCellModel(id: UUID(), name: "New Topic", info: "0 entries")) }
     )
 }

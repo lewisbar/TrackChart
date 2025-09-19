@@ -11,6 +11,7 @@ import Persistence
 @main
 struct TrackChartApp: App {
     @State private var topicStore = TopicStore(persistenceService: UserDefaultsTopicPersistenceService(topicIDsKey: "com.trackchart.topics.idlist"))
+    @State private var topicCellModels = [TopicCellModel]()
     @State private var isTopicCreationViewPresented = false
     @State private var isAlertViewPresented = false
     @State private var alertMessage = (title: "Error", message: "Please try again later. If the error persists, don't hesitate to contact support.")
@@ -26,6 +27,8 @@ struct TrackChartApp: App {
                         isAlertViewPresented = true
                     }
                 }
+                .onChange(of: topicStore.topics, updateTopicCellModels)
+                .onChange(of: topicCellModels, propagateDeletedAndReorderedCellModelsToStore)
                 .sheet(isPresented: $isTopicCreationViewPresented, content: makeTopicCreationView)
                 .alert(alertMessage.title, isPresented: $isAlertViewPresented, actions: {}, message: { Text(alertMessage.message) })
         }
@@ -33,16 +36,39 @@ struct TrackChartApp: App {
 
     private func makeTopicListView() -> some View {
         NavigationStack {
-            TopicListView(topics: topicCellModels, startTopicCreation: startTopicCreation, deleteTopic: delete)
+            TopicListView(topics: $topicCellModels, startTopicCreation: startTopicCreation)
                 .navigationDestination(for: TopicCellModel.self, destination: makeTopicView)
         }
     }
 
-    private var topicCellModels: [TopicCellModel] {
-        topicStore
+    private func updateTopicCellModels() {
+        topicCellModels = topicStore
             .topics
             .map(Topic.init)
             .map(makeTopicCellModel)
+    }
+
+    private func propagateDeletedAndReorderedCellModelsToStore() {
+        let updatedIDs = topicCellModels.map(\.id)
+
+        topicStore.topics.forEach { topic in
+            if !updatedIDs.contains(topic.id) {
+                do {
+                    try topicStore.remove(topic)
+                } catch {
+                    alertMessage = ("Error", error.localizedDescription)
+                    isAlertViewPresented = true
+                }
+            }
+        }
+
+        let reorderedTopics = updatedIDs.compactMap { topicStore.topic(for: $0) }
+        do {
+            try topicStore.reorder(to: reorderedTopics)
+        } catch {
+            alertMessage = ("Error", error.localizedDescription)
+            isAlertViewPresented = true
+        }
     }
 
     private func makeTopicCellModel(for topic: Topic) -> TopicCellModel {
