@@ -31,7 +31,7 @@ struct TrackChartApp: App {
 
     private func makeTopicListView() -> some View {
         NavigationStack {
-            TopicListView(topics: topicCellModels, createTopic: createTopic)
+            TopicListView(topics: topicCellModels, createTopic: createTopic, deleteTopic: delete)
                 .navigationDestination(for: TopicCellModel.self, destination: makeTopicView)
         }
     }
@@ -51,6 +51,17 @@ struct TrackChartApp: App {
         let newTopic = Persistence.Topic(id: UUID(), name: name, entries: [])
         do {
             try topicStore.add(newTopic)
+        } catch {
+            alertMessage = ("Error", error.localizedDescription)
+            isAlertViewPresented = true
+        }
+    }
+
+    private func delete(_ topicCellModel: TopicCellModel) {
+        guard let persistenceTopic = topicStore.topics.first(where: { $0.id == topicCellModel.id }) else { return}
+
+        do {
+            try topicStore.remove(persistenceTopic)
         } catch {
             alertMessage = ("Error", error.localizedDescription)
             isAlertViewPresented = true
