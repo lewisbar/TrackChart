@@ -20,7 +20,7 @@ public class UserDefaultsTopicPersistenceService: TopicPersistenceService {
         var key: String { Self.key(for: id.uuidString) }
 
         static func key(for id: String) -> String {
-            "topic_\(id)"
+            "com.trackchart.topics.topic_\(id)"
         }
     }
 
