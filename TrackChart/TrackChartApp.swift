@@ -14,7 +14,6 @@ struct TrackChartApp: App {
     @State private var topicCellModels = [TopicCellModel]()
     @State private var currentTopic: Topic?
     @State private var currentTopicName: String = ""
-    @State private var isTopicCreationViewPresented = false
     @State private var isAlertViewPresented = false
     @State private var alertMessage = (title: "Error", message: "Please try again later. If the error persists, don't hesitate to contact support.")
 
@@ -25,15 +24,15 @@ struct TrackChartApp: App {
                 .onChange(of: topicStore.topics, updateTopicCellModels)
                 .onChange(of: topicCellModels, propagateDeletedAndReorderedCellModelsToStore)
                 .onChange(of: currentTopicName) { currentTopic.map { set(name: currentTopicName, for: $0) } }
-                .sheet(isPresented: $isTopicCreationViewPresented, content: makeTopicCreationView)
                 .alert(alertMessage.title, isPresented: $isAlertViewPresented, actions: makeDismissButton, message: { Text(alertMessage.message) })
         }
     }
 
     private func makeTopicListView() -> some View {
         NavigationStack {
-            TopicListView(topics: $topicCellModels, startTopicCreation: startTopicCreation)
+            TopicListView(topics: $topicCellModels)
                 .navigationDestination(for: TopicCellModel.self, destination: makeTopicView)
+                .navigationDestination(for: String.self, destination: makeNewTopicView)
         }
     }
 
@@ -61,22 +60,6 @@ struct TrackChartApp: App {
         TopicCellModel(id: topic.id, name: topic.name, info: "\(topic.entries.count) entries")
     }
 
-    private func startTopicCreation() {
-        isTopicCreationViewPresented = true
-    }
-
-    private func makeTopicCreationView() -> some View {
-        TopicCreationView(createTopic: { name in
-            createTopic(withName: name)
-            isTopicCreationViewPresented = false
-        })
-    }
-
-    private func createTopic(withName name: String) {
-        let newTopic = Persistence.Topic(id: UUID(), name: name, entries: [])
-        do { try topicStore.add(newTopic) } catch { handle(error) }
-    }
-
     private func makeDismissButton() -> some View {
         Button("OK") { isAlertViewPresented = false }
     }
@@ -97,7 +80,25 @@ struct TrackChartApp: App {
                     currentTopic = topic
                     currentTopicName = topic.name
                 }
+                .onDisappear {
+                    currentTopic = nil
+                    currentTopicName = ""
+                }
         }
+    }
+
+    private func makeNewTopicView(_ code: String) -> some View {
+        let newTopic = Topic(id: UUID(), name: "", entries: [])
+        return TopicView(title: $currentTopicName, counterView: { makeCounterView(for: newTopic) }, chartView: { makeChartView(for: newTopic) })
+            .onAppear {
+                do { try topicStore.add(newTopic.persistenceTopic) } catch { handle(error) }
+                currentTopic = newTopic
+                currentTopicName = newTopic.name
+            }
+            .onDisappear {
+                currentTopic = nil
+                currentTopicName = ""
+            }
     }
 
     private func makeCounterView(for topic: Topic) -> some View {

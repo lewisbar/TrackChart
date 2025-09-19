@@ -9,12 +9,11 @@ import SwiftUI
 
 struct TopicListView: View {
     @Binding var topics: [TopicCellModel]
-    let startTopicCreation: () -> Void
 
     var body: some View {
         ZStack {
             list(of: topics)
-            plusButton
+            NewTopicButton()
         }
     }
 
@@ -22,16 +21,6 @@ struct TopicListView: View {
         List($topics, editActions: .all) { $topic in
             TopicCell(topic: topic)
         }
-    }
-
-    private var plusButton: some View {
-        CircleButton(
-            action: startTopicCreation,
-            image: Image(systemName: "plus"),
-            color: .blue
-        )
-        .frame(maxHeight: .infinity, alignment: .bottom)
-        .padding(.bottom)
     }
 }
 
@@ -42,8 +31,5 @@ struct TopicListView: View {
         TopicCellModel(id: UUID(), name: "Hours Studied", info: "32 entries")
     ]
 
-    TopicListView(
-        topics: $topics,
-        startTopicCreation: { topics.append(TopicCellModel(id: UUID(), name: "New Topic", info: "0 entries")) }
-    )
+    TopicListView(topics: $topics)
 }
