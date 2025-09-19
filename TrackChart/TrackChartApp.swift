@@ -24,6 +24,7 @@ struct TrackChartApp: App {
                 .onAppear { do { try topicStore.load() } catch { handle(error) } }
                 .onChange(of: topicStore.topics, updateTopicCellModels)
                 .onChange(of: topicCellModels, propagateDeletedAndReorderedCellModelsToStore)
+                .onChange(of: currentTopicName) { currentTopic.map { set(name: currentTopicName, for: $0) } }
                 .sheet(isPresented: $isTopicCreationViewPresented, content: makeTopicCreationView)
                 .alert(alertMessage.title, isPresented: $isAlertViewPresented, actions: makeDismissButton, message: { Text(alertMessage.message) })
         }
@@ -110,6 +111,11 @@ struct TrackChartApp: App {
 
     private func removeLastValue(from topic: Topic) {
         let updatedTopic = Topic(id: topic.id, name: topic.name, entries: topic.entries.dropLast())
+        do { try topicStore.update(updatedTopic.persistenceTopic) } catch { handle(error) }
+    }
+
+    private func set(name: String, for topic: Topic) {
+        let updatedTopic = Topic(id: topic.id, name: name, entries: topic.entries)
         do { try topicStore.update(updatedTopic.persistenceTopic) } catch { handle(error) }
     }
 
