@@ -20,6 +20,11 @@ class NavigationPathNavigator {
     func showDetail(for topic: Topic) {
         path.append(.detail(topic))
     }
+
+    func goBack() {
+        guard path.last != .list else { return }
+        path.removeLast()
+    }
 }
 
 struct NavigationPathNavigatorTests {
@@ -47,5 +52,21 @@ struct NavigationPathNavigatorTests {
 
         sut.showDetail(for: topic2)
         #expect(sut.path == [.list, .detail(topic1), .detail(topic2)])
+    }
+
+    @Test func goBack_removesDetailRepeatedly_butKeepsList() {
+        let sut = NavigationPathNavigator()
+        let topic1 = Topic(id: UUID(), name: "a topic", entries: [1, 3, 5])
+        let topic2 = Topic(id: UUID(), name: "another topic", entries: [-1, -3])
+        sut.path = [.list, .detail(topic1), .detail(topic2)]
+
+        sut.goBack()
+        #expect(sut.path == [.list, .detail(topic1)])
+
+        sut.goBack()
+        #expect(sut.path == [.list])
+
+        sut.goBack()
+        #expect(sut.path == [.list])
     }
 }
