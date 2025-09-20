@@ -11,6 +11,7 @@ struct TopicView<CounterView: View, ChartView: View>: View {
     @Binding var title: String
     @ViewBuilder let counterView: () -> CounterView
     @ViewBuilder let chartView: () -> ChartView
+    @FocusState private var isTextFieldFocused: Bool
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -22,10 +23,12 @@ struct TopicView<CounterView: View, ChartView: View>: View {
                 .padding(.top, 8)
                 .padding(.bottom, 4)
                 .padding(.horizontal, 8)
+                .focused($isTextFieldFocused)
 
             chartView()
             counterView()
         }
+        .onAppear { isTextFieldFocused = title.isEmpty }
         .navigationBarBackButtonHidden(true)
         .toolbar { ToolbarItem(placement: .topBarLeading, content: chevronOnlyBackButton) }
     }
