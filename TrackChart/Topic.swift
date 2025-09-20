@@ -7,8 +7,14 @@
 
 import Foundation
 
-struct Topic {
-    let id: UUID
-    let name: String
-    let entries: [Int]
+public struct Topic: Equatable {
+    public let id: UUID
+    public let name: String
+    public let entries: [Int]
+
+    public init(id: UUID, name: String, entries: [Int]) {
+        self.id = id
+        self.name = name
+        self.entries = entries
+    }
 }
