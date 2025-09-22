@@ -5,6 +5,8 @@
 //  Created by Lennart Wisbar on 16.09.25.
 //
 
+import Domain
+
 public class UserDefaultsValuePersistenceService: ValuePersistenceService {
     private let userDefaults: UserDefaults
     private let key: String

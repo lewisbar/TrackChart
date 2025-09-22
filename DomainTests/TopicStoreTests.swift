@@ -6,7 +6,7 @@
 //
 
 import Testing
-import Persistence
+import Domain
 
 class TopicStoreTests {
     @Test func init_doesNotLoadTopics() {

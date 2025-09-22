@@ -8,6 +8,7 @@
 import Testing
 import Foundation
 import TrackChartiOS
+import Domain
 
 class NavigationPathNavigator {
     enum Destination: Equatable {

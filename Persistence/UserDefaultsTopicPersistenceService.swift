@@ -5,6 +5,8 @@
 //  Created by Lennart Wisbar on 19.09.25.
 //
 
+import Domain
+
 public class UserDefaultsTopicPersistenceService: TopicPersistenceService {
     private struct UserDefaultsTopic: Codable {
         let id: UUID

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Domain
 import Persistence
 
 @main
@@ -39,7 +40,6 @@ struct TrackChartApp: App {
     private func updateTopicCellModels() {
         topicCellModels = topicStore
             .topics
-            .map(Topic.init)
             .map(makeTopicCellModel)
     }
 
@@ -72,8 +72,7 @@ struct TrackChartApp: App {
 
     @ViewBuilder
     private func makeTopicView(for topicCellModel: TopicCellModel) -> some View {
-        if let persistenceTopic = topicStore.topics.first(where: { $0.id == topicCellModel.id }) {
-            let topic = Topic(from: persistenceTopic)
+        if let topic = topicStore.topics.first(where: { $0.id == topicCellModel.id }) {
 
             TopicView(title: $currentTopicName, counterView: { makeCounterView(for: topic) }, chartView: { makeChartView(for: topic) })
                 .onAppear {
@@ -91,7 +90,7 @@ struct TrackChartApp: App {
         let newTopic = Topic(id: UUID(), name: "", entries: [])
         return TopicView(title: $currentTopicName, counterView: { makeCounterView(for: newTopic) }, chartView: { makeChartView(for: newTopic) })
             .onAppear {
-                do { try topicStore.add(newTopic.persistenceTopic) } catch { handle(error) }
+                do { try topicStore.add(newTopic) } catch { handle(error) }
                 currentTopic = newTopic
                 currentTopicName = newTopic.name
             }
@@ -107,17 +106,17 @@ struct TrackChartApp: App {
 
     private func submit(_ newValue: Int, to topic: Topic) {
         let updatedTopic = Topic(id: topic.id, name: topic.name, entries: topic.entries + [newValue])
-        do { try topicStore.update(updatedTopic.persistenceTopic) } catch { handle(error) }
+        do { try topicStore.update(updatedTopic) } catch { handle(error) }
     }
 
     private func removeLastValue(from topic: Topic) {
         let updatedTopic = Topic(id: topic.id, name: topic.name, entries: topic.entries.dropLast())
-        do { try topicStore.update(updatedTopic.persistenceTopic) } catch { handle(error) }
+        do { try topicStore.update(updatedTopic) } catch { handle(error) }
     }
 
     private func set(name: String, for topic: Topic) {
         let updatedTopic = Topic(id: topic.id, name: name, entries: topic.entries)
-        do { try topicStore.update(updatedTopic.persistenceTopic) } catch { handle(error) }
+        do { try topicStore.update(updatedTopic) } catch { handle(error) }
     }
 
     @ViewBuilder
@@ -132,17 +131,5 @@ struct TrackChartApp: App {
     private func handle(_ error: Error) {
         alertMessage = ("Error", error.localizedDescription)
         isAlertViewPresented = true
-    }
-}
-
-private extension Topic {
-    init(from persistenceTopic: Persistence.Topic) {
-        self.id = persistenceTopic.id
-        self.name = persistenceTopic.name
-        self.entries = persistenceTopic.entries
-    }
-
-    var persistenceTopic: Persistence.Topic {
-        Persistence.Topic(id: id, name: name, entries: entries)
     }
 }

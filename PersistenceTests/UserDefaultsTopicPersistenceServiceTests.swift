@@ -7,6 +7,7 @@
 
 import Testing
 import Persistence
+import Domain
 
 @Suite(.serialized)
 class UserDefaultsTopicPersistenceServiceTests {

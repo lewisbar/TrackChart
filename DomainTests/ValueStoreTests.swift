@@ -6,7 +6,7 @@
 //
 
 import Testing
-import Persistence
+import Domain
 
 class ValueStoreTests {
     @Test func add_appendsValue() {
