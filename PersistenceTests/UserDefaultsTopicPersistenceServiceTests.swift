@@ -179,9 +179,13 @@ class UserDefaultsTopicPersistenceServiceTests {
     // MARK: - Helpers
 
     private func makeSUT(suiteName: String = #function) -> UserDefaultsTopicPersistenceService {
-        let sut = UserDefaultsTopicPersistenceService(topicIDsKey: testKey, userDefaults: userDefaults)
+        let sut = UserDefaultsTopicPersistenceService(topicIDsKey: testKey, topicKeyForID: topicKey, userDefaults: userDefaults)
         weakSUT = sut
         return sut
+    }
+
+    private func topicKey(for id: String) -> String {
+        #file + "topic_\(id)"
     }
 
     private func storedTopicIDs() -> [Any]? {
@@ -189,7 +193,7 @@ class UserDefaultsTopicPersistenceServiceTests {
     }
 
     private func storedTopic(for id: UUID) -> Any? {
-        userDefaults.object(forKey: "com.trackchart.topics.topic_\(id)")
+        userDefaults.object(forKey: topicKey(for: id.uuidString))
     }
 
     private func cleanUp() {

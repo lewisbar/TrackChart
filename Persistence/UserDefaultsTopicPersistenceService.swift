@@ -16,19 +16,19 @@ public class UserDefaultsTopicPersistenceService: TopicPersistenceService {
             self.name = topic.name
             self.entries = topic.entries
         }
-
-        var key: String { Self.key(for: id.uuidString) }
-
-        static func key(for id: String) -> String {
-            "com.trackchart.topics.topic_\(id)"
-        }
     }
 
     private let userDefaults: UserDefaults
     private let topicIDsKey: String
+    private let topicKeyForID: (String) -> String
 
-    public init(topicIDsKey: String, userDefaults: UserDefaults = .standard) {
+    public init(
+        topicIDsKey: String,
+        topicKeyForID: @escaping (String) -> String = { "com.trackchart.topics.topic_\($0)" },
+        userDefaults: UserDefaults = .standard
+    ) {
         self.topicIDsKey = topicIDsKey
+        self.topicKeyForID = topicKeyForID
         self.userDefaults = userDefaults
     }
 
@@ -40,7 +40,11 @@ public class UserDefaultsTopicPersistenceService: TopicPersistenceService {
 
     private func save(_ topic: UserDefaultsTopic) throws {
         let data = try JSONEncoder().encode(topic)
-        userDefaults.set(data, forKey: topic.key)
+        userDefaults.set(data, forKey: key(for: topic))
+    }
+
+    private func key(for topic: UserDefaultsTopic) -> String {
+        topicKeyForID(topic.id.uuidString)
     }
 
     private func addToIDList(_ id: String) {
@@ -70,14 +74,14 @@ public class UserDefaultsTopicPersistenceService: TopicPersistenceService {
 
     public func delete(_ topic: Topic) throws {
         let topic = UserDefaultsTopic(from: topic)
-        userDefaults.removeObject(forKey: topic.key)
+        userDefaults.removeObject(forKey: key(for: topic))
     }
 
     public func load() throws -> [Topic] {
         try userDefaults
             .array(forKey: topicIDsKey)?
             .compactMap { $0 as? String }
-            .compactMap { userDefaults.data(forKey: UserDefaultsTopic.key(for: $0)) }
+            .compactMap { userDefaults.data(forKey: topicKeyForID($0)) }
             .compactMap { try JSONDecoder().decode(UserDefaultsTopic.self, from: $0) }
             .map { Topic(id: $0.id, name: $0.name, entries: $0.entries) } ?? []
     }
