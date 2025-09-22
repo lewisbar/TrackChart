@@ -12,26 +12,25 @@ import Domain
 
 class NavigationPathNavigator {
     enum Destination: Equatable {
-        case list
         case detail(Topic)
     }
 
-    var path: [Destination] = [.list]
+    var path: [Destination] = []
 
     func showDetail(for topic: Topic) {
         path.append(.detail(topic))
     }
 
     func goBack() {
-        guard path.last != .list else { return }
+        guard !path.isEmpty else { return }
         path.removeLast()
     }
 }
 
 struct NavigationPathNavigatorTests {
-    @Test func init_startsWithTopicList() {
+    @Test func init_startsWithHome() {
         let sut = NavigationPathNavigator()
-        sut.path = [.list]
+        #expect(sut.path == [])
     }
 
     @Test func showDetail_addsDetailToStack() {
@@ -40,7 +39,7 @@ struct NavigationPathNavigatorTests {
 
         sut.showDetail(for: topic)
 
-        #expect(sut.path == [.list, .detail(topic)])
+        #expect(sut.path == [.detail(topic)])
     }
 
     @Test func showDetail_whenAlreadyOnDetail_addsAnotherDetailToStack() {
@@ -49,25 +48,25 @@ struct NavigationPathNavigatorTests {
         let topic2 = Topic(id: UUID(), name: "another topic", entries: [-1, -3])
 
         sut.showDetail(for: topic1)
-        #expect(sut.path == [.list, .detail(topic1)])
+        #expect(sut.path == [.detail(topic1)])
 
         sut.showDetail(for: topic2)
-        #expect(sut.path == [.list, .detail(topic1), .detail(topic2)])
+        #expect(sut.path == [.detail(topic1), .detail(topic2)])
     }
 
-    @Test func goBack_removesDetailRepeatedly_butKeepsList() {
+    @Test func goBack_removesDetailRepeatedly() {
         let sut = NavigationPathNavigator()
         let topic1 = Topic(id: UUID(), name: "a topic", entries: [1, 3, 5])
         let topic2 = Topic(id: UUID(), name: "another topic", entries: [-1, -3])
-        sut.path = [.list, .detail(topic1), .detail(topic2)]
+        sut.path = [.detail(topic1), .detail(topic2)]
 
         sut.goBack()
-        #expect(sut.path == [.list, .detail(topic1)])
+        #expect(sut.path == [.detail(topic1)])
 
         sut.goBack()
-        #expect(sut.path == [.list])
+        #expect(sut.path == [])
 
         sut.goBack()
-        #expect(sut.path == [.list])
+        #expect(sut.path == [])
     }
 }
