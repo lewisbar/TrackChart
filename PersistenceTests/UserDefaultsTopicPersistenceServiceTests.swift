@@ -189,7 +189,7 @@ class UserDefaultsTopicPersistenceServiceTests {
     }
 
     private func storedTopic(for id: UUID) -> Any? {
-        userDefaults.object(forKey: "topic_\(id)")
+        userDefaults.object(forKey: "com.trackchart.topics.topic_\(id)")
     }
 
     private func cleanUp() {
