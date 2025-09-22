@@ -7,7 +7,7 @@
 
 import Testing
 import Foundation
-import TrackChart
+import TrackChartiOS
 
 class NavigationPathNavigator {
     enum Destination: Equatable {

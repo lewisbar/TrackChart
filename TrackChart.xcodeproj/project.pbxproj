@@ -51,10 +51,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		30438AD02E7990AF00F3C852 /* TrackChartTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TrackChartTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		30438AD02E7990AF00F3C852 /* TrackChartiOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TrackChartiOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3050055D2E79B95900DEF76D /* Persistence.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Persistence.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		305005642E79B95A00DEF76D /* PersistenceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PersistenceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		30BDE0742E7854E000199C93 /* TrackChart.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TrackChart.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		30BDE0742E7854E000199C93 /* TrackChartiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TrackChartiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -68,9 +68,9 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		30438AD12E7990AF00F3C852 /* TrackChartTests */ = {
+		30438AD12E7990AF00F3C852 /* TrackChartiOSTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = TrackChartTests;
+			path = TrackChartiOSTests;
 			sourceTree = "<group>";
 		};
 		3050055E2E79B95900DEF76D /* Persistence */ = {
@@ -86,9 +86,9 @@
 			path = PersistenceTests;
 			sourceTree = "<group>";
 		};
-		30BDE0762E7854E000199C93 /* TrackChart */ = {
+		30BDE0762E7854E000199C93 /* TrackChartiOS */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = TrackChart;
+			path = TrackChartiOS;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -137,8 +137,8 @@
 		30BDE06B2E7854DF00199C93 = {
 			isa = PBXGroup;
 			children = (
-				30BDE0762E7854E000199C93 /* TrackChart */,
-				30438AD12E7990AF00F3C852 /* TrackChartTests */,
+				30BDE0762E7854E000199C93 /* TrackChartiOS */,
+				30438AD12E7990AF00F3C852 /* TrackChartiOSTests */,
 				3050055E2E79B95900DEF76D /* Persistence */,
 				305005682E79B95A00DEF76D /* PersistenceTests */,
 				305005872E7A152000DEF76D /* Frameworks */,
@@ -149,8 +149,8 @@
 		30BDE0752E7854E000199C93 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				30BDE0742E7854E000199C93 /* TrackChart.app */,
-				30438AD02E7990AF00F3C852 /* TrackChartTests.xctest */,
+				30BDE0742E7854E000199C93 /* TrackChartiOS.app */,
+				30438AD02E7990AF00F3C852 /* TrackChartiOSTests.xctest */,
 				3050055D2E79B95900DEF76D /* Persistence.framework */,
 				305005642E79B95A00DEF76D /* PersistenceTests.xctest */,
 			);
@@ -170,9 +170,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		30438ACF2E7990AF00F3C852 /* TrackChartTests */ = {
+		30438ACF2E7990AF00F3C852 /* TrackChartiOSTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 30438AD82E7990AF00F3C852 /* Build configuration list for PBXNativeTarget "TrackChartTests" */;
+			buildConfigurationList = 30438AD82E7990AF00F3C852 /* Build configuration list for PBXNativeTarget "TrackChartiOSTests" */;
 			buildPhases = (
 				30438ACC2E7990AF00F3C852 /* Sources */,
 				30438ACD2E7990AF00F3C852 /* Frameworks */,
@@ -184,13 +184,13 @@
 				30438AD52E7990AF00F3C852 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				30438AD12E7990AF00F3C852 /* TrackChartTests */,
+				30438AD12E7990AF00F3C852 /* TrackChartiOSTests */,
 			);
-			name = TrackChartTests;
+			name = TrackChartiOSTests;
 			packageProductDependencies = (
 			);
 			productName = TrackChartTests;
-			productReference = 30438AD02E7990AF00F3C852 /* TrackChartTests.xctest */;
+			productReference = 30438AD02E7990AF00F3C852 /* TrackChartiOSTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		3050055C2E79B95900DEF76D /* Persistence */ = {
@@ -239,9 +239,9 @@
 			productReference = 305005642E79B95A00DEF76D /* PersistenceTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		30BDE0732E7854E000199C93 /* TrackChart */ = {
+		30BDE0732E7854E000199C93 /* TrackChartiOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 30BDE0822E7854E200199C93 /* Build configuration list for PBXNativeTarget "TrackChart" */;
+			buildConfigurationList = 30BDE0822E7854E200199C93 /* Build configuration list for PBXNativeTarget "TrackChartiOS" */;
 			buildPhases = (
 				30BDE0702E7854E000199C93 /* Sources */,
 				30BDE0712E7854E000199C93 /* Frameworks */,
@@ -254,13 +254,13 @@
 				3050058B2E7A152000DEF76D /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				30BDE0762E7854E000199C93 /* TrackChart */,
+				30BDE0762E7854E000199C93 /* TrackChartiOS */,
 			);
-			name = TrackChart;
+			name = TrackChartiOS;
 			packageProductDependencies = (
 			);
 			productName = TrackChart;
-			productReference = 30BDE0742E7854E000199C93 /* TrackChart.app */;
+			productReference = 30BDE0742E7854E000199C93 /* TrackChartiOS.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -303,8 +303,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				30BDE0732E7854E000199C93 /* TrackChart */,
-				30438ACF2E7990AF00F3C852 /* TrackChartTests */,
+				30BDE0732E7854E000199C93 /* TrackChartiOS */,
+				30438ACF2E7990AF00F3C852 /* TrackChartiOSTests */,
 				3050055C2E79B95900DEF76D /* Persistence */,
 				305005632E79B95A00DEF76D /* PersistenceTests */,
 			);
@@ -376,7 +376,7 @@
 /* Begin PBXTargetDependency section */
 		30438AD52E7990AF00F3C852 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 30BDE0732E7854E000199C93 /* TrackChart */;
+			target = 30BDE0732E7854E000199C93 /* TrackChartiOS */;
 			targetProxy = 30438AD42E7990AF00F3C852 /* PBXContainerItemProxy */;
 		};
 		305005672E79B95A00DEF76D /* PBXTargetDependency */ = {
@@ -406,7 +406,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TrackChart.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TrackChart";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TrackChartiOS.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TrackChartiOS";
 			};
 			name = Debug;
 		};
@@ -424,7 +424,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TrackChart.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TrackChart";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TrackChartiOS.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TrackChartiOS";
 			};
 			name = Release;
 		};
@@ -667,7 +667,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"TrackChart/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"TrackChartiOS/Preview Content\"";
 				DEVELOPMENT_TEAM = 9SPL76B3GR;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -696,7 +696,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"TrackChart/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"TrackChartiOS/Preview Content\"";
 				DEVELOPMENT_TEAM = 9SPL76B3GR;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -721,7 +721,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		30438AD82E7990AF00F3C852 /* Build configuration list for PBXNativeTarget "TrackChartTests" */ = {
+		30438AD82E7990AF00F3C852 /* Build configuration list for PBXNativeTarget "TrackChartiOSTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				30438AD62E7990AF00F3C852 /* Debug */,
@@ -757,7 +757,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		30BDE0822E7854E200199C93 /* Build configuration list for PBXNativeTarget "TrackChart" */ = {
+		30BDE0822E7854E200199C93 /* Build configuration list for PBXNativeTarget "TrackChartiOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				30BDE0832E7854E200199C93 /* Debug */,

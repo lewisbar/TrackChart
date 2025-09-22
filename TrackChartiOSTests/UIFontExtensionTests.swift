@@ -7,7 +7,7 @@
 
 import Testing
 import SwiftUI
-import TrackChart
+import TrackChartiOS
 
 struct UIFontExtensionTests {
     @Test func widthOf_singleDigit_returnsCorrectNumber() {
