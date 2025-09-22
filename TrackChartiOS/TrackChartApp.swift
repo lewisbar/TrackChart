@@ -10,7 +10,7 @@ import Persistence
 
 @main
 struct TrackChartApp: App {
-    @State private var topicStore = TopicStore(persistenceService: UserDefaultsTopicPersistenceService(topicIDsKey: "com.trackchart.topics.idlist"))
+    @State private var topicStore = TopicStore(persistenceService: UserDefaultsTopicPersistenceService())
     @State private var topicCellModels = [TopicCellModel]()
     @State private var currentTopic: Topic?
     @State private var currentTopicName: String = ""

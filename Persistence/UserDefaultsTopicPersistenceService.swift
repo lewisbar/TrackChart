@@ -23,7 +23,7 @@ public class UserDefaultsTopicPersistenceService: TopicPersistenceService {
     private let topicKeyForID: (String) -> String
 
     public init(
-        topicIDsKey: String,
+        topicIDsKey: String = "com.trackchart.topics.idlist",
         topicKeyForID: @escaping (String) -> String = { "com.trackchart.topics.topic_\($0)" },
         userDefaults: UserDefaults = .standard
     ) {
