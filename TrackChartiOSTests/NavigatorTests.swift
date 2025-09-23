@@ -27,6 +27,7 @@ struct NavigationTopic: Hashable, Codable {
     }
 }
 
+@Observable
 class Navigator {
     var path = [NavigationTopic]()
     private let saveTopic: (Topic) -> Void
@@ -119,6 +120,24 @@ class NavigatorTests {
         #expect(sut.path == [])
     }
 
+    @Test func isObservable() async throws {
+        let sut = makeSUT()
+        let tracker = ObservationTracker()
+
+        withObservationTracking {
+            _ = sut.path
+        } onChange: {
+            Task { await tracker.setTriggered() }
+        }
+
+        sut.showNewDetail()
+
+        try await Task.sleep(for: .milliseconds(10))
+        let triggered = await tracker.getTriggered()
+        #expect(triggered, "Expected observation to be triggered after adding topic to path")
+        #expect(sut.path.count == 1)
+    }
+
     // MARK: - Helpers
 
     private func makeSUT(saveTopic: @escaping (Topic) -> Void = { _ in }) -> Navigator {
@@ -132,4 +151,10 @@ class NavigatorTests {
     deinit {
         #expect(weakSUT == nil, "Instance should have been deallocated. Potential memory leak.")
     }
+}
+
+private actor ObservationTracker {
+    var triggered = false
+    func setTriggered() { triggered = true }
+    func getTriggered() -> Bool { triggered }
 }
