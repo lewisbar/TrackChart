@@ -9,49 +9,6 @@ import Testing
 import Foundation
 import Domain
 
-struct NavigationTopic: Hashable, Codable {
-    let id: UUID
-    let name: String
-    let entries: [Int]
-
-    init(id: UUID, name: String, entries: [Int]) {
-        self.id = id
-        self.name = name
-        self.entries = entries
-    }
-
-    init(from topic: Topic) {
-        self.id = topic.id
-        self.name = topic.name
-        self.entries = topic.entries
-    }
-}
-
-@Observable
-class Navigator {
-    var path = [NavigationTopic]()
-    private let saveTopic: (Topic) -> Void
-
-    init(saveTopic: @escaping (Topic) -> Void) {
-        self.saveTopic = saveTopic
-    }
-
-    func showDetail(for topic: NavigationTopic) {
-        path.append(topic)
-    }
-
-    func showNewDetail() {
-        let newTopic = Topic(id: UUID(), name: "", entries: [])
-        saveTopic(newTopic)
-        path.append(NavigationTopic(from: newTopic))
-    }
-
-    func goBack() {
-        guard !path.isEmpty else { return }
-        path.removeLast()
-    }
-}
-
 class NavigatorTests {
     @Test func init_startsWithHome() {
         let sut = makeSUT()
