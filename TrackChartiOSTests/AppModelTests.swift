@@ -13,12 +13,16 @@ import Persistence
 @Observable
 class AppModel {
     let store: TopicStore
+    var alertMessage = (title: "Error", message: "Please try again later. If the error persists, don't hesitate to contact support.")
+    var isAlertViewPresented = false
     var topicCellModels = [TopicCellModel]()
     init(store: TopicStore) {
         self.store = store
         loadTopics()
     }
     private func handle(_ error: Error) {
+        alertMessage = ("Error", error.localizedDescription)
+        isAlertViewPresented = true
     }
     private func loadTopics() {
         do { try store.load() } catch { handle(error) }
@@ -36,6 +40,24 @@ struct AppModelTests {
 
         #expect(sut.topicCellModels == [TopicCellModel(from: topic)])
     }
+
+    @Test func loadingError_showsErrorMessage() {
+        let persistenceService = TopicPersistenceServiceSpy()
+        let error = anyNSError()
+        persistenceService.stub(error)
+        let store = TopicStore(persistenceService: persistenceService)
+        let sut = AppModel(store: store)
+
+        #expect(sut.alertMessage == ("Error", error.localizedDescription))
+        #expect(sut.isAlertViewPresented)
+        #expect(sut.topicCellModels == [])
+    }
+
+    // MARK: - Helpers
+
+    private func anyNSError() -> NSError {
+        NSError(domain: "test", code: 0)
+    }
 }
 
 private class TopicPersistenceServiceSpy: TopicPersistenceService {
@@ -44,7 +66,7 @@ private class TopicPersistenceServiceSpy: TopicPersistenceService {
     var deletedTopics = [Topic]()
     var reorderedTopicLists = [[Topic]]()
     var loadCallCount = 0
-    private(set) var stubbedTopics = [Topic]()
+    private(set) var stubbedResult = Result<[Topic], Error>.success([])
 
     func create(_ topic: Topic) {
         createdTopics.append(topic)
@@ -62,12 +84,16 @@ private class TopicPersistenceServiceSpy: TopicPersistenceService {
         reorderedTopicLists.append(newOrder)
     }
 
-    func load() -> [Topic] {
+    func load() throws -> [Topic] {
         loadCallCount += 1
-        return stubbedTopics
+        return try stubbedResult.get()
     }
 
     func stub(_ topics: [Topic]) {
-        stubbedTopics = topics
+        stubbedResult = .success(topics)
+    }
+
+    func stub(_ error: Error) {
+        stubbedResult = .failure(error)
     }
 }
