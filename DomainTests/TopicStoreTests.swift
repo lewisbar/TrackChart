@@ -123,6 +123,20 @@ class TopicStoreTests {
         #expect(persistenceService.loadCallCount == 1)
     }
 
+    @Test func submitNewValueToTopic() throws {
+        let topics = sampleTopics()
+        let selectedTopic = topics[3]
+        let newValue = -14
+        let (sut, persistenceService) = makeSUT(with: topics)
+        try sut.load()
+
+        try sut.submit(newValue, to: selectedTopic)
+
+        let updatedTopic = sut.topic(for: selectedTopic.id)
+        #expect(updatedTopic?.entries == selectedTopic.entries + [newValue])
+        #expect(persistenceService.updatedTopics == [updatedTopic])
+    }
+
     @Test func isObservable() async throws {
         let (sut, _) = makeSUT()
         let tracker = ObservationTracker()

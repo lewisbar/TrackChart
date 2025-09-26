@@ -2,7 +2,7 @@
 //  TopicStore.swift
 //  Persistence
 //
-//  Created by LennartWisbar on 18.09.25.
+//  Created by Lennart Wisbar on 18.09.25.
 //
 
 @Observable
@@ -47,5 +47,10 @@ public class TopicStore {
 
     public func topic(for id: UUID) -> Topic? {
         topics.first(where: { $0.id == id })
+    }
+
+    public func submit(_ newValue: Int, to topic: Topic) throws {
+        let updatedTopic = Topic(id: topic.id, name: topic.name, entries: topic.entries + [newValue])
+        try update(updatedTopic)
     }
 }
