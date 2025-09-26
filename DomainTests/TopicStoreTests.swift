@@ -137,6 +137,19 @@ class TopicStoreTests {
         #expect(persistenceService.updatedTopics == [updatedTopic])
     }
 
+    @Test func removeLastValueFromTopic() throws {
+        let topics = sampleTopics()
+        let selectedTopic = topics[2]
+        let (sut, persistenceService) = makeSUT(with: topics)
+        try sut.load()
+
+        try sut.removeLastValue(from: selectedTopic)
+
+        let updatedTopic = sut.topic(for: selectedTopic.id)
+        #expect(updatedTopic?.entries == selectedTopic.entries.dropLast())
+        #expect(persistenceService.updatedTopics == [updatedTopic])
+    }
+
     @Test func isObservable() async throws {
         let (sut, _) = makeSUT()
         let tracker = ObservationTracker()

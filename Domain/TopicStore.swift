@@ -53,4 +53,9 @@ public class TopicStore {
         let updatedTopic = Topic(id: topic.id, name: topic.name, entries: topic.entries + [newValue])
         try update(updatedTopic)
     }
+
+    public func removeLastValue(from topic: Topic) throws {
+            let updatedTopic = Topic(id: topic.id, name: topic.name, entries: topic.entries.dropLast())
+        try update(updatedTopic)
+    }
 }
