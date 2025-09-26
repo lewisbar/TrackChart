@@ -150,6 +150,20 @@ class TopicStoreTests {
         #expect(persistenceService.updatedTopics == [updatedTopic])
     }
 
+    @Test func changeTopicName() throws {
+        let topics = sampleTopics()
+        let selectedTopic = topics[2]
+        let newName = "New Topic Name"
+        let (sut, persistenceService) = makeSUT(with: topics)
+        try sut.load()
+
+        try sut.changeName(of: selectedTopic, to: newName)
+
+        let updatedTopic = sut.topic(for: selectedTopic.id)
+        #expect(updatedTopic?.name == newName)
+        #expect(persistenceService.updatedTopics == [updatedTopic])
+    }
+
     @Test func isObservable() async throws {
         let (sut, _) = makeSUT()
         let tracker = ObservationTracker()

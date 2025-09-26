@@ -58,4 +58,9 @@ public class TopicStore {
             let updatedTopic = Topic(id: topic.id, name: topic.name, entries: topic.entries.dropLast())
         try update(updatedTopic)
     }
+
+    public func changeName(of topic: Topic, to newName: String) throws {
+        let updatedTopic = Topic(id: topic.id, name: newName, entries: topic.entries)
+        try update(updatedTopic)
+    }
 }
