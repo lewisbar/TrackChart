@@ -17,5 +17,5 @@ public protocol TopicStore {
     func remove(_ topic: Topic) throws
     func submit(_ newValue: Int, to topic: Topic) throws
     func removeLastValue(from topic: Topic) throws
-    func changeName(of topic: Topic, to newName: String) throws
+    func rename(_ topic: Topic, to newName: String) throws
 }

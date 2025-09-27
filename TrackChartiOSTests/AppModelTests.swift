@@ -154,7 +154,7 @@ private class TopicStoreSpy: TopicStore {
         try throwErrorIfSetupThisWay()
     }
     
-    func changeName(of topic: Topic, to newName: String) throws {
+    func rename(_ topic: Topic, to newName: String) throws {
         changeNameCalls.append((topic, newName))
         try throwErrorIfSetupThisWay()
     }

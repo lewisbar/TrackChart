@@ -59,7 +59,7 @@ public class PersistentTopicStore: TopicStore {
         try update(updatedTopic)
     }
 
-    public func changeName(of topic: Topic, to newName: String) throws {
+    public func rename(_ topic: Topic, to newName: String) throws {
         let updatedTopic = Topic(id: topic.id, name: newName, entries: topic.entries)
         try update(updatedTopic)
     }
