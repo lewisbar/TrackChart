@@ -15,7 +15,11 @@ class AppModel {
     let store: TopicStore
     var alertMessage = (title: "Error", message: "Please try again later. If the error persists, don't hesitate to contact support.")
     var isAlertViewPresented = false
-    var topicCellModels = [TopicCellModel]()
+    var topicCellModels = [TopicCellModel]() {
+        didSet {
+            updateStoreWithDeletedAndReorderedCellModels()
+        }
+    }
     init(store: TopicStore) {
         self.store = store
         loadTopics()
@@ -24,6 +28,7 @@ class AppModel {
         alertMessage = ("Error", error.localizedDescription)
         isAlertViewPresented = true
     }
+
     func updateStoreWithDeletedAndReorderedCellModels() {
         let updatedIDs = topicCellModels.map(\.id)
 
@@ -44,21 +49,18 @@ class AppModel {
 }
 
 struct AppModelTests {
-    @Test func init_loadsTopics() {
+    @Test func init_loadsTopicsAndMapsThemToCellModels() {
         let topic = Topic(id: UUID(), name: "a topic", entries: [3, 4, 5])
-        let persistenceService = TopicPersistenceServiceSpy()
-        persistenceService.stub([topic])
-        let store = TopicStore(persistenceService: persistenceService)
+        let store = TopicStoreSpy(with: .success([topic]))
         let sut = AppModel(store: store)
 
+        #expect(store.loadCalls == 1)
         #expect(sut.topicCellModels == [TopicCellModel(from: topic)])
     }
 
     @Test func loadingError_showsErrorMessage() {
-        let persistenceService = TopicPersistenceServiceSpy()
         let error = anyNSError()
-        persistenceService.stub(error)
-        let store = TopicStore(persistenceService: persistenceService)
+        let store = TopicStoreSpy(with: .failure(error))
         let sut = AppModel(store: store)
 
         #expect(sut.alertMessage == ("Error", error.localizedDescription))
@@ -66,23 +68,19 @@ struct AppModelTests {
         #expect(sut.topicCellModels == [])
     }
 
-    @Test func updateStoreAfterDeletionAndReordering() {
+    @Test func updateStoreAutomaticallyAfterDeletionAndReordering() {
         let topic1 = Topic(id: UUID(), name: "topic1", entries: [3, 4, 5])
         let topic2 = Topic(id: UUID(), name: "topic2", entries: [-3, -4])
         let topic3 = Topic(id: UUID(), name: "topic3", entries: [3, 4, 5, 6])
         let topic4 = Topic(id: UUID(), name: "topic4", entries: [1, 2])
         let originalTopicList = [topic1, topic2, topic3, topic4]
-        let persistenceService = TopicPersistenceServiceSpy()
-        persistenceService.stub(originalTopicList)
-        let store = TopicStore(persistenceService: persistenceService)
+        let store = TopicStoreSpy(with: .success(originalTopicList))
         let sut = AppModel(store: store)
 
         let modifiedTopicList = [topic3, topic4, topic1]
         sut.topicCellModels = modifiedTopicList.map(TopicCellModel.init)
 
-        sut.updateStoreWithDeletedAndReorderedCellModels()
-
-        #expect(sut.store.topics == modifiedTopicList, "Expected \(modifiedTopicList.map(\.name)), got \(sut.store.topics.map(\.name))")
+        #expect(store.topics == modifiedTopicList)
     }
 
     // MARK: - Helpers
@@ -92,40 +90,76 @@ struct AppModelTests {
     }
 }
 
-private class TopicPersistenceServiceSpy: TopicPersistenceService {
-    var createdTopics = [Topic]()
-    var updatedTopics = [Topic]()
-    var deletedTopics = [Topic]()
-    var reorderedTopicLists = [[Topic]]()
-    var loadCallCount = 0
-    private(set) var stubbedResult = Result<[Topic], Error>.success([])
+private class TopicStoreSpy: TopicStore {
+    private(set) var topics = [Topic]()
+    private(set) var topicsToLoad = [Topic]()
+    private(set) var error: Error?
+    private(set) var topicForIDCalls = [UUID]()
+    private(set) var loadCalls = 0
+    private(set) var addCalls = [Topic]()
+    private(set) var updateCalls = [Topic]()
+    private(set) var reorderCalls = [[Topic]]()
+    private(set) var removeCalls = [Topic]()
+    private(set) var submitCalls = [(value: Int, topic: Topic)]()
+    private(set) var removeLastValueCalls = [Topic]()
+    private(set) var changeNameCalls = [(topic: Topic, newName: String)]()
 
-    func create(_ topic: Topic) {
-        createdTopics.append(topic)
+    init(with result: Result<[Topic], Error>) {
+        switch result {
+        case let .success(topics): self.topicsToLoad = topics
+        case let .failure(error): self.error = error
+        }
     }
 
-    func update(_ topic: Topic) {
-        updatedTopics.append(topic)
+    func topic(for id: UUID) -> Topic? {
+        topicForIDCalls.append(id)
+        return topics.first(where: { $0.id == id })
     }
 
-    func delete(_ topic: Topic) {
-        deletedTopics.append(topic)
+    func load() throws {
+        loadCalls += 1
+        try throwErrorIfSetupThisWay()
+        topics = topicsToLoad
     }
-
+    
+    func add(_ topic: Topic) throws {
+        addCalls.append(topic)
+        try throwErrorIfSetupThisWay()
+    }
+    
+    func update(_ topic: Topic) throws {
+        updateCalls.append(topic)
+        try throwErrorIfSetupThisWay()
+    }
+    
     func reorder(to newOrder: [Topic]) throws {
-        reorderedTopicLists.append(newOrder)
+        reorderCalls.append(newOrder)
+        try throwErrorIfSetupThisWay()
+        topics = newOrder
+    }
+    
+    func remove(_ topic: Topic) throws {
+        removeCalls.append(topic)
+        try throwErrorIfSetupThisWay()
+        topics.removeAll(where: { $0.id == topic.id })
+    }
+    
+    func submit(_ newValue: Int, to topic: Topic) throws {
+        submitCalls.append((newValue, topic))
+        try throwErrorIfSetupThisWay()
+    }
+    
+    func removeLastValue(from topic: Topic) throws {
+        removeCalls.append(topic)
+        try throwErrorIfSetupThisWay()
+    }
+    
+    func changeName(of topic: Topic, to newName: String) throws {
+        changeNameCalls.append((topic, newName))
+        try throwErrorIfSetupThisWay()
     }
 
-    func load() throws -> [Topic] {
-        loadCallCount += 1
-        return try stubbedResult.get()
-    }
-
-    func stub(_ topics: [Topic]) {
-        stubbedResult = .success(topics)
-    }
-
-    func stub(_ error: Error) {
-        stubbedResult = .failure(error)
+    private func throwErrorIfSetupThisWay() throws {
+        if let error { throw error }
     }
 }
