@@ -24,6 +24,19 @@ class AppModel {
         alertMessage = ("Error", error.localizedDescription)
         isAlertViewPresented = true
     }
+    func updateStoreWithDeletedAndReorderedCellModels() {
+        let updatedIDs = topicCellModels.map(\.id)
+
+        store.topics.forEach { topic in
+            if !updatedIDs.contains(topic.id) {
+                do { try store.remove(topic) } catch { handle(error) }
+            }
+        }
+
+        let reorderedTopics = updatedIDs.compactMap { store.topic(for: $0) }
+        do { try store.reorder(to: reorderedTopics) } catch { handle(error) }
+    }
+
     private func loadTopics() {
         do { try store.load() } catch { handle(error) }
         topicCellModels = store.topics.map(TopicCellModel.init)
@@ -51,6 +64,25 @@ struct AppModelTests {
         #expect(sut.alertMessage == ("Error", error.localizedDescription))
         #expect(sut.isAlertViewPresented)
         #expect(sut.topicCellModels == [])
+    }
+
+    @Test func updateStoreAfterDeletionAndReordering() {
+        let topic1 = Topic(id: UUID(), name: "topic1", entries: [3, 4, 5])
+        let topic2 = Topic(id: UUID(), name: "topic2", entries: [-3, -4])
+        let topic3 = Topic(id: UUID(), name: "topic3", entries: [3, 4, 5, 6])
+        let topic4 = Topic(id: UUID(), name: "topic4", entries: [1, 2])
+        let originalTopicList = [topic1, topic2, topic3, topic4]
+        let persistenceService = TopicPersistenceServiceSpy()
+        persistenceService.stub(originalTopicList)
+        let store = TopicStore(persistenceService: persistenceService)
+        let sut = AppModel(store: store)
+
+        let modifiedTopicList = [topic3, topic4, topic1]
+        sut.topicCellModels = modifiedTopicList.map(TopicCellModel.init)
+
+        sut.updateStoreWithDeletedAndReorderedCellModels()
+
+        #expect(sut.store.topics == modifiedTopicList, "Expected \(modifiedTopicList.map(\.name)), got \(sut.store.topics.map(\.name))")
     }
 
     // MARK: - Helpers
