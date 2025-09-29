@@ -24,9 +24,10 @@ class AppModel {
         self.store = store
         loadTopics()
     }
-    private func handle(_ error: Error) {
-        alertMessage = ("Error", error.localizedDescription)
-        isAlertViewPresented = true
+
+    func rename(_ topic: Topic, to newName: String) {
+        do { try store.rename(topic, to: newName) } catch { handle(error) }
+        topicCellModels = store.topics.map(TopicCellModel.init)
     }
 
     private func updateStoreWithDeletedAndReorderedCellModels() {
@@ -42,14 +43,14 @@ class AppModel {
         do { try store.reorder(to: reorderedTopics) } catch { handle(error) }
     }
 
-    func rename(_ topic: Topic, to newName: String) {
-        do { try store.rename(topic, to: newName) } catch { handle(error) }
-        topicCellModels = store.topics.map(TopicCellModel.init)
-    }
-
     private func loadTopics() {
         do { try store.load() } catch { handle(error) }
         topicCellModels = store.topics.map(TopicCellModel.init)
+    }
+
+    private func handle(_ error: Error) {
+        alertMessage = ("Error", error.localizedDescription)
+        isAlertViewPresented = true
     }
 }
 
