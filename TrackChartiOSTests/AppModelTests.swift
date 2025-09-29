@@ -12,7 +12,7 @@ import Persistence
 
 @Observable
 class AppModel {
-    let store: TopicStore
+    private let store: TopicStore
     var alertMessage = (title: "Error", message: "Please try again later. If the error persists, don't hesitate to contact support.")
     var isAlertViewPresented = false
     var topicCellModels = [TopicCellModel]() {
@@ -40,6 +40,11 @@ class AppModel {
 
         let reorderedTopics = updatedIDs.compactMap { store.topic(for: $0) }
         do { try store.reorder(to: reorderedTopics) } catch { handle(error) }
+    }
+
+    func rename(_ topic: Topic, to newName: String) {
+        do { try store.rename(topic, to: newName) } catch { handle(error) }
+        topicCellModels = store.topics.map(TopicCellModel.init)
     }
 
     private func loadTopics() {
@@ -81,6 +86,19 @@ struct AppModelTests {
         sut.topicCellModels = modifiedTopicList.map(TopicCellModel.init)
 
         #expect(store.topics == modifiedTopicList)
+    }
+
+    @Test func renameTopic_alsoUpdatesStore() {
+        let topic = Topic(id: UUID(), name: "topic1", entries: [3, 4, 5])
+        let newName = "new name"
+        let store = TopicStoreSpy(with: .success([topic]))
+        let sut = AppModel(store: store)
+
+        sut.rename(topic, to: newName)
+
+        let expectedTopic = Topic(id: topic.id, name: newName, entries: topic.entries)
+        #expect(sut.topicCellModels == [TopicCellModel(from: expectedTopic)])
+        #expect(store.topics == [expectedTopic])
     }
 
     // MARK: - Helpers
@@ -156,7 +174,12 @@ private class TopicStoreSpy: TopicStore {
     
     func rename(_ topic: Topic, to newName: String) throws {
         changeNameCalls.append((topic, newName))
+
         try throwErrorIfSetupThisWay()
+
+        if let index = topics.firstIndex(of: topic) {
+            topics[index] = Topic(id: topic.id, name: newName, entries: topic.entries)
+        }
     }
 
     private func throwErrorIfSetupThisWay() throws {
