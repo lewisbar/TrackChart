@@ -24,6 +24,12 @@ class AppModel {
         self.navigator = navigator
         loadTopics()
     }
+    func navigate(to topic: Topic) {
+        navigator.showDetail(for: NavigationTopic(from: topic))
+    }
+    func navigateBack() {
+        navigator.goBack()
+    }
 
     func rename(_ topic: Topic, to newName: String) {
         do { try store.rename(topic, to: newName) } catch { handle(error) }
@@ -98,13 +104,27 @@ class AppModelTests {
         #expect(store.topics == [expectedTopic])
     }
 
-    @Test func navigateToTopic() {
-        let topic = topic()
+    @Test func navigateToTopicBackAndForth() {
+        let topic1 = topic()
+        let navTopic1 = NavigationTopic(from: topic1)
+        let topic2 = topic()
+        let navTopic2 = NavigationTopic(from: topic2)
         let (sut, _, navigator) = makeSUT()
 
-        sut.navigate(to: topic)
+        sut.navigate(to: topic1)
+        #expect(navigator.path == [navTopic1])
 
-        #expect(navigator.path == [NavigationTopic(from: topic)])
+        sut.navigate(to: topic2)
+        #expect(navigator.path == [navTopic1, navTopic2])
+
+        sut.navigateBack()
+        #expect(navigator.path == [navTopic1])
+
+        sut.navigateBack()
+        #expect(navigator.path == [])
+
+        sut.navigate(to: topic2)
+        #expect(navigator.path == [navTopic2])
     }
 
     // MARK: - Helpers
