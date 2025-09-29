@@ -13,13 +13,15 @@ import Persistence
 @Observable
 class AppModel {
     private let store: TopicStore
+    let navigator: Navigator
     var alertMessage = (title: "Error", message: "Please try again later. If the error persists, don't hesitate to contact support.")
     var isAlertViewPresented = false
     var topicCellModels = [TopicCellModel]() {
         didSet { updateStoreWithDeletedAndReorderedCellModels() }
     }
-    init(store: TopicStore) {
+    init(store: TopicStore, navigator: Navigator) {
         self.store = store
+        self.navigator = navigator
         loadTopics()
     }
 
@@ -52,11 +54,10 @@ class AppModel {
     }
 }
 
-struct AppModelTests {
+class AppModelTests {
     @Test func init_loadsTopicsAndMapsThemToCellModels() {
         let topic = Topic(id: UUID(), name: "a topic", entries: [3, 4, 5])
-        let store = TopicStoreSpy(with: .success([topic]))
-        let sut = AppModel(store: store)
+        let (sut, store, _) = makeSUT(withResult: .success([topic]))
 
         #expect(store.loadCalls == 1)
         #expect(sut.topicCellModels == [TopicCellModel(from: topic)])
@@ -64,8 +65,7 @@ struct AppModelTests {
 
     @Test func loadingError_showsErrorMessage() {
         let error = anyNSError()
-        let store = TopicStoreSpy(with: .failure(error))
-        let sut = AppModel(store: store)
+        let (sut, store, _) = makeSUT(withResult: .failure(error))
 
         #expect(sut.alertMessage == ("Error", error.localizedDescription))
         #expect(sut.isAlertViewPresented)
@@ -78,8 +78,7 @@ struct AppModelTests {
         let topic3 = Topic(id: UUID(), name: "topic3", entries: [3, 4, 5, 6])
         let topic4 = Topic(id: UUID(), name: "topic4", entries: [1, 2])
         let originalTopicList = [topic1, topic2, topic3, topic4]
-        let store = TopicStoreSpy(with: .success(originalTopicList))
-        let sut = AppModel(store: store)
+        let (sut, store, _) = makeSUT(withResult: .success(originalTopicList))
 
         let modifiedTopicList = [topic3, topic4, topic1]
         sut.topicCellModels = modifiedTopicList.map(TopicCellModel.init)
@@ -90,8 +89,7 @@ struct AppModelTests {
     @Test func renameTopic_alsoUpdatesStore() {
         let topic = Topic(id: UUID(), name: "topic1", entries: [3, 4, 5])
         let newName = "new name"
-        let store = TopicStoreSpy(with: .success([topic]))
-        let sut = AppModel(store: store)
+        let (sut, store, _) = makeSUT(withResult: .success([topic]))
 
         sut.rename(topic, to: newName)
 
@@ -101,6 +99,28 @@ struct AppModelTests {
     }
 
     // MARK: - Helpers
+
+    private func makeSUT(withResult storeResult: Result<[Topic], Error>) -> (sut: AppModel, store: TopicStoreSpy, navigator: Navigator) {
+        let store = TopicStoreSpy(with: storeResult)
+        let navigator = Navigator()
+        let sut = AppModel(store: store, navigator: navigator)
+
+        weakSUT = sut
+        weakStore = store
+        weakNavigator = navigator
+
+        return (sut, store, navigator)
+    }
+
+    deinit {
+        #expect(weakSUT == nil, "Instance should have been deallocated. Potential memory leak.")
+        #expect(weakStore == nil, "Instance should have been deallocated. Potential memory leak.")
+        #expect(weakNavigator == nil, "Instance should have been deallocated. Potential memory leak.")
+    }
+
+    private weak var weakSUT: AppModel?
+    private weak var weakStore: TopicStoreSpy?
+    private weak var weakNavigator: Navigator?
 
     private func anyNSError() -> NSError {
         NSError(domain: "test", code: 0)
