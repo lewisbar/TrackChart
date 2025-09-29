@@ -98,9 +98,18 @@ class AppModelTests {
         #expect(store.topics == [expectedTopic])
     }
 
+    @Test func navigateToTopic() {
+        let topic = topic()
+        let (sut, _, navigator) = makeSUT()
+
+        sut.navigate(to: topic)
+
+        #expect(navigator.path == [NavigationTopic(from: topic)])
+    }
+
     // MARK: - Helpers
 
-    private func makeSUT(withResult storeResult: Result<[Topic], Error>) -> (sut: AppModel, store: TopicStoreSpy, navigator: Navigator) {
+    private func makeSUT(withResult storeResult: Result<[Topic], Error> = .success([])) -> (sut: AppModel, store: TopicStoreSpy, navigator: Navigator) {
         let store = TopicStoreSpy(with: storeResult)
         let navigator = Navigator()
         let sut = AppModel(store: store, navigator: navigator)
