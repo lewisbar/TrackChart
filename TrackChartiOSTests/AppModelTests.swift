@@ -16,9 +16,7 @@ class AppModel {
     var alertMessage = (title: "Error", message: "Please try again later. If the error persists, don't hesitate to contact support.")
     var isAlertViewPresented = false
     var topicCellModels = [TopicCellModel]() {
-        didSet {
-            updateStoreWithDeletedAndReorderedCellModels()
-        }
+        didSet { updateStoreWithDeletedAndReorderedCellModels() }
     }
     init(store: TopicStore) {
         self.store = store
