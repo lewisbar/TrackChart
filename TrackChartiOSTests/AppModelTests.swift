@@ -29,7 +29,7 @@ class AppModel {
         isAlertViewPresented = true
     }
 
-    func updateStoreWithDeletedAndReorderedCellModels() {
+    private func updateStoreWithDeletedAndReorderedCellModels() {
         let updatedIDs = topicCellModels.map(\.id)
 
         store.topics.forEach { topic in
