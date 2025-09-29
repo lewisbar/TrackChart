@@ -56,7 +56,7 @@ class AppModel {
 
 class AppModelTests {
     @Test func init_loadsTopicsAndMapsThemToCellModels() {
-        let topic = Topic(id: UUID(), name: "a topic", entries: [3, 4, 5])
+        let topic = topic()
         let (sut, store, _) = makeSUT(withResult: .success([topic]))
 
         #expect(store.loadCalls == 1)
@@ -65,7 +65,7 @@ class AppModelTests {
 
     @Test func loadingError_showsErrorMessage() {
         let error = anyNSError()
-        let (sut, store, _) = makeSUT(withResult: .failure(error))
+        let (sut, _, _) = makeSUT(withResult: .failure(error))
 
         #expect(sut.alertMessage == ("Error", error.localizedDescription))
         #expect(sut.isAlertViewPresented)
@@ -73,10 +73,10 @@ class AppModelTests {
     }
 
     @Test func updateStoreAutomaticallyAfterDeletionAndReordering() {
-        let topic1 = Topic(id: UUID(), name: "topic1", entries: [3, 4, 5])
-        let topic2 = Topic(id: UUID(), name: "topic2", entries: [-3, -4])
-        let topic3 = Topic(id: UUID(), name: "topic3", entries: [3, 4, 5, 6])
-        let topic4 = Topic(id: UUID(), name: "topic4", entries: [1, 2])
+        let topic1 = topic(name: "topic1")
+        let topic2 = topic(name: "topic2")
+        let topic3 = topic(name: "topic3")
+        let topic4 = topic(name: "topic4")
         let originalTopicList = [topic1, topic2, topic3, topic4]
         let (sut, store, _) = makeSUT(withResult: .success(originalTopicList))
 
@@ -87,7 +87,7 @@ class AppModelTests {
     }
 
     @Test func renameTopic_alsoUpdatesStore() {
-        let topic = Topic(id: UUID(), name: "topic1", entries: [3, 4, 5])
+        let topic = topic(name: "old name")
         let newName = "new name"
         let (sut, store, _) = makeSUT(withResult: .success([topic]))
 
@@ -121,6 +121,10 @@ class AppModelTests {
     private weak var weakSUT: AppModel?
     private weak var weakStore: TopicStoreSpy?
     private weak var weakNavigator: Navigator?
+
+    private func topic(id: UUID = UUID(), name: String = "a topic", entries: [Int] = [.random(in: -2...10)]) -> Topic {
+        Topic(id: id, name: name, entries: entries)
+    }
 
     private func anyNSError() -> NSError {
         NSError(domain: "test", code: 0)
