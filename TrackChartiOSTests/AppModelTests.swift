@@ -57,7 +57,7 @@ class AppModelTests {
         let navTopic1 = NavigationTopic(from: topic1)
         let topic2 = topic()
         let navTopic2 = NavigationTopic(from: topic2)
-        let (sut, _, navigator) = makeSUT()
+        let (sut, _, navigator) = makeSUT(withResult: .success([topic1, topic2]))
 
         sut.navigate(to: topic1)
         #expect(navigator.path == [navTopic1])
@@ -72,6 +72,29 @@ class AppModelTests {
         #expect(navigator.path == [])
 
         sut.navigate(to: topic2)
+        #expect(navigator.path == [navTopic2])
+    }
+
+    @Test func navigateToTopicWithID() {
+        let topic1 = topic()
+        let navTopic1 = NavigationTopic(from: topic1)
+        let topic2 = topic()
+        let navTopic2 = NavigationTopic(from: topic2)
+        let (sut, _, navigator) = makeSUT(withResult: .success([topic1, topic2]))
+
+        sut.navigate(toTopicWithID: topic1.id)
+        #expect(navigator.path == [navTopic1])
+
+        sut.navigate(toTopicWithID: topic2.id)
+        #expect(navigator.path == [navTopic1, navTopic2])
+
+        sut.navigateBack()
+        #expect(navigator.path == [navTopic1])
+
+        sut.navigateBack()
+        #expect(navigator.path == [])
+
+        sut.navigate(toTopicWithID: topic2.id)
         #expect(navigator.path == [navTopic2])
     }
 

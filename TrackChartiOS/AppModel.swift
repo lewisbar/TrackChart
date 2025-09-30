@@ -23,6 +23,10 @@ public class AppModel {
         loadTopics()
     }
 
+    public func navigate(toTopicWithID id: UUID) {
+        store.topic(for: id).map(navigate)
+    }
+
     public func navigate(to topic: Topic) {
         navigator.showDetail(for: NavigationTopic(from: topic))
     }
