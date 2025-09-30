@@ -19,14 +19,23 @@ class AppModel {
     var topicCellModels = [TopicCellModel]() {
         didSet { updateStoreWithDeletedAndReorderedCellModels() }
     }
+
     init(store: TopicStore, navigator: Navigator) {
         self.store = store
         self.navigator = navigator
         loadTopics()
     }
+
     func navigate(to topic: Topic) {
         navigator.showDetail(for: NavigationTopic(from: topic))
     }
+
+    func navigateToNewTopic() {
+        let newTopic = Topic(id: UUID(), name: "", entries: [])
+        do { try store.add(newTopic) } catch { handle(error) }
+        navigator.showDetail(for: NavigationTopic(from: newTopic))
+    }
+
     func navigateBack() {
         navigator.goBack()
     }
@@ -127,6 +136,17 @@ class AppModelTests {
         #expect(navigator.path == [navTopic2])
     }
 
+    @Test func navigateToNewTopic_createsAndNavigates() {
+        let (sut, store, navigator) = makeSUT()
+        #expect(navigator.path.count == 0)
+        #expect(store.topics.count == 0)
+
+        sut.navigateToNewTopic()
+
+        #expect(navigator.path.count == 1)
+        #expect(store.topics.count == 1)
+    }
+
     // MARK: - Helpers
 
     private func makeSUT(withResult storeResult: Result<[Topic], Error> = .success([])) -> (sut: AppModel, store: TopicStoreSpy, navigator: Navigator) {
@@ -195,6 +215,7 @@ private class TopicStoreSpy: TopicStore {
     func add(_ topic: Topic) throws {
         addCalls.append(topic)
         try throwErrorIfSetupThisWay()
+        topics.append(topic)
     }
     
     func update(_ topic: Topic) throws {
