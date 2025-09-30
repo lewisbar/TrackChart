@@ -43,17 +43,17 @@ public class AppModel {
 
     public func rename(_ topic: Topic, to newName: String) {
         do { try store.rename(topic, to: newName) } catch { handle(error) }
-        topicCellModels = store.topics.map(TopicCellModel.init)
+        updateCellModelsFromStore()
     }
 
     public func submit(_ value: Int, to topic: Topic) {
         do { try store.submit(value, to: topic) } catch { handle(error)}
-        topicCellModels = store.topics.map(TopicCellModel.init)
+        updateCellModelsFromStore()
     }
 
     public func removeLastValue(from topic: Topic) {
         do { try store.removeLastValue(from: topic) } catch { handle(error)}
-        topicCellModels = store.topics.map(TopicCellModel.init)
+        updateCellModelsFromStore()
     }
 
     private func updateStoreWithDeletedAndReorderedCellModels() {
@@ -71,11 +71,15 @@ public class AppModel {
 
     private func loadTopics() {
         do { try store.load() } catch { handle(error) }
-        topicCellModels = store.topics.map(TopicCellModel.init)
+        updateCellModelsFromStore()
     }
 
     private func handle(_ error: Error) {
         alertMessage = ("Error", error.localizedDescription)
         isAlertViewPresented = true
+    }
+
+    private func updateCellModelsFromStore() {
+        topicCellModels = store.topics.map(TopicCellModel.init)
     }
 }
