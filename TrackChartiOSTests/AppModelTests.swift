@@ -146,6 +146,24 @@ class AppModelTests {
         #expect(store.topics.count == 1)
     }
 
+    @Test func isObservable() async throws {
+        let originalTopic = topic(name: "old name")
+        let (sut, _, _) = makeSUT(withResult: .success([originalTopic]))
+        let tracker = ObservationTracker()
+
+        withObservationTracking {
+            _ = sut.topicCellModels
+        } onChange: {
+            Task { await tracker.setTriggered() }
+        }
+
+        sut.rename(originalTopic, to: "new name")
+
+        try await Task.sleep(for: .milliseconds(10))
+        let triggered = await tracker.getTriggered()
+        #expect(triggered, "Expected observation to be triggered after changing value")
+    }
+
     // MARK: - Helpers
 
     private func makeSUT(withResult persistenceResult: Result<[Topic], Error> = .success([])) -> (sut: AppModel, store: TopicStore, navigator: Navigator) {
@@ -198,4 +216,10 @@ private class TopicPersistenceServiceStub: TopicPersistenceService {
     func update(_ topic: Topic) throws {}
     func delete(_ topic: Topic) throws {}
     func reorder(to newOrder: [Topic]) throws {}
+}
+
+private actor ObservationTracker {
+    var triggered = false
+    func setTriggered() { triggered = true }
+    func getTriggered() -> Bool { triggered }
 }
