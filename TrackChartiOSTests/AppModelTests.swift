@@ -14,7 +14,7 @@ import Persistence
 class AppModel {
     private let store: TopicStore
     let navigator: Navigator
-    var alertMessage = (title: "Error", message: "Please try again later. If the error persists, don't hesitate to contact support.")
+    var alertMessage = (title: "Error", message: "An error occurred.")
     var isAlertViewPresented = false
     var topicCellModels = [TopicCellModel]() {
         didSet { updateStoreWithDeletedAndReorderedCellModels() }
