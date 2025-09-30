@@ -2,7 +2,7 @@
 //  AppModelTests.swift
 //  TrackChartiOSTests
 //
-//  Created by LennartWisbar on 23.09.25.
+//  Created by Lennart Wisbar on 23.09.25.
 //
 
 import Testing
@@ -72,9 +72,8 @@ class AppModel {
 class AppModelTests {
     @Test func init_loadsTopicsAndMapsThemToCellModels() {
         let topic = topic()
-        let (sut, store, _) = makeSUT(withResult: .success([topic]))
+        let (sut, _, _) = makeSUT(withResult: .success([topic]))
 
-        #expect(store.loadCalls == 1)
         #expect(sut.topicCellModels == [TopicCellModel(from: topic)])
     }
 
@@ -149,14 +148,16 @@ class AppModelTests {
 
     // MARK: - Helpers
 
-    private func makeSUT(withResult storeResult: Result<[Topic], Error> = .success([])) -> (sut: AppModel, store: TopicStoreSpy, navigator: Navigator) {
-        let store = TopicStoreSpy(with: storeResult)
+    private func makeSUT(withResult persistenceResult: Result<[Topic], Error> = .success([])) -> (sut: AppModel, store: TopicStore, navigator: Navigator) {
+        let persistenceService = TopicPersistenceServiceStub(loadResult: persistenceResult)
+        let store = PersistentTopicStore(persistenceService: persistenceService)
         let navigator = Navigator()
         let sut = AppModel(store: store, navigator: navigator)
 
         weakSUT = sut
         weakStore = store
         weakNavigator = navigator
+        weakPersistenceService = persistenceService
 
         return (sut, store, navigator)
     }
@@ -165,11 +166,13 @@ class AppModelTests {
         #expect(weakSUT == nil, "Instance should have been deallocated. Potential memory leak.")
         #expect(weakStore == nil, "Instance should have been deallocated. Potential memory leak.")
         #expect(weakNavigator == nil, "Instance should have been deallocated. Potential memory leak.")
+        #expect(weakPersistenceService == nil, "Instance should have been deallocated. Potential memory leak.")
     }
 
     private weak var weakSUT: AppModel?
-    private weak var weakStore: TopicStoreSpy?
+    private weak var weakStore: PersistentTopicStore?
     private weak var weakNavigator: Navigator?
+    private weak var weakPersistenceService: TopicPersistenceServiceStub?
 
     private func topic(id: UUID = UUID(), name: String = "a topic", entries: [Int] = [.random(in: -2...10)]) -> Topic {
         Topic(id: id, name: name, entries: entries)
@@ -180,82 +183,19 @@ class AppModelTests {
     }
 }
 
-private class TopicStoreSpy: TopicStore {
-    private(set) var topics = [Topic]()
-    private(set) var topicsToLoad = [Topic]()
-    private(set) var error: Error?
-    private(set) var topicForIDCalls = [UUID]()
-    private(set) var loadCalls = 0
-    private(set) var addCalls = [Topic]()
-    private(set) var updateCalls = [Topic]()
-    private(set) var reorderCalls = [[Topic]]()
-    private(set) var removeCalls = [Topic]()
-    private(set) var submitCalls = [(value: Int, topic: Topic)]()
-    private(set) var removeLastValueCalls = [Topic]()
-    private(set) var changeNameCalls = [(topic: Topic, newName: String)]()
+private class TopicPersistenceServiceStub: TopicPersistenceService {
+    private let loadResult: Result<[Topic], Error>
 
-    init(with result: Result<[Topic], Error>) {
-        switch result {
-        case let .success(topics): self.topicsToLoad = topics
-        case let .failure(error): self.error = error
-        }
+    init(loadResult: Result<[Topic], Error> = .success([])) {
+        self.loadResult = loadResult
     }
 
-    func topic(for id: UUID) -> Topic? {
-        topicForIDCalls.append(id)
-        return topics.first(where: { $0.id == id })
+    func load() throws -> [Topic] {
+        try loadResult.get()
     }
 
-    func load() throws {
-        loadCalls += 1
-        try throwErrorIfSetupThisWay()
-        topics = topicsToLoad
-    }
-    
-    func add(_ topic: Topic) throws {
-        addCalls.append(topic)
-        try throwErrorIfSetupThisWay()
-        topics.append(topic)
-    }
-    
-    func update(_ topic: Topic) throws {
-        updateCalls.append(topic)
-        try throwErrorIfSetupThisWay()
-    }
-    
-    func reorder(to newOrder: [Topic]) throws {
-        reorderCalls.append(newOrder)
-        try throwErrorIfSetupThisWay()
-        topics = newOrder
-    }
-    
-    func remove(_ topic: Topic) throws {
-        removeCalls.append(topic)
-        try throwErrorIfSetupThisWay()
-        topics.removeAll(where: { $0.id == topic.id })
-    }
-    
-    func submit(_ newValue: Int, to topic: Topic) throws {
-        submitCalls.append((newValue, topic))
-        try throwErrorIfSetupThisWay()
-    }
-    
-    func removeLastValue(from topic: Topic) throws {
-        removeCalls.append(topic)
-        try throwErrorIfSetupThisWay()
-    }
-    
-    func rename(_ topic: Topic, to newName: String) throws {
-        changeNameCalls.append((topic, newName))
-
-        try throwErrorIfSetupThisWay()
-
-        if let index = topics.firstIndex(of: topic) {
-            topics[index] = Topic(id: topic.id, name: newName, entries: topic.entries)
-        }
-    }
-
-    private func throwErrorIfSetupThisWay() throws {
-        if let error { throw error }
-    }
+    func create(_ topic: Topic) throws {}
+    func update(_ topic: Topic) throws {}
+    func delete(_ topic: Topic) throws {}
+    func reorder(to newOrder: [Topic]) throws {}
 }
