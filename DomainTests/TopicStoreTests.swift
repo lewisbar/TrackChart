@@ -157,7 +157,7 @@ class TopicStoreTests {
         let (sut, persistenceService) = makeSUT(with: topics)
         try sut.load()
 
-        try sut.changeName(of: selectedTopic, to: newName)
+        try sut.rename(selectedTopic, to: newName)
 
         let updatedTopic = sut.topic(for: selectedTopic.id)
         #expect(updatedTopic?.name == newName)

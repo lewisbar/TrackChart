@@ -150,7 +150,7 @@ class AppModelTests {
 
     private func makeSUT(withResult persistenceResult: Result<[Topic], Error> = .success([])) -> (sut: AppModel, store: TopicStore, navigator: Navigator) {
         let persistenceService = TopicPersistenceServiceStub(loadResult: persistenceResult)
-        let store = PersistentTopicStore(persistenceService: persistenceService)
+        let store = TopicStore(persistenceService: persistenceService)
         let navigator = Navigator()
         let sut = AppModel(store: store, navigator: navigator)
 
@@ -170,7 +170,7 @@ class AppModelTests {
     }
 
     private weak var weakSUT: AppModel?
-    private weak var weakStore: PersistentTopicStore?
+    private weak var weakStore: TopicStore?
     private weak var weakNavigator: Navigator?
     private weak var weakPersistenceService: TopicPersistenceServiceStub?
 
