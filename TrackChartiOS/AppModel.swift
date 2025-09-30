@@ -10,7 +10,7 @@ import Domain
 @Observable
 public class AppModel {
     private let store: TopicStore
-    public let navigator: Navigator
+    public var navigator: Navigator
     public var alertMessage = (title: "Error", message: "An error occurred.")
     public var isAlertViewPresented = false
     public var topicCellModels = [TopicCellModel]() {
