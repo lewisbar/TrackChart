@@ -8,66 +8,6 @@
 import Testing
 import TrackChartiOS
 import Domain
-import Persistence
-
-@Observable
-class AppModel {
-    private let store: TopicStore
-    let navigator: Navigator
-    var alertMessage = (title: "Error", message: "An error occurred.")
-    var isAlertViewPresented = false
-    var topicCellModels = [TopicCellModel]() {
-        didSet { updateStoreWithDeletedAndReorderedCellModels() }
-    }
-
-    init(store: TopicStore, navigator: Navigator) {
-        self.store = store
-        self.navigator = navigator
-        loadTopics()
-    }
-
-    func navigate(to topic: Topic) {
-        navigator.showDetail(for: NavigationTopic(from: topic))
-    }
-
-    func navigateToNewTopic() {
-        let newTopic = Topic(id: UUID(), name: "", entries: [])
-        do { try store.add(newTopic) } catch { handle(error) }
-        navigator.showDetail(for: NavigationTopic(from: newTopic))
-    }
-
-    func navigateBack() {
-        navigator.goBack()
-    }
-
-    func rename(_ topic: Topic, to newName: String) {
-        do { try store.rename(topic, to: newName) } catch { handle(error) }
-        topicCellModels = store.topics.map(TopicCellModel.init)
-    }
-
-    private func updateStoreWithDeletedAndReorderedCellModels() {
-        let updatedIDs = topicCellModels.map(\.id)
-
-        store.topics.forEach { topic in
-            if !updatedIDs.contains(topic.id) {
-                do { try store.remove(topic) } catch { handle(error) }
-            }
-        }
-
-        let reorderedTopics = updatedIDs.compactMap { store.topic(for: $0) }
-        do { try store.reorder(to: reorderedTopics) } catch { handle(error) }
-    }
-
-    private func loadTopics() {
-        do { try store.load() } catch { handle(error) }
-        topicCellModels = store.topics.map(TopicCellModel.init)
-    }
-
-    private func handle(_ error: Error) {
-        alertMessage = ("Error", error.localizedDescription)
-        isAlertViewPresented = true
-    }
-}
 
 class AppModelTests {
     @Test func init_loadsTopicsAndMapsThemToCellModels() {
