@@ -46,6 +46,11 @@ public class AppModel {
         topicCellModels = store.topics.map(TopicCellModel.init)
     }
 
+    public func submit(_ value: Int, to topic: Topic) {
+        do { try store.submit(value, to: topic) } catch { handle(error)}
+        topicCellModels = store.topics.map(TopicCellModel.init)
+    }
+
     private func updateStoreWithDeletedAndReorderedCellModels() {
         let updatedIDs = topicCellModels.map(\.id)
 

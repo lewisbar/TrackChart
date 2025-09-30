@@ -52,6 +52,18 @@ class AppModelTests {
         #expect(store.topics == [expectedTopic])
     }
 
+    @Test func submitValueToTopic_updatesStoreAndCellModels() {
+        let originalTopic = topic(entries: [-1, 0])
+        let newValue = 1
+        let (sut, store, _) = makeSUT(withResult: .success([originalTopic]))
+
+        sut.submit(newValue, to: originalTopic)
+
+        let expectedTopic = topic(id: originalTopic.id, name: originalTopic.name, entries: originalTopic.entries + [newValue])
+        #expect(sut.topicCellModels == [TopicCellModel(from: expectedTopic)])
+        #expect(store.topics == [expectedTopic])
+    }
+
     @Test func navigateToTopicBackAndForth() {
         let topic1 = topic()
         let navTopic1 = NavigationTopic(from: topic1)
