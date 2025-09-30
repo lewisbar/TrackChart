@@ -36,31 +36,6 @@ class NavigatorTests {
         #expect(sut.path == [topic1, topic2])
     }
 
-    @Test func showNewDetail_createsAndSavesNewTopic_andAddsDetailToStack() {
-        var savedTopics = [Topic]()
-        let sut = Navigator(saveTopic: { savedTopics.append($0) })
-
-        sut.showNewDetail()
-
-        #expect(savedTopics.count == 1)
-        #expect(savedTopics.first?.name == "")
-        #expect(savedTopics.first?.entries == [])
-        #expect(sut.path.count == 1)
-    }
-
-    @Test func showNewDetail_whenAlreadyOnDetail_createsAndSavesNewTopic_andAddsDetailToStack() {
-        var savedTopics = [Topic]()
-        let sut = Navigator(saveTopic: { savedTopics.append($0) })
-        sut.showDetail(for: NavigationTopic(id: UUID(), name: "a topic", entries: [1, 3, 5]))
-
-        sut.showNewDetail()
-
-        #expect(savedTopics.count == 1)
-        #expect(savedTopics.first?.name == "")
-        #expect(savedTopics.first?.entries == [])
-        #expect(sut.path.count == 2)
-    }
-
     @Test func goBack_removesDetailRepeatedly() {
         let sut = makeSUT()
         let topic1 = NavigationTopic(id: UUID(), name: "a topic", entries: [1, 3, 5])
@@ -80,6 +55,7 @@ class NavigatorTests {
     @Test func isObservable() async throws {
         let sut = makeSUT()
         let tracker = ObservationTracker()
+        let topic = NavigationTopic(id: UUID(), name: "a topic", entries: [2, -2, 1])
 
         withObservationTracking {
             _ = sut.path
@@ -87,7 +63,7 @@ class NavigatorTests {
             Task { await tracker.setTriggered() }
         }
 
-        sut.showNewDetail()
+        sut.showDetail(for: topic)
 
         try await Task.sleep(for: .milliseconds(10))
         let triggered = await tracker.getTriggered()
@@ -97,8 +73,8 @@ class NavigatorTests {
 
     // MARK: - Helpers
 
-    private func makeSUT(saveTopic: @escaping (Topic) -> Void = { _ in }) -> Navigator {
-        let sut = Navigator(saveTopic: saveTopic)
+    private func makeSUT() -> Navigator {
+        let sut = Navigator()
         weakSUT = sut
         return sut
     }

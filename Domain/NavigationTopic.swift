@@ -23,4 +23,8 @@ public struct NavigationTopic: Hashable, Codable {
         self.name = topic.name
         self.entries = topic.entries
     }
+
+    public var topic: Topic {
+        Topic(id: id, name: name, entries: entries)
+    }
 }

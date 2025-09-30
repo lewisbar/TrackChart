@@ -10,20 +10,11 @@ import Foundation
 @Observable
 public class Navigator {
     public var path = [NavigationTopic]()
-    private let saveTopic: (Topic) -> Void
 
-    public init(saveTopic: @escaping (Topic) -> Void) {
-        self.saveTopic = saveTopic
-    }
+    public init() {}
 
     public func showDetail(for topic: NavigationTopic) {
         path.append(topic)
-    }
-
-    public func showNewDetail() {
-        let newTopic = Topic(id: UUID(), name: "", entries: [])
-        saveTopic(newTopic)
-        path.append(NavigationTopic(from: newTopic))
     }
 
     public func goBack() {
