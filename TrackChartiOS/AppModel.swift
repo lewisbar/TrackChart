@@ -51,6 +51,11 @@ public class AppModel {
         topicCellModels = store.topics.map(TopicCellModel.init)
     }
 
+    public func removeLastValue(from topic: Topic) {
+        do { try store.removeLastValue(from: topic) } catch { handle(error)}
+        topicCellModels = store.topics.map(TopicCellModel.init)
+    }
+
     private func updateStoreWithDeletedAndReorderedCellModels() {
         let updatedIDs = topicCellModels.map(\.id)
 

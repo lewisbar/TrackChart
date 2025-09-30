@@ -64,6 +64,17 @@ class AppModelTests {
         #expect(store.topics == [expectedTopic])
     }
 
+    @Test func removeLastValueFromTopic_updatesStoreAndCellModels() {
+        let originalTopic = topic(entries: [-1, 0, 1])
+        let (sut, store, _) = makeSUT(withResult: .success([originalTopic]))
+
+        sut.removeLastValue(from: originalTopic)
+
+        let expectedTopic = topic(id: originalTopic.id, name: originalTopic.name, entries: originalTopic.entries.dropLast())
+        #expect(sut.topicCellModels == [TopicCellModel(from: expectedTopic)])
+        #expect(store.topics == [expectedTopic])
+    }
+
     @Test func navigateToTopicBackAndForth() {
         let topic1 = topic()
         let navTopic1 = NavigationTopic(from: topic1)
