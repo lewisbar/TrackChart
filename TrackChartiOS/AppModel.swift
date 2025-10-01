@@ -16,6 +16,12 @@ public class AppModel {
     public var topicCellModels = [TopicCellModel]() {
         didSet { updateStoreWithDeletedAndReorderedCellModels() }
     }
+    public var currentTopic: Topic? {
+        didSet { currentTopicName = currentTopic?.name ?? "" }
+    }
+    public var currentTopicName: String = "" {
+        didSet { currentTopic.map { rename($0, to: currentTopicName) } }
+    }
 
     public init(store: TopicStore, navigator: Navigator) {
         self.store = store
@@ -29,16 +35,19 @@ public class AppModel {
 
     public func navigate(to topic: Topic) {
         navigator.showDetail(for: NavigationTopic(from: topic))
+        currentTopic = topic
     }
 
     public func navigateToNewTopic() {
         let newTopic = Topic(id: UUID(), name: "", entries: [])
         do { try store.add(newTopic) } catch { handle(error) }
         navigator.showDetail(for: NavigationTopic(from: newTopic))
+        currentTopic = newTopic
     }
 
     public func navigateBack() {
         navigator.goBack()
+        currentTopic = navigator.path.last?.topic
     }
 
     public func rename(_ topic: Topic, to newName: String) {

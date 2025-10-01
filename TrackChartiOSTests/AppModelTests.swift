@@ -84,18 +84,28 @@ class AppModelTests {
 
         sut.navigate(to: topic1)
         #expect(navigator.path == [navTopic1])
+        #expect(sut.currentTopic == topic1)
+        #expect(sut.currentTopicName == topic1.name)
 
         sut.navigate(to: topic2)
         #expect(navigator.path == [navTopic1, navTopic2])
+        #expect(sut.currentTopic == topic2)
+        #expect(sut.currentTopicName == topic2.name)
 
         sut.navigateBack()
         #expect(navigator.path == [navTopic1])
+        #expect(sut.currentTopic == topic1)
+        #expect(sut.currentTopicName == topic1.name)
 
         sut.navigateBack()
         #expect(navigator.path == [])
+        #expect(sut.currentTopic == nil)
+        #expect(sut.currentTopicName == "")
 
         sut.navigate(to: topic2)
         #expect(navigator.path == [navTopic2])
+        #expect(sut.currentTopic == topic2)
+        #expect(sut.currentTopicName == topic2.name)
     }
 
     @Test func navigateToTopicWithID() {
@@ -107,18 +117,28 @@ class AppModelTests {
 
         sut.navigate(toTopicWithID: topic1.id)
         #expect(navigator.path == [navTopic1])
+        #expect(sut.currentTopic == topic1)
+        #expect(sut.currentTopicName == topic1.name)
 
         sut.navigate(toTopicWithID: topic2.id)
         #expect(navigator.path == [navTopic1, navTopic2])
+        #expect(sut.currentTopic == topic2)
+        #expect(sut.currentTopicName == topic2.name)
 
         sut.navigateBack()
         #expect(navigator.path == [navTopic1])
+        #expect(sut.currentTopic == topic1)
+        #expect(sut.currentTopicName == topic1.name)
 
         sut.navigateBack()
         #expect(navigator.path == [])
+        #expect(sut.currentTopic == nil)
+        #expect(sut.currentTopicName == "")
 
         sut.navigate(toTopicWithID: topic2.id)
         #expect(navigator.path == [navTopic2])
+        #expect(sut.currentTopic == topic2)
+        #expect(sut.currentTopicName == topic2.name)
     }
 
     @Test func navigateToNewTopic_createsAndNavigates() {
@@ -130,6 +150,8 @@ class AppModelTests {
 
         #expect(navigator.path.count == 1)
         #expect(store.topics.count == 1)
+        #expect(sut.currentTopic != nil)
+        #expect(sut.currentTopicName == "")
     }
 
     @Test func isObservable() async throws {
