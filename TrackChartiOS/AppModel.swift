@@ -13,6 +13,9 @@ public class AppModel {
     public var navigator: Navigator
     public var alertMessage = (title: "Error", message: "An error occurred.")
     public var isAlertViewPresented = false
+    public var topicCellModels: [TopicCellModel] {
+        store.topics.map(TopicCellModel.init)
+    }
 
     public init(store: TopicStore, navigator: Navigator) {
         self.store = store
@@ -33,6 +36,17 @@ public class AppModel {
 
     public func removeLastValue(from topic: Topic) {
         do { try store.removeLastValue(from: topic) } catch { handle(error)}
+    }
+
+    public func updateWithDeletedAndReorderedTopics(_ ids: [UUID]) {
+        store.topics.forEach { topic in
+            if !ids.contains(topic.id) {
+                do { try store.remove(topic) } catch { handle(error) }
+            }
+        }
+
+        let reorderedTopics = ids.compactMap { store.topic(for: $0) }
+        do { try store.reorder(to: reorderedTopics) } catch { handle(error) }
     }
 
     public func navigate(toTopicWithID id: UUID) {

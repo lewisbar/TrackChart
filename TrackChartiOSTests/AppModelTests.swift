@@ -68,6 +68,22 @@ class AppModelTests {
         #expect(store.topics == [expectedTopic])
     }
 
+    @Test func updateStoreAfterDeletionAndReordering() {
+        let topic1 = topic(name: "topic1")
+        let topic2 = topic(name: "topic2")
+        let topic3 = topic(name: "topic3")
+        let topic4 = topic(name: "topic4")
+        let originalTopicList = [topic1, topic2, topic3, topic4]
+        let (sut, store, _) = makeSUT(withResult: .success(originalTopicList))
+
+        sut.loadTopics()
+
+        let modifiedTopicList = [topic3, topic4, topic1]
+        sut.updateWithDeletedAndReorderedTopics(modifiedTopicList.map(\.id))
+
+        #expect(store.topics == modifiedTopicList)
+    }
+
     @Test func navigateToTopicBackAndForth() {
         let topic1 = topic()
         let navTopic1 = NavigationTopic(from: topic1)
