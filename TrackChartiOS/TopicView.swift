@@ -36,7 +36,7 @@ struct TopicView<CounterView: View, ChartView: View>: View {
     private func chevronOnlyBackButton() -> some View {
         Button(action: { dismiss() }) {
             Image(systemName: "chevron.left")
-                .foregroundColor(.white)
+                .foregroundColor(.primary)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
