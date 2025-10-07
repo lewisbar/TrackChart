@@ -10,65 +10,23 @@ import TrackChartiOS
 import Domain
 
 class AppModelTests {
-    @Test func init_doesNotLoad() {
+    @Test func init_loadsTopicsAndMapsThemToCellModels() {
         let topic = topic()
-        let (_, store, _) = makeSUT(withResult: .success([topic]))
+        let (sut, _, _) = makeSUT(withResult: .success([topic]))
 
-        #expect(store.topics.isEmpty)
-    }
-
-    @Test func loadTopics() {
-        let topic = topic()
-        let (sut, store, _) = makeSUT(withResult: .success([topic]))
-
-        sut.loadTopics()
-
-        #expect(store.topics == [topic])
+        #expect(sut.topicCellModels == [TopicCellModel(from: topic)])
     }
 
     @Test func loadingError_showsErrorMessage() {
         let error = anyNSError()
         let (sut, _, _) = makeSUT(withResult: .failure(error))
 
-        sut.loadTopics()
-
         #expect(sut.alertMessage == ("Error", error.localizedDescription))
         #expect(sut.isAlertViewPresented)
+        #expect(sut.topicCellModels == [])
     }
 
-    @Test func renameTopic_updatesStore() {
-        let topic = topic(name: "old name")
-        let newName = "new name"
-        let (sut, store, _) = makeSUT(withResult: .success([topic]))
-
-        sut.rename(topic, to: newName)
-
-        let expectedTopic = Topic(id: topic.id, name: newName, entries: topic.entries)
-        #expect(store.topics == [expectedTopic])
-    }
-
-    @Test func submitValueToTopic_updatesStore() {
-        let originalTopic = topic(entries: [-1, 0])
-        let newValue = 1
-        let (sut, store, _) = makeSUT(withResult: .success([originalTopic]))
-
-        sut.submit(newValue, to: originalTopic)
-
-        let expectedTopic = topic(id: originalTopic.id, name: originalTopic.name, entries: originalTopic.entries + [newValue])
-        #expect(store.topics == [expectedTopic])
-    }
-
-    @Test func removeLastValueFromTopic_updatesStore() {
-        let originalTopic = topic(entries: [-1, 0, 1])
-        let (sut, store, _) = makeSUT(withResult: .success([originalTopic]))
-
-        sut.removeLastValue(from: originalTopic)
-
-        let expectedTopic = topic(id: originalTopic.id, name: originalTopic.name, entries: originalTopic.entries.dropLast())
-        #expect(store.topics == [expectedTopic])
-    }
-
-    @Test func updateStoreAfterDeletionAndReordering() {
+    @Test func updateStoreAutomaticallyAfterDeletionAndReordering() {
         let topic1 = topic(name: "topic1")
         let topic2 = topic(name: "topic2")
         let topic3 = topic(name: "topic3")
@@ -76,12 +34,45 @@ class AppModelTests {
         let originalTopicList = [topic1, topic2, topic3, topic4]
         let (sut, store, _) = makeSUT(withResult: .success(originalTopicList))
 
-        sut.loadTopics()
-
         let modifiedTopicList = [topic3, topic4, topic1]
-        sut.updateWithDeletedAndReorderedTopics(modifiedTopicList.map(\.id))
+        sut.topicCellModels = modifiedTopicList.map(TopicCellModel.init)
 
         #expect(store.topics == modifiedTopicList)
+    }
+
+    @Test func renameTopic_alsoUpdatesStore() {
+        let topic = topic(name: "old name")
+        let newName = "new name"
+        let (sut, store, _) = makeSUT(withResult: .success([topic]))
+
+        sut.rename(topic, to: newName)
+
+        let expectedTopic = Topic(id: topic.id, name: newName, entries: topic.entries)
+        #expect(sut.topicCellModels == [TopicCellModel(from: expectedTopic)])
+        #expect(store.topics == [expectedTopic])
+    }
+
+    @Test func submitValueToTopic_updatesStoreAndCellModels() {
+        let originalTopic = topic(entries: [-1, 0])
+        let newValue = 1
+        let (sut, store, _) = makeSUT(withResult: .success([originalTopic]))
+
+        sut.submit(newValue, to: originalTopic)
+
+        let expectedTopic = topic(id: originalTopic.id, name: originalTopic.name, entries: originalTopic.entries + [newValue])
+        #expect(sut.topicCellModels == [TopicCellModel(from: expectedTopic)])
+        #expect(store.topics == [expectedTopic])
+    }
+
+    @Test func removeLastValueFromTopic_updatesStoreAndCellModels() {
+        let originalTopic = topic(entries: [-1, 0, 1])
+        let (sut, store, _) = makeSUT(withResult: .success([originalTopic]))
+
+        sut.removeLastValue(from: originalTopic)
+
+        let expectedTopic = topic(id: originalTopic.id, name: originalTopic.name, entries: originalTopic.entries.dropLast())
+        #expect(sut.topicCellModels == [TopicCellModel(from: expectedTopic)])
+        #expect(store.topics == [expectedTopic])
     }
 
     @Test func navigateToTopicBackAndForth() {
@@ -93,18 +84,28 @@ class AppModelTests {
 
         sut.navigate(to: topic1)
         #expect(navigator.path == [navTopic1])
+        #expect(sut.currentTopic == topic1)
+        #expect(sut.currentTopicName == topic1.name)
 
         sut.navigate(to: topic2)
         #expect(navigator.path == [navTopic1, navTopic2])
+        #expect(sut.currentTopic == topic2)
+        #expect(sut.currentTopicName == topic2.name)
 
         sut.navigateBack()
         #expect(navigator.path == [navTopic1])
+        #expect(sut.currentTopic == topic1)
+        #expect(sut.currentTopicName == topic1.name)
 
         sut.navigateBack()
         #expect(navigator.path == [])
+        #expect(sut.currentTopic == nil)
+        #expect(sut.currentTopicName == "")
 
         sut.navigate(to: topic2)
         #expect(navigator.path == [navTopic2])
+        #expect(sut.currentTopic == topic2)
+        #expect(sut.currentTopicName == topic2.name)
     }
 
     @Test func navigateToTopicWithID() {
@@ -114,22 +115,30 @@ class AppModelTests {
         let navTopic2 = NavigationTopic(from: topic2)
         let (sut, _, navigator) = makeSUT(withResult: .success([topic1, topic2]))
 
-        sut.loadTopics()
-
         sut.navigate(toTopicWithID: topic1.id)
         #expect(navigator.path == [navTopic1])
+        #expect(sut.currentTopic == topic1)
+        #expect(sut.currentTopicName == topic1.name)
 
         sut.navigate(toTopicWithID: topic2.id)
         #expect(navigator.path == [navTopic1, navTopic2])
+        #expect(sut.currentTopic == topic2)
+        #expect(sut.currentTopicName == topic2.name)
 
         sut.navigateBack()
         #expect(navigator.path == [navTopic1])
+        #expect(sut.currentTopic == topic1)
+        #expect(sut.currentTopicName == topic1.name)
 
         sut.navigateBack()
         #expect(navigator.path == [])
+        #expect(sut.currentTopic == nil)
+        #expect(sut.currentTopicName == "")
 
         sut.navigate(toTopicWithID: topic2.id)
         #expect(navigator.path == [navTopic2])
+        #expect(sut.currentTopic == topic2)
+        #expect(sut.currentTopicName == topic2.name)
     }
 
     @Test func navigateToNewTopic_createsAndNavigates() {
@@ -141,19 +150,22 @@ class AppModelTests {
 
         #expect(navigator.path.count == 1)
         #expect(store.topics.count == 1)
+        #expect(sut.currentTopic != nil)
+        #expect(sut.currentTopicName == "")
     }
 
     @Test func isObservable() async throws {
-        let (sut, _, _) = makeSUT()
+        let originalTopic = topic(name: "old name")
+        let (sut, _, _) = makeSUT(withResult: .success([originalTopic]))
         let tracker = ObservationTracker()
 
         withObservationTracking {
-            _ = sut.isAlertViewPresented
+            _ = sut.topicCellModels
         } onChange: {
             Task { await tracker.setTriggered() }
         }
 
-        sut.isAlertViewPresented = true
+        sut.rename(originalTopic, to: "new name")
 
         try await Task.sleep(for: .milliseconds(10))
         let triggered = await tracker.getTriggered()
