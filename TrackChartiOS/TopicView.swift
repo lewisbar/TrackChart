@@ -28,7 +28,6 @@ struct TopicView<CounterView: View, ChartView: View>: View {
             chartView()
             counterView()
         }
-        .onAppear { isTextFieldFocused = title.isEmpty }
         .navigationBarBackButtonHidden(true)
         .toolbar { ToolbarItem(placement: .topBarLeading, content: chevronOnlyBackButton) }
     }
