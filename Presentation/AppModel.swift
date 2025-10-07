@@ -1,6 +1,5 @@
 //
 //  AppModel.swift
-//  TrackChartiOS
 //
 //  Created by Lennart Wisbar on 30.09.25.
 //

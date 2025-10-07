@@ -1,12 +1,11 @@
 //
 //  AppModelTests.swift
-//  TrackChartiOSTests
 //
 //  Created by Lennart Wisbar on 23.09.25.
 //
 
 import Testing
-import TrackChartiOS
+import Presentation
 import Domain
 
 class AppModelTests {

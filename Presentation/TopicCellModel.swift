@@ -1,6 +1,5 @@
 //
 //  TopicCellModel.swift
-//  TrackChart
 //
 //  Created by Lennart Wisbar on 18.09.25.
 //
