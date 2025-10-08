@@ -49,6 +49,10 @@ public class AppModel {
         currentTopic = navigator.path.last?.topic
     }
 
+    public func topic(for id: UUID) -> Topic? {
+        store.topic(for: id)
+    }
+
     public func rename(_ topic: Topic, to newName: String) {
         do { try store.rename(topic, to: newName) } catch { handle(error) }
         updateCellModelsFromStore()

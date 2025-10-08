@@ -25,6 +25,24 @@ class AppModelTests {
         #expect(sut.topicCellModels == [])
     }
 
+    @Test func topicForID() {
+        let topic = topic(name: "a topic")
+        let (sut, _, _) = makeSUT(withResult: .success([topic]))
+
+        let receivedTopic = sut.topic(for: topic.id)
+
+        #expect(receivedTopic == topic)
+    }
+
+    @Test func topicForNonExistentID_returnsNil() {
+        let topic = topic(name: "a topic")
+        let (sut, _, _) = makeSUT(withResult: .success([topic]))
+
+        let receivedTopic = sut.topic(for: UUID())
+
+        #expect(receivedTopic == nil)
+    }
+
     @Test func updateStoreAutomaticallyAfterDeletionAndReordering() {
         let topic1 = topic(name: "topic1")
         let topic2 = topic(name: "topic2")
