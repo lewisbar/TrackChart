@@ -24,7 +24,9 @@ public class AppModel {
     public var currentTopicName: String = "" {
         didSet { currentTopic.map { rename($0, to: currentTopicName) } }
     }
-    public var currentEntries: [Int] = []
+    public var currentEntries: [Int] = [] {
+        didSet { currentTopic.map { updateEntries(for: $0, to: currentEntries) } }
+    }
 
     public init(store: TopicStore, navigator: Navigator) {
         self.store = store
@@ -61,11 +63,6 @@ public class AppModel {
         store.topic(for: id)
     }
 
-    public func rename(_ topic: Topic, to newName: String) {
-        do { try store.rename(topic, to: newName) } catch { handle(error) }
-        updateCellModelsFromStore()
-    }
-
     public func submit(_ value: Int, to topic: Topic) {
         do { try store.submit(value, to: topic) } catch { handle(error)}
         updateCellModelsFromStore()
@@ -73,6 +70,17 @@ public class AppModel {
 
     public func removeLastValue(from topic: Topic) {
         do { try store.removeLastValue(from: topic) } catch { handle(error)}
+        updateCellModelsFromStore()
+    }
+
+    private func rename(_ topic: Topic, to newName: String) {
+        do { try store.rename(topic, to: newName) } catch { handle(error) }
+        updateCellModelsFromStore()
+    }
+
+    private func updateEntries(for topic: Topic, to newEntries: [Int]) {
+        let updatedTopic = Topic(id: topic.id, name: topic.name, entries: newEntries)
+        do { try store.update(updatedTopic) } catch { handle(error) }
         updateCellModelsFromStore()
     }
 

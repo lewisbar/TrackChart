@@ -70,15 +70,30 @@ class AppModelTests {
         #expect(store.topics == modifiedTopicList)
     }
 
-    @Test func renameTopic_alsoUpdatesStore() {
+    @Test func renameTopic_alsoUpdatesStoreAndCellModels() {
         let topic = topic(name: "old name")
         let newName = "new name"
         let (sut, store, _) = makeSUT(withResult: .success([topic]))
         sut.loadTopics()
+        sut.navigate(to: topic)
 
-        sut.rename(topic, to: newName)
+        sut.currentTopicName = newName
 
         let expectedTopic = Topic(id: topic.id, name: newName, entries: topic.entries)
+        #expect(sut.topicCellModels == [TopicCellModel(from: expectedTopic)])
+        #expect(store.topics == [expectedTopic])
+    }
+
+    @Test func changeEntries_alsoUpdatesStoreAndCellModels() {
+        let topic = topic(entries: [1, 2])
+        let newEntries = [-1, -2]
+        let (sut, store, _) = makeSUT(withResult: .success([topic]))
+        sut.loadTopics()
+        sut.navigate(to: topic)
+
+        sut.currentEntries = newEntries
+
+        let expectedTopic = Topic(id: topic.id, name: topic.name, entries: newEntries)
         #expect(sut.topicCellModels == [TopicCellModel(from: expectedTopic)])
         #expect(store.topics == [expectedTopic])
     }
