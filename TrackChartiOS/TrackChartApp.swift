@@ -8,6 +8,7 @@
 import SwiftUI
 import Domain
 import Persistence
+import Presentation
 
 @main
 struct TrackChartApp: App {
