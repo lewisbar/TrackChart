@@ -25,7 +25,6 @@ public class AppModel {
     public init(store: TopicStore, navigator: Navigator) {
         self.store = store
         self.navigator = navigator
-        loadTopics()
     }
 
     public func navigate(toTopicWithID id: UUID) {
@@ -47,6 +46,11 @@ public class AppModel {
     public func navigateBack() {
         navigator.goBack()
         currentTopic = navigator.path.last?.topic
+    }
+
+    public func loadTopics() {
+        do { try store.load() } catch { handle(error) }
+        updateCellModelsFromStore()
     }
 
     public func topic(for id: UUID) -> Topic? {
@@ -81,17 +85,12 @@ public class AppModel {
         do { try store.reorder(to: reorderedTopics) } catch { handle(error) }
     }
 
-    private func loadTopics() {
-        do { try store.load() } catch { handle(error) }
-        updateCellModelsFromStore()
+    private func updateCellModelsFromStore() {
+        topicCellModels = store.topics.map(TopicCellModel.init)
     }
 
     private func handle(_ error: Error) {
         alertMessage = ("Error", error.localizedDescription)
         isAlertViewPresented = true
-    }
-
-    private func updateCellModelsFromStore() {
-        topicCellModels = store.topics.map(TopicCellModel.init)
     }
 }

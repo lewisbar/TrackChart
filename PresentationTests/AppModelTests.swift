@@ -9,9 +9,18 @@ import Presentation
 import Domain
 
 class AppModelTests {
-    @Test func init_loadsTopicsAndMapsThemToCellModels() {
+    @Test func init_doesNotLoadTopics() {
         let topic = topic()
         let (sut, _, _) = makeSUT(withResult: .success([topic]))
+
+        #expect(sut.topicCellModels == [])
+    }
+
+    @Test func loadTopics_loadsTopicsAndMapsThemToCellModels() {
+        let topic = topic()
+        let (sut, _, _) = makeSUT(withResult: .success([topic]))
+
+        sut.loadTopics()
 
         #expect(sut.topicCellModels == [TopicCellModel(from: topic)])
     }
@@ -19,6 +28,7 @@ class AppModelTests {
     @Test func loadingError_showsErrorMessage() {
         let error = anyNSError()
         let (sut, _, _) = makeSUT(withResult: .failure(error))
+        sut.loadTopics()
 
         #expect(sut.alertMessage == ("Error", error.localizedDescription))
         #expect(sut.isAlertViewPresented)
@@ -28,6 +38,7 @@ class AppModelTests {
     @Test func topicForID() {
         let topic = topic(name: "a topic")
         let (sut, _, _) = makeSUT(withResult: .success([topic]))
+        sut.loadTopics()
 
         let receivedTopic = sut.topic(for: topic.id)
 
@@ -37,6 +48,7 @@ class AppModelTests {
     @Test func topicForNonExistentID_returnsNil() {
         let topic = topic(name: "a topic")
         let (sut, _, _) = makeSUT(withResult: .success([topic]))
+        sut.loadTopics()
 
         let receivedTopic = sut.topic(for: UUID())
 
@@ -50,6 +62,7 @@ class AppModelTests {
         let topic4 = topic(name: "topic4")
         let originalTopicList = [topic1, topic2, topic3, topic4]
         let (sut, store, _) = makeSUT(withResult: .success(originalTopicList))
+        sut.loadTopics()
 
         let modifiedTopicList = [topic3, topic4, topic1]
         sut.topicCellModels = modifiedTopicList.map(TopicCellModel.init)
@@ -61,6 +74,7 @@ class AppModelTests {
         let topic = topic(name: "old name")
         let newName = "new name"
         let (sut, store, _) = makeSUT(withResult: .success([topic]))
+        sut.loadTopics()
 
         sut.rename(topic, to: newName)
 
@@ -73,6 +87,7 @@ class AppModelTests {
         let originalTopic = topic(entries: [-1, 0])
         let newValue = 1
         let (sut, store, _) = makeSUT(withResult: .success([originalTopic]))
+        sut.loadTopics()
 
         sut.submit(newValue, to: originalTopic)
 
@@ -84,6 +99,7 @@ class AppModelTests {
     @Test func removeLastValueFromTopic_updatesStoreAndCellModels() {
         let originalTopic = topic(entries: [-1, 0, 1])
         let (sut, store, _) = makeSUT(withResult: .success([originalTopic]))
+        sut.loadTopics()
 
         sut.removeLastValue(from: originalTopic)
 
@@ -98,6 +114,7 @@ class AppModelTests {
         let topic2 = topic()
         let navTopic2 = NavigationTopic(from: topic2)
         let (sut, _, navigator) = makeSUT(withResult: .success([topic1, topic2]))
+        sut.loadTopics()
 
         sut.navigate(to: topic1)
         #expect(navigator.path == [navTopic1])
@@ -131,6 +148,7 @@ class AppModelTests {
         let topic2 = topic()
         let navTopic2 = NavigationTopic(from: topic2)
         let (sut, _, navigator) = makeSUT(withResult: .success([topic1, topic2]))
+        sut.loadTopics()
 
         sut.navigate(toTopicWithID: topic1.id)
         #expect(navigator.path == [navTopic1])
@@ -162,6 +180,7 @@ class AppModelTests {
         let (sut, store, navigator) = makeSUT()
         #expect(navigator.path.count == 0)
         #expect(store.topics.count == 0)
+        sut.loadTopics()
 
         sut.navigateToNewTopic()
 
@@ -182,7 +201,7 @@ class AppModelTests {
             Task { await tracker.setTriggered() }
         }
 
-        sut.rename(originalTopic, to: "new name")
+        sut.loadTopics()
 
         try await Task.sleep(for: .milliseconds(10))
         let triggered = await tracker.getTriggered()
