@@ -16,11 +16,15 @@ public class AppModel {
         didSet { updateStoreWithDeletedAndReorderedCellModels() }
     }
     public var currentTopic: Topic? {
-        didSet { currentTopicName = currentTopic?.name ?? "" }
+        didSet {
+            currentTopicName = currentTopic?.name ?? ""
+            currentEntries = currentTopic?.entries ?? []
+        }
     }
     public var currentTopicName: String = "" {
         didSet { currentTopic.map { rename($0, to: currentTopicName) } }
     }
+    public var currentEntries: [Int] = []
 
     public init(store: TopicStore, navigator: Navigator) {
         self.store = store

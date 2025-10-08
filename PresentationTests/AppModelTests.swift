@@ -116,30 +116,40 @@ class AppModelTests {
         let (sut, _, navigator) = makeSUT(withResult: .success([topic1, topic2]))
         sut.loadTopics()
 
+        #expect(navigator.path == [])
+        #expect(sut.currentTopic == nil)
+        #expect(sut.currentTopicName == "")
+        #expect(sut.currentEntries == [])
+
         sut.navigate(to: topic1)
         #expect(navigator.path == [navTopic1])
         #expect(sut.currentTopic == topic1)
         #expect(sut.currentTopicName == topic1.name)
+        #expect(sut.currentEntries == topic1.entries)
 
         sut.navigate(to: topic2)
         #expect(navigator.path == [navTopic1, navTopic2])
         #expect(sut.currentTopic == topic2)
         #expect(sut.currentTopicName == topic2.name)
+        #expect(sut.currentEntries == topic2.entries)
 
         sut.navigateBack()
         #expect(navigator.path == [navTopic1])
         #expect(sut.currentTopic == topic1)
         #expect(sut.currentTopicName == topic1.name)
+        #expect(sut.currentEntries == topic1.entries)
 
         sut.navigateBack()
         #expect(navigator.path == [])
         #expect(sut.currentTopic == nil)
         #expect(sut.currentTopicName == "")
+        #expect(sut.currentEntries == [])
 
         sut.navigate(to: topic2)
         #expect(navigator.path == [navTopic2])
         #expect(sut.currentTopic == topic2)
         #expect(sut.currentTopicName == topic2.name)
+        #expect(sut.currentEntries == topic2.entries)
     }
 
     @Test func navigateToTopicWithID() {
@@ -150,30 +160,40 @@ class AppModelTests {
         let (sut, _, navigator) = makeSUT(withResult: .success([topic1, topic2]))
         sut.loadTopics()
 
+        #expect(navigator.path == [])
+        #expect(sut.currentTopic == nil)
+        #expect(sut.currentTopicName == "")
+        #expect(sut.currentEntries == [])
+
         sut.navigate(toTopicWithID: topic1.id)
         #expect(navigator.path == [navTopic1])
         #expect(sut.currentTopic == topic1)
         #expect(sut.currentTopicName == topic1.name)
+        #expect(sut.currentEntries == topic1.entries)
 
         sut.navigate(toTopicWithID: topic2.id)
         #expect(navigator.path == [navTopic1, navTopic2])
         #expect(sut.currentTopic == topic2)
         #expect(sut.currentTopicName == topic2.name)
+        #expect(sut.currentEntries == topic2.entries)
 
         sut.navigateBack()
         #expect(navigator.path == [navTopic1])
         #expect(sut.currentTopic == topic1)
         #expect(sut.currentTopicName == topic1.name)
+        #expect(sut.currentEntries == topic1.entries)
 
         sut.navigateBack()
         #expect(navigator.path == [])
         #expect(sut.currentTopic == nil)
         #expect(sut.currentTopicName == "")
+        #expect(sut.currentEntries == [])
 
         sut.navigate(toTopicWithID: topic2.id)
         #expect(navigator.path == [navTopic2])
         #expect(sut.currentTopic == topic2)
         #expect(sut.currentTopicName == topic2.name)
+        #expect(sut.currentEntries == topic2.entries)
     }
 
     @Test func navigateToNewTopic_createsAndNavigates() {
@@ -188,6 +208,7 @@ class AppModelTests {
         #expect(store.topics.count == 1)
         #expect(sut.currentTopic != nil)
         #expect(sut.currentTopicName == "")
+        #expect(sut.currentEntries == [])
     }
 
     @Test func isObservable() async throws {
