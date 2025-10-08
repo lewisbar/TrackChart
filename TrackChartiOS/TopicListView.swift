@@ -27,7 +27,11 @@ struct TopicListView: View {
     }
 
     private var plusButton: some View {
-        CircleButton(action: createTopic, image: Image(systemName: "plus"), color: .blue)
+        VStack {
+            Spacer()
+            CircleButton(action: createTopic, image: Image(systemName: "plus"), color: .blue)
+                .padding(.bottom)
+        }
     }
 }
 
