@@ -21,6 +21,7 @@ struct TrackChartApp: App {
         WindowGroup {
             ContentView(mainView: makeTopicListView)
                 .onAppear(perform: model.loadTopics)
+                .alert(model.alertMessage.title, isPresented: $model.isAlertViewPresented, actions: makeDismissButton, message: makeAlertText)
         }
     }
 
@@ -31,8 +32,8 @@ struct TrackChartApp: App {
         }
     }
 
-    private func makeTopicCellModel(for topic: Topic) -> TopicCellModel {
-        TopicCellModel(id: topic.id, name: topic.name, info: "\(topic.entries.count) entries")
+    private func makeAlertText() -> some View {
+        Text(model.alertMessage.message)
     }
 
     private func makeDismissButton() -> some View {

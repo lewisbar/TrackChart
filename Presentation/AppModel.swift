@@ -14,7 +14,7 @@ public class AppModel {
     public var currentTopicName: String = "" { didSet { currentTopic.map { rename($0, to: currentTopicName) } } }
     public var currentEntries: [Int] = [] { didSet { currentTopic.map { updateEntries(for: $0, to: currentEntries) } } }
     private(set) public var alertMessage = defaultAlertMessage
-    private(set) public var isAlertViewPresented = false
+    public var isAlertViewPresented = false
 
     private let store: TopicStore
     private let navigator: Navigator
