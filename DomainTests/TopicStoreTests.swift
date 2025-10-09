@@ -34,19 +34,15 @@ class TopicStoreTests {
     }
 
     @Test func add_throwsError() throws {
-        let (sut, persistenceService) = makeSUT()
-        let topic1 = sampleTopic1()
-        let topic2 = sampleTopic2()
+        let error = anyNSError()
+        let (sut, persistenceService) = makeSUT(error: error)
+        let topic = sampleTopic1()
 
-        try sut.add(topic1)
+        #expect(throws: type(of: error)) {
+            try sut.add(topic)
+        }
 
-        #expect(sut.topics == [topic1])
-        #expect(persistenceService.createdTopics == [topic1])
-
-        try sut.add(topic2)
-
-        #expect(sut.topics == [topic1, topic2])
-        #expect(persistenceService.createdTopics == [topic1, topic2])
+        #expect(sut.topics == [])
     }
 
     @Test func delete_deletesAlsoFromPersistence() throws {
@@ -236,6 +232,10 @@ class TopicStoreTests {
     deinit {
         #expect(weakSUT == nil, "Instance should have been deallocated. Potential memory leak.")
         #expect(weakPersistenceService == nil, "Instance should have been deallocated. Potential memory leak.")
+    }
+
+    private func anyNSError() -> NSError {
+        NSError(domain: "test", code: 0)
     }
 }
 
