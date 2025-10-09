@@ -99,6 +99,23 @@ class AppModelTests {
         #expect(testComponents.store.topics == [expectedTopic])
     }
 
+    @Test func renameTopic_onError_doesNotUpdate() {
+        let originalTopic = topic(name: "old name")
+        let newName = "new name"
+        let testComponents = makeSUT(withTopics: [originalTopic])
+        testComponents.sut.loadTopics()
+        testComponents.sut.navigate(to: originalTopic)
+        let error = anyNSError()
+        testComponents.persistenceService.error = error
+
+        testComponents.sut.currentTopicName = newName
+
+        #expect(testComponents.sut.topicCellModels == [TopicCellModel(from: originalTopic)])
+        #expect(testComponents.store.topics == [originalTopic])
+        #expect(testComponents.sut.isAlertViewPresented)
+        #expect(testComponents.sut.alertMessage == ("Error", error.localizedDescription))
+    }
+
     @Test func changeEntries_alsoUpdatesStoreAndCellModels() {
         let topic = topic(entries: [1, 2])
         let newEntries = [-1, -2]
