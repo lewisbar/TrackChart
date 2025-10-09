@@ -34,8 +34,8 @@ public class TopicStore {
     }
 
     public func reorder(to newOrder: [Topic]) throws {
-        topics = newOrder
         try persistenceService.reorder(to: newOrder)
+        topics = newOrder
     }
 
     public func remove(_ topic: Topic) throws {

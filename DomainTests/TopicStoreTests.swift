@@ -157,6 +157,22 @@ class TopicStoreTests {
         #expect(persistenceService.reorderedTopicLists == [reorderedTopics])
     }
 
+    @Test func updateOrder_onError_doesNotUpdate() throws {
+        let originalTopics = sampleTopics()
+        let reorderedTopics = originalTopics.shuffled()
+        let (sut, persistenceService) = makeSUT(with: originalTopics)
+        try sut.load()
+        let error = anyNSError()
+        persistenceService.error = error
+
+        #expect(throws: type(of: error)) {
+            try sut.reorder(to: reorderedTopics)
+        }
+
+        #expect(sut.topics == originalTopics)
+        #expect(persistenceService.reorderedTopicLists.isEmpty)
+    }
+
     @Test func topicForID_returnsCorrectTopicWithoutCallingPersistenceService() throws {
         let topics = sampleTopics()
         let pickedTopic = topics[3]
