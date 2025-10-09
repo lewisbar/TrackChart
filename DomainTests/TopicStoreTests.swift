@@ -200,6 +200,24 @@ class TopicStoreTests {
         #expect(persistenceService.updatedTopics == [updatedTopic])
     }
 
+    @Test func submitNewValueToTopic_onError_doesNotSubmit() throws {
+        let topics = sampleTopics()
+        let selectedTopic = topics[3]
+        let newValue = -14
+        let (sut, persistenceService) = makeSUT(with: topics)
+        try sut.load()
+        let error = anyNSError()
+        persistenceService.error = error
+
+        #expect(throws: type(of: error)) {
+            try sut.submit(newValue, to: selectedTopic)
+        }
+
+        let updatedTopic = sut.topic(for: selectedTopic.id)
+        #expect(updatedTopic?.entries == selectedTopic.entries)
+        #expect(persistenceService.updatedTopics.isEmpty)
+    }
+
     @Test func removeLastValueFromTopic() throws {
         let topics = sampleTopics()
         let selectedTopic = topics[2]
