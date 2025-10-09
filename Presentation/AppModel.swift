@@ -9,13 +9,17 @@ import Domain
 @Observable
 public class AppModel {
     private let store: TopicStore
-    public var navigator: Navigator
+    private let navigator: Navigator
+    public var path: [NavigationTopic] {
+        get { navigator.path }
+        set { navigator.path = newValue }
+    }
     private(set) public var alertMessage = defaultAlertMessage
-    public var isAlertViewPresented = false
+    private(set) public var isAlertViewPresented = false
     public var topicCellModels = [TopicCellModel]() {
         didSet { updateStoreWithDeletedAndReorderedCellModels() }
     }
-    public var currentTopic: Topic? {
+    private(set) public var currentTopic: Topic? {
         didSet {
             currentTopicName = currentTopic?.name ?? ""
             currentEntries = currentTopic?.entries ?? []

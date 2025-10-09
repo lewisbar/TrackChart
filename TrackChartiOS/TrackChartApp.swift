@@ -25,7 +25,7 @@ struct TrackChartApp: App {
     }
 
     private func makeTopicListView() -> some View {
-        NavigationStack(path: $model.navigator.path) {
+        NavigationStack(path: $model.path) {
             TopicListView(topics: $model.topicCellModels, showTopic: model.navigate, createTopic: model.navigateToNewTopic)
                 .navigationDestination(for: NavigationTopic.self, destination: makeTopicView)
         }
