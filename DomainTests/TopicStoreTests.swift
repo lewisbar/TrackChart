@@ -35,7 +35,7 @@ class TopicStoreTests {
 
     @Test func add_throwsError() throws {
         let error = anyNSError()
-        let (sut, persistenceService) = makeSUT(error: error)
+        let (sut, _) = makeSUT(error: error)
         let topic = sampleTopic1()
 
         #expect(throws: type(of: error)) {
