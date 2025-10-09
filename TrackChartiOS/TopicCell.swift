@@ -27,6 +27,7 @@ struct TopicCell: View {
             Text(topic.info)
             Image(systemName: "chevron.right")
         }
+        .tint(.primary)
     }
 }
 
