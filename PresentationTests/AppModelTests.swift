@@ -154,6 +154,23 @@ class AppModelTests {
         #expect(testComponents.store.topics == [expectedTopic])
     }
 
+    @Test func removeLastValueFromTopic_onError_doesNotUpdate() {
+        let originalTopic = topic(entries: [-1, 0])
+        let newValue = 1
+        let testComponents = makeSUT(withTopics: [originalTopic])
+        testComponents.sut.loadTopics()
+        let error = anyNSError()
+        testComponents.persistenceService.error = error
+
+        testComponents.sut.removeLastValue(from: originalTopic)
+
+        let expectedTopic = topic(id: originalTopic.id, name: originalTopic.name, entries: originalTopic.entries + [newValue])
+        #expect(testComponents.sut.topicCellModels == [TopicCellModel(from: originalTopic)])
+        #expect(testComponents.store.topics == [originalTopic])
+        #expect(testComponents.sut.isAlertViewPresented)
+        #expect(testComponents.sut.alertMessage == ("Error", error.localizedDescription))
+    }
+
     @Test func navigateToTopicBackAndForth() {
         let topic1 = topic()
         let navTopic1 = NavigationTopic(from: topic1)
