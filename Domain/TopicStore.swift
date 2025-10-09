@@ -19,8 +19,8 @@ public class TopicStore {
     }
 
     public func add(_ topic: Topic) throws {
-        topics.append(topic)
         try persistenceService.create(topic)
+        topics.append(topic)
     }
 
     public func update(_ topic: Topic) throws {

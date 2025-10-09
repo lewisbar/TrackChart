@@ -253,6 +253,22 @@ class AppModelTests {
         #expect(sut.currentEntries == [])
     }
 
+    @Test func navigateToNewTopic_onCreationError_showsError_andDoesNotCreateOrNavigate() {
+        let error = anyNSError()
+        let (sut, store, navigator) = makeSUT(creationError: error)
+        sut.loadTopics()
+
+        sut.navigateToNewTopic()
+
+        #expect(sut.isAlertViewPresented)
+        #expect(sut.alertMessage == ("Error", error.localizedDescription))
+        #expect(navigator.path.count == 0)
+        #expect(store.topics.count == 0)
+        #expect(sut.currentTopic == nil)
+        #expect(sut.currentTopicName == "")
+        #expect(sut.currentEntries == [])
+    }
+
     @Test func isObservable() async throws {
         let originalTopic = topic(name: "old name")
         let (sut, _, _) = makeSUT(withResult: .success([originalTopic]))
@@ -273,8 +289,8 @@ class AppModelTests {
 
     // MARK: - Helpers
 
-    private func makeSUT(withResult persistenceResult: Result<[Topic], Error> = .success([])) -> (sut: AppModel, store: TopicStore, navigator: Navigator) {
-        let persistenceService = TopicPersistenceServiceStub(loadResult: persistenceResult)
+    private func makeSUT(withResult persistenceResult: Result<[Topic], Error> = .success([]), creationError: Error? = nil) -> (sut: AppModel, store: TopicStore, navigator: Navigator) {
+        let persistenceService = TopicPersistenceServiceStub(loadResult: persistenceResult, creationError: creationError)
         let store = TopicStore(persistenceService: persistenceService)
         let navigator = Navigator()
         let sut = AppModel(store: store, navigator: navigator)
@@ -310,16 +326,21 @@ class AppModelTests {
 
 private class TopicPersistenceServiceStub: TopicPersistenceService {
     private let loadResult: Result<[Topic], Error>
+    private let creationError: Error?
 
-    init(loadResult: Result<[Topic], Error> = .success([])) {
+    init(loadResult: Result<[Topic], Error> = .success([]), creationError: Error?) {
         self.loadResult = loadResult
+        self.creationError = creationError
     }
 
     func load() throws -> [Topic] {
         try loadResult.get()
     }
 
-    func create(_ topic: Topic) throws {}
+    func create(_ topic: Topic) throws {
+        if let creationError { throw creationError }
+    }
+
     func update(_ topic: Topic) throws {}
     func delete(_ topic: Topic) throws {}
     func reorder(to newOrder: [Topic]) throws {}

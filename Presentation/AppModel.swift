@@ -35,9 +35,13 @@ public class AppModel {
 
     public func navigateToNewTopic() {
         let newTopic = Topic(id: UUID(), name: "", entries: [])
-        do { try store.add(newTopic) } catch { handle(error) }
-        navigator.showDetail(for: NavigationTopic(from: newTopic))
-        currentTopic = newTopic
+        do {
+            try store.add(newTopic)
+            navigator.showDetail(for: NavigationTopic(from: newTopic))
+            currentTopic = newTopic
+        } catch {
+            handle(error)
+        }
     }
 
     public func navigateBack() {
