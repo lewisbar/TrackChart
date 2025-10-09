@@ -8,29 +8,16 @@ import Domain
 
 @Observable
 public class AppModel {
-    private let store: TopicStore
-    private let navigator: Navigator
-    public var path: [NavigationTopic] {
-        get { navigator.path }
-        set { navigator.path = newValue }
-    }
+    public var path: [NavigationTopic] { get { navigator.path } set { navigator.path = newValue } }
+    public var topicCellModels = [TopicCellModel]() { didSet { updateStoreWithDeletedAndReorderedCellModels() } }
+    private(set) public var currentTopic: Topic? { didSet { syncNameAndEntriesToCurrentTopic() } }
+    public var currentTopicName: String = "" { didSet { currentTopic.map { rename($0, to: currentTopicName) } } }
+    public var currentEntries: [Int] = [] { didSet { currentTopic.map { updateEntries(for: $0, to: currentEntries) } } }
     private(set) public var alertMessage = defaultAlertMessage
     private(set) public var isAlertViewPresented = false
-    public var topicCellModels = [TopicCellModel]() {
-        didSet { updateStoreWithDeletedAndReorderedCellModels() }
-    }
-    private(set) public var currentTopic: Topic? {
-        didSet {
-            currentTopicName = currentTopic?.name ?? ""
-            currentEntries = currentTopic?.entries ?? []
-        }
-    }
-    public var currentTopicName: String = "" {
-        didSet { currentTopic.map { rename($0, to: currentTopicName) } }
-    }
-    public var currentEntries: [Int] = [] {
-        didSet { currentTopic.map { updateEntries(for: $0, to: currentEntries) } }
-    }
+
+    private let store: TopicStore
+    private let navigator: Navigator
 
     public init(store: TopicStore, navigator: Navigator) {
         self.store = store
@@ -108,6 +95,11 @@ public class AppModel {
 
     private func updateCellModelsFromStore() {
         topicCellModels = store.topics.map(TopicCellModel.init)
+    }
+
+    private func syncNameAndEntriesToCurrentTopic() {
+        currentTopicName = currentTopic?.name ?? ""
+        currentEntries = currentTopic?.entries ?? []
     }
 
     private func handle(_ error: Error) {
