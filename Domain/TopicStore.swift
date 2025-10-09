@@ -41,8 +41,8 @@ public class TopicStore {
     public func remove(_ topic: Topic) throws {
         guard let index = topics.firstIndex(where: { $0.id == topic.id }) else { return }
 
-        topics.remove(at: index)
         try persistenceService.delete(topic)
+        topics.remove(at: index)
     }
 
     public func topic(for id: UUID) -> Topic? {

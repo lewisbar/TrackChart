@@ -82,6 +82,24 @@ class TopicStoreTests {
         #expect(persistenceService.deletedTopics.isEmpty)
     }
 
+    @Test func delete_onError_doesNotDelete() throws {
+        let reducedTopics = sampleTopics()
+        let topicToDelete = sampleTopic1()
+        var allTopics = reducedTopics
+        allTopics.insert(topicToDelete, at: 1)
+        let error = anyNSError()
+        let (sut, persistenceService) = makeSUT(with: allTopics)
+        try sut.load()
+        persistenceService.error = error
+
+        #expect(throws: type(of: error)) {
+            try sut.remove(topicToDelete)
+        }
+
+        #expect(sut.topics == allTopics)
+        #expect(persistenceService.deletedTopics.isEmpty)
+    }
+
     @Test func update_whenTopicDoesNotExist_createsNewTopic() throws {
         let topics = sampleTopics()
         let topicToUpdate = sampleTopic1()
@@ -245,8 +263,8 @@ private class TopicPersistenceServiceSpy: TopicPersistenceService {
     var deletedTopics = [Topic]()
     var reorderedTopicLists = [[Topic]]()
     var loadCallCount = 0
-    private(set) var stubbedTopics: [Topic]
-    private(set) var error: Error?
+    var stubbedTopics: [Topic]
+    var error: Error?
 
     init(topics: [Topic], error: Error?) {
         self.stubbedTopics = topics
