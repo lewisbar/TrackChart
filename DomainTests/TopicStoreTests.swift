@@ -33,6 +33,22 @@ class TopicStoreTests {
         #expect(persistenceService.createdTopics == [topic1, topic2])
     }
 
+    @Test func add_throwsError() throws {
+        let (sut, persistenceService) = makeSUT()
+        let topic1 = sampleTopic1()
+        let topic2 = sampleTopic2()
+
+        try sut.add(topic1)
+
+        #expect(sut.topics == [topic1])
+        #expect(persistenceService.createdTopics == [topic1])
+
+        try sut.add(topic2)
+
+        #expect(sut.topics == [topic1, topic2])
+        #expect(persistenceService.createdTopics == [topic1, topic2])
+    }
+
     @Test func delete_deletesAlsoFromPersistence() throws {
         let reducedTopics = sampleTopics()
         let topicToDelete = sampleTopic1()
@@ -185,9 +201,8 @@ class TopicStoreTests {
 
     // MARK: - Helpers
 
-    private func makeSUT(with topics: [Topic] = []) -> (sut: TopicStore, persistenceService: TopicPersistenceServiceSpy) {
-        let persistenceService = TopicPersistenceServiceSpy()
-        persistenceService.stub(topics)
+    private func makeSUT(with topics: [Topic] = [], error: Error? = nil) -> (sut: TopicStore, persistenceService: TopicPersistenceServiceSpy) {
+        let persistenceService = TopicPersistenceServiceSpy(topics: topics, error: error)
         let sut = TopicStore(persistenceService: persistenceService)
 
         weakSUT = sut
@@ -230,31 +245,38 @@ private class TopicPersistenceServiceSpy: TopicPersistenceService {
     var deletedTopics = [Topic]()
     var reorderedTopicLists = [[Topic]]()
     var loadCallCount = 0
-    private(set) var stubbedTopics = [Topic]()
+    private(set) var stubbedTopics: [Topic]
+    private(set) var error: Error?
 
-    func create(_ topic: Topic) {
+    init(topics: [Topic], error: Error?) {
+        self.stubbedTopics = topics
+        self.error = error
+    }
+
+    func create(_ topic: Topic) throws {
+        if let error { throw error }
         createdTopics.append(topic)
     }
     
-    func update(_ topic: Topic) {
+    func update(_ topic: Topic) throws {
+        if let error { throw error }
         updatedTopics.append(topic)
     }
     
-    func delete(_ topic: Topic) {
+    func delete(_ topic: Topic) throws {
+        if let error { throw error }
         deletedTopics.append(topic)
     }
 
     func reorder(to newOrder: [Topic]) throws {
+        if let error { throw error }
         reorderedTopicLists.append(newOrder)
     }
 
-    func load() -> [Topic] {
+    func load() throws -> [Topic] {
+        if let error { throw error }
         loadCallCount += 1
         return stubbedTopics
-    }
-
-    func stub(_ topics: [Topic]) {
-        stubbedTopics = topics
     }
 }
 
