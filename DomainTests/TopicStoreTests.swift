@@ -262,6 +262,24 @@ class TopicStoreTests {
         #expect(persistenceService.updatedTopics == [updatedTopic])
     }
 
+    @Test func changeTopicName_onError_doesNotRename() throws {
+        let topics = sampleTopics()
+        let selectedTopic = topics[2]
+        let newName = "New Topic Name"
+        let (sut, persistenceService) = makeSUT(with: topics)
+        try sut.load()
+        let error = anyNSError()
+        persistenceService.error = error
+
+        #expect(throws: type(of: error)) {
+            try sut.rename(selectedTopic, to: newName)
+        }
+
+        let updatedTopic = sut.topic(for: selectedTopic.id)
+        #expect(updatedTopic?.name == selectedTopic.name)
+        #expect(persistenceService.updatedTopics.isEmpty)
+    }
+
     @Test func isObservable() async throws {
         let (sut, _) = makeSUT()
         let tracker = ObservationTracker()
