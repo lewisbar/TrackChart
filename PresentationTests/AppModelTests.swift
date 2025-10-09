@@ -126,6 +126,22 @@ class AppModelTests {
         #expect(testComponents.store.topics == [expectedTopic])
     }
 
+    @Test func submitValueToTopic_onError_doesNotUpdate() {
+        let originalTopic = topic(entries: [-1, 0])
+        let newValue = 1
+        let testComponents = makeSUT(withTopics: [originalTopic])
+        testComponents.sut.loadTopics()
+        let error = anyNSError()
+        testComponents.persistenceService.error = error
+
+        testComponents.sut.submit(newValue, to: originalTopic)
+
+        #expect(testComponents.sut.topicCellModels == [TopicCellModel(from: originalTopic)])
+        #expect(testComponents.store.topics == [originalTopic])
+        #expect(testComponents.sut.isAlertViewPresented)
+        #expect(testComponents.sut.alertMessage == ("Error", error.localizedDescription))
+    }
+
     @Test func removeLastValueFromTopic_updatesStoreAndCellModels() {
         let originalTopic = topic(entries: [-1, 0, 1])
         let testComponents = makeSUT(withTopics: [originalTopic])
