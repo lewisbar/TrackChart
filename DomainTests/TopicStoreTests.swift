@@ -231,6 +231,23 @@ class TopicStoreTests {
         #expect(persistenceService.updatedTopics == [updatedTopic])
     }
 
+    @Test func removeLastValueFromTopic_onError_doesNotRemove() throws {
+        let topics = sampleTopics()
+        let selectedTopic = topics[2]
+        let (sut, persistenceService) = makeSUT(with: topics)
+        try sut.load()
+        let error = anyNSError()
+        persistenceService.error = error
+
+        #expect(throws: type(of: error)) {
+            try sut.removeLastValue(from: selectedTopic)
+        }
+
+        let updatedTopic = sut.topic(for: selectedTopic.id)
+        #expect(updatedTopic?.entries == selectedTopic.entries)
+        #expect(persistenceService.updatedTopics.isEmpty)
+    }
+
     @Test func changeTopicName() throws {
         let topics = sampleTopics()
         let selectedTopic = topics[2]
