@@ -35,6 +35,21 @@ class AppModelTests {
         #expect(sut.topicCellModels == [])
     }
 
+    @Test func dismissErrorMessage() {
+        let error = anyNSError()
+        let (sut, _, _) = makeSUT(withResult: .failure(error))
+        sut.loadTopics()
+
+        #expect(sut.alertMessage == ("Error", error.localizedDescription))
+        #expect(sut.isAlertViewPresented)
+        #expect(sut.topicCellModels == [])
+
+        sut.dismissAlert()
+
+        #expect(sut.alertMessage == AppModel.defaultAlertMessage)
+        #expect(!sut.isAlertViewPresented)
+    }
+
     @Test func topicForID() {
         let topic = topic(name: "a topic")
         let (sut, _, _) = makeSUT(withResult: .success([topic]))

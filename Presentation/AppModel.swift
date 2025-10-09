@@ -10,7 +10,7 @@ import Domain
 public class AppModel {
     private let store: TopicStore
     public var navigator: Navigator
-    public var alertMessage = (title: "Error", message: "An error occurred.")
+    private(set) public var alertMessage = defaultAlertMessage
     public var isAlertViewPresented = false
     public var topicCellModels = [TopicCellModel]() {
         didSet { updateStoreWithDeletedAndReorderedCellModels() }
@@ -52,6 +52,11 @@ public class AppModel {
     public func navigateBack() {
         navigator.goBack()
         currentTopic = navigator.path.last?.topic
+    }
+
+    public func dismissAlert() {
+        isAlertViewPresented = false
+        alertMessage = Self.defaultAlertMessage
     }
 
     public func loadTopics() {
@@ -105,4 +110,6 @@ public class AppModel {
         alertMessage = ("Error", error.localizedDescription)
         isAlertViewPresented = true
     }
+
+    public static let defaultAlertMessage = (title: "Error", message: "An error occurred.")
 }

@@ -36,7 +36,7 @@ struct TrackChartApp: App {
     }
 
     private func makeDismissButton() -> some View {
-        Button("OK") { model.isAlertViewPresented = false }  // TODO: Hide this detail behind a method dismissAlertView()
+        Button("OK") { model.dismissAlert() }
     }
 
     @ViewBuilder
