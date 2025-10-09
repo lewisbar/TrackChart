@@ -9,7 +9,11 @@ import Domain
 @Observable
 public class AppModel {
     public var path: [NavigationTopic] { get { navigator.path } set { navigator.path = newValue } }
-    public var topicCellModels = [TopicCellModel]() { didSet { updateStoreWithDeletedAndReorderedCellModels() } }
+    public var topicCellModels = [TopicCellModel]() { didSet {
+        if !isUpdatingCellModelsFromStore {
+            updateStoreWithDeletedAndReorderedCellModels()
+        }
+    } }
     private(set) public var currentTopic: Topic? { didSet { syncNameAndEntriesToCurrentTopic() } }
     public var currentTopicName: String = "" { didSet { currentTopic.map { rename($0, to: currentTopicName) } } }
     public var currentEntries: [Int] = [] { didSet { currentTopic.map { updateEntries(for: $0, to: currentEntries) } } }
@@ -18,6 +22,7 @@ public class AppModel {
 
     private let store: TopicStore
     private let navigator: Navigator
+    private var isUpdatingCellModelsFromStore = false
 
     public init(store: TopicStore, navigator: Navigator) {
         self.store = store
@@ -85,20 +90,29 @@ public class AppModel {
     }
 
     private func updateStoreWithDeletedAndReorderedCellModels() {
+        let backup = store.topics
         let updatedIDs = topicCellModels.map(\.id)
 
-        store.topics.forEach { topic in
-            if !updatedIDs.contains(topic.id) {
-                do { try store.remove(topic) } catch { handle(error) }
+        do {
+            try store.topics.forEach { topic in
+                if !updatedIDs.contains(topic.id) {
+                    try store.remove(topic)
+                }
             }
-        }
 
-        let reorderedTopics = updatedIDs.compactMap { store.topic(for: $0) }
-        do { try store.reorder(to: reorderedTopics) } catch { handle(error) }
+            let reorderedTopics = updatedIDs.compactMap { store.topic(for: $0) }
+            try store.reorder(to: reorderedTopics)
+        } catch {
+            store.topics = backup
+            updateCellModelsFromStore()
+            handle(error)
+        }
     }
 
     private func updateCellModelsFromStore() {
+        isUpdatingCellModelsFromStore = true
         topicCellModels = store.topics.map(TopicCellModel.init)
+        isUpdatingCellModelsFromStore = false
     }
 
     private func syncNameAndEntriesToCurrentTopic() {

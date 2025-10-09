@@ -85,6 +85,26 @@ class AppModelTests {
         #expect(testComponents.store.topics == modifiedTopicList)
     }
 
+    @Test func updateStoreAutomaticallyAfterDeletionAndReordering_onError_recoverWithCurrentStoreState() {
+        let topic1 = topic(name: "topic1")
+        let topic2 = topic(name: "topic2")
+        let topic3 = topic(name: "topic3")
+        let topic4 = topic(name: "topic4")
+        let originalTopicList = [topic1, topic2, topic3, topic4]
+        let testComponents = makeSUT(withTopics: originalTopicList)
+        testComponents.sut.loadTopics()
+        let error = anyNSError()
+        testComponents.persistenceService.error = error
+
+        let modifiedTopicList = [topic3, topic4, topic1]
+        testComponents.sut.topicCellModels = modifiedTopicList.map(TopicCellModel.init)
+
+        #expect(testComponents.store.topics == originalTopicList)
+        #expect(testComponents.sut.topicCellModels == originalTopicList.map(TopicCellModel.init))
+        #expect(testComponents.sut.alertMessage == ("Error", error.localizedDescription))
+        #expect(testComponents.sut.isAlertViewPresented)
+    }
+
     @Test func renameTopic_alsoUpdatesStoreAndCellModels() {
         let topic = topic(name: "old name")
         let newName = "new name"
