@@ -29,8 +29,8 @@ public class TopicStore {
             return
         }
 
-        topics[index] = topic
         try persistenceService.update(topic)
+        topics[index] = topic
     }
 
     public func reorder(to newOrder: [Topic]) throws {

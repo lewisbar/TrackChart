@@ -128,6 +128,23 @@ class TopicStoreTests {
         #expect(persistenceService.createdTopics.isEmpty)
     }
 
+    @Test func update_onError_doesNotUpdate() throws {
+        let originalTopics = sampleTopics()
+        let topicToUpdate = Topic(id: originalTopics[2].id, name: "new name", entries: [8, 8, -8])
+        let (sut, persistenceService) = makeSUT(with: originalTopics)
+        try sut.load()
+        let error = anyNSError()
+        persistenceService.error = error
+
+        #expect(throws: type(of: error)) {
+            try sut.update(topicToUpdate)
+        }
+
+        #expect(sut.topics == originalTopics)
+        #expect(persistenceService.updatedTopics.isEmpty)
+        #expect(persistenceService.createdTopics.isEmpty)
+    }
+
     @Test func updateOrder_updatesOrderOfIDs() throws {
         let originalTopics = sampleTopics()
         let reorderedTopics = originalTopics.shuffled()
