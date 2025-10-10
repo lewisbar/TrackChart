@@ -80,8 +80,8 @@ struct ChartView: View {
     private func pointMark(for dataPoint: DataPoint) -> some ChartContent {
         PointMark(x: .value(xLabel, dataPoint.label), y: .value(yLabel, dataPoint.value))
             .symbol(symbol: pointSymbol)
-            .annotation(position: .top, spacing: 5) { maxPositiveValueAnnotation(for: dataPoint) }
-            .annotation(position: .bottom, spacing: 5) { minNegativeValueAnnotation(for: dataPoint) }
+            .annotation(position: .top, spacing: 2) { maxPositiveValueAnnotation(for: dataPoint) }
+            .annotation(position: .bottom, spacing: 2) { minNegativeValueAnnotation(for: dataPoint) }
     }
 
     private func pointSymbol() -> some View {
@@ -118,7 +118,6 @@ struct ChartView: View {
         Text("\(value)")
             .font(.caption)
             .foregroundColor(primaryColor)
-            .padding(4)
             .background(.white.opacity(0.5), in: RoundedRectangle(cornerRadius: 4))
     }
 
@@ -132,7 +131,7 @@ struct ChartView: View {
     }
 
     private func yAxisContent() -> some AxisContent {
-        AxisMarks(values: .automatic(desiredCount: 2)) { value in
+        AxisMarks(values: .automatic(desiredCount: 2, roundLowerBound: false, roundUpperBound: false)) { value in
             AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [2, 2]))
             AxisTick(stroke: StrokeStyle(lineWidth: 0.5))
             AxisValueLabel()
@@ -147,24 +146,29 @@ struct ChartView: View {
 }
 
 #Preview {
-    VStack(spacing: 32) {
-        VStack {
-            Text("Chart 1")
-            ChartView(values: [0, 2, 1, 2, 3, 4, 3, 5, 8, 7])
-        }
-        .card()
+    ScrollView {
+        VStack(spacing: 32) {
+            VStack {
+                Text("Chart 1")
+                ChartView(values: [0, 2, 1, 2, 3, 4, 3, 5, 8, 7])
+            }
+            .card()
+            .frame(height: 200)
 
-        VStack {
-            Text("Chart 2")
-            ChartView(values: [0, -2, -1, -2, -3, -4, -3, -5, -8, -7])
-        }
-        .card()
+            VStack {
+                Text("Chart 2")
+                ChartView(values: [0, -2, -1, -2, -3, -4, -3, -5, -8, -7])
+            }
+            .card()
+            .frame(height: 200)
 
-        VStack {
-            Text("Chart 2")
-            ChartView(values: [0, 2, 1, 2, 3, 4, 3, -1, -2, -3, -4, 5, 8, 7, 2, 1, 2, 3, 4, 3, -1, -2, -3, -4, 5, 8, 7])
+            VStack {
+                Text("Chart 2")
+                ChartView(values: [0, 2, 1, 2, 3, 4, 3, -1, -2, -3, -4, 5, 8, 7, 2, 1, 2, 3, 4, 3, -1, -2, -3, -4, 5, 8, 7])
+            }
+            .card()
+            .frame(height: 200)
         }
-        .card()
+        .padding()
     }
-    .padding()
 }
