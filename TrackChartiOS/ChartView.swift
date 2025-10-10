@@ -40,33 +40,17 @@ struct ChartView: View {
     }
 
     var body: some View {
-        Chart(dataPoints) { dataPoint in
-            areaMark(for: dataPoint)
-            lineMark(for: dataPoint)
-            if showPointMarks { pointMark(for: dataPoint) }
-        }
-        .chartXScale(domain: 1...dataPoints.count)
-        .chartXAxis {
-            AxisMarks(preset: .aligned, values: .automatic(desiredCount: 4, roundLowerBound: false, roundUpperBound: false)) {
-                AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [2, 2]))
-                AxisValueLabel()
-                    .foregroundStyle(.gray)
-                    .font(.caption)
-            }
-        }
-        .chartYAxis {
-            AxisMarks(values: .automatic(desiredCount: 2)) { value in
-                AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [2, 2]))
-                AxisTick(stroke: StrokeStyle(lineWidth: 0.5))
-                AxisValueLabel()
-                    .foregroundStyle(.gray)
-                    .font(.caption)
-                if value.as(Int.self) == 0 {
-                    AxisGridLine(stroke: StrokeStyle(lineWidth: 1, dash: []))
-                        .foregroundStyle(.black.opacity(0.5)) // Highlight y=0
-                }
-            }
-        }
+        Chart(dataPoints, content: chartContent)
+            .chartXScale(domain: 1...dataPoints.count)
+            .chartXAxis(content: xAxisContent)
+            .chartYAxis(content: yAxisContent)
+    }
+
+    @ChartContentBuilder
+    private func chartContent(for dataPoint: DataPoint) -> some ChartContent {
+        areaMark(for: dataPoint)
+        lineMark(for: dataPoint)
+        if showPointMarks { pointMark(for: dataPoint) }
     }
 
     private func areaMark(for dataPoint: DataPoint) -> some ChartContent {
@@ -125,6 +109,29 @@ struct ChartView: View {
                         .background(.white.opacity(0.5), in: RoundedRectangle(cornerRadius: 4))
                 }
             }
+    }
+
+    private func xAxisContent() -> some AxisContent {
+        AxisMarks(preset: .aligned, values: .automatic(desiredCount: 4, roundLowerBound: false, roundUpperBound: false)) {
+            AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [2, 2]))
+            AxisValueLabel()
+                .foregroundStyle(.gray)
+                .font(.caption)
+        }
+    }
+
+    private func yAxisContent() -> some AxisContent {
+        AxisMarks(values: .automatic(desiredCount: 2)) { value in
+            AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [2, 2]))
+            AxisTick(stroke: StrokeStyle(lineWidth: 0.5))
+            AxisValueLabel()
+                .foregroundStyle(.gray)
+                .font(.caption)
+            if value.as(Int.self) == 0 {
+                AxisGridLine(stroke: StrokeStyle(lineWidth: 1, dash: []))
+                    .foregroundStyle(.black.opacity(0.5)) // Highlight y=0
+            }
+        }
     }
 }
 
