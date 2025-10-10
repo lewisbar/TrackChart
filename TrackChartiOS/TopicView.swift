@@ -43,11 +43,12 @@ struct TopicView<CounterView: View, ChartView: View>: View {
 
 #Preview {
     @Previewable @State var values = [5, 6, 8, 2, 4, 3, 5, 2]
-    @Previewable @State var title = ""
+    @Previewable @State var title = "A Title"
 
     TopicView(
         title: $title,
         counterView: { CounterView(submitNewValue: { values.append($0) }, deleteLastValue: { values.removeLast() }) },
         chartView: { ChartView(values: values)}
     )
+    .padding()
 }
