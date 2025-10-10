@@ -79,18 +79,17 @@ struct ChartView: View {
 
     private func pointMark(for dataPoint: DataPoint) -> some ChartContent {
         PointMark(x: .value(xLabel, dataPoint.label), y: .value(yLabel, dataPoint.value))
-            .foregroundStyle(pointFillColor)
-            .symbol {
-                ZStack {
-                    Circle()
-                        .fill(pointFillColor)
-                    Circle()
-                        .stroke(pointOutlineColor, lineWidth: 2)
-                }
-                .frame(width: 6)
-            }
+            .symbol(symbol: pointSymbol)
             .annotation(position: .top, spacing: 5) { maxPositiveValueAnnotation(for: dataPoint) }
             .annotation(position: .bottom, spacing: 5) { minNegativeValueAnnotation(for: dataPoint) }
+    }
+
+    private func pointSymbol() -> some View {
+        ZStack {
+            Circle().fill(pointFillColor)
+            Circle().stroke(pointOutlineColor, lineWidth: 2)
+        }
+        .frame(width: 6)
     }
 
     @ViewBuilder
