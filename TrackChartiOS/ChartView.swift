@@ -89,26 +89,30 @@ struct ChartView: View {
                 }
                 .frame(width: 6)
             }
-            .annotation(position: .top, spacing: 5) {
-                // Annotate max positive value
-                if annotateExtrema, dataPoint.value == dataPoints.map(\.value).max() && dataPoint.value > 0 {
-                    Text("\(dataPoint.value)")
-                        .font(.caption)
-                        .foregroundColor(primaryColor)
-                        .padding(2)
-                        .background(.white.opacity(0.5), in: RoundedRectangle(cornerRadius: 4))
-                }
-            }
-            .annotation(position: .bottom, spacing: 5) {
-                // Annotate min negative value
-                if annotateExtrema, dataPoint.value == dataPoints.map(\.value).min() && dataPoint.value < 0 {
-                    Text("\(dataPoint.value)")
-                        .font(.caption)
-                        .foregroundColor(primaryColor)
-                        .padding(1)
-                        .background(.white.opacity(0.5), in: RoundedRectangle(cornerRadius: 4))
-                }
-            }
+            .annotation(position: .top, spacing: 5) { maxPositiveValueAnnotation(for: dataPoint) }
+            .annotation(position: .bottom, spacing: 5) { minNegativeValueAnnotation(for: dataPoint) }
+    }
+
+    @ViewBuilder
+    private func maxPositiveValueAnnotation(for dataPoint: DataPoint) -> some View {
+        if annotateExtrema, dataPoint.value == dataPoints.map(\.value).max() && dataPoint.value > 0 {
+            annotation(for: dataPoint.value)
+        }
+    }
+
+    @ViewBuilder
+    private func minNegativeValueAnnotation(for dataPoint: DataPoint) -> some View {
+        if annotateExtrema, dataPoint.value == dataPoints.map(\.value).min() && dataPoint.value < 0 {
+            annotation(for: dataPoint.value)
+        }
+    }
+
+    private func annotation(for value: Int) -> some View {
+        Text("\(value)")
+            .font(.caption)
+            .foregroundColor(primaryColor)
+            .padding(4)
+            .background(.white.opacity(0.5), in: RoundedRectangle(cornerRadius: 4))
     }
 
     private func xAxisContent() -> some AxisContent {
