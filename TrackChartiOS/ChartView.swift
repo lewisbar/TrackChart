@@ -26,7 +26,8 @@ struct ChartView: View {
     private let yLabel = "Count"
     fileprivate static let fallbackValue = "0"
     private let primaryColor = Color.blue
-    private let secondaryColor = Color.orange
+    private var topColor: Color { primaryColor.opacity(0.4) }
+    private var bottomColor: Color { primaryColor.opacity(0.1) }
 
     init(values: [Int]) {
         self.dataPoints = values.enumerated().map { index, value in DataPoint(value: value, name: "\(index)") }
@@ -36,14 +37,7 @@ struct ChartView: View {
         Chart(dataPoints) { dataPoint in
             AreaMark(x: .value(xLabel, dataPoint.name), y: .value(yLabel, dataPoint.value))
                 .foregroundStyle(
-                    LinearGradient(
-                        gradient: Gradient(colors: [
-                            primaryColor.opacity(0.4),
-                            secondaryColor.opacity(0.1)
-                        ]),
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
+                    LinearGradient(colors: [topColor, bottomColor], startPoint: .top, endPoint: .bottom)
                 )
             LineMark(x: .value(xLabel, dataPoint.name), y: .value(yLabel, dataPoint.value))
                 .foregroundStyle(primaryColor)
@@ -136,5 +130,5 @@ private struct ZoomingBehaviorModifier: ViewModifier {
 }
 
 #Preview {
-    ChartView(values: [0, 2, 1, -2, 3, 4, 3, 5, 8, 7])
+    ChartView(values: [0, 2, 1, 2, 3, 4, 3, -1, -4, -1, -2, 5, 8, 7])
 }
