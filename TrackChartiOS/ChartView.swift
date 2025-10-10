@@ -134,32 +134,19 @@ struct ChartView: View {
             Text("Chart 1")
             ChartView(values: [0, 2, 1, 2, 3, 4, 3, 5, 8, 7])
         }
-        .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 10)
-                .fill(.white)
-                .shadow(radius: 5)
-        )
+        .card()
+
         VStack {
             Text("Chart 2")
             ChartView(values: [0, -2, -1, -2, -3, -4, -3, -5, -8, -7])
         }
-        .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 10)
-                .fill(.white)
-                .shadow(radius: 5)
-        )
+        .card()
+
         VStack {
             Text("Chart 2")
             ChartView(values: [0, 2, 1, 2, 3, 4, 3, -1, -2, -3, -4, 5, 8, 7, 2, 1, 2, 3, 4, 3, -1, -2, -3, -4, 5, 8, 7])
         }
-        .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 10)
-                .fill(.white)
-                .shadow(radius: 5)
-        )
+        .card()
     }
     .padding()
 }
