@@ -32,8 +32,8 @@ struct ChartView: View {
     private var bottomColor: Color { .teal.opacity(0.1) }
     private var pointOutlineColor: Color { .cyan }
     private var pointFillColor: Color { .white }
-    private let showPointMarks = false
-    private let annotateExtrema = false
+    private let showPointMarks = true
+    private let annotateExtrema = true
 
     init(values: [Int]) {
         self.dataPoints = values.enumerated().map { index, value in DataPoint(value: value, label: index + 1) }
