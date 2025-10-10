@@ -135,6 +135,8 @@
 		3050055D2E79B95900DEF76D /* Persistence.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Persistence.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		305005642E79B95A00DEF76D /* PersistenceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PersistenceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		30BDE0742E7854E000199C93 /* TrackChartiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TrackChartiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		30C88B3A2E98863800224777 /* CI_macOS_Frameworks.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = CI_macOS_Frameworks.xctestplan; path = TestPlans/CI_macOS_Frameworks.xctestplan; sourceTree = "<group>"; };
+		30C88B3B2E9887E000224777 /* CI_iOS_App.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = CI_iOS_App.xctestplan; path = TestPlans/CI_iOS_App.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -291,6 +293,8 @@
 		30BDE06B2E7854DF00199C93 = {
 			isa = PBXGroup;
 			children = (
+				30C88B3A2E98863800224777 /* CI_macOS_Frameworks.xctestplan */,
+				30C88B3B2E9887E000224777 /* CI_iOS_App.xctestplan */,
 				30BDE0762E7854E000199C93 /* TrackChartiOS */,
 				30438AD12E7990AF00F3C852 /* TrackChartiOSTests */,
 				3050055E2E79B95900DEF76D /* Persistence */,

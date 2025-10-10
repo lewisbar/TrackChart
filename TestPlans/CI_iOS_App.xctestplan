@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "4E46B637-B512-4500-8C39-A804C554712C",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:TrackChart.xcodeproj",
+        "identifier" : "30438ACF2E7990AF00F3C852",
+        "name" : "TrackChartiOSTests"
+      }
+    }
+  ],
+  "version" : 1
+}

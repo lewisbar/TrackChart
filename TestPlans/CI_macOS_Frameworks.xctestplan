@@ -1,0 +1,38 @@
+{
+  "configurations" : [
+    {
+      "id" : "13D2E95E-E159-4C56-9D1B-BDE5583C9C45",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:TrackChart.xcodeproj",
+        "identifier" : "301C95AE2E818653008E3F16",
+        "name" : "DomainTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:TrackChart.xcodeproj",
+        "identifier" : "305005632E79B95A00DEF76D",
+        "name" : "PersistenceTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:TrackChart.xcodeproj",
+        "identifier" : "3049D7D62E957FB000BEECA3",
+        "name" : "PresentationTests"
+      }
+    }
+  ],
+  "version" : 1
+}
