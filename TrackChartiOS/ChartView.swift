@@ -105,8 +105,8 @@ struct ChartView: View {
                 }
                 .frame(width: 6)
             }
-        // Annotate max positive value
             .annotation(position: .top, spacing: 5) {
+                // Annotate max positive value
                 if annotateExtrema, dataPoint.value == dataPoints.map(\.value).max() && dataPoint.value > 0 {
                     Text("\(dataPoint.value)")
                         .font(.caption)
@@ -115,8 +115,8 @@ struct ChartView: View {
                         .background(.white.opacity(0.5), in: RoundedRectangle(cornerRadius: 4))
                 }
             }
-        // Annotate min negative value
             .annotation(position: .bottom, spacing: 5) {
+                // Annotate min negative value
                 if annotateExtrema, dataPoint.value == dataPoints.map(\.value).min() && dataPoint.value < 0 {
                     Text("\(dataPoint.value)")
                         .font(.caption)
