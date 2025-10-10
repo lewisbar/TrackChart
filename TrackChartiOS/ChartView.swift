@@ -50,7 +50,7 @@ struct ChartView: View {
                 .lineStyle(StrokeStyle(lineWidth: 1))
             PointMark(x: .value(xLabel, dataPoint.name), y: .value(yLabel, dataPoint.value))
                 .foregroundStyle(primaryColor)
-                .symbolSize(15)
+                .symbolSize(10)
         }
         .applyScrollingBehavior(
             xLabels: dataPoints.map(\.name),
