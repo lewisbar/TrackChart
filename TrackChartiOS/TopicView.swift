@@ -27,6 +27,7 @@ struct TopicView<CounterView: View, ChartView: View>: View {
 
             chartView()
             counterView()
+                .padding()
         }
         .navigationBarBackButtonHidden(true)
         .toolbar { ToolbarItem(placement: .topBarLeading, content: chevronOnlyBackButton) }
