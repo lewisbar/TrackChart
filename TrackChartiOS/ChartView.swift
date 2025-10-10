@@ -95,16 +95,24 @@ struct ChartView: View {
 
     @ViewBuilder
     private func maxPositiveValueAnnotation(for dataPoint: DataPoint) -> some View {
-        if annotateExtrema, dataPoint.value == dataPoints.map(\.value).max() && dataPoint.value > 0 {
+        if annotateExtrema, isMaxPositiveValue(dataPoint.value) {
             annotation(for: dataPoint.value)
         }
     }
 
     @ViewBuilder
     private func minNegativeValueAnnotation(for dataPoint: DataPoint) -> some View {
-        if annotateExtrema, dataPoint.value == dataPoints.map(\.value).min() && dataPoint.value < 0 {
+        if annotateExtrema, isMinNegativeValue(dataPoint.value) {
             annotation(for: dataPoint.value)
         }
+    }
+
+    private func isMaxPositiveValue(_ value: Int) -> Bool {
+        value > 0 && value == dataPoints.map(\.value).max()
+    }
+
+    private func isMinNegativeValue(_ value: Int) -> Bool {
+        value < 0 && value == dataPoints.map(\.value).min()
     }
 
     private func annotation(for value: Int) -> some View {
