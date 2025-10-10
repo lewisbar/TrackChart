@@ -117,8 +117,7 @@ struct ChartView: View {
     private func annotation(for value: Int) -> some View {
         Text("\(value)")
             .font(.caption)
-            .foregroundColor(primaryColor)
-            .background(.white.opacity(0.5), in: RoundedRectangle(cornerRadius: 4))
+            .foregroundColor(pointOutlineColor)
     }
 
     private func xAxisContent() -> some AxisContent {
