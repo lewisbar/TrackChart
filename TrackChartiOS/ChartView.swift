@@ -26,6 +26,7 @@ struct ChartView: View {
     private let yLabel = "Count"
     fileprivate static let fallbackValue = "0"
     private let primaryColor = Color.blue
+    private let secondaryColor = Color.orange
 
     init(values: [Int]) {
         self.dataPoints = values.enumerated().map { index, value in DataPoint(value: value, name: "\(index)") }
@@ -36,7 +37,10 @@ struct ChartView: View {
             AreaMark(x: .value(xLabel, dataPoint.name), y: .value(yLabel, dataPoint.value))
                 .foregroundStyle(
                     LinearGradient(
-                        gradient: Gradient(colors: [primaryColor.opacity(0.4), primaryColor.opacity(0.1)]),
+                        gradient: Gradient(colors: [
+                            primaryColor.opacity(0.4),
+                            secondaryColor.opacity(0.1)
+                        ]),
                         startPoint: .top,
                         endPoint: .bottom
                     )
@@ -46,7 +50,7 @@ struct ChartView: View {
                 .lineStyle(StrokeStyle(lineWidth: 1))
             PointMark(x: .value(xLabel, dataPoint.name), y: .value(yLabel, dataPoint.value))
                 .foregroundStyle(primaryColor)
-                .symbolSize(20)
+                .symbolSize(15)
         }
         .applyScrollingBehavior(
             xLabels: dataPoints.map(\.name),
