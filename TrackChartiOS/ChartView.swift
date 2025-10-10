@@ -55,18 +55,20 @@ struct ChartView: View {
 
     private func areaMark(for dataPoint: DataPoint) -> some ChartContent {
         AreaMark(x: .value(xLabel, dataPoint.label), y: .value(yLabel, dataPoint.value))
-            .foregroundStyle(
-                LinearGradient(
-                    stops: [
-                        .init(color: topColor, location: 0.0),
-                        .init(color: midColor, location: 0.5),
-                        .init(color: bottomColor, location: 1.0)
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-            )
+            .foregroundStyle(areaGradient)
             .interpolationMethod(.catmullRom)
+    }
+
+    private var areaGradient: some ShapeStyle {
+        LinearGradient(
+            stops: [
+                .init(color: topColor, location: 0.0),
+                .init(color: midColor, location: 0.5),
+                .init(color: bottomColor, location: 1.0)
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
     }
 
     private func lineMark(for dataPoint: DataPoint) -> some ChartContent {
