@@ -28,12 +28,14 @@ struct ChartView: View {
     private var pointFillColor: Color { .white }
     private let showPointMarks: Bool
     private let annotateExtrema: Bool
+    private let showAxisLabels: Bool
 
     /// Disabling `showPointMarks` also disables extrema annotation
-    init(values: [Int], showPointMarks: Bool = true, annotateExtrema: Bool = true) {
+    init(values: [Int], showPointMarks: Bool = true, annotateExtrema: Bool = true, showAxisLabels: Bool = true) {
         self.dataPoints = values.enumerated().map { index, value in DataPoint(value: value, label: index + 1) }
         self.showPointMarks = showPointMarks
         self.annotateExtrema = annotateExtrema
+        self.showAxisLabels = showAxisLabels
     }
 
     var body: some View {
@@ -119,25 +121,35 @@ struct ChartView: View {
             .foregroundColor(pointOutlineColor)
     }
 
+    @AxisContentBuilder
     private func xAxisContent() -> some AxisContent {
-        AxisMarks(preset: .aligned, values: .automatic(desiredCount: 4, roundLowerBound: false, roundUpperBound: false)) {
-            AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [2, 2]))
-            AxisValueLabel()
-                .foregroundStyle(.gray)
-                .font(.caption)
+        if showAxisLabels {
+            AxisMarks(preset: .aligned, values: .automatic(desiredCount: 4, roundLowerBound: false, roundUpperBound: false)) {
+                AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [2, 2]))
+
+                AxisValueLabel()
+                    .foregroundStyle(.gray)
+                    .font(.caption)
+            }
         }
     }
 
+    @AxisContentBuilder
     private func yAxisContent() -> some AxisContent {
-        AxisMarks(values: .automatic(desiredCount: 2, roundLowerBound: false, roundUpperBound: false)) { value in
-            AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [2, 2]))
-            AxisTick(stroke: StrokeStyle(lineWidth: 0.5))
-            AxisValueLabel()
-                .foregroundStyle(.gray)
-                .font(.caption)
-            if value.as(Int.self) == 0 {
-                AxisGridLine(stroke: StrokeStyle(lineWidth: 1, dash: []))
-                    .foregroundStyle(.black.opacity(0.5)) // Highlight y=0
+        if showAxisLabels {
+            AxisMarks(values: .automatic(desiredCount: 2, roundLowerBound: false, roundUpperBound: false)) { value in
+                AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [2, 2]))
+
+                AxisTick(stroke: StrokeStyle(lineWidth: 0.5))
+
+                AxisValueLabel()
+                    .foregroundStyle(.gray)
+                    .font(.caption)
+
+                if value.as(Int.self) == 0 {
+                    AxisGridLine(stroke: StrokeStyle(lineWidth: 1, dash: []))
+                        .foregroundStyle(.black.opacity(0.5)) // Highlight y=0
+                }
             }
         }
     }
