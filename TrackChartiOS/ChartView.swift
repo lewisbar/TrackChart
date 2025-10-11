@@ -12,7 +12,7 @@ struct ChartView: View {
     private struct DataPoint: Identifiable, Equatable {
         let id = UUID()
         let value: Int
-        let name: String
+        let label: Int
     }
 
     private let dataPoints: [DataPoint]
@@ -20,104 +20,156 @@ struct ChartView: View {
     @State private var xPosition = fallbackValue
     @State private var visibleLength = 10
     private let maxVisibleLength = 10
-    private var homePosition: String { dataPoints.last?.name ?? Self.fallbackValue }
+    private var homePosition: Int { dataPoints.last?.label ?? Self.fallbackValue }
     private var totalPoints: Int { dataPoints.count }
     private let xLabel = "Data point"
     private let yLabel = "Count"
-    fileprivate static let fallbackValue = "0"
+    fileprivate static let fallbackValue = 1
+
+    private let primaryColor = Color.blue
+    private var topColor: Color { primaryColor.opacity(0.5) }
+    private var midColor: Color { .cyan.opacity(0.3) }
+    private var bottomColor: Color { .teal.opacity(0.1) }
+    private var pointOutlineColor: Color { .cyan }
+    private var pointFillColor: Color { .white }
+    private let showPointMarks = true
+    private let annotateExtrema = true
 
     init(values: [Int]) {
-        self.dataPoints = values.enumerated().map { index, value in DataPoint(value: value, name: "\(index)") }
+        self.dataPoints = values.enumerated().map { index, value in DataPoint(value: value, label: index + 1) }
     }
 
     var body: some View {
-        Chart(dataPoints) { dataPoint in
-            LineMark(x: .value(xLabel, dataPoint.name), y: .value(yLabel, dataPoint.value))
-            PointMark(x: .value(xLabel, dataPoint.name), y: .value(yLabel, dataPoint.value))
-        }
-        .applyScrollingBehavior(
-            xLabels: dataPoints.map(\.name),
-            visibleLength: $visibleLength,
-            xPosition: $xPosition,
-            homePosition: homePosition
+        Chart(dataPoints, content: chartContent)
+            .chartXScale(domain: 1...dataPoints.count)
+            .chartXAxis(content: xAxisContent)
+            .chartYAxis(content: yAxisContent)
+    }
+
+    @ChartContentBuilder
+    private func chartContent(for dataPoint: DataPoint) -> some ChartContent {
+        areaMark(for: dataPoint)
+        lineMark(for: dataPoint)
+        if showPointMarks { pointMark(for: dataPoint) }
+    }
+
+    private func areaMark(for dataPoint: DataPoint) -> some ChartContent {
+        AreaMark(x: .value(xLabel, dataPoint.label), y: .value(yLabel, dataPoint.value))
+            .foregroundStyle(areaGradient)
+            .interpolationMethod(.catmullRom)
+    }
+
+    private var areaGradient: some ShapeStyle {
+        LinearGradient(
+            stops: [
+                .init(color: topColor, location: 0.0),
+                .init(color: midColor, location: 0.5),
+                .init(color: bottomColor, location: 1.0)
+            ],
+            startPoint: .top,
+            endPoint: .bottom
         )
-        .applyZoomingBehavior(visibleLength: $visibleLength, totalPoints: totalPoints)
-    }
-}
-
-private extension View {
-    func applyScrollingBehavior(
-        xLabels: [String],
-        visibleLength: Binding<Int>,
-        xPosition: Binding<String>,
-        homePosition: String
-    ) -> some View {
-        self.modifier(ScrollingBehaviorModifier(
-            xLabels: xLabels,
-            visibleLength: visibleLength,
-            xPosition: xPosition,
-            homePosition: homePosition
-        ))
     }
 
-    func applyZoomingBehavior(
-        visibleLength: Binding<Int>,
-        totalPoints: Int
-    ) -> some View {
-        self.modifier(ZoomingBehaviorModifier(
-            visibleLength: visibleLength,
-            totalPoints: totalPoints
-        ))
+    private func lineMark(for dataPoint: DataPoint) -> some ChartContent {
+        LineMark(x: .value(xLabel, dataPoint.label), y: .value(yLabel, dataPoint.value))
+            .foregroundStyle(primaryColor)
+            .lineStyle(StrokeStyle(lineWidth: 2))
+            .shadow(color: primaryColor.opacity(0.3), radius: 2)
+            .interpolationMethod(.catmullRom)
     }
-}
 
-private struct ScrollingBehaviorModifier: ViewModifier {
-    let xLabels: [String]
-    @Binding var visibleLength: Int
-    @Binding var xPosition: String
-    let homePosition: String
-
-    func body(content: Content) -> some View {
-        content
-            .chartXScale(domain: xLabels.isEmpty ? [ChartView.fallbackValue] : xLabels)
-            .chartXVisibleDomain(length: max(visibleLength, 1))
-            .chartScrollableAxes(.horizontal)
-            .chartScrollPosition(x: $xPosition)
-            .onAppear { xPosition = homePosition }
-            .onChange(of: xLabels) { xPosition = homePosition }
+    private func pointMark(for dataPoint: DataPoint) -> some ChartContent {
+        PointMark(x: .value(xLabel, dataPoint.label), y: .value(yLabel, dataPoint.value))
+            .symbol(symbol: pointSymbol)
+            .annotation(position: .top, spacing: 2) { maxPositiveValueAnnotation(for: dataPoint) }
+            .annotation(position: .bottom, spacing: 2) { minNegativeValueAnnotation(for: dataPoint) }
     }
-}
 
-private struct ZoomingBehaviorModifier: ViewModifier {
-    @Binding var visibleLength: Int
-    let totalPoints: Int
+    private func pointSymbol() -> some View {
+        ZStack {
+            Circle().fill(pointFillColor)
+            Circle().stroke(pointOutlineColor, lineWidth: 2)
+        }
+        .frame(width: 6)
+    }
 
-    func body(content: Content) -> some View {
-        content
-            .highPriorityGesture(
-                MagnificationGesture()
-                    .onChanged { delta in
-                        let sensitivity = 2.0
-                        let step = 2.0 // Fixed step size for consistent changes
-                        let adjustedDelta = delta > 0 ? pow(delta, 0.3) : 1.0 // Stronger dampening for large deltas
-                        let change = (adjustedDelta - 1.0) * sensitivity * step
-                        let newLength = max(5, min(totalPoints, Int(Double(visibleLength) - change.rounded())))
-                        visibleLength = newLength
-                    },
-                including: .all
-            )
-//          .chartXAxis {
-//                AxisMarks(values: stride(from: 0, to: totalPoints, by: max(1, visibleLength / 5)).map { String($0) }) { value in
-//                    if let index = Int(value.as(String.self) ?? ChartView.fallbackValue) {
-//                        AxisValueLabel("\(index)", anchor: .bottom)
-//                        AxisGridLine()
-//                        AxisTick()
-//                    }
-//                }
-//            }
+    @ViewBuilder
+    private func maxPositiveValueAnnotation(for dataPoint: DataPoint) -> some View {
+        if annotateExtrema, isMaxPositiveValue(dataPoint.value) {
+            annotation(for: dataPoint.value)
+        }
+    }
+
+    @ViewBuilder
+    private func minNegativeValueAnnotation(for dataPoint: DataPoint) -> some View {
+        if annotateExtrema, isMinNegativeValue(dataPoint.value) {
+            annotation(for: dataPoint.value)
+        }
+    }
+
+    private func isMaxPositiveValue(_ value: Int) -> Bool {
+        value > 0 && value == dataPoints.map(\.value).max()
+    }
+
+    private func isMinNegativeValue(_ value: Int) -> Bool {
+        value < 0 && value == dataPoints.map(\.value).min()
+    }
+
+    private func annotation(for value: Int) -> some View {
+        Text("\(value)")
+            .font(.caption)
+            .foregroundColor(pointOutlineColor)
+    }
+
+    private func xAxisContent() -> some AxisContent {
+        AxisMarks(preset: .aligned, values: .automatic(desiredCount: 4, roundLowerBound: false, roundUpperBound: false)) {
+            AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [2, 2]))
+            AxisValueLabel()
+                .foregroundStyle(.gray)
+                .font(.caption)
+        }
+    }
+
+    private func yAxisContent() -> some AxisContent {
+        AxisMarks(values: .automatic(desiredCount: 2, roundLowerBound: false, roundUpperBound: false)) { value in
+            AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [2, 2]))
+            AxisTick(stroke: StrokeStyle(lineWidth: 0.5))
+            AxisValueLabel()
+                .foregroundStyle(.gray)
+                .font(.caption)
+            if value.as(Int.self) == 0 {
+                AxisGridLine(stroke: StrokeStyle(lineWidth: 1, dash: []))
+                    .foregroundStyle(.black.opacity(0.5)) // Highlight y=0
+            }
+        }
     }
 }
 
 #Preview {
-    ChartView(values: [0, 2, 1, -2, 3, 4, 3, 5, 8, 7])
+    ScrollView {
+        VStack(spacing: 32) {
+            VStack {
+                Text("Chart 1")
+                ChartView(values: [0, 2, 1, 2, 3, 4, 3, 5, 8, 7])
+            }
+            .card()
+            .frame(height: 200)
+
+            VStack {
+                Text("Chart 2")
+                ChartView(values: [0, -2, -1, -2, -3, -4, -3, -5, -8, -7])
+            }
+            .card()
+            .frame(height: 200)
+
+            VStack {
+                Text("Chart 3")
+                ChartView(values: [0, 2, 1, 2, 3, 4, 3, -1, -2, -3, -4, 5, 8, 7, 2, 1, 2, 3, 4, 3, -1, -2, -3, -4, 5, 8, 7])
+            }
+            .card()
+            .frame(height: 200)
+        }
+        .padding()
+    }
 }
