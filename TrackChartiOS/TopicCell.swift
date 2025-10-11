@@ -23,11 +23,16 @@ struct TopicCell: View {
     private func label() -> some View {
         HStack {
             Text(topic.name)
+                .tint(.primary)
+
             Spacer()
+
             Text(topic.info)
+                .tint(.secondary)
+
             Image(systemName: "chevron.right")
+                .tint(.secondary)
         }
-        .tint(.primary)
     }
 }
 
