@@ -164,7 +164,7 @@ struct ChartView: View {
             .frame(height: 200)
 
             VStack {
-                Text("Chart 2")
+                Text("Chart 3")
                 ChartView(values: [0, 2, 1, 2, 3, 4, 3, -1, -2, -3, -4, 5, 8, 7, 2, 1, 2, 3, 4, 3, -1, -2, -3, -4, 5, 8, 7])
             }
             .card()
