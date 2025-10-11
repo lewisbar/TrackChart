@@ -26,11 +26,14 @@ struct ChartView: View {
     private var bottomColor: Color { .teal.opacity(0.1) }
     private var pointOutlineColor: Color { .cyan }
     private var pointFillColor: Color { .white }
-    private let showPointMarks = true
-    private let annotateExtrema = true
+    private let showPointMarks: Bool
+    private let annotateExtrema: Bool
 
-    init(values: [Int]) {
+    /// Disabling `showPointMarks` also disables extrema annotation
+    init(values: [Int], showPointMarks: Bool = true, annotateExtrema: Bool = true) {
         self.dataPoints = values.enumerated().map { index, value in DataPoint(value: value, label: index + 1) }
+        self.showPointMarks = showPointMarks
+        self.annotateExtrema = annotateExtrema
     }
 
     var body: some View {
