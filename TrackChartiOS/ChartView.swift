@@ -17,14 +17,8 @@ struct ChartView: View {
 
     private let dataPoints: [DataPoint]
 
-    @State private var xPosition = fallbackValue
-    @State private var visibleLength = 10
-    private let maxVisibleLength = 10
-    private var homePosition: Int { dataPoints.last?.label ?? Self.fallbackValue }
-    private var totalPoints: Int { dataPoints.count }
     private let xLabel = "Data point"
     private let yLabel = "Count"
-    fileprivate static let fallbackValue = 1
 
     private let primaryColor = Color.blue
     private var topColor: Color { primaryColor.opacity(0.5) }
