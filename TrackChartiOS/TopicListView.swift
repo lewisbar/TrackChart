@@ -23,8 +23,9 @@ struct TopicListView: View {
     private func list(of topics: [TopicCellModel]) -> some View {
         List($topics, editActions: .all) { $topic in
             TopicCell(topic: topic, showTopic: showTopic)
-                .card(shadowRadius: 1)
+                .card()
                 .listRowSeparator(.hidden)
+                .frame(maxHeight: 150)
         }
     }
 

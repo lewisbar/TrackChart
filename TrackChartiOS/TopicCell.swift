@@ -22,14 +22,23 @@ struct TopicCell: View {
 
     private func label() -> some View {
         HStack {
-            Text(topic.name)
-                .tint(.primary)
+            VStack {
+                HStack(alignment: .center) {
+                    Text(topic.name)
+                        .tint(.primary)
+                        .font(.title3)
 
-            Spacer()
+                    Spacer()
 
-            Text(topic.info)
-                .tint(.secondary)
+                    Text(topic.info)
+                        .tint(.secondary)
+                        .font(.caption)
+                }
+                .padding([.horizontal, .bottom])
 
+                ChartView(values: [1, -2, 3, 5, 0, 4], showPointMarks: false, annotateExtrema: false, showAxisLabels: false)
+                    .padding(.horizontal)
+            }
             Image(systemName: "chevron.right")
                 .tint(.secondary)
         }
@@ -38,4 +47,7 @@ struct TopicCell: View {
 
 #Preview {
         TopicCell(topic: TopicCellModel(id: UUID(), name: "Daily Pages Read", info: "17 entries"), showTopic: { _ in })
+        .frame(height: 140)
+        .card()
+        .padding()
 }
