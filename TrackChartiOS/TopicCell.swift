@@ -13,7 +13,7 @@ struct TopicCell: View {
     let showTopic: (UUID) -> Void
 
     var body: some View {
-        Button(action: action, label: label).card()
+        Button(action: action, label: label)
     }
 
     private func action() {
@@ -37,5 +37,5 @@ struct TopicCell: View {
 }
 
 #Preview {
-    TopicCell(topic: TopicCellModel(id: UUID(), name: "Daily Pages Read", info: "17 entries"), showTopic: { _ in })
+        TopicCell(topic: TopicCellModel(id: UUID(), name: "Daily Pages Read", info: "17 entries"), showTopic: { _ in })
 }
