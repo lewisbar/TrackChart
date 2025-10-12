@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ChartPlaceholderView: View {
     var body: some View {
-        Text("No data yet.")
+        Text("No data yet")
             .foregroundStyle(.secondary)
             .tint(.secondary)
             .multilineTextAlignment(.center)
