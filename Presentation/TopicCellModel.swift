@@ -21,9 +21,11 @@ public struct TopicCellModel: Identifiable, Hashable {
     }
 
     public init(from topic: Topic) {
+        let infoPostfix = topic.entries.count == 1 ? "entry" : "entries"
+
         self.id = topic.id
         self.name = topic.name
-        self.info = "\(topic.entries.count) entries"
+        self.info = "\(topic.entries.count) \(infoPostfix)"
         self.entries = topic.entries
     }
 }

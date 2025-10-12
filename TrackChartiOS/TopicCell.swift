@@ -60,6 +60,6 @@ struct TopicCell: View {
     TopicCell(topic: TopicCellModel(id: UUID(), name: "Daily Pages Read", info: "0 entries", entries: []), showTopic: { _ in })
         .padding()
 
-    TopicCell(topic: TopicCellModel(id: UUID(), name: "Daily Pages Read", info: "17 entries", entries: [1, 2, 4, 8, 16, -1, -2]), showTopic: { _ in })
+    TopicCell(topic: TopicCellModel(id: UUID(), name: "Daily Pages Read", info: "17 entries", entries: [1]), showTopic: { _ in })
         .padding()
 }
