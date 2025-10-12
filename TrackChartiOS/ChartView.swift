@@ -8,7 +8,7 @@
 import SwiftUI
 import Charts
 
-struct ChartView: View {
+struct ChartView<Placeholder: View>: View {
     private struct DataPoint: Identifiable, Equatable {
         let id = UUID()
         let value: Int
@@ -29,20 +29,32 @@ struct ChartView: View {
     private let showPointMarks: Bool
     private let annotateExtrema: Bool
     private let showAxisLabels: Bool
+    @ViewBuilder private let placeholder: () -> Placeholder
 
     /// Disabling `showPointMarks` also disables extrema annotation
-    init(values: [Int], showPointMarks: Bool = true, annotateExtrema: Bool = true, showAxisLabels: Bool = true) {
+    init(
+        values: [Int],
+        showPointMarks: Bool = true,
+        annotateExtrema: Bool = true,
+        showAxisLabels: Bool = true,
+        placeholder: @escaping () -> Placeholder = ChartPlaceholderView.init
+    ) {
         self.dataPoints = values.enumerated().map { index, value in DataPoint(value: value, label: index + 1) }
         self.showPointMarks = showPointMarks
         self.annotateExtrema = annotateExtrema
         self.showAxisLabels = showAxisLabels
+        self.placeholder = placeholder
     }
 
     var body: some View {
-        Chart(dataPoints, content: chartContent)
-            .chartXScale(domain: 1...dataPoints.count)
-            .chartXAxis(content: xAxisContent)
-            .chartYAxis(content: yAxisContent)
+        if !dataPoints.isEmpty {
+            Chart(dataPoints, content: chartContent)
+                .chartXScale(domain: 1...dataPoints.count)
+                .chartXAxis(content: xAxisContent)
+                .chartYAxis(content: yAxisContent)
+        } else {
+            placeholder()
+        }
     }
 
     @ChartContentBuilder
@@ -175,6 +187,13 @@ struct ChartView: View {
             VStack {
                 Text("Chart 3")
                 ChartView(values: [0, 2, 1, 2, 3, 4, 3, -1, -2, -3, -4, 5, 8, 7, 2, 1, 2, 3, 4, 3, -1, -2, -3, -4, 5, 8, 7])
+            }
+            .card()
+            .frame(height: 200)
+
+            VStack {
+                Text("Chart 4")
+                ChartView(values: [], placeholder: { ChartPlaceholderView().font(.callout).padding(.bottom)})
             }
             .card()
             .frame(height: 200)

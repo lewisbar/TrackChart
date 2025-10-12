@@ -36,7 +36,12 @@ struct TopicCell: View {
                 }
                 .padding([.horizontal, .bottom])
 
-                ChartView(values: [1, -2, 3, 5, 0, 4], showPointMarks: false, annotateExtrema: false, showAxisLabels: false)
+                ChartView(
+                    values: [1, -2, 3, 5, 0, 4],
+                    showPointMarks: false,
+                    annotateExtrema: false,
+                    showAxisLabels: false,
+                    placeholder: { ChartPlaceholderView().font(.callout).padding(.bottom, 24) })
                     .padding(.horizontal)
             }
             Image(systemName: "chevron.right")

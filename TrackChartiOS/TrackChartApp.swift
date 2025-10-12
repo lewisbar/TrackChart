@@ -53,10 +53,6 @@ struct TrackChartApp: App {
 
     @ViewBuilder
     private func makeChartView(for topic: Topic) -> some View {
-        if !topic.entries.isEmpty {
-            ChartView(values: topic.entries)
-        } else {
-            ChartPlaceholderView()
-        }
+        ChartView(values: topic.entries)
     }
 }
