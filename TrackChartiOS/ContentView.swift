@@ -12,7 +12,6 @@ struct ContentView<MainView: View>: View {
 
     var body: some View {
         mainView()
-            .padding()
     }
 }
 
