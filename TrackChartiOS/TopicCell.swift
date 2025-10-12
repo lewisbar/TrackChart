@@ -37,7 +37,7 @@ struct TopicCell: View {
                 .padding([.horizontal, .bottom])
 
                 ChartView(
-                    values: [1, -2, 3, 5, 0, 4],
+                    values: topic.entries,
                     showPointMarks: false,
                     annotateExtrema: false,
                     showAxisLabels: false,
@@ -54,8 +54,12 @@ struct TopicCell: View {
 }
 
 #Preview {
-        TopicCell(topic: TopicCellModel(id: UUID(), name: "Daily Pages Read", info: "17 entries"), showTopic: { _ in })
-        .frame(height: 140)
-        .card()
+    TopicCell(topic: TopicCellModel(id: UUID(), name: "Daily Pages Read", info: "17 entries", entries: [1, 2, 4, 8, 16, -1, -2]), showTopic: { _ in })
+        .padding()
+
+    TopicCell(topic: TopicCellModel(id: UUID(), name: "Daily Pages Read", info: "0 entries", entries: []), showTopic: { _ in })
+        .padding()
+
+    TopicCell(topic: TopicCellModel(id: UUID(), name: "Daily Pages Read", info: "17 entries", entries: [1, 2, 4, 8, 16, -1, -2]), showTopic: { _ in })
         .padding()
 }
