@@ -61,7 +61,7 @@ struct ChartView<Placeholder: View>: View {
     private func chartContent(for dataPoint: DataPoint) -> some ChartContent {
         areaMark(for: dataPoint)
         lineMark(for: dataPoint)
-        if showPointMarks { pointMark(for: dataPoint) }
+        if showPointMarks || dataPoints.count == 1 { pointMark(for: dataPoint) }
     }
 
     private func areaMark(for dataPoint: DataPoint) -> some ChartContent {
