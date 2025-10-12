@@ -22,13 +22,13 @@ struct TopicView<CounterView: View, ChartView: View>: View {
                 .minimumScaleFactor(0.5)
                 .padding(.top, 8)
                 .padding(.bottom, 4)
-                .padding(.horizontal, 8)
                 .focused($isTextFieldFocused)
 
             chartView()
             counterView()
-                .padding()
+                .padding(.vertical)
         }
+        .padding(.horizontal)
         .navigationBarBackButtonHidden(true)
         .toolbar { ToolbarItem(placement: .topBarLeading, content: chevronOnlyBackButton) }
     }
