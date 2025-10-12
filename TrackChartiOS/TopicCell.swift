@@ -27,6 +27,7 @@ struct TopicCell: View {
                     Text(topic.name)
                         .tint(.primary)
                         .font(.title3)
+                        .minimumScaleFactor(0.5)
 
                     Spacer()
 
