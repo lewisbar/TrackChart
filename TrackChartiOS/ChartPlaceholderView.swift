@@ -2,17 +2,19 @@
 //  ChartPlaceholderView.swift
 //  TrackChart
 //
-//  Created by LennartWisbar on 17.09.25.
+//  Created by Lennart Wisbar on 17.09.25.
 //
 
 import SwiftUI
 
 struct ChartPlaceholderView: View {
     var body: some View {
-        Text("Start adding data points to see chart.")
+        Text("No data yet")
+            .foregroundStyle(.secondary)
+            .tint(.secondary)
             .multilineTextAlignment(.center)
-            .frame(maxHeight: .infinity, alignment: .center)
-            .padding(.bottom, 50)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+            .ignoresSafeArea()
     }
 }
 

@@ -8,7 +8,7 @@
 import SwiftUI
 import Charts
 
-struct ChartView: View {
+struct ChartView<Placeholder: View>: View {
     private struct DataPoint: Identifiable, Equatable {
         let id = UUID()
         let value: Int
@@ -17,14 +17,8 @@ struct ChartView: View {
 
     private let dataPoints: [DataPoint]
 
-    @State private var xPosition = fallbackValue
-    @State private var visibleLength = 10
-    private let maxVisibleLength = 10
-    private var homePosition: Int { dataPoints.last?.label ?? Self.fallbackValue }
-    private var totalPoints: Int { dataPoints.count }
     private let xLabel = "Data point"
     private let yLabel = "Count"
-    fileprivate static let fallbackValue = 1
 
     private let primaryColor = Color.blue
     private var topColor: Color { primaryColor.opacity(0.5) }
@@ -32,25 +26,42 @@ struct ChartView: View {
     private var bottomColor: Color { .teal.opacity(0.1) }
     private var pointOutlineColor: Color { .cyan }
     private var pointFillColor: Color { .white }
-    private let showPointMarks = true
-    private let annotateExtrema = true
+    private let showPointMarks: Bool
+    private let annotateExtrema: Bool
+    private let showAxisLabels: Bool
+    @ViewBuilder private let placeholder: () -> Placeholder
 
-    init(values: [Int]) {
+    /// Disabling `showPointMarks` also disables extrema annotation
+    init(
+        values: [Int],
+        showPointMarks: Bool = true,
+        annotateExtrema: Bool = true,
+        showAxisLabels: Bool = true,
+        placeholder: @escaping () -> Placeholder = ChartPlaceholderView.init
+    ) {
         self.dataPoints = values.enumerated().map { index, value in DataPoint(value: value, label: index + 1) }
+        self.showPointMarks = showPointMarks
+        self.annotateExtrema = annotateExtrema
+        self.showAxisLabels = showAxisLabels
+        self.placeholder = placeholder
     }
 
     var body: some View {
-        Chart(dataPoints, content: chartContent)
-            .chartXScale(domain: 1...dataPoints.count)
-            .chartXAxis(content: xAxisContent)
-            .chartYAxis(content: yAxisContent)
+        if !dataPoints.isEmpty {
+            Chart(dataPoints, content: chartContent)
+                .chartXScale(domain: 1...dataPoints.count)
+                .chartXAxis(content: xAxisContent)
+                .chartYAxis(content: yAxisContent)
+        } else {
+            placeholder()
+        }
     }
 
     @ChartContentBuilder
     private func chartContent(for dataPoint: DataPoint) -> some ChartContent {
         areaMark(for: dataPoint)
         lineMark(for: dataPoint)
-        if showPointMarks { pointMark(for: dataPoint) }
+        if showPointMarks || dataPoints.count == 1 { pointMark(for: dataPoint) }
     }
 
     private func areaMark(for dataPoint: DataPoint) -> some ChartContent {
@@ -122,25 +133,35 @@ struct ChartView: View {
             .foregroundColor(pointOutlineColor)
     }
 
+    @AxisContentBuilder
     private func xAxisContent() -> some AxisContent {
-        AxisMarks(preset: .aligned, values: .automatic(desiredCount: 4, roundLowerBound: false, roundUpperBound: false)) {
-            AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [2, 2]))
-            AxisValueLabel()
-                .foregroundStyle(.gray)
-                .font(.caption)
+        if showAxisLabels {
+            AxisMarks(preset: .aligned, values: .automatic(desiredCount: 4, roundLowerBound: false, roundUpperBound: false)) {
+                AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [2, 2]))
+
+                AxisValueLabel()
+                    .foregroundStyle(.gray)
+                    .font(.caption)
+            }
         }
     }
 
+    @AxisContentBuilder
     private func yAxisContent() -> some AxisContent {
-        AxisMarks(values: .automatic(desiredCount: 2, roundLowerBound: false, roundUpperBound: false)) { value in
-            AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [2, 2]))
-            AxisTick(stroke: StrokeStyle(lineWidth: 0.5))
-            AxisValueLabel()
-                .foregroundStyle(.gray)
-                .font(.caption)
-            if value.as(Int.self) == 0 {
-                AxisGridLine(stroke: StrokeStyle(lineWidth: 1, dash: []))
-                    .foregroundStyle(.black.opacity(0.5)) // Highlight y=0
+        if showAxisLabels {
+            AxisMarks(values: .automatic(desiredCount: 2, roundLowerBound: false, roundUpperBound: false)) { value in
+                AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [2, 2]))
+
+                AxisTick(stroke: StrokeStyle(lineWidth: 0.5))
+
+                AxisValueLabel()
+                    .foregroundStyle(.gray)
+                    .font(.caption)
+
+                if value.as(Int.self) == 0 {
+                    AxisGridLine(stroke: StrokeStyle(lineWidth: 1, dash: []))
+                        .foregroundStyle(.black.opacity(0.5)) // Highlight y=0
+                }
             }
         }
     }
@@ -166,6 +187,13 @@ struct ChartView: View {
             VStack {
                 Text("Chart 3")
                 ChartView(values: [0, 2, 1, 2, 3, 4, 3, -1, -2, -3, -4, 5, 8, 7, 2, 1, 2, 3, 4, 3, -1, -2, -3, -4, 5, 8, 7])
+            }
+            .card()
+            .frame(height: 200)
+
+            VStack {
+                Text("Chart 4")
+                ChartView(values: [], placeholder: { ChartPlaceholderView().font(.callout).padding(.bottom)})
             }
             .card()
             .frame(height: 200)

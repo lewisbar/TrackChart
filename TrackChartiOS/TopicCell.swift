@@ -22,15 +22,48 @@ struct TopicCell: View {
 
     private func label() -> some View {
         HStack {
-            Text(topic.name)
-            Spacer()
-            Text(topic.info)
+            VStack {
+                HStack(alignment: .center) {
+                    Text(topic.name)
+                        .tint(.primary)
+                        .font(.title3)
+                        .minimumScaleFactor(0.5)
+
+                    Spacer()
+
+                    Text(topic.info)
+                        .tint(.secondary)
+                        .font(.caption)
+                }
+                .padding([.horizontal, .bottom])
+
+                ChartView(
+                    values: topic.entries,
+                    showPointMarks: false,
+                    annotateExtrema: false,
+                    showAxisLabels: false,
+                    placeholder: { ChartPlaceholderView().font(.footnote).padding(.bottom, 30) }
+                )
+                .padding(.horizontal)
+            }
             Image(systemName: "chevron.right")
+                .tint(.secondary)
         }
-        .tint(.primary)
+        .card()
+        .frame(height: 150)
     }
 }
 
 #Preview {
-    TopicCell(topic: TopicCellModel(id: UUID(), name: "Daily Pages Read", info: "17 entries"), showTopic: { _ in })
+    TopicCell(topic: TopicCellModel(id: UUID(), name: "Daily Pages Read", info: "7 entries", entries: [1, 2, 4, 8, 16, -1, -2]), showTopic: { _ in })
+        .padding()
+
+    TopicCell(topic: TopicCellModel(id: UUID(), name: "Pushups", info: "10 entries", entries: [1, 2, 4, 8, -16, -1, -2, 6, 7, 8]), showTopic: { _ in })
+        .padding()
+
+    TopicCell(topic: TopicCellModel(id: UUID(), name: "Hours Studied", info: "0 entries", entries: []), showTopic: { _ in })
+        .padding()
+
+    TopicCell(topic: TopicCellModel(id: UUID(), name: "Some Other Topic", info: "1 entry", entries: [1]), showTopic: { _ in })
+        .padding()
 }

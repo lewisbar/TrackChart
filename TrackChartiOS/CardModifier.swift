@@ -32,8 +32,20 @@ struct CardModifier: ViewModifier {
 }
 
 extension View {
-    func card(cornerRadius: CGFloat = 10, backgroundColor: Color = .white, shadowRadius: CGFloat = 5, padding: CGFloat? = nil) -> some View {
-        modifier(CardModifier(cornerRadius: cornerRadius, backgroundColor: backgroundColor, shadowRadius: shadowRadius, padding: padding))
+    func card(
+        cornerRadius: CGFloat = 10,
+        backgroundColor: Color = Color(uiColor: .systemBackground),
+        shadowRadius: CGFloat = 5,
+        padding: CGFloat? = nil
+    ) -> some View {
+        modifier(
+            CardModifier(
+                cornerRadius: cornerRadius,
+                backgroundColor: backgroundColor,
+                shadowRadius: shadowRadius,
+                padding: padding
+            )
+        )
     }
 }
 

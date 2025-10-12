@@ -23,6 +23,7 @@ struct TopicListView: View {
     private func list(of topics: [TopicCellModel]) -> some View {
         List($topics, editActions: .all) { $topic in
             TopicCell(topic: topic, showTopic: showTopic)
+                .listRowSeparator(.hidden)
         }
     }
 
@@ -37,9 +38,9 @@ struct TopicListView: View {
 
 #Preview {
     @Previewable @State var topics = [
-        TopicCellModel(id: UUID(), name: "Daily Pages Read", info: "15 entries"),
-        TopicCellModel(id: UUID(), name: "Pushups", info: "230 entries"),
-        TopicCellModel(id: UUID(), name: "Hours Studied", info: "32 entries")
+        TopicCellModel(id: UUID(), name: "Daily Pages Read", info: "15 entries", entries: [1, 2, 4, 8, 1]),
+        TopicCellModel(id: UUID(), name: "Pushups", info: "230 entries", entries: [4, 5, 2, -4, -5, -2, 9, 7, 4, 0]),
+        TopicCellModel(id: UUID(), name: "Hours Studied", info: "0 entries", entries: [])
     ]
 
     TopicListView(topics: $topics, showTopic: { _ in }, createTopic: {})
