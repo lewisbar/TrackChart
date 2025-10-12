@@ -41,12 +41,15 @@ struct TopicCell: View {
                     showPointMarks: false,
                     annotateExtrema: false,
                     showAxisLabels: false,
-                    placeholder: { ChartPlaceholderView().font(.callout).padding(.bottom, 24) })
-                    .padding(.horizontal)
+                    placeholder: { ChartPlaceholderView().font(.footnote).padding(.bottom, 30) }
+                )
+                .padding(.horizontal)
             }
             Image(systemName: "chevron.right")
                 .tint(.secondary)
         }
+        .card()
+        .frame(height: 150)
     }
 }
 
