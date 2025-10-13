@@ -12,11 +12,13 @@ public class UserDefaultsTopicPersistenceService: TopicPersistenceService {
         let id: UUID
         let name: String
         let entries: [Int]
+        let unsubmittedValue: Int
 
         init(from topic: Topic) {
             self.id = topic.id
             self.name = topic.name
             self.entries = topic.entries
+            self.unsubmittedValue = topic.unsubmittedValue
         }
     }
 
@@ -85,6 +87,6 @@ public class UserDefaultsTopicPersistenceService: TopicPersistenceService {
             .compactMap { $0 as? String }
             .compactMap { userDefaults.data(forKey: topicKeyForID($0)) }
             .compactMap { try JSONDecoder().decode(UserDefaultsTopic.self, from: $0) }
-            .map { Topic(id: $0.id, name: $0.name, entries: $0.entries) } ?? []
+            .map { Topic(id: $0.id, name: $0.name, entries: $0.entries, unsubmittedValue: $0.unsubmittedValue) } ?? []
     }
 }
