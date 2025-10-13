@@ -167,6 +167,20 @@ class AppModelTests {
         #expect(testComponents.sut.alertMessage == ("Error", error.localizedDescription))
     }
 
+    @Test func setUnsubmittedValue() {
+        let originalTopic = topic(unsubmittedValue: 0)
+        let newValue = 5
+        let testComponents = makeSUT(withTopics: [originalTopic])
+        testComponents.sut.loadTopics()
+
+        testComponents.sut.setUnsubmittedValue(to: newValue, for: originalTopic)
+
+        let updatedTopic = testComponents.sut.topic(for: originalTopic.id)
+        let expectedTopic = topic(id: originalTopic.id, name: originalTopic.name, entries: originalTopic.entries, unsubmittedValue: newValue)
+        #expect(updatedTopic == expectedTopic)
+        #expect(testComponents.sut.topicCellModels == [TopicCellModel(from: expectedTopic)])
+    }
+
     @Test func submitValueToTopic_updatesStoreAndCellModels() {
         let originalTopic = topic(entries: [-1, 0])
         let newValue = 1
@@ -403,8 +417,8 @@ class AppModelTests {
     private weak var weakNavigator: Navigator?
     private weak var weakPersistenceService: TopicPersistenceServiceStub?
 
-    private func topic(id: UUID = UUID(), name: String = "a topic", entries: [Int] = [.random(in: -2...10)]) -> Topic {
-        Topic(id: id, name: name, entries: entries)
+    private func topic(id: UUID = UUID(), name: String = "a topic", entries: [Int] = [.random(in: -2...10)], unsubmittedValue: Int = 0) -> Topic {
+        Topic(id: id, name: name, entries: entries, unsubmittedValue: unsubmittedValue)
     }
 
     private func anyNSError() -> NSError {
