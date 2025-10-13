@@ -181,6 +181,23 @@ class AppModelTests {
         #expect(testComponents.sut.topicCellModels == [TopicCellModel(from: expectedTopic)])
     }
 
+    @Test func setUnsubmittedValue_onError_doesNotChangeStore_andHandlesError() {
+        let originalTopic = topic(unsubmittedValue: 0)
+        let newValue = 5
+        let testComponents = makeSUT(withTopics: [originalTopic])
+        testComponents.sut.loadTopics()
+        let error = anyNSError()
+        testComponents.persistenceService.error = error
+
+        testComponents.sut.setUnsubmittedValue(to: newValue, for: originalTopic)
+
+        let targetedTopic = testComponents.sut.topic(for: originalTopic.id)
+        #expect(targetedTopic == originalTopic)
+        #expect(testComponents.sut.topicCellModels == [TopicCellModel(from: originalTopic)])
+        #expect(testComponents.sut.isAlertViewPresented)
+        #expect(testComponents.sut.alertMessage == ("Error", error.localizedDescription))
+    }
+
     @Test func submitValueToTopic_updatesStoreAndCellModels() {
         let originalTopic = topic(entries: [-1, 0])
         let newValue = 1

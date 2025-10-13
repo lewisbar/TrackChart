@@ -70,7 +70,7 @@ public class AppModel {
 
     public func setUnsubmittedValue(to newValue: Int, for topic: Topic) {
         let updatedTopic = Topic(id: topic.id, name: topic.name, entries: topic.entries, unsubmittedValue: newValue)
-        do { try store.update(updatedTopic) } catch { }
+        do { try store.update(updatedTopic) } catch { handle(error) }
         // Cell models don't need to be updated, as they don't contain unsubmitted values
     }
 
