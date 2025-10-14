@@ -39,7 +39,7 @@ public class AppModel {
     }
 
     public func navigateToNewTopic() {
-        let newTopic = Topic(id: UUID(), name: "", entries: [])
+        let newTopic = Topic(id: UUID(), name: "", entries: [], unsubmittedValue: 0)
         do {
             try store.add(newTopic)
             navigator.showDetail(for: NavigationTopic(from: newTopic))
@@ -90,7 +90,7 @@ public class AppModel {
     }
 
     private func updateEntries(for topic: Topic, to newEntries: [Int]) {
-        let updatedTopic = Topic(id: topic.id, name: topic.name, entries: newEntries)
+        let updatedTopic = Topic(id: topic.id, name: topic.name, entries: newEntries, unsubmittedValue: topic.unsubmittedValue)
         do { try store.update(updatedTopic) } catch { handle(error) }
         updateCellModelsFromStore()
     }

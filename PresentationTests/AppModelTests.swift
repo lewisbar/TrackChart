@@ -114,7 +114,7 @@ class AppModelTests {
 
         testComponents.sut.currentTopicName = newName
 
-        let expectedTopic = Topic(id: topic.id, name: newName, entries: topic.entries)
+        let expectedTopic = Topic(id: topic.id, name: newName, entries: topic.entries, unsubmittedValue: topic.unsubmittedValue)
         #expect(testComponents.sut.topicCellModels == [TopicCellModel(from: expectedTopic)])
         #expect(testComponents.store.topics == [expectedTopic])
     }
@@ -145,7 +145,7 @@ class AppModelTests {
 
         testComponents.sut.currentEntries = newEntries
 
-        let expectedTopic = Topic(id: topic.id, name: topic.name, entries: newEntries)
+        let expectedTopic = Topic(id: topic.id, name: topic.name, entries: newEntries, unsubmittedValue: topic.unsubmittedValue)
         #expect(testComponents.sut.topicCellModels == [TopicCellModel(from: expectedTopic)])
         #expect(testComponents.store.topics == [expectedTopic])
     }
@@ -241,7 +241,6 @@ class AppModelTests {
 
     @Test func removeLastValueFromTopic_onError_doesNotUpdate() {
         let originalTopic = topic(entries: [-1, 0])
-        let newValue = 1
         let testComponents = makeSUT(withTopics: [originalTopic])
         testComponents.sut.loadTopics()
         let error = anyNSError()

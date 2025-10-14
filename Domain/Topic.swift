@@ -13,7 +13,7 @@ public struct Topic: Equatable {
     public let entries: [Int]
     public let unsubmittedValue: Int
 
-    public init(id: UUID, name: String, entries: [Int], unsubmittedValue: Int = 0) {
+    public init(id: UUID, name: String, entries: [Int], unsubmittedValue: Int) {
         self.id = id
         self.name = name
         self.entries = entries
