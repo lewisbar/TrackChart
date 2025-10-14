@@ -14,23 +14,3 @@ struct ContentView<MainView: View>: View {
         mainView()
     }
 }
-
-#Preview {
-    @Previewable @State var values = [1, 2, 4, 5, 0, -4, -3, 2, 4, 7, 1]
-    @Previewable @State var title = "Title"
-
-    ContentView(
-        mainView: {
-            TopicView(
-                title: $title,
-                counterView: {
-                    CounterView(
-                        submitNewValue: { values.append($0) },
-                        deleteLastValue: { values.removeLast() }
-                    )
-                },
-                chartView: { ChartView(values: values) }
-            )
-        }
-    )
-}
