@@ -11,15 +11,21 @@ import Domain
 @Observable
 class TopicViewModel {
     let id: UUID
-    var name: String
+    var name: String { didSet { updateTopic(currentTopic) } }
     var entries: [Int]
     var unsubmittedValue: Int
+    let updateTopic: (Topic) -> Void
 
-    init(topic: Topic) {
+    private var currentTopic: Topic {
+        Topic(id: id, name: name, entries: entries, unsubmittedValue: unsubmittedValue)
+    }
+
+    init(topic: Topic, updateTopic: @escaping (Topic) -> Void) {
         self.id = topic.id
         self.name = topic.name
         self.entries = topic.entries
         self.unsubmittedValue = topic.unsubmittedValue
+        self.updateTopic = updateTopic
     }
 }
 
@@ -52,10 +58,22 @@ class TopicViewModelTests {
         #expect(triggered, "Expected observation to be triggered after adding value")
     }
 
+    @Test func changeOfName_sendsUpdatedTopic() {
+        let originalTopic = makeTopic(name: "old name")
+        var capturedTopic: Topic?
+        let sut = makeSUT(topic: originalTopic, updateTopic: { capturedTopic = $0 })
+        let newName = "new name"
+
+        sut.name = newName
+
+        let expectedTopic = Topic(id: originalTopic.id, name: newName, entries: originalTopic.entries, unsubmittedValue: originalTopic.unsubmittedValue)
+        #expect(capturedTopic == expectedTopic)
+    }
+
     // MARK: - Helpers
 
-    private func makeSUT(topic: Topic? = nil) -> TopicViewModel {
-        let sut = TopicViewModel(topic: topic ?? makeTopic())
+    private func makeSUT(topic: Topic? = nil, updateTopic: @escaping (Topic) -> Void = { _ in }) -> TopicViewModel {
+        let sut = TopicViewModel(topic: topic ?? makeTopic(), updateTopic: updateTopic)
         weakSUT = sut
         return sut
     }
