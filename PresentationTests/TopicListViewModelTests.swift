@@ -11,10 +11,12 @@ import Domain
 
 @Observable
 class TopicListViewModel {
-    var topics: [TopicCellModel]
+    var topics: [TopicCellModel] { didSet { updateTopicList(topics.map { $0.id }) } }
+    private let updateTopicList: ([UUID]) -> Void
 
-    init(topics: [Topic]) {
+    init(topics: [Topic], updateTopicList: @escaping ([UUID]) -> Void) {
         self.topics = topics.map(TopicCellModel.init)
+        self.updateTopicList = updateTopicList
     }
 }
 
@@ -46,10 +48,23 @@ class TopicListViewModelTests {
         #expect(triggered, "Expected observation to be triggered after adding value")
     }
 
+    @Test func onChangeOfTopics_sendUpdate() {
+        let topic1 = topic(name: "a topic", entries: [5, 6], unsubmittedValue: 4)
+        let topic2 = topic(name: "another topic", entries: [-12, 0], unsubmittedValue: 0)
+        let topic3 = topic(name: "a third topic", entries: [0], unsubmittedValue: -1)
+        var capturedIDList: [UUID]?
+        let sut = makeSUT(topics: [topic1, topic2, topic3], updateTopicList: { capturedIDList = $0 })
+        let newList = [topic3, topic1]
+
+        sut.topics = newList.map(TopicCellModel.init)
+
+        #expect(capturedIDList == newList.map(\.id))
+    }
+
     // MARK: - Helpers
 
-    private func makeSUT(topics: [Topic] = []) -> TopicListViewModel {
-        let sut = TopicListViewModel(topics: topics)
+    private func makeSUT(topics: [Topic] = [], updateTopicList: @escaping ([UUID]) -> Void = { _ in }) -> TopicListViewModel {
+        let sut = TopicListViewModel(topics: topics, updateTopicList: updateTopicList)
         weakSUT = sut
         return sut
     }
