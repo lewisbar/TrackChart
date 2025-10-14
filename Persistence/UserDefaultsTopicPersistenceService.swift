@@ -20,6 +20,14 @@ public class UserDefaultsTopicPersistenceService: TopicPersistenceService {
             self.entries = topic.entries
             self.unsubmittedValue = topic.unsubmittedValue
         }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            id = try container.decode(UUID.self, forKey: .id)
+            name = try container.decode(String.self, forKey: .name)
+            entries = try container.decode([Int].self, forKey: .entries)
+            unsubmittedValue = try container.decodeIfPresent(Int.self, forKey: .unsubmittedValue) ?? 0
+        }
     }
 
     private let userDefaults: UserDefaults
