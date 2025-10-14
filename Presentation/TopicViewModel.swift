@@ -13,7 +13,7 @@ public class TopicViewModel {
     public var name: String { didSet { updateTopic(currentTopic) } }
     public var entries: [Int] { didSet { updateTopic(currentTopic) } }
     public var unsubmittedValue: Int { didSet { updateTopic(currentTopic) } }
-    public let updateTopic: (Topic) -> Void
+    private let updateTopic: (Topic) -> Void
 
     private var currentTopic: Topic {
         Topic(id: id, name: name, entries: entries, unsubmittedValue: unsubmittedValue)
