@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CounterView: View {
-    @State private var count = 0
+    @Binding var count: Int
     let submitNewValue: (Int) -> Void
     let deleteLastValue: () -> Void
 
@@ -72,6 +72,8 @@ struct CounterView: View {
 }
 
 #Preview {
-    CounterView(submitNewValue: { _ in }, deleteLastValue: {})
+    @Previewable @State var count = 0
+
+    CounterView(count: $count, submitNewValue: { _ in }, deleteLastValue: {})
 //        .environment(\.layoutDirection, .rightToLeft)
 }

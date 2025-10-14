@@ -43,16 +43,7 @@ struct TrackChartApp: App {
     @ViewBuilder
     private func makeTopicView(for navigationTopic: NavigationTopic) -> some View {
         if let topic = model.topic(for: navigationTopic.id) {
-            TopicView(title: $model.currentTopicName, counterView: { makeCounterView(for: topic) }, chartView: { makeChartView(for: topic) })
+            TopicView(model: TopicViewModel(topic: topic, updateTopic: model.update))
         }
-    }
-
-    private func makeCounterView(for topic: Topic) -> some View {
-        CounterView(submitNewValue: { model.submit($0, to: topic) }, deleteLastValue: { model.removeLastValue(from: topic) })
-    }
-
-    @ViewBuilder
-    private func makeChartView(for topic: Topic) -> some View {
-        ChartView(values: topic.entries)
     }
 }
