@@ -12,7 +12,7 @@ import Domain
 class TopicViewModel {
     let id: UUID
     var name: String { didSet { updateTopic(currentTopic) } }
-    var entries: [Int]
+    var entries: [Int] { didSet { updateTopic(currentTopic) } }
     var unsubmittedValue: Int
     let updateTopic: (Topic) -> Void
 
@@ -67,6 +67,18 @@ class TopicViewModelTests {
         sut.name = newName
 
         let expectedTopic = Topic(id: originalTopic.id, name: newName, entries: originalTopic.entries, unsubmittedValue: originalTopic.unsubmittedValue)
+        #expect(capturedTopic == expectedTopic)
+    }
+
+    @Test func changeOfEntries_sendsUpdatedTopic() {
+        let originalTopic = makeTopic(entries: [19, 20])
+        var capturedTopic: Topic?
+        let sut = makeSUT(topic: originalTopic, updateTopic: { capturedTopic = $0 })
+        let newEntries = [-100, 100, 1000]
+
+        sut.entries = newEntries
+
+        let expectedTopic = Topic(id: originalTopic.id, name: originalTopic.name, entries: newEntries, unsubmittedValue: originalTopic.unsubmittedValue)
         #expect(capturedTopic == expectedTopic)
     }
 
