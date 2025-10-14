@@ -8,6 +8,7 @@
 import Testing
 import Domain
 
+@Observable
 class TopicViewModel {
     let id: UUID
     var name: String
@@ -22,15 +23,56 @@ class TopicViewModel {
     }
 }
 
-struct TopicViewModelTests {
+class TopicViewModelTests {
     @Test func init_setsInitialValues() {
-        let topic = Topic(id: UUID(), name: "a topic", entries: [-1, 2], unsubmittedValue: 4)
+        let topic = makeTopic()
 
-        let sut = TopicViewModel(topic: topic)
+        let sut = makeSUT(topic: topic)
 
         #expect(sut.id == topic.id)
         #expect(sut.name == topic.name)
         #expect(sut.entries == topic.entries)
         #expect(sut.unsubmittedValue == topic.unsubmittedValue)
     }
+
+    @Test func isObservable() async throws {
+        let sut = makeSUT()
+        let tracker = ObservationTracker()
+
+        withObservationTracking {
+            _ = sut.name
+        } onChange: {
+            Task { await tracker.setTriggered() }
+        }
+
+        sut.name = "new name"
+
+        try await Task.sleep(for: .milliseconds(10))
+        let triggered = await tracker.getTriggered()
+        #expect(triggered, "Expected observation to be triggered after adding value")
+    }
+
+    // MARK: - Helpers
+
+    private func makeSUT(topic: Topic? = nil) -> TopicViewModel {
+        let sut = TopicViewModel(topic: topic ?? makeTopic())
+        weakSUT = sut
+        return sut
+    }
+
+    private func makeTopic(id: UUID = UUID(), name: String = "a topic", entries: [Int] = [-1, 2], unsubmittedValue: Int = 0) -> Topic {
+        Topic(id: id, name: name, entries: entries, unsubmittedValue: unsubmittedValue)
+    }
+
+    private weak var weakSUT: TopicViewModel?
+
+    deinit {
+        #expect(weakSUT == nil, "Instance should have been deallocated. Potential memory leak.")
+    }
+}
+
+private actor ObservationTracker {
+    var triggered = false
+    func setTriggered() { triggered = true }
+    func getTriggered() -> Bool { triggered }
 }
