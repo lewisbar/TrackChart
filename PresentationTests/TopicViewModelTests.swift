@@ -6,28 +6,8 @@
 //
 
 import Testing
+import Presentation
 import Domain
-
-@Observable
-class TopicViewModel {
-    let id: UUID
-    var name: String { didSet { updateTopic(currentTopic) } }
-    var entries: [Int] { didSet { updateTopic(currentTopic) } }
-    var unsubmittedValue: Int { didSet { updateTopic(currentTopic) } }
-    let updateTopic: (Topic) -> Void
-
-    private var currentTopic: Topic {
-        Topic(id: id, name: name, entries: entries, unsubmittedValue: unsubmittedValue)
-    }
-
-    init(topic: Topic, updateTopic: @escaping (Topic) -> Void) {
-        self.id = topic.id
-        self.name = topic.name
-        self.entries = topic.entries
-        self.unsubmittedValue = topic.unsubmittedValue
-        self.updateTopic = updateTopic
-    }
-}
 
 class TopicViewModelTests {
     @Test func init_setsInitialValues() {
