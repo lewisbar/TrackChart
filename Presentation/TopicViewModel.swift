@@ -16,7 +16,14 @@ public class TopicViewModel {
             updateTopic(currentTopic)
         }
     }
-    public var entries: [Int] { didSet { updateTopic(currentTopic) } }
+
+    public var entries: [Int] {
+        didSet {
+            guard oldValue != entries else { return }
+            updateTopic(currentTopic)
+        }
+    }
+
     public var unsubmittedValue: Int { didSet { updateTopic(currentTopic) } }
     private let updateTopic: (Topic) -> Void
 
