@@ -1,0 +1,47 @@
+//
+//  TopicViewModel.swift
+//  Presentation
+//
+//  Created by Lennart Wisbar on 14.10.25.
+//
+
+import Domain
+
+@Observable
+public class TopicViewModel {
+    public let id: UUID
+    public var name: String {
+        didSet {
+            guard oldValue != name else { return }
+            updateTopic(currentTopic)
+        }
+    }
+
+    public var entries: [Int] {
+        didSet {
+            guard oldValue != entries else { return }
+            updateTopic(currentTopic)
+        }
+    }
+
+    public var unsubmittedValue: Int {
+        didSet {
+            guard oldValue != unsubmittedValue else { return }
+            updateTopic(currentTopic)
+        }
+    }
+
+    private let updateTopic: (Topic) -> Void
+
+    private var currentTopic: Topic {
+        Topic(id: id, name: name, entries: entries, unsubmittedValue: unsubmittedValue)
+    }
+
+    public init(topic: Topic, updateTopic: @escaping (Topic) -> Void) {
+        self.id = topic.id
+        self.name = topic.name
+        self.entries = topic.entries
+        self.unsubmittedValue = topic.unsubmittedValue
+        self.updateTopic = updateTopic
+    }
+}

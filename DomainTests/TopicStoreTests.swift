@@ -115,7 +115,7 @@ class TopicStoreTests {
 
     @Test func update_updatesExistingTopic() throws {
         let topics = sampleTopics()
-        let topicToUpdate = Topic(id: topics[2].id, name: "new name", entries: [8, 8, -8])
+        let topicToUpdate = Topic(id: topics[2].id, name: "new name", entries: [8, 8, -8], unsubmittedValue: 0)
         let (sut, persistenceService) = makeSUT(with: topics)
         try sut.load()
 
@@ -130,7 +130,7 @@ class TopicStoreTests {
 
     @Test func update_onError_doesNotUpdate() throws {
         let originalTopics = sampleTopics()
-        let topicToUpdate = Topic(id: originalTopics[2].id, name: "new name", entries: [8, 8, -8])
+        let topicToUpdate = Topic(id: originalTopics[2].id, name: "new name", entries: [8, 8, -8], unsubmittedValue: 12)
         let (sut, persistenceService) = makeSUT(with: originalTopics)
         try sut.load()
         let error = anyNSError()
@@ -313,21 +313,21 @@ class TopicStoreTests {
 
     private func sampleTopics() -> [Topic] {
         [
-            Topic(id: UUID(), name: "Topic 1", entries: [0, 3, 4, 5, 2, 3, 4, -1]),
-            Topic(id: UUID(), name: "Topic 2", entries: [-3, 4, 5, 6, 3, 4, 23, -12, 0]),
-            Topic(id: UUID(), name: "Topic 3", entries: [100, 200, 1000, -2000, 30, 10]),
-            Topic(id: UUID(), name: "Topic 4", entries: [30]),
-            Topic(id: UUID(), name: "Topic 5", entries: []),
-            Topic(id: UUID(), name: "Topic 6", entries: [-12]),
+            Topic(id: UUID(), name: "Topic 1", entries: [0, 3, 4, 5, 2, 3, 4, -1], unsubmittedValue: 1),
+            Topic(id: UUID(), name: "Topic 2", entries: [-3, 4, 5, 6, 3, 4, 23, -12, 0], unsubmittedValue: 10),
+            Topic(id: UUID(), name: "Topic 3", entries: [100, 200, 1000, -2000, 30, 10], unsubmittedValue: 100),
+            Topic(id: UUID(), name: "Topic 4", entries: [30], unsubmittedValue: -1),
+            Topic(id: UUID(), name: "Topic 5", entries: [], unsubmittedValue: -10),
+            Topic(id: UUID(), name: "Topic 6", entries: [-12], unsubmittedValue: -100),
         ]
     }
 
     private func sampleTopic1() -> Topic {
-        Topic(id: UUID(), name: "a topic", entries: [1, 2, 3])
+        Topic(id: UUID(), name: "a topic", entries: [1, 2, 3], unsubmittedValue: 18)
     }
 
     private func sampleTopic2() -> Topic {
-        Topic(id: UUID(), name: "another topic", entries: [45, 67, 89, -12])
+        Topic(id: UUID(), name: "another topic", entries: [45, 67, 89, -12], unsubmittedValue: -18)
     }
 
     private weak var weakSUT: TopicStore?

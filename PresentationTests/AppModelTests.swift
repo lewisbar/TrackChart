@@ -70,6 +70,34 @@ class AppModelTests {
         #expect(receivedTopic == nil)
     }
 
+    @Test func updateTopic() {
+        let originalTopic = topic(name: "old name", entries: [1, 2, 3], unsubmittedValue: -1)
+        let testComponents = makeSUT(withTopics: [originalTopic])
+        testComponents.sut.loadTopics()
+        let changedTopic = Topic(id: originalTopic.id, name: "new name", entries: [4, 5, 6], unsubmittedValue: 17)
+
+        testComponents.sut.update(changedTopic)
+
+        #expect(testComponents.sut.topic(for: originalTopic.id) == changedTopic)
+        #expect(testComponents.sut.topicCellModels == [TopicCellModel(from: changedTopic)])
+    }
+
+    @Test func updateTopic_onError_doesNotUpdate() {
+        let originalTopic = topic(name: "old name", entries: [1, 2, 3], unsubmittedValue: -1)
+        let testComponents = makeSUT(withTopics: [originalTopic])
+        testComponents.sut.loadTopics()
+        let changedTopic = Topic(id: originalTopic.id, name: "new name", entries: [4, 5, 6], unsubmittedValue: 17)
+        let error = anyNSError()
+        testComponents.persistenceService.error = error
+
+        testComponents.sut.update(changedTopic)
+
+        #expect(testComponents.sut.topic(for: originalTopic.id) == originalTopic)
+        #expect(testComponents.sut.isAlertViewPresented)
+        #expect(testComponents.sut.alertMessage == ("Error", error.localizedDescription))
+        #expect(testComponents.sut.topicCellModels == [TopicCellModel(from: originalTopic)])
+    }
+
     @Test func updateStoreAutomaticallyAfterDeletionAndReordering() {
         let topic1 = topic(name: "topic1")
         let topic2 = topic(name: "topic2")
@@ -105,126 +133,6 @@ class AppModelTests {
         #expect(testComponents.sut.isAlertViewPresented)
     }
 
-    @Test func renameTopic_alsoUpdatesStoreAndCellModels() {
-        let topic = topic(name: "old name")
-        let newName = "new name"
-        let testComponents = makeSUT(withTopics: [topic])
-        testComponents.sut.loadTopics()
-        testComponents.sut.navigate(to: topic)
-
-        testComponents.sut.currentTopicName = newName
-
-        let expectedTopic = Topic(id: topic.id, name: newName, entries: topic.entries)
-        #expect(testComponents.sut.topicCellModels == [TopicCellModel(from: expectedTopic)])
-        #expect(testComponents.store.topics == [expectedTopic])
-    }
-
-    @Test func renameTopic_onError_doesNotUpdate() {
-        let originalTopic = topic(name: "old name")
-        let newName = "new name"
-        let testComponents = makeSUT(withTopics: [originalTopic])
-        testComponents.sut.loadTopics()
-        testComponents.sut.navigate(to: originalTopic)
-        let error = anyNSError()
-        testComponents.persistenceService.error = error
-
-        testComponents.sut.currentTopicName = newName
-
-        #expect(testComponents.sut.topicCellModels == [TopicCellModel(from: originalTopic)])
-        #expect(testComponents.store.topics == [originalTopic])
-        #expect(testComponents.sut.isAlertViewPresented)
-        #expect(testComponents.sut.alertMessage == ("Error", error.localizedDescription))
-    }
-
-    @Test func changeEntries_alsoUpdatesStoreAndCellModels() {
-        let topic = topic(entries: [1, 2])
-        let newEntries = [-1, -2]
-        let testComponents = makeSUT(withTopics: [topic])
-        testComponents.sut.loadTopics()
-        testComponents.sut.navigate(to: topic)
-
-        testComponents.sut.currentEntries = newEntries
-
-        let expectedTopic = Topic(id: topic.id, name: topic.name, entries: newEntries)
-        #expect(testComponents.sut.topicCellModels == [TopicCellModel(from: expectedTopic)])
-        #expect(testComponents.store.topics == [expectedTopic])
-    }
-
-    @Test func changeEntries_onError_doesNotUpdate() {
-        let originalTopic = topic(entries: [1, 2])
-        let newEntries = [-1, -2]
-        let testComponents = makeSUT(withTopics: [originalTopic])
-        testComponents.sut.loadTopics()
-        testComponents.sut.navigate(to: originalTopic)
-        let error = anyNSError()
-        testComponents.persistenceService.error = error
-
-        testComponents.sut.currentEntries = newEntries
-
-        #expect(testComponents.sut.topicCellModels == [TopicCellModel(from: originalTopic)])
-        #expect(testComponents.store.topics == [originalTopic])
-        #expect(testComponents.sut.isAlertViewPresented)
-        #expect(testComponents.sut.alertMessage == ("Error", error.localizedDescription))
-    }
-
-    @Test func submitValueToTopic_updatesStoreAndCellModels() {
-        let originalTopic = topic(entries: [-1, 0])
-        let newValue = 1
-        let testComponents = makeSUT(withTopics: [originalTopic])
-        testComponents.sut.loadTopics()
-
-        testComponents.sut.submit(newValue, to: originalTopic)
-
-        let expectedTopic = topic(id: originalTopic.id, name: originalTopic.name, entries: originalTopic.entries + [newValue])
-        #expect(testComponents.sut.topicCellModels == [TopicCellModel(from: expectedTopic)])
-        #expect(testComponents.store.topics == [expectedTopic])
-    }
-
-    @Test func submitValueToTopic_onError_doesNotUpdate() {
-        let originalTopic = topic(entries: [-1, 0])
-        let newValue = 1
-        let testComponents = makeSUT(withTopics: [originalTopic])
-        testComponents.sut.loadTopics()
-        let error = anyNSError()
-        testComponents.persistenceService.error = error
-
-        testComponents.sut.submit(newValue, to: originalTopic)
-
-        #expect(testComponents.sut.topicCellModels == [TopicCellModel(from: originalTopic)])
-        #expect(testComponents.store.topics == [originalTopic])
-        #expect(testComponents.sut.isAlertViewPresented)
-        #expect(testComponents.sut.alertMessage == ("Error", error.localizedDescription))
-    }
-
-    @Test func removeLastValueFromTopic_updatesStoreAndCellModels() {
-        let originalTopic = topic(entries: [-1, 0, 1])
-        let testComponents = makeSUT(withTopics: [originalTopic])
-        testComponents.sut.loadTopics()
-
-        testComponents.sut.removeLastValue(from: originalTopic)
-
-        let expectedTopic = topic(id: originalTopic.id, name: originalTopic.name, entries: originalTopic.entries.dropLast())
-        #expect(testComponents.sut.topicCellModels == [TopicCellModel(from: expectedTopic)])
-        #expect(testComponents.store.topics == [expectedTopic])
-    }
-
-    @Test func removeLastValueFromTopic_onError_doesNotUpdate() {
-        let originalTopic = topic(entries: [-1, 0])
-        let newValue = 1
-        let testComponents = makeSUT(withTopics: [originalTopic])
-        testComponents.sut.loadTopics()
-        let error = anyNSError()
-        testComponents.persistenceService.error = error
-
-        testComponents.sut.removeLastValue(from: originalTopic)
-
-        let expectedTopic = topic(id: originalTopic.id, name: originalTopic.name, entries: originalTopic.entries + [newValue])
-        #expect(testComponents.sut.topicCellModels == [TopicCellModel(from: originalTopic)])
-        #expect(testComponents.store.topics == [originalTopic])
-        #expect(testComponents.sut.isAlertViewPresented)
-        #expect(testComponents.sut.alertMessage == ("Error", error.localizedDescription))
-    }
-
     @Test func navigateToTopicBackAndForth() {
         let topic1 = topic()
         let navTopic1 = NavigationTopic(from: topic1)
@@ -235,44 +143,26 @@ class AppModelTests {
 
         #expect(testComponents.navigator.path == [])
         #expect(testComponents.sut.path == [])
-        #expect(testComponents.sut.currentTopic == nil)
-        #expect(testComponents.sut.currentTopicName == "")
-        #expect(testComponents.sut.currentEntries == [])
 
         testComponents.sut.navigate(to: topic1)
         #expect(testComponents.navigator.path == [navTopic1])
         #expect(testComponents.sut.path == [navTopic1])
-        #expect(testComponents.sut.currentTopic == topic1)
-        #expect(testComponents.sut.currentTopicName == topic1.name)
-        #expect(testComponents.sut.currentEntries == topic1.entries)
 
         testComponents.sut.navigate(to: topic2)
         #expect(testComponents.navigator.path == [navTopic1, navTopic2])
         #expect(testComponents.sut.path == [navTopic1, navTopic2])
-        #expect(testComponents.sut.currentTopic == topic2)
-        #expect(testComponents.sut.currentTopicName == topic2.name)
-        #expect(testComponents.sut.currentEntries == topic2.entries)
 
         testComponents.sut.navigateBack()
         #expect(testComponents.navigator.path == [navTopic1])
         #expect(testComponents.sut.path == [navTopic1])
-        #expect(testComponents.sut.currentTopic == topic1)
-        #expect(testComponents.sut.currentTopicName == topic1.name)
-        #expect(testComponents.sut.currentEntries == topic1.entries)
 
         testComponents.sut.navigateBack()
         #expect(testComponents.navigator.path == [])
         #expect(testComponents.sut.path == [])
-        #expect(testComponents.sut.currentTopic == nil)
-        #expect(testComponents.sut.currentTopicName == "")
-        #expect(testComponents.sut.currentEntries == [])
 
         testComponents.sut.navigate(to: topic2)
         #expect(testComponents.navigator.path == [navTopic2])
         #expect(testComponents.sut.path == [navTopic2])
-        #expect(testComponents.sut.currentTopic == topic2)
-        #expect(testComponents.sut.currentTopicName == topic2.name)
-        #expect(testComponents.sut.currentEntries == topic2.entries)
     }
 
     @Test func navigateToTopicWithID() {
@@ -285,44 +175,26 @@ class AppModelTests {
 
         #expect(testComponents.navigator.path == [])
         #expect(testComponents.sut.path == [])
-        #expect(testComponents.sut.currentTopic == nil)
-        #expect(testComponents.sut.currentTopicName == "")
-        #expect(testComponents.sut.currentEntries == [])
 
         testComponents.sut.navigate(toTopicWithID: topic1.id)
         #expect(testComponents.navigator.path == [navTopic1])
         #expect(testComponents.sut.path == [navTopic1])
-        #expect(testComponents.sut.currentTopic == topic1)
-        #expect(testComponents.sut.currentTopicName == topic1.name)
-        #expect(testComponents.sut.currentEntries == topic1.entries)
 
         testComponents.sut.navigate(toTopicWithID: topic2.id)
         #expect(testComponents.navigator.path == [navTopic1, navTopic2])
         #expect(testComponents.sut.path == [navTopic1, navTopic2])
-        #expect(testComponents.sut.currentTopic == topic2)
-        #expect(testComponents.sut.currentTopicName == topic2.name)
-        #expect(testComponents.sut.currentEntries == topic2.entries)
 
         testComponents.sut.navigateBack()
         #expect(testComponents.navigator.path == [navTopic1])
         #expect(testComponents.sut.path == [navTopic1])
-        #expect(testComponents.sut.currentTopic == topic1)
-        #expect(testComponents.sut.currentTopicName == topic1.name)
-        #expect(testComponents.sut.currentEntries == topic1.entries)
 
         testComponents.sut.navigateBack()
         #expect(testComponents.navigator.path == [])
         #expect(testComponents.sut.path == [])
-        #expect(testComponents.sut.currentTopic == nil)
-        #expect(testComponents.sut.currentTopicName == "")
-        #expect(testComponents.sut.currentEntries == [])
 
         testComponents.sut.navigate(toTopicWithID: topic2.id)
         #expect(testComponents.navigator.path == [navTopic2])
         #expect(testComponents.sut.path == [navTopic2])
-        #expect(testComponents.sut.currentTopic == topic2)
-        #expect(testComponents.sut.currentTopicName == topic2.name)
-        #expect(testComponents.sut.currentEntries == topic2.entries)
     }
 
     @Test func navigateToNewTopic_createsAndNavigates() {
@@ -335,9 +207,6 @@ class AppModelTests {
 
         #expect(testComponents.navigator.path.count == 1)
         #expect(testComponents.store.topics.count == 1)
-        #expect(testComponents.sut.currentTopic != nil)
-        #expect(testComponents.sut.currentTopicName == "")
-        #expect(testComponents.sut.currentEntries == [])
     }
 
     @Test func navigateToNewTopic_onCreationError_showsError_andDoesNotCreateOrNavigate() {
@@ -352,9 +221,6 @@ class AppModelTests {
         #expect(testComponents.sut.alertMessage == ("Error", error.localizedDescription))
         #expect(testComponents.navigator.path.isEmpty)
         #expect(testComponents.store.topics.isEmpty)
-        #expect(testComponents.sut.currentTopic == nil)
-        #expect(testComponents.sut.currentTopicName == "")
-        #expect(testComponents.sut.currentEntries.isEmpty)
     }
 
     @Test func isObservable() async throws {
@@ -403,8 +269,8 @@ class AppModelTests {
     private weak var weakNavigator: Navigator?
     private weak var weakPersistenceService: TopicPersistenceServiceStub?
 
-    private func topic(id: UUID = UUID(), name: String = "a topic", entries: [Int] = [.random(in: -2...10)]) -> Topic {
-        Topic(id: id, name: name, entries: entries)
+    private func topic(id: UUID = UUID(), name: String = "a topic", entries: [Int] = [.random(in: -2...10)], unsubmittedValue: Int = 0) -> Topic {
+        Topic(id: id, name: name, entries: entries, unsubmittedValue: unsubmittedValue)
     }
 
     private func anyNSError() -> NSError {

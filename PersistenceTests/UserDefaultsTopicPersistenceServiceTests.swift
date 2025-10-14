@@ -38,7 +38,7 @@ class UserDefaultsTopicPersistenceServiceTests {
 
     @Test func create_createsTopic() throws {
         let id = UUID()
-        let topic = Topic(id: id, name: "a topic", entries: [2, 1, 4, 6, 3])
+        let topic = Topic(id: id, name: "a topic", entries: [2, 1, 4, 6, 3], unsubmittedValue: 0)
         let sut = makeSUT()
         #expect(storedTopicIDs() == nil)
 
@@ -50,8 +50,8 @@ class UserDefaultsTopicPersistenceServiceTests {
 
     @Test func create_whenIDAlreadyExists_overwrites() throws {
         let id = UUID()
-        let firstTopic = Topic(id: id, name: "a topic", entries: [2, 1, 4, 6, 3])
-        let topicWithSameID = Topic(id: id, name: "another topic", entries: [-2, -3, -50])
+        let firstTopic = Topic(id: id, name: "a topic", entries: [2, 1, 4, 6, 3], unsubmittedValue: 5)
+        let topicWithSameID = Topic(id: id, name: "another topic", entries: [-2, -3, -50], unsubmittedValue: 100)
         let sut = makeSUT()
         #expect(storedTopicIDs() == nil)
 
@@ -72,8 +72,8 @@ class UserDefaultsTopicPersistenceServiceTests {
     }
 
     @Test func load_returnsStoredTopics() throws {
-        let topic1 = Topic(id: UUID(), name: "a topic", entries: [2, 1, 4, 6, 3])
-        let topic2 = Topic(id: UUID(), name: "another topic", entries: [-31, 7, -4, 0])
+        let topic1 = Topic(id: UUID(), name: "a topic", entries: [2, 1, 4, 6, 3], unsubmittedValue: 1)
+        let topic2 = Topic(id: UUID(), name: "another topic", entries: [-31, 7, -4, 0], unsubmittedValue: -2)
         let sut = makeSUT()
         #expect(storedTopicIDs() == nil)
 
@@ -85,8 +85,8 @@ class UserDefaultsTopicPersistenceServiceTests {
     }
 
     @Test func update_whenTopicDoesNotExist_creates() throws {
-        let topic1 = Topic(id: UUID(), name: "a topic", entries: [2, 1, 4, 6, 3])
-        let topic2 = Topic(id: UUID(), name: "another topic", entries: [-31, 7, -4, 0])
+        let topic1 = Topic(id: UUID(), name: "a topic", entries: [2, 1, 4, 6, 3], unsubmittedValue: 12)
+        let topic2 = Topic(id: UUID(), name: "another topic", entries: [-31, 7, -4, 0], unsubmittedValue: 14)
         let sut = makeSUT()
         #expect(storedTopicIDs() == nil)
 
@@ -101,10 +101,10 @@ class UserDefaultsTopicPersistenceServiceTests {
     }
 
     @Test func update_updatesCorrectTopic() throws {
-        let topic1 = Topic(id: UUID(), name: "a topic", entries: [2, 1, 4, 6, 3])
-        let updatedTopic1 = Topic(id: topic1.id, name: "an updated topic", entries: [2, 1, 4, 6, 3])
-        let topic2 = Topic(id: UUID(), name: "another topic", entries: [-31, 7, -4, 0])
-        let updatedTopic2 = Topic(id: topic2.id, name: "another topic", entries: [-31, 7, -4, 0, 100])
+        let topic1 = Topic(id: UUID(), name: "a topic", entries: [2, 1, 4, 6, 3], unsubmittedValue: 3)
+        let updatedTopic1 = Topic(id: topic1.id, name: "an updated topic", entries: [2, 1, 4, 6, 3], unsubmittedValue: 0)
+        let topic2 = Topic(id: UUID(), name: "another topic", entries: [-31, 7, -4, 0], unsubmittedValue: 12)
+        let updatedTopic2 = Topic(id: topic2.id, name: "another topic", entries: [-31, 7, -4, 0, 100], unsubmittedValue: -100)
         let sut = makeSUT()
         #expect(storedTopicIDs() == nil)
 
@@ -122,9 +122,9 @@ class UserDefaultsTopicPersistenceServiceTests {
     }
 
     @Test func reorder_updatesIDList() throws {
-        let topic1 = Topic(id: UUID(), name: "Topic 1", entries: [2, 1, 4, 6, 3])
-        let topic2 = Topic(id: UUID(), name: "Topic 2", entries: [-31, 7, -4, 0])
-        let topic3 = Topic(id: UUID(), name: "Topic 3", entries: [31, -7, 4, 1000, 11])
+        let topic1 = Topic(id: UUID(), name: "Topic 1", entries: [2, 1, 4, 6, 3], unsubmittedValue: 1)
+        let topic2 = Topic(id: UUID(), name: "Topic 2", entries: [-31, 7, -4, 0], unsubmittedValue: 2)
+        let topic3 = Topic(id: UUID(), name: "Topic 3", entries: [31, -7, 4, 1000, 11], unsubmittedValue: 3)
         let sut = makeSUT()
         #expect(storedTopicIDs() == nil)
 
@@ -143,8 +143,8 @@ class UserDefaultsTopicPersistenceServiceTests {
     }
 
     @Test func delete_deletesTopic() throws {
-        let topic1 = Topic(id: UUID(), name: "a topic", entries: [2, 1, 4, 6, 3])
-        let topic2 = Topic(id: UUID(), name: "another topic", entries: [-31, 7, -4, 0])
+        let topic1 = Topic(id: UUID(), name: "a topic", entries: [2, 1, 4, 6, 3], unsubmittedValue: 2)
+        let topic2 = Topic(id: UUID(), name: "another topic", entries: [-31, 7, -4, 0], unsubmittedValue: -1)
         let sut = makeSUT()
         #expect(storedTopicIDs() == nil)
 
@@ -161,8 +161,8 @@ class UserDefaultsTopicPersistenceServiceTests {
     }
 
     @Test func delete_nonExistentTopic_doesNothing() throws {
-        let topic1 = Topic(id: UUID(), name: "a topic", entries: [2, 1, 4, 6, 3])
-        let topic2 = Topic(id: UUID(), name: "another topic", entries: [-31, 7, -4, 0])
+        let topic1 = Topic(id: UUID(), name: "a topic", entries: [2, 1, 4, 6, 3], unsubmittedValue: 12)
+        let topic2 = Topic(id: UUID(), name: "another topic", entries: [-31, 7, -4, 0], unsubmittedValue: 21)
         let sut = makeSUT()
         #expect(storedTopicIDs() == nil)
 

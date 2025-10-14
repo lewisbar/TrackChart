@@ -6,17 +6,27 @@
 //
 
 import SwiftUI
+import Presentation
 
-struct TopicView<CounterView: View, ChartView: View>: View {
-    @Binding var title: String
-    @ViewBuilder let counterView: () -> CounterView
-    @ViewBuilder let chartView: () -> ChartView
+struct TopicView: View {
+    @Bindable var model: TopicViewModel
+
+    var body: some View {
+        TopicViewContent(name: $model.name, entries: $model.entries, unsubmittedValue: $model.unsubmittedValue)
+    }
+}
+
+private struct TopicViewContent: View {
+    @Binding var name: String
+    @Binding var entries: [Int]
+    @Binding var unsubmittedValue: Int
+
     @FocusState private var isTextFieldFocused: Bool
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         VStack {
-            TextField("Enter topic name", text: $title)
+            TextField("Enter topic name", text: $name)
                 .font(.largeTitle)
                 .fontWeight(.medium)
                 .minimumScaleFactor(0.5)
@@ -24,9 +34,14 @@ struct TopicView<CounterView: View, ChartView: View>: View {
                 .padding(.bottom, 4)
                 .focused($isTextFieldFocused)
 
-            chartView()
-            counterView()
-                .padding(.vertical)
+            ChartView(values: entries)
+
+            CounterView(
+                count: $unsubmittedValue,
+                submitNewValue: { entries.append($0) },
+                deleteLastValue: { if !entries.isEmpty { entries.removeLast() } }
+            )
+            .padding(.vertical)
         }
         .padding(.horizontal)
         .navigationBarBackButtonHidden(true)
@@ -43,13 +58,10 @@ struct TopicView<CounterView: View, ChartView: View>: View {
 }
 
 #Preview {
+    @Previewable @State var name = "A Name"
     @Previewable @State var values = [5, 6, 8, 2, 4, 3, 5, 2]
-    @Previewable @State var title = "A Title"
+    @Previewable @State var unsubmittedValue = 0
 
-    TopicView(
-        title: $title,
-        counterView: { CounterView(submitNewValue: { values.append($0) }, deleteLastValue: { values.removeLast() }) },
-        chartView: { ChartView(values: values)}
-    )
-    .padding()
+    TopicViewContent(name: $name, entries: $values, unsubmittedValue: $unsubmittedValue)
+        .padding()
 }

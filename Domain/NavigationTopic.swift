@@ -11,20 +11,23 @@ public struct NavigationTopic: Hashable, Codable {
     public let id: UUID
     public let name: String
     public let entries: [Int]
+    public let unsubmittedValue: Int
 
-    public init(id: UUID, name: String, entries: [Int]) {
+    public init(id: UUID, name: String, entries: [Int], unsubmittedValue: Int) {
         self.id = id
         self.name = name
         self.entries = entries
+        self.unsubmittedValue = unsubmittedValue
     }
 
     public init(from topic: Topic) {
         self.id = topic.id
         self.name = topic.name
         self.entries = topic.entries
+        self.unsubmittedValue = topic.unsubmittedValue
     }
 
     public var topic: Topic {
-        Topic(id: id, name: name, entries: entries)
+        Topic(id: id, name: name, entries: entries, unsubmittedValue: unsubmittedValue)
     }
 }

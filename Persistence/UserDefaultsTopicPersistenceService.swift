@@ -12,11 +12,39 @@ public class UserDefaultsTopicPersistenceService: TopicPersistenceService {
         let id: UUID
         let name: String
         let entries: [Int]
+        let unsubmittedValue: Int
+        let needsMigration: Bool
 
         init(from topic: Topic) {
             self.id = topic.id
             self.name = topic.name
             self.entries = topic.entries
+            self.unsubmittedValue = topic.unsubmittedValue
+            self.needsMigration = false
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            id = try container.decode(UUID.self, forKey: .id)
+            name = try container.decode(String.self, forKey: .name)
+            entries = try container.decode([Int].self, forKey: .entries)
+
+            // Check if data is stored in the old version without unsubmittedValue
+            if let currentValue = try container.decodeIfPresent(Int.self, forKey: .unsubmittedValue) {
+                unsubmittedValue = currentValue
+                needsMigration = false
+            } else {
+                unsubmittedValue = 0
+                needsMigration = true
+            }
+        }
+
+        enum CodingKeys: String, CodingKey {
+            case id
+            case name
+            case entries
+            case unsubmittedValue
+            // needsMigration is not encoded/decoded, it’s only used at runtime
         }
     }
 
@@ -85,6 +113,13 @@ public class UserDefaultsTopicPersistenceService: TopicPersistenceService {
             .compactMap { $0 as? String }
             .compactMap { userDefaults.data(forKey: topicKeyForID($0)) }
             .compactMap { try JSONDecoder().decode(UserDefaultsTopic.self, from: $0) }
-            .map { Topic(id: $0.id, name: $0.name, entries: $0.entries) } ?? []
+            .map { topic -> UserDefaultsTopic in
+                // Store data that came in old format back in new format
+                if topic.needsMigration, let encodedData = try? JSONEncoder().encode(topic) {
+                    userDefaults.set(encodedData, forKey: topicKeyForID(topic.id.uuidString))
+                }
+                return topic
+            }
+            .map { Topic(id: $0.id, name: $0.name, entries: $0.entries, unsubmittedValue: $0.unsubmittedValue) } ?? []
     }
 }

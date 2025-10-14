@@ -14,9 +14,6 @@ public class AppModel {
             updateStoreWithDeletedAndReorderedCellModels()
         }
     } }
-    private(set) public var currentTopic: Topic? { didSet { syncNameAndEntriesToCurrentTopic() } }
-    public var currentTopicName: String = "" { didSet { currentTopic.map { rename($0, to: currentTopicName) } } }
-    public var currentEntries: [Int] = [] { didSet { currentTopic.map { updateEntries(for: $0, to: currentEntries) } } }
     private(set) public var alertMessage = defaultAlertMessage
     public var isAlertViewPresented = false
 
@@ -35,15 +32,13 @@ public class AppModel {
 
     public func navigate(to topic: Topic) {
         navigator.showDetail(for: NavigationTopic(from: topic))
-        currentTopic = topic
     }
 
     public func navigateToNewTopic() {
-        let newTopic = Topic(id: UUID(), name: "", entries: [])
+        let newTopic = Topic(id: UUID(), name: "", entries: [], unsubmittedValue: 0)
         do {
             try store.add(newTopic)
             navigator.showDetail(for: NavigationTopic(from: newTopic))
-            currentTopic = newTopic
         } catch {
             handle(error)
         }
@@ -51,7 +46,6 @@ public class AppModel {
 
     public func navigateBack() {
         navigator.goBack()
-        currentTopic = navigator.path.last?.topic
     }
 
     public func dismissAlert() {
@@ -68,24 +62,8 @@ public class AppModel {
         store.topic(for: id)
     }
 
-    public func submit(_ value: Int, to topic: Topic) {
-        do { try store.submit(value, to: topic) } catch { handle(error)}
-        updateCellModelsFromStore()
-    }
-
-    public func removeLastValue(from topic: Topic) {
-        do { try store.removeLastValue(from: topic) } catch { handle(error)}
-        updateCellModelsFromStore()
-    }
-
-    private func rename(_ topic: Topic, to newName: String) {
-        do { try store.rename(topic, to: newName) } catch { handle(error) }
-        updateCellModelsFromStore()
-    }
-
-    private func updateEntries(for topic: Topic, to newEntries: [Int]) {
-        let updatedTopic = Topic(id: topic.id, name: topic.name, entries: newEntries)
-        do { try store.update(updatedTopic) } catch { handle(error) }
+    public func update(_ changedTopic: Topic) {
+        do { try store.update(changedTopic) } catch { handle(error) }
         updateCellModelsFromStore()
     }
 
@@ -113,11 +91,6 @@ public class AppModel {
         isUpdatingCellModelsFromStore = true
         topicCellModels = store.topics.map(TopicCellModel.init)
         isUpdatingCellModelsFromStore = false
-    }
-
-    private func syncNameAndEntriesToCurrentTopic() {
-        currentTopicName = currentTopic?.name ?? ""
-        currentEntries = currentTopic?.entries ?? []
     }
 
     private func handle(_ error: Error) {
