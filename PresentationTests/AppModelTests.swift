@@ -70,6 +70,34 @@ class AppModelTests {
         #expect(receivedTopic == nil)
     }
 
+    @Test func updateTopic() {
+        let originalTopic = topic(name: "old name", entries: [1, 2, 3], unsubmittedValue: -1)
+        let testComponents = makeSUT(withTopics: [originalTopic])
+        testComponents.sut.loadTopics()
+        let changedTopic = Topic(id: originalTopic.id, name: "new name", entries: [4, 5, 6], unsubmittedValue: 17)
+
+        testComponents.sut.update(changedTopic)
+
+        #expect(testComponents.sut.topic(for: originalTopic.id) == changedTopic)
+        #expect(testComponents.sut.topicCellModels == [TopicCellModel(from: changedTopic)])
+    }
+
+    @Test func updateTopic_onError_doesNotUpdate() {
+        let originalTopic = topic(name: "old name", entries: [1, 2, 3], unsubmittedValue: -1)
+        let testComponents = makeSUT(withTopics: [originalTopic])
+        testComponents.sut.loadTopics()
+        let changedTopic = Topic(id: originalTopic.id, name: "new name", entries: [4, 5, 6], unsubmittedValue: 17)
+        let error = anyNSError()
+        testComponents.persistenceService.error = error
+
+        testComponents.sut.update(changedTopic)
+
+        #expect(testComponents.sut.topic(for: originalTopic.id) == originalTopic)
+        #expect(testComponents.sut.isAlertViewPresented)
+        #expect(testComponents.sut.alertMessage == ("Error", error.localizedDescription))
+        #expect(testComponents.sut.topicCellModels == [TopicCellModel(from: originalTopic)])
+    }
+
     @Test func updateStoreAutomaticallyAfterDeletionAndReordering() {
         let topic1 = topic(name: "topic1")
         let topic2 = topic(name: "topic2")

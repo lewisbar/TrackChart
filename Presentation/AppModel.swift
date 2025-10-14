@@ -68,6 +68,11 @@ public class AppModel {
         store.topic(for: id)
     }
 
+    public func update(_ changedTopic: Topic) {
+        do { try store.update(changedTopic) } catch { handle(error) }
+        updateCellModelsFromStore()
+    }
+
     public func setUnsubmittedValue(to newValue: Int, for topic: Topic) {
         let updatedTopic = Topic(id: topic.id, name: topic.name, entries: topic.entries, unsubmittedValue: newValue)
         do { try store.update(updatedTopic) } catch { handle(error) }
