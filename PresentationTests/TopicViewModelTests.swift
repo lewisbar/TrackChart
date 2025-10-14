@@ -96,6 +96,17 @@ class TopicViewModelTests {
         #expect(capturedTopic == expectedTopic)
     }
 
+    @Test func didSetUnsubmittedValue_ifValueHasNotChanged_doesNotSendUpdatedTopic() {
+        let originalValue = 0
+        let originalTopic = makeTopic(unsubmittedValue: originalValue)
+        var capturedTopic: Topic?
+        let sut = makeSUT(topic: originalTopic, updateTopic: { capturedTopic = $0 })
+
+        sut.unsubmittedValue = originalValue
+
+        #expect(capturedTopic == nil)
+    }
+
     // MARK: - Helpers
 
     private func makeSUT(topic: Topic? = nil, updateTopic: @escaping (Topic) -> Void = { _ in }) -> TopicViewModel {
