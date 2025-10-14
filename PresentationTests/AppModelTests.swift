@@ -249,7 +249,6 @@ class AppModelTests {
 
         testComponents.sut.removeLastValue(from: originalTopic)
 
-        let expectedTopic = topic(id: originalTopic.id, name: originalTopic.name, entries: originalTopic.entries + [newValue])
         #expect(testComponents.sut.topicCellModels == [TopicCellModel(from: originalTopic)])
         #expect(testComponents.store.topics == [originalTopic])
         #expect(testComponents.sut.isAlertViewPresented)
