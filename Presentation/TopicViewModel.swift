@@ -10,7 +10,12 @@ import Domain
 @Observable
 public class TopicViewModel {
     public let id: UUID
-    public var name: String { didSet { updateTopic(currentTopic) } }
+    public var name: String {
+        didSet {
+            guard oldValue != name else { return }
+            updateTopic(currentTopic)
+        }
+    }
     public var entries: [Int] { didSet { updateTopic(currentTopic) } }
     public var unsubmittedValue: Int { didSet { updateTopic(currentTopic) } }
     private let updateTopic: (Topic) -> Void

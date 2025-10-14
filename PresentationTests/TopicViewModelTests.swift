@@ -50,6 +50,17 @@ class TopicViewModelTests {
         #expect(capturedTopic == expectedTopic)
     }
 
+    @Test func didSetName_ifNameHasNotChanged_doesNotSendUpdatedTopic() {
+        let originalName = "old name"
+        let originalTopic = makeTopic(name: originalName)
+        var capturedTopic: Topic?
+        let sut = makeSUT(topic: originalTopic, updateTopic: { capturedTopic = $0 })
+
+        sut.name = originalName
+
+        #expect(capturedTopic == nil)
+    }
+
     @Test func changeOfEntries_sendsUpdatedTopic() {
         let originalTopic = makeTopic(entries: [19, 20])
         var capturedTopic: Topic?
