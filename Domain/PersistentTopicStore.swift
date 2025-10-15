@@ -1,12 +1,12 @@
 //
-//  TopicStore.swift
+//  PersistentTopicStore.swift
 //  Domain
 //
 //  Created by Lennart Wisbar on 18.09.25.
 //
 
 @Observable
-public class TopicStore {
+public class PersistentTopicStore: TopicStore {
     public var topics: [Topic] = []
     private let persistenceService: TopicPersistenceService
 

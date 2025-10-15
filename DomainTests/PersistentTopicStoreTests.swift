@@ -1,6 +1,5 @@
 //
-//  TopicStoreTests.swift
-//  PersistenceTests
+//  PersistentTopicStoreTests.swift
 //
 //  Created by Lennart Wisbar on 18.09.25.
 //
@@ -8,7 +7,7 @@
 import Testing
 import Domain
 
-class TopicStoreTests {
+class PersistentTopicStoreTests {
     @Test func init_doesNotLoadTopics() {
         let topics = sampleTopics()
         let (sut, persistenceService) = makeSUT(with: topics)
@@ -207,9 +206,9 @@ class TopicStoreTests {
 
     // MARK: - Helpers
 
-    private func makeSUT(with topics: [Topic] = [], error: Error? = nil) -> (sut: TopicStore, persistenceService: TopicPersistenceServiceSpy) {
+    private func makeSUT(with topics: [Topic] = [], error: Error? = nil) -> (sut: PersistentTopicStore, persistenceService: TopicPersistenceServiceSpy) {
         let persistenceService = TopicPersistenceServiceSpy(topics: topics, error: error)
-        let sut = TopicStore(persistenceService: persistenceService)
+        let sut = PersistentTopicStore(persistenceService: persistenceService)
 
         weakSUT = sut
         weakPersistenceService = persistenceService
@@ -236,7 +235,7 @@ class TopicStoreTests {
         Topic(id: UUID(), name: "another topic", entries: [45, 67, 89, -12], unsubmittedValue: -18)
     }
 
-    private weak var weakSUT: TopicStore?
+    private weak var weakSUT: PersistentTopicStore?
     private weak var weakPersistenceService: TopicPersistenceServiceSpy?
 
     deinit {
