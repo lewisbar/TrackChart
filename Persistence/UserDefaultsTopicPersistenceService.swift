@@ -48,6 +48,17 @@ public class UserDefaultsTopicPersistenceService: TopicPersistenceService {
         }
     }
 
+    public enum Error: Swift.Error, LocalizedError {
+        case nonMatchingIDs([String])
+
+        public var errorDescription: String? {
+            if case let .nonMatchingIDs(ids) = self {
+                return "Reordering failed because of non-matching IDs. Keeping old order.\n\nNon-matching IDs (\(ids.count)): \(ids)."
+            }
+            return nil
+        }
+    }
+
     private let userDefaults: UserDefaults
     private let topicIDsKey: String
     private let topicKeyForID: (String) -> String
@@ -99,7 +110,14 @@ public class UserDefaultsTopicPersistenceService: TopicPersistenceService {
 
     public func reorder(to newOrder: [Topic]) throws {
         let reorderedIDs = newOrder.map(\.id.uuidString)
+        let existingIDs = loadTopicIDs()
+        try makeSure(thatNewIDs: reorderedIDs, matchOldIDs: existingIDs)
         userDefaults.set(reorderedIDs, forKey: topicIDsKey)
+    }
+
+    private func makeSure(thatNewIDs newIDs: [String], matchOldIDs oldIDs: [String]) throws {
+        let nonMatchingIDs = Set(newIDs).symmetricDifference(Set(oldIDs))
+        if !nonMatchingIDs.isEmpty { throw Error.nonMatchingIDs(Array(nonMatchingIDs)) }
     }
 
     public func delete(_ topic: Topic) throws {

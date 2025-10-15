@@ -142,6 +142,40 @@ class UserDefaultsTopicPersistenceServiceTests {
         #expect(updatedLoadedTopics == newOrder)
     }
 
+    @Test func reorder_withNonMatchingIDs_throwsError() throws {
+        let topic1 = Topic(id: UUID(), name: "Topic 1", entries: [2, 1, 4, 6, 3], unsubmittedValue: 1)
+        let topic2 = Topic(id: UUID(), name: "Topic 2", entries: [-31, 7, -4, 0], unsubmittedValue: 2)
+        let topic3 = Topic(id: UUID(), name: "Topic 3", entries: [31, -7, 4, 1000, 11], unsubmittedValue: 3)
+        let sut = makeSUT()
+        #expect(storedTopicIDs() == nil)
+
+        try sut.create(topic1)
+        try sut.create(topic2)
+        try sut.create(topic3)
+
+        let firstLoadedTopics = try sut.load()
+        let originalOrder = [topic1, topic2, topic3]
+        #expect(firstLoadedTopics == originalOrder)
+
+        let newOrderWithMissingTopic = [topic3, topic1]
+        #expect(throws: UserDefaultsTopicPersistenceService.Error.self) {
+            try sut.reorder(to: newOrderWithMissingTopic)
+        }
+
+        let secondLoadedTopics = try sut.load()
+        #expect(secondLoadedTopics == originalOrder)
+
+        let extraTopic = Topic(id: UUID(), name: "Topic 4", entries: [2], unsubmittedValue: 0)
+        let newOrderWithExtraTopic = [topic1, topic3, topic2, extraTopic]
+
+        #expect(throws: UserDefaultsTopicPersistenceService.Error.self) {
+            try sut.reorder(to: newOrderWithExtraTopic)
+        }
+
+        let thirdLoadedTopics = try sut.load()
+        #expect(thirdLoadedTopics == originalOrder)
+    }
+
     @Test func delete_deletesTopic() throws {
         let topic1 = Topic(id: UUID(), name: "a topic", entries: [2, 1, 4, 6, 3], unsubmittedValue: 2)
         let topic2 = Topic(id: UUID(), name: "another topic", entries: [-31, 7, -4, 0], unsubmittedValue: -1)
