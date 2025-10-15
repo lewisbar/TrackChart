@@ -9,23 +9,6 @@ import Testing
 import Presentation
 import Domain
 
-@Observable
-class TopicListViewModel {
-    var topics: [TopicCellModel] {
-        didSet {
-            guard oldValue != topics else { return }
-            updateTopicList(topics.map { $0.id })
-        }
-    }
-
-    private let updateTopicList: ([UUID]) -> Void
-
-    init(topics: [Topic], updateTopicList: @escaping ([UUID]) -> Void) {
-        self.topics = topics.map(TopicCellModel.init)
-        self.updateTopicList = updateTopicList
-    }
-}
-
 class TopicListViewModelTests {
     @Test func init_setsCellModels() {
         let topic1 = topic(name: "a topic", entries: [5, 6], unsubmittedValue: 4)
