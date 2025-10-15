@@ -13,7 +13,7 @@ import Presentation
 @main
 struct TrackChartApp: App {
     @State private var model = AppModel(
-        store: TopicStore(persistenceService: UserDefaultsTopicPersistenceService()),
+        store: PersistentTopicStore(persistenceService: UserDefaultsTopicPersistenceService()),
         navigator: Navigator()
     )
 
@@ -27,7 +27,7 @@ struct TrackChartApp: App {
 
     private func makeTopicListView() -> some View {
         NavigationStack(path: $model.path) {
-            TopicListView(topics: $model.topicCellModels, showTopic: model.navigate, createTopic: model.navigateToNewTopic)
+            TopicListView(model: model.topicListModel, showTopic: model.navigate, createTopic: model.navigateToNewTopic)
                 .navigationDestination(for: NavigationTopic.self, destination: makeTopicView)
         }
     }
