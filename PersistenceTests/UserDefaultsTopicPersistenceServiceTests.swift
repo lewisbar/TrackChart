@@ -187,11 +187,15 @@ class UserDefaultsTopicPersistenceServiceTests {
 
         let firstLoadedTopics = try sut.load()
         #expect(firstLoadedTopics == [topic1, topic2])
+        let firstIDs = storedTopicIDs()?.compactMap { $0 as? String }
+        #expect(firstIDs == firstLoadedTopics.map(\.id.uuidString))
 
         try sut.delete(topic1)
 
         let reducedLoadedTopics = try sut.load()
         #expect(reducedLoadedTopics == [topic2])
+        let reducedIDs = storedTopicIDs()?.compactMap { $0 as? String }
+        #expect(reducedIDs == reducedLoadedTopics.map(\.id.uuidString))
     }
 
     @Test func delete_nonExistentTopic_doesNothing() throws {

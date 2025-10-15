@@ -123,6 +123,11 @@ public class UserDefaultsTopicPersistenceService: TopicPersistenceService {
     public func delete(_ topic: Topic) throws {
         let topic = UserDefaultsTopic(from: topic)
         userDefaults.removeObject(forKey: key(for: topic))
+        var currentIDs = loadTopicIDs()
+        if let index = currentIDs.firstIndex(where: { $0 == topic.id.uuidString }) {
+            currentIDs.remove(at: index)
+        }
+        save(currentIDs)
     }
 
     public func load() throws -> [Topic] {
