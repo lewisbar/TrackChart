@@ -1,12 +1,12 @@
 //
-//  TopicStore.swift
+//  PersistentTopicStore.swift
 //  Domain
 //
 //  Created by Lennart Wisbar on 18.09.25.
 //
 
 @Observable
-public class TopicStore {
+public class PersistentTopicStore: TopicStore {
     public var topics: [Topic] = []
     private let persistenceService: TopicPersistenceService
 
@@ -47,20 +47,5 @@ public class TopicStore {
 
     public func topic(for id: UUID) -> Topic? {
         topics.first(where: { $0.id == id })
-    }
-
-    public func submit(_ newValue: Int, to topic: Topic) throws {
-        let updatedTopic = Topic(id: topic.id, name: topic.name, entries: topic.entries + [newValue], unsubmittedValue: topic.unsubmittedValue)
-        try update(updatedTopic)
-    }
-
-    public func removeLastValue(from topic: Topic) throws {
-        let updatedTopic = Topic(id: topic.id, name: topic.name, entries: topic.entries.dropLast(), unsubmittedValue: topic.unsubmittedValue)
-        try update(updatedTopic)
-    }
-
-    public func rename(_ topic: Topic, to newName: String) throws {
-        let updatedTopic = Topic(id: topic.id, name: newName, entries: topic.entries, unsubmittedValue: topic.unsubmittedValue)
-        try update(updatedTopic)
     }
 }

@@ -9,6 +9,16 @@ import SwiftUI
 import Presentation
 
 struct TopicListView: View {
+    @Bindable var model: TopicListViewModel
+    let showTopic: (UUID) -> Void
+    let createTopic: () -> Void
+
+    var body: some View {
+        TopicListViewContent(topics: $model.topics, showTopic: showTopic, createTopic: createTopic)
+    }
+}
+
+private struct TopicListViewContent: View {
     @Binding var topics: [TopicCellModel]
     let showTopic: (UUID) -> Void
     let createTopic: () -> Void
@@ -43,5 +53,5 @@ struct TopicListView: View {
         TopicCellModel(id: UUID(), name: "Hours Studied", info: "0 entries", entries: [])
     ]
 
-    TopicListView(topics: $topics, showTopic: { _ in }, createTopic: {})
+    TopicListViewContent(topics: $topics, showTopic: { _ in }, createTopic: {})
 }

@@ -10,6 +10,7 @@ import Domain
 @Observable
 public class TopicViewModel {
     public let id: UUID
+
     public var name: String {
         didSet {
             guard oldValue != name else { return }

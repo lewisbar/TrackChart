@@ -11,91 +11,92 @@ import Domain
 class AppModelTests {
     @Test func init_doesNotLoadTopics() {
         let topic = topic()
-        let testComponents = makeSUT(withTopics: [topic])
+        let (sut, store, _) = makeSUT(withTopics: [topic])
 
-        #expect(testComponents.sut.topicCellModels == [])
+        #expect(store.loadCallCount == 0)
+        #expect(sut.topicListModel.topics.isEmpty)
     }
 
-    @Test func loadTopics_loadsTopicsAndMapsThemToCellModels() {
+    @Test func loadTopics_passesTopicsToListViewModel() {
         let topic = topic()
-        let testComponents = makeSUT(withTopics: [topic])
+        let (sut, _, _) = makeSUT(withTopics: [topic])
 
-        testComponents.sut.loadTopics()
+        sut.loadTopics()
 
-        #expect(testComponents.sut.topicCellModels == [TopicCellModel(from: topic)])
+        #expect(sut.topicListModel.topics == [TopicCellModel(from: topic)])
     }
 
     @Test func loadingError_showsErrorMessage() {
         let error = anyNSError()
-        let testComponents = makeSUT(error: error)
-        testComponents.sut.loadTopics()
+        let (sut, _ , _) = makeSUT(error: error)
+        sut.loadTopics()
 
-        #expect(testComponents.sut.alertMessage == ("Error", error.localizedDescription))
-        #expect(testComponents.sut.isAlertViewPresented)
-        #expect(testComponents.sut.topicCellModels == [])
+        #expect(sut.alertMessage == ("Error", error.localizedDescription))
+        #expect(sut.isAlertViewPresented)
+        #expect(sut.topicListModel.topics.isEmpty)
     }
 
     @Test func dismissErrorMessage() {
         let error = anyNSError()
-        let testComponents = makeSUT(error: error)
-        testComponents.sut.loadTopics()
+        let (sut, _, _) = makeSUT(error: error)
+        sut.loadTopics()
 
-        #expect(testComponents.sut.alertMessage == ("Error", error.localizedDescription))
-        #expect(testComponents.sut.isAlertViewPresented)
-        #expect(testComponents.sut.topicCellModels == [])
+        #expect(sut.alertMessage == ("Error", error.localizedDescription))
+        #expect(sut.isAlertViewPresented)
+        #expect(sut.topicListModel.topics.isEmpty)
 
-        testComponents.sut.dismissAlert()
+        sut.dismissAlert()
 
-        #expect(testComponents.sut.alertMessage == AppModel.defaultAlertMessage)
-        #expect(!testComponents.sut.isAlertViewPresented)
+        #expect(sut.alertMessage == AppModel.defaultAlertMessage)
+        #expect(!sut.isAlertViewPresented)
     }
 
     @Test func topicForID() {
         let topic = topic(name: "a topic")
-        let testComponents = makeSUT(withTopics: [topic])
-        testComponents.sut.loadTopics()
+        let (sut, _, _) = makeSUT(withTopics: [topic])
+        sut.loadTopics()
 
-        let receivedTopic = testComponents.sut.topic(for: topic.id)
+        let receivedTopic = sut.topic(for: topic.id)
 
         #expect(receivedTopic == topic)
     }
 
     @Test func topicForNonExistentID_returnsNil() {
         let topic = topic(name: "a topic")
-        let testComponents = makeSUT(withTopics: [topic])
-        testComponents.sut.loadTopics()
+        let (sut, _, _) = makeSUT(withTopics: [topic])
+        sut.loadTopics()
 
-        let receivedTopic = testComponents.sut.topic(for: UUID())
+        let receivedTopic = sut.topic(for: UUID())
 
         #expect(receivedTopic == nil)
     }
 
     @Test func updateTopic() {
         let originalTopic = topic(name: "old name", entries: [1, 2, 3], unsubmittedValue: -1)
-        let testComponents = makeSUT(withTopics: [originalTopic])
-        testComponents.sut.loadTopics()
+        let (sut, _, _) = makeSUT(withTopics: [originalTopic])
+        sut.loadTopics()
         let changedTopic = Topic(id: originalTopic.id, name: "new name", entries: [4, 5, 6], unsubmittedValue: 17)
 
-        testComponents.sut.update(changedTopic)
+        sut.update(changedTopic)
 
-        #expect(testComponents.sut.topic(for: originalTopic.id) == changedTopic)
-        #expect(testComponents.sut.topicCellModels == [TopicCellModel(from: changedTopic)])
+        #expect(sut.topic(for: originalTopic.id) == changedTopic)
+        #expect(sut.topicListModel.topics == [TopicCellModel(from: changedTopic)])
     }
 
     @Test func updateTopic_onError_doesNotUpdate() {
         let originalTopic = topic(name: "old name", entries: [1, 2, 3], unsubmittedValue: -1)
-        let testComponents = makeSUT(withTopics: [originalTopic])
-        testComponents.sut.loadTopics()
+        let (sut, store, _) = makeSUT(withTopics: [originalTopic])
+        sut.loadTopics()
         let changedTopic = Topic(id: originalTopic.id, name: "new name", entries: [4, 5, 6], unsubmittedValue: 17)
         let error = anyNSError()
-        testComponents.persistenceService.error = error
+        store.error = error
 
-        testComponents.sut.update(changedTopic)
+        sut.update(changedTopic)
 
-        #expect(testComponents.sut.topic(for: originalTopic.id) == originalTopic)
-        #expect(testComponents.sut.isAlertViewPresented)
-        #expect(testComponents.sut.alertMessage == ("Error", error.localizedDescription))
-        #expect(testComponents.sut.topicCellModels == [TopicCellModel(from: originalTopic)])
+        #expect(sut.topic(for: originalTopic.id) == originalTopic)
+        #expect(sut.isAlertViewPresented)
+        #expect(sut.alertMessage == ("Error", error.localizedDescription))
+        #expect(sut.topicListModel.topics == [TopicCellModel(from: originalTopic)])
     }
 
     @Test func updateStoreAutomaticallyAfterDeletionAndReordering() {
@@ -104,13 +105,14 @@ class AppModelTests {
         let topic3 = topic(name: "topic3")
         let topic4 = topic(name: "topic4")
         let originalTopicList = [topic1, topic2, topic3, topic4]
-        let testComponents = makeSUT(withTopics: originalTopicList)
-        testComponents.sut.loadTopics()
+        let (sut, store, _) = makeSUT(withTopics: originalTopicList)
+        sut.loadTopics()
 
         let modifiedTopicList = [topic3, topic4, topic1]
-        testComponents.sut.topicCellModels = modifiedTopicList.map(TopicCellModel.init)
+        sut.topicListModel.topics = modifiedTopicList.map(TopicCellModel.init)
 
-        #expect(testComponents.store.topics == modifiedTopicList)
+        #expect(store.topics == modifiedTopicList)
+        #expect(store.removedTopics == [topic2])
     }
 
     @Test func updateStoreAutomaticallyAfterDeletionAndReordering_onError_recoverWithCurrentStoreState() {
@@ -119,18 +121,18 @@ class AppModelTests {
         let topic3 = topic(name: "topic3")
         let topic4 = topic(name: "topic4")
         let originalTopicList = [topic1, topic2, topic3, topic4]
-        let testComponents = makeSUT(withTopics: originalTopicList)
-        testComponents.sut.loadTopics()
+        let (sut, store, _) = makeSUT(withTopics: originalTopicList)
+        sut.loadTopics()
         let error = anyNSError()
-        testComponents.persistenceService.error = error
+        store.reorderingError = error
 
         let modifiedTopicList = [topic3, topic4, topic1]
-        testComponents.sut.topicCellModels = modifiedTopicList.map(TopicCellModel.init)
+        sut.topicListModel.topics = modifiedTopicList.map(TopicCellModel.init)
 
-        #expect(testComponents.store.topics == originalTopicList)
-        #expect(testComponents.sut.topicCellModels == originalTopicList.map(TopicCellModel.init))
-        #expect(testComponents.sut.alertMessage == ("Error", error.localizedDescription))
-        #expect(testComponents.sut.isAlertViewPresented)
+        #expect(store.topics == originalTopicList)
+        #expect(sut.topicListModel.topics == originalTopicList.map(TopicCellModel.init))
+        #expect(sut.alertMessage == ("Error", error.localizedDescription))
+        #expect(sut.isAlertViewPresented)
     }
 
     @Test func navigateToTopicBackAndForth() {
@@ -211,16 +213,16 @@ class AppModelTests {
 
     @Test func navigateToNewTopic_onCreationError_showsError_andDoesNotCreateOrNavigate() {
         let error = anyNSError()
-        let testComponents = makeSUT()
-        testComponents.sut.loadTopics()
-        testComponents.persistenceService.error = error
+        let (sut, store, navigator) = makeSUT()
+        sut.loadTopics()
+        store.error = error
 
-        testComponents.sut.navigateToNewTopic()
+        sut.navigateToNewTopic()
 
-        #expect(testComponents.sut.isAlertViewPresented)
-        #expect(testComponents.sut.alertMessage == ("Error", error.localizedDescription))
-        #expect(testComponents.navigator.path.isEmpty)
-        #expect(testComponents.store.topics.isEmpty)
+        #expect(sut.isAlertViewPresented)
+        #expect(sut.alertMessage == ("Error", error.localizedDescription))
+        #expect(navigator.path.isEmpty)
+        #expect(store.topics.isEmpty)
     }
 
     @Test func isObservable() async throws {
@@ -229,12 +231,12 @@ class AppModelTests {
         let tracker = ObservationTracker()
 
         withObservationTracking {
-            _ = testComponents.sut.topicCellModels
+            _ = testComponents.sut.path
         } onChange: {
             Task { await tracker.setTriggered() }
         }
 
-        testComponents.sut.loadTopics()
+        testComponents.sut.navigate(to: originalTopic)
 
         try await Task.sleep(for: .milliseconds(10))
         let triggered = await tracker.getTriggered()
@@ -243,31 +245,28 @@ class AppModelTests {
 
     // MARK: - Helpers
 
-    private func makeSUT(withTopics persistedTopics: [Topic] = [], error: Error? = nil) -> (sut: AppModel, store: TopicStore, navigator: Navigator, persistenceService: TopicPersistenceServiceStub) {
-        let persistenceService = TopicPersistenceServiceStub(topics: persistedTopics, error: error)
-        let store = TopicStore(persistenceService: persistenceService)
+    private func makeSUT(withTopics topics: [Topic] = [], error: Error? = nil) -> (sut: AppModel, store: TopicStoreSpy, navigator: Navigator) {
+        let store = TopicStoreSpy(topics: topics)
+        store.error = error
         let navigator = Navigator()
         let sut = AppModel(store: store, navigator: navigator)
 
         weakSUT = sut
         weakStore = store
         weakNavigator = navigator
-        weakPersistenceService = persistenceService
 
-        return (sut, store, navigator, persistenceService)
+        return (sut, store, navigator)
     }
 
     deinit {
         #expect(weakSUT == nil, "Instance should have been deallocated. Potential memory leak.")
         #expect(weakStore == nil, "Instance should have been deallocated. Potential memory leak.")
         #expect(weakNavigator == nil, "Instance should have been deallocated. Potential memory leak.")
-        #expect(weakPersistenceService == nil, "Instance should have been deallocated. Potential memory leak.")
     }
 
     private weak var weakSUT: AppModel?
-    private weak var weakStore: TopicStore?
+    private weak var weakStore: TopicStoreSpy?
     private weak var weakNavigator: Navigator?
-    private weak var weakPersistenceService: TopicPersistenceServiceStub?
 
     private func topic(id: UUID = UUID(), name: String = "a topic", entries: [Int] = [.random(in: -2...10)], unsubmittedValue: Int = 0) -> Topic {
         Topic(id: id, name: name, entries: entries, unsubmittedValue: unsubmittedValue)
@@ -278,34 +277,63 @@ class AppModelTests {
     }
 }
 
-private class TopicPersistenceServiceStub: TopicPersistenceService {
+private class TopicStoreSpy: TopicStore {
     var topics: [Topic]
     var error: Error?
+    var reorderingError: Error?
 
-    init(topics: [Topic], error: Error?) {
+    init(topics: [Topic] = []) {
         self.topics = topics
-        self.error = error
     }
 
-    func load() throws -> [Topic] {
-        if let error { throw error }
-        return topics
+    private(set) var loadCallCount = 0
+    func load() throws {
+        try throwErrorIfPresent()
+        loadCallCount += 1
     }
 
-    func create(_ topic: Topic) throws {
-        if let error { throw error }
+    private(set) var requestedIDs = [UUID]()
+    func topic(for id: UUID) -> Topic? {
+        requestedIDs.append(id)
+        return topics.first(where: { $0.id == id })
     }
 
-    func update(_ topic: Topic) throws {
-        if let error { throw error }
-    }
-
-    func delete(_ topic: Topic) throws {
-        if let error { throw error }
-    }
-
+    private(set) var newOrders = [[Topic]]()
     func reorder(to newOrder: [Topic]) throws {
+        try throwReorderingErrorIfPresent()
+        topics = newOrder
+        newOrders.append(newOrder)
+    }
+
+    private(set) var addedTopics = [Topic]()
+    func add(_ topic: Topic) throws {
+        try throwErrorIfPresent()
+        topics.append(topic)
+        addedTopics.append(topic)
+    }
+
+    private(set) var updatedTopics = [Topic]()
+    func update(_ topic: Topic) throws {
+        try throwErrorIfPresent()
+        let index = topics.firstIndex(where: { $0.id == topic.id })!
+        topics[index] = topic
+        updatedTopics.append(topic)
+    }
+
+    private(set) var removedTopics = [Topic]()
+    func remove(_ topic: Topic) throws {
+        try throwErrorIfPresent()
+        let index = topics.firstIndex(where: { $0.id == topic.id })!
+        topics.remove(at: index)
+        removedTopics.append(topic)
+    }
+
+    private func throwErrorIfPresent() throws {
         if let error { throw error }
+    }
+
+    private func throwReorderingErrorIfPresent() throws {
+        if let reorderingError { throw reorderingError }
     }
 }
 

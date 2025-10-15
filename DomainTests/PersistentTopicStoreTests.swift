@@ -1,6 +1,5 @@
 //
-//  TopicStoreTests.swift
-//  PersistenceTests
+//  PersistentTopicStoreTests.swift
 //
 //  Created by Lennart Wisbar on 18.09.25.
 //
@@ -8,7 +7,7 @@
 import Testing
 import Domain
 
-class TopicStoreTests {
+class PersistentTopicStoreTests {
     @Test func init_doesNotLoadTopics() {
         let topics = sampleTopics()
         let (sut, persistenceService) = makeSUT(with: topics)
@@ -186,100 +185,6 @@ class TopicStoreTests {
         #expect(persistenceService.loadCallCount == 1)
     }
 
-    @Test func submitNewValueToTopic() throws {
-        let topics = sampleTopics()
-        let selectedTopic = topics[3]
-        let newValue = -14
-        let (sut, persistenceService) = makeSUT(with: topics)
-        try sut.load()
-
-        try sut.submit(newValue, to: selectedTopic)
-
-        let updatedTopic = sut.topic(for: selectedTopic.id)
-        #expect(updatedTopic?.entries == selectedTopic.entries + [newValue])
-        #expect(persistenceService.updatedTopics == [updatedTopic])
-    }
-
-    @Test func submitNewValueToTopic_onError_doesNotSubmit() throws {
-        let topics = sampleTopics()
-        let selectedTopic = topics[3]
-        let newValue = -14
-        let (sut, persistenceService) = makeSUT(with: topics)
-        try sut.load()
-        let error = anyNSError()
-        persistenceService.error = error
-
-        #expect(throws: type(of: error)) {
-            try sut.submit(newValue, to: selectedTopic)
-        }
-
-        let updatedTopic = sut.topic(for: selectedTopic.id)
-        #expect(updatedTopic?.entries == selectedTopic.entries)
-        #expect(persistenceService.updatedTopics.isEmpty)
-    }
-
-    @Test func removeLastValueFromTopic() throws {
-        let topics = sampleTopics()
-        let selectedTopic = topics[2]
-        let (sut, persistenceService) = makeSUT(with: topics)
-        try sut.load()
-
-        try sut.removeLastValue(from: selectedTopic)
-
-        let updatedTopic = sut.topic(for: selectedTopic.id)
-        #expect(updatedTopic?.entries == selectedTopic.entries.dropLast())
-        #expect(persistenceService.updatedTopics == [updatedTopic])
-    }
-
-    @Test func removeLastValueFromTopic_onError_doesNotRemove() throws {
-        let topics = sampleTopics()
-        let selectedTopic = topics[2]
-        let (sut, persistenceService) = makeSUT(with: topics)
-        try sut.load()
-        let error = anyNSError()
-        persistenceService.error = error
-
-        #expect(throws: type(of: error)) {
-            try sut.removeLastValue(from: selectedTopic)
-        }
-
-        let updatedTopic = sut.topic(for: selectedTopic.id)
-        #expect(updatedTopic?.entries == selectedTopic.entries)
-        #expect(persistenceService.updatedTopics.isEmpty)
-    }
-
-    @Test func changeTopicName() throws {
-        let topics = sampleTopics()
-        let selectedTopic = topics[2]
-        let newName = "New Topic Name"
-        let (sut, persistenceService) = makeSUT(with: topics)
-        try sut.load()
-
-        try sut.rename(selectedTopic, to: newName)
-
-        let updatedTopic = sut.topic(for: selectedTopic.id)
-        #expect(updatedTopic?.name == newName)
-        #expect(persistenceService.updatedTopics == [updatedTopic])
-    }
-
-    @Test func changeTopicName_onError_doesNotRename() throws {
-        let topics = sampleTopics()
-        let selectedTopic = topics[2]
-        let newName = "New Topic Name"
-        let (sut, persistenceService) = makeSUT(with: topics)
-        try sut.load()
-        let error = anyNSError()
-        persistenceService.error = error
-
-        #expect(throws: type(of: error)) {
-            try sut.rename(selectedTopic, to: newName)
-        }
-
-        let updatedTopic = sut.topic(for: selectedTopic.id)
-        #expect(updatedTopic?.name == selectedTopic.name)
-        #expect(persistenceService.updatedTopics.isEmpty)
-    }
-
     @Test func isObservable() async throws {
         let (sut, _) = makeSUT()
         let tracker = ObservationTracker()
@@ -301,9 +206,9 @@ class TopicStoreTests {
 
     // MARK: - Helpers
 
-    private func makeSUT(with topics: [Topic] = [], error: Error? = nil) -> (sut: TopicStore, persistenceService: TopicPersistenceServiceSpy) {
+    private func makeSUT(with topics: [Topic] = [], error: Error? = nil) -> (sut: PersistentTopicStore, persistenceService: TopicPersistenceServiceSpy) {
         let persistenceService = TopicPersistenceServiceSpy(topics: topics, error: error)
-        let sut = TopicStore(persistenceService: persistenceService)
+        let sut = PersistentTopicStore(persistenceService: persistenceService)
 
         weakSUT = sut
         weakPersistenceService = persistenceService
@@ -330,7 +235,7 @@ class TopicStoreTests {
         Topic(id: UUID(), name: "another topic", entries: [45, 67, 89, -12], unsubmittedValue: -18)
     }
 
-    private weak var weakSUT: TopicStore?
+    private weak var weakSUT: PersistentTopicStore?
     private weak var weakPersistenceService: TopicPersistenceServiceSpy?
 
     deinit {
