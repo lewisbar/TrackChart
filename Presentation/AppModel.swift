@@ -9,21 +9,19 @@ import Domain
 @Observable
 public class AppModel {
     public var path: [NavigationTopic] { get { navigator.path } set { navigator.path = newValue } }
-    public var topicCellModels = [TopicCellModel]() { didSet {
-        if !isUpdatingCellModelsFromStore {
-            updateStoreWithDeletedAndReorderedCellModels()
-        }
-    } }
+    private(set) public var topicListModel: TopicListViewModel = .placeholder
     private(set) public var alertMessage = defaultAlertMessage
     public var isAlertViewPresented = false
 
     private let store: TopicStore
     private let navigator: Navigator
-    private var isUpdatingCellModelsFromStore = false
 
     public init(store: TopicStore, navigator: Navigator) {
         self.store = store
         self.navigator = navigator
+        self.topicListModel = TopicListViewModel(topics: [], updateTopicList: { [weak self] newOrder in
+            self?.updateTopicList(to: newOrder)
+        })
     }
 
     public func navigate(toTopicWithID id: UUID) {
@@ -67,18 +65,17 @@ public class AppModel {
         updateCellModelsFromStore()
     }
 
-    private func updateStoreWithDeletedAndReorderedCellModels() {
+    private func updateTopicList(to newOrder: [UUID]) {
         let backup = store.topics
-        let updatedIDs = topicCellModels.map(\.id)
 
         do {
             try store.topics.forEach { topic in
-                if !updatedIDs.contains(topic.id) {
+                if !newOrder.contains(topic.id) {
                     try store.remove(topic)
                 }
             }
 
-            let reorderedTopics = updatedIDs.compactMap { store.topic(for: $0) }
+            let reorderedTopics = newOrder.compactMap { store.topic(for: $0) }
             try store.reorder(to: reorderedTopics)
         } catch {
             store.topics = backup
@@ -88,9 +85,7 @@ public class AppModel {
     }
 
     private func updateCellModelsFromStore() {
-        isUpdatingCellModelsFromStore = true
-        topicCellModels = store.topics.map(TopicCellModel.init)
-        isUpdatingCellModelsFromStore = false
+        topicListModel.updateFromStore(topics: store.topics)
     }
 
     private func handle(_ error: Error) {
@@ -99,4 +94,8 @@ public class AppModel {
     }
 
     public static let defaultAlertMessage = (title: "Error", message: "An error occurred.")
+}
+
+private extension TopicListViewModel {
+    static let placeholder = TopicListViewModel(topics: [], updateTopicList: { _ in })
 }

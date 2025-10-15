@@ -11,7 +11,7 @@ public protocol TopicLoading {
     func load() throws
 }
 
-public protocol TopicReading {
+public protocol TopicReading: AnyObject {
     var topics: [Topic] { get set }
     func topic(for id: UUID) -> Topic?
 }

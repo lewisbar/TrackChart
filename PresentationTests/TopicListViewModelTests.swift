@@ -63,6 +63,23 @@ class TopicListViewModelTests {
         #expect(capturedIDList == nil)
     }
 
+    @Test func updateFromStore() {
+        let topic1 = topic(name: "a topic", entries: [5, 6], unsubmittedValue: 4)
+        let topic2 = topic(name: "another topic", entries: [-12, 0], unsubmittedValue: 0)
+        let topic3 = topic(name: "a third topic", entries: [0], unsubmittedValue: -1)
+        let topic4 = topic(name: "a fourth topic", entries: [-5], unsubmittedValue: 3)
+        let changedTopic1 = topic(id: topic1.id, name: "new name", entries: [4], unsubmittedValue: 1000)
+        let originalList = [topic1, topic3, topic4]
+        var capturedIDList: [UUID]?
+        let sut = makeSUT(topics: originalList, updateTopicList: { capturedIDList = $0 })
+
+        let changedTopicList = [topic2, changedTopic1, topic4]
+        sut.updateFromStore(topics: changedTopicList)
+
+        #expect(sut.topics == changedTopicList.map(TopicCellModel.init))
+        #expect(capturedIDList == nil)
+    }
+
     // MARK: - Helpers
 
     private func makeSUT(topics: [Topic] = [], updateTopicList: @escaping ([UUID]) -> Void = { _ in }) -> TopicListViewModel {
