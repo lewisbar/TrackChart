@@ -114,7 +114,7 @@ class PersistentTopicStoreTests {
 
     @Test func update_updatesExistingTopic() throws {
         let topics = sampleTopics()
-        let topicToUpdate = Topic(id: topics[2].id, name: "new name", entries: [8, 8, -8], unsubmittedValue: 0)
+        let topicToUpdate = Topic(id: topics[2].id, name: "new name", entries: entries(from: [8, 8, -8]), unsubmittedValue: 0)
         let (sut, persistenceService) = makeSUT(with: topics)
         try sut.load()
 
@@ -129,7 +129,7 @@ class PersistentTopicStoreTests {
 
     @Test func update_onError_doesNotUpdate() throws {
         let originalTopics = sampleTopics()
-        let topicToUpdate = Topic(id: originalTopics[2].id, name: "new name", entries: [8, 8, -8], unsubmittedValue: 12)
+        let topicToUpdate = Topic(id: originalTopics[2].id, name: "new name", entries: entries(from: [8, 8, -8]), unsubmittedValue: 12)
         let (sut, persistenceService) = makeSUT(with: originalTopics)
         try sut.load()
         let error = anyNSError()
@@ -218,21 +218,27 @@ class PersistentTopicStoreTests {
 
     private func sampleTopics() -> [Topic] {
         [
-            Topic(id: UUID(), name: "Topic 1", entries: [0, 3, 4, 5, 2, 3, 4, -1], unsubmittedValue: 1),
-            Topic(id: UUID(), name: "Topic 2", entries: [-3, 4, 5, 6, 3, 4, 23, -12, 0], unsubmittedValue: 10),
-            Topic(id: UUID(), name: "Topic 3", entries: [100, 200, 1000, -2000, 30, 10], unsubmittedValue: 100),
-            Topic(id: UUID(), name: "Topic 4", entries: [30], unsubmittedValue: -1),
-            Topic(id: UUID(), name: "Topic 5", entries: [], unsubmittedValue: -10),
-            Topic(id: UUID(), name: "Topic 6", entries: [-12], unsubmittedValue: -100),
+            Topic(id: UUID(), name: "Topic 1", entries: entries(from: [0, 3, 4, 5, 2, 3, 4, -1]), unsubmittedValue: 1),
+            Topic(id: UUID(), name: "Topic 2", entries: entries(from: [-3, 4, 5, 6, 3, 4, 23, -12, 0]), unsubmittedValue: 10),
+            Topic(id: UUID(), name: "Topic 3", entries: entries(from: [100, 200, 1000, -2000, 30, 10]), unsubmittedValue: 100),
+            Topic(id: UUID(), name: "Topic 4", entries: entries(from: [30]), unsubmittedValue: -1),
+            Topic(id: UUID(), name: "Topic 5", entries: entries(from: []), unsubmittedValue: -10),
+            Topic(id: UUID(), name: "Topic 6", entries: entries(from: [-12]), unsubmittedValue: -100),
         ]
     }
 
     private func sampleTopic1() -> Topic {
-        Topic(id: UUID(), name: "a topic", entries: [1, 2, 3], unsubmittedValue: 18)
+        Topic(id: UUID(), name: "a topic", entries: entries(from: [1, 2, 3]), unsubmittedValue: 18)
     }
 
     private func sampleTopic2() -> Topic {
-        Topic(id: UUID(), name: "another topic", entries: [45, 67, 89, -12], unsubmittedValue: -18)
+        Topic(id: UUID(), name: "another topic", entries: entries(from: [45, 67, 89, -12]), unsubmittedValue: -18)
+    }
+
+    private func entries(from values: [Int]) -> [Entry] {
+        values.map {
+            Entry(value: Double($0), timestamp: Date().advanced(by: -100))
+        }
     }
 
     private weak var weakSUT: PersistentTopicStore?

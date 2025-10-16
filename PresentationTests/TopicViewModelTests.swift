@@ -17,7 +17,7 @@ class TopicViewModelTests {
 
         #expect(sut.id == topic.id)
         #expect(sut.name == topic.name)
-        #expect(sut.entries == topic.entries)
+        #expect(sut.entries.map(\.entry) == topic.entries)
         #expect(sut.unsubmittedValue == topic.unsubmittedValue)
     }
 
@@ -62,24 +62,24 @@ class TopicViewModelTests {
     }
 
     @Test func changeOfEntries_sendsUpdatedTopic() {
-        let originalTopic = makeTopic(entries: [19, 20])
+        let originalTopic = makeTopic(values: [19, 20])
         var capturedTopic: Topic?
         let sut = makeSUT(topic: originalTopic, updateTopic: { capturedTopic = $0 })
-        let newEntries = [-100, 100, 1000]
+        let newEntries = entries(from: [-100, 100, 1000])
 
-        sut.entries = newEntries
+        sut.entries = newEntries.map(ViewEntry.init)
 
         let expectedTopic = Topic(id: originalTopic.id, name: originalTopic.name, entries: newEntries, unsubmittedValue: originalTopic.unsubmittedValue)
         #expect(capturedTopic == expectedTopic)
     }
 
-    @Test func didSetEntries_ifEntriesHaveNotChanges_doesNotSendUpdatedTopic() {
-        let originalEntries = [10, 20]
-        let originalTopic = makeTopic(entries: originalEntries)
+    @Test func didSetEntries_ifEntriesHaveNotChanged_doesNotSendUpdatedTopic() {
+        let originalEntries = entries(from: [10, 20])
+        let originalTopic = Topic(id: UUID(), name: "a name", entries: originalEntries, unsubmittedValue: 0)
         var capturedTopic: Topic?
         let sut = makeSUT(topic: originalTopic, updateTopic: { capturedTopic = $0 })
 
-        sut.entries = originalEntries
+        sut.entries = originalEntries.map(ViewEntry.init)
 
         #expect(capturedTopic == nil)
     }
@@ -88,7 +88,7 @@ class TopicViewModelTests {
         let originalTopic = makeTopic(unsubmittedValue: 0)
         var capturedTopic: Topic?
         let sut = makeSUT(topic: originalTopic, updateTopic: { capturedTopic = $0 })
-        let newValue = 17
+        let newValue = 17.0
 
         sut.unsubmittedValue = newValue
 
@@ -97,7 +97,7 @@ class TopicViewModelTests {
     }
 
     @Test func didSetUnsubmittedValue_ifValueHasNotChanged_doesNotSendUpdatedTopic() {
-        let originalValue = 0
+        let originalValue = 0.0
         let originalTopic = makeTopic(unsubmittedValue: originalValue)
         var capturedTopic: Topic?
         let sut = makeSUT(topic: originalTopic, updateTopic: { capturedTopic = $0 })
@@ -115,8 +115,14 @@ class TopicViewModelTests {
         return sut
     }
 
-    private func makeTopic(id: UUID = UUID(), name: String = "a topic", entries: [Int] = [-1, 2], unsubmittedValue: Int = 0) -> Topic {
-        Topic(id: id, name: name, entries: entries, unsubmittedValue: unsubmittedValue)
+    private func makeTopic(id: UUID = UUID(), name: String = "a topic", values: [Int] = [-1, 2], unsubmittedValue: Double = 0) -> Topic {
+        Topic(id: id, name: name, entries: entries(from: values), unsubmittedValue: Double(unsubmittedValue))
+    }
+
+    private func entries(from values: [Int]) -> [Entry] {
+        values.map {
+            Entry(value: Double($0), timestamp: Date().advanced(by: -100))
+        }
     }
 
     private weak var weakSUT: TopicViewModel?

@@ -11,9 +11,9 @@ public struct TopicCellModel: Identifiable, Hashable {
     public let id: UUID
     public let name: String
     public let info: String
-    public let entries: [Int]
+    public let entries: [TopicCellEntry]
 
-    public init(id: UUID, name: String, info: String, entries: [Int]) {
+    public init(id: UUID, name: String, info: String, entries: [TopicCellEntry]) {
         self.id = id
         self.name = name
         self.info = info
@@ -26,6 +26,25 @@ public struct TopicCellModel: Identifiable, Hashable {
         self.id = topic.id
         self.name = topic.name
         self.info = "\(topic.entries.count) \(infoPostfix)"
-        self.entries = topic.entries
+        self.entries = topic.entries.map(TopicCellEntry.init)
+    }
+}
+
+public struct TopicCellEntry: Hashable, Codable {
+    public let value: Double
+    public let timestamp: Date
+
+    public init(value: Double, timestamp: Date) {
+        self.value = value
+        self.timestamp = timestamp
+    }
+
+    public init(from entry: Entry) {
+        self.value = entry.value
+        self.timestamp = entry.timestamp
+    }
+
+    public var entry: Entry {
+        Entry(value: value, timestamp: timestamp)
     }
 }

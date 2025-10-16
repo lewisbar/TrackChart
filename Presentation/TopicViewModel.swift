@@ -18,14 +18,14 @@ public class TopicViewModel {
         }
     }
 
-    public var entries: [Int] {
+    public var entries: [ViewEntry] {
         didSet {
             guard oldValue != entries else { return }
             updateTopic(currentTopic)
         }
     }
 
-    public var unsubmittedValue: Int {
+    public var unsubmittedValue: Double {
         didSet {
             guard oldValue != unsubmittedValue else { return }
             updateTopic(currentTopic)
@@ -35,14 +35,33 @@ public class TopicViewModel {
     private let updateTopic: (Topic) -> Void
 
     private var currentTopic: Topic {
-        Topic(id: id, name: name, entries: entries, unsubmittedValue: unsubmittedValue)
+        Topic(id: id, name: name, entries: entries.map(\.entry), unsubmittedValue: unsubmittedValue)
     }
 
     public init(topic: Topic, updateTopic: @escaping (Topic) -> Void) {
         self.id = topic.id
         self.name = topic.name
-        self.entries = topic.entries
+        self.entries = topic.entries.map(ViewEntry.init)
         self.unsubmittedValue = topic.unsubmittedValue
         self.updateTopic = updateTopic
+    }
+}
+
+public struct ViewEntry: Equatable {
+    public let value: Double
+    public let timestamp: Date
+
+    public init(value: Double, timestamp: Date) {
+        self.value = value
+        self.timestamp = timestamp
+    }
+
+    public init(from entry: Entry) {
+        self.value = entry.value
+        self.timestamp = entry.timestamp
+    }
+
+    public var entry: Entry {
+        Entry(value: value, timestamp: timestamp)
     }
 }

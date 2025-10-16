@@ -13,7 +13,7 @@ import Presentation
 @main
 struct TrackChartApp: App {
     @State private var model = AppModel(
-        store: PersistentTopicStore(persistenceService: UserDefaultsTopicPersistenceService()),
+        store: PersistentTopicStore(persistenceService: InMemoryPersistenceService()),
         navigator: Navigator()
     )
 
@@ -45,5 +45,39 @@ struct TrackChartApp: App {
         if let topic = model.topic(for: navigationTopic.id) {
             TopicView(model: TopicViewModel(topic: topic, updateTopic: model.update))
         }
+    }
+}
+
+private class InMemoryPersistenceService: TopicPersistenceService {
+    private var topics: [Topic] = [
+        .init(id: UUID(), name: "Topic 1", entries: [
+            .init(value: 1, timestamp: Date().advanced(by: -1000)),
+            .init(value: 2, timestamp: Date().advanced(by: -500)),
+            .init(value: 0, timestamp: Date().advanced(by: -200)),
+            .init(value: -1, timestamp: Date().advanced(by: -100)),
+            .init(value: 0, timestamp: Date().advanced(by: 0))
+        ], unsubmittedValue: 4)
+    ]
+
+    func create(_ topic: Topic) throws {
+        topics.append(topic)
+    }
+    
+    func update(_ topic: Topic) throws {
+        guard let index = topics.firstIndex(where: { $0.id == topic.id }) else { return }
+        topics[index] = topic
+    }
+    
+    func delete(_ topic: Topic) throws {
+        guard let index = topics.firstIndex(where: { $0.id == topic.id }) else { return }
+        topics.remove(at: index)
+    }
+    
+    func reorder(to newOrder: [Topic]) throws {
+        topics = newOrder
+    }
+    
+    func load() throws -> [Topic] {
+        topics
     }
 }

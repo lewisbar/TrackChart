@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CounterView: View {
-    @Binding var count: Int
+    @Binding var count: Double
     let submitNewValue: (Int) -> Void
     let deleteLastValue: () -> Void
 
@@ -22,7 +22,7 @@ struct CounterView: View {
             minusButton
                 .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
 
-            CountLabel(count: count)
+            CountLabel(count: Int(count))
                 .dynamicTypeSize(...DynamicTypeSize.accessibility3)
 
             plusButton
@@ -55,7 +55,7 @@ struct CounterView: View {
     private var submitButton: some View {
         CircleButton(
             action: {
-                submitNewValue(count)
+                submitNewValue(Int(count))
                 count = 0
             },
             image: Image(systemName: "checkmark"),
@@ -72,7 +72,7 @@ struct CounterView: View {
 }
 
 #Preview {
-    @Previewable @State var count = 0
+    @Previewable @State var count = 0.0
 
     CounterView(count: $count, submitNewValue: { _ in }, deleteLastValue: {})
 //        .environment(\.layoutDirection, .rightToLeft)

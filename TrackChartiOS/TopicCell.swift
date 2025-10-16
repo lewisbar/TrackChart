@@ -38,7 +38,7 @@ struct TopicCell: View {
                 .padding([.horizontal, .bottom])
 
                 ChartView(
-                    values: topic.entries,
+                    values: topic.entries.map(\.value).map(Int.init),  // TODO: Pass ViewEntries instead
                     showPointMarks: false,
                     annotateExtrema: false,
                     showAxisLabels: false,
@@ -55,15 +55,36 @@ struct TopicCell: View {
 }
 
 #Preview {
-    TopicCell(topic: TopicCellModel(id: UUID(), name: "Daily Pages Read", info: "7 entries", entries: [1, 2, 4, 8, 16, -1, -2]), showTopic: { _ in })
-        .padding()
+    TopicCell(
+        topic: TopicCellModel(
+            id: UUID(),
+            name: "Daily Pages Read",
+            info: "7 entries",
+            entries: [1, 2, 4, 8, 16, -1, -2].map { TopicCellEntry(value: $0, timestamp: Date()) }
+        ),
+        showTopic: { _ in }
+    )
+    .padding()
 
-    TopicCell(topic: TopicCellModel(id: UUID(), name: "Pushups", info: "10 entries", entries: [1, 2, 4, 8, -16, -1, -2, 6, 7, 8]), showTopic: { _ in })
-        .padding()
+    TopicCell(
+        topic: TopicCellModel(
+            id: UUID(),
+            name: "Daily Pages Read",
+            info: "7 entries",
+            entries: [].map { TopicCellEntry(value: $0, timestamp: Date()) }
+        ),
+        showTopic: { _ in }
+    )
+    .padding()
 
-    TopicCell(topic: TopicCellModel(id: UUID(), name: "Hours Studied", info: "0 entries", entries: []), showTopic: { _ in })
-        .padding()
-
-    TopicCell(topic: TopicCellModel(id: UUID(), name: "Some Other Topic", info: "1 entry", entries: [1]), showTopic: { _ in })
-        .padding()
+    TopicCell(
+        topic: TopicCellModel(
+            id: UUID(),
+            name: "Daily Pages Read",
+            info: "7 entries",
+            entries: [1].map { TopicCellEntry(value: $0, timestamp: Date()) }
+        ),
+        showTopic: { _ in }
+    )
+    .padding()
 }

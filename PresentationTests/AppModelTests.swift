@@ -72,10 +72,10 @@ class AppModelTests {
     }
 
     @Test func updateTopic() {
-        let originalTopic = topic(name: "old name", entries: [1, 2, 3], unsubmittedValue: -1)
+        let originalTopic = topic(name: "old name", values: [1, 2, 3], unsubmittedValue: -1)
         let (sut, _, _) = makeSUT(withTopics: [originalTopic])
         sut.loadTopics()
-        let changedTopic = Topic(id: originalTopic.id, name: "new name", entries: [4, 5, 6], unsubmittedValue: 17)
+        let changedTopic = topic(id: originalTopic.id, name: "new name", values: [4, 5, 6], unsubmittedValue: 17)
 
         sut.update(changedTopic)
 
@@ -84,10 +84,10 @@ class AppModelTests {
     }
 
     @Test func updateTopic_onError_doesNotUpdate() {
-        let originalTopic = topic(name: "old name", entries: [1, 2, 3], unsubmittedValue: -1)
+        let originalTopic = topic(name: "old name", values: [1, 2, 3], unsubmittedValue: -1)
         let (sut, store, _) = makeSUT(withTopics: [originalTopic])
         sut.loadTopics()
-        let changedTopic = Topic(id: originalTopic.id, name: "new name", entries: [4, 5, 6], unsubmittedValue: 17)
+        let changedTopic = topic(id: originalTopic.id, name: "new name", values: [4, 5, 6], unsubmittedValue: 17)
         let error = anyNSError()
         store.error = error
 
@@ -268,8 +268,14 @@ class AppModelTests {
     private weak var weakStore: TopicStoreSpy?
     private weak var weakNavigator: Navigator?
 
-    private func topic(id: UUID = UUID(), name: String = "a topic", entries: [Int] = [.random(in: -2...10)], unsubmittedValue: Int = 0) -> Topic {
-        Topic(id: id, name: name, entries: entries, unsubmittedValue: unsubmittedValue)
+    private func topic(id: UUID = UUID(), name: String = "a topic", values: [Int] = [.random(in: -2...10)], unsubmittedValue: Double = 0) -> Topic {
+        Topic(id: id, name: name, entries: entries(from: values), unsubmittedValue: unsubmittedValue)
+    }
+
+    private func entries(from values: [Int]) -> [Entry] {
+        values.map {
+            Entry(value: Double($0), timestamp: Date().advanced(by: -100))
+        }
     }
 
     private func anyNSError() -> NSError {

@@ -11,8 +11,8 @@ import Domain
 
 class TopicListViewModelTests {
     @Test func init_setsCellModels() {
-        let topic1 = topic(name: "a topic", entries: [5, 6], unsubmittedValue: 4)
-        let topic2 = topic(name: "another topic", entries: [-12, 0], unsubmittedValue: 0)
+        let topic1 = topic(name: "a topic", values: [5, 6], unsubmittedValue: 4)
+        let topic2 = topic(name: "another topic", values: [-12, 0], unsubmittedValue: 0)
 
         let sut = makeSUT(topics: [topic1, topic2])
 
@@ -38,9 +38,9 @@ class TopicListViewModelTests {
     }
 
     @Test func onChangeOfTopics_sendsUpdate() {
-        let topic1 = topic(name: "a topic", entries: [5, 6], unsubmittedValue: 4)
-        let topic2 = topic(name: "another topic", entries: [-12, 0], unsubmittedValue: 0)
-        let topic3 = topic(name: "a third topic", entries: [0], unsubmittedValue: -1)
+        let topic1 = topic(name: "a topic", values: [5, 6], unsubmittedValue: 4)
+        let topic2 = topic(name: "another topic", values: [-12, 0], unsubmittedValue: 0)
+        let topic3 = topic(name: "a third topic", values: [0], unsubmittedValue: -1)
         var capturedIDList: [UUID]?
         let sut = makeSUT(topics: [topic1, topic2, topic3], updateTopicList: { capturedIDList = $0 })
         let newList = [topic3, topic1]
@@ -51,9 +51,9 @@ class TopicListViewModelTests {
     }
 
     @Test func didSetTopics_ifNothingHasChanged_doesNotSendUpdate() {
-        let topic1 = topic(name: "a topic", entries: [5, 6], unsubmittedValue: 4)
-        let topic2 = topic(name: "another topic", entries: [-12, 0], unsubmittedValue: 0)
-        let topic3 = topic(name: "a third topic", entries: [0], unsubmittedValue: -1)
+        let topic1 = topic(name: "a topic", values: [5, 6], unsubmittedValue: 4)
+        let topic2 = topic(name: "another topic", values: [-12, 0], unsubmittedValue: 0)
+        let topic3 = topic(name: "a third topic", values: [0], unsubmittedValue: -1)
         var capturedIDList: [UUID]?
         let originalList = [topic1, topic2, topic3]
         let sut = makeSUT(topics: originalList, updateTopicList: { capturedIDList = $0 })
@@ -64,11 +64,11 @@ class TopicListViewModelTests {
     }
 
     @Test func updateFromStore() {
-        let topic1 = topic(name: "a topic", entries: [5, 6], unsubmittedValue: 4)
-        let topic2 = topic(name: "another topic", entries: [-12, 0], unsubmittedValue: 0)
-        let topic3 = topic(name: "a third topic", entries: [0], unsubmittedValue: -1)
-        let topic4 = topic(name: "a fourth topic", entries: [-5], unsubmittedValue: 3)
-        let changedTopic1 = topic(id: topic1.id, name: "new name", entries: [4], unsubmittedValue: 1000)
+        let topic1 = topic(name: "a topic", values: [5, 6], unsubmittedValue: 4)
+        let topic2 = topic(name: "another topic", values: [-12, 0], unsubmittedValue: 0)
+        let topic3 = topic(name: "a third topic", values: [0], unsubmittedValue: -1)
+        let topic4 = topic(name: "a fourth topic", values: [-5], unsubmittedValue: 3)
+        let changedTopic1 = topic(id: topic1.id, name: "new name", values: [4], unsubmittedValue: 1000)
         let originalList = [topic1, topic3, topic4]
         var capturedIDList: [UUID]?
         let sut = makeSUT(topics: originalList, updateTopicList: { capturedIDList = $0 })
@@ -88,8 +88,14 @@ class TopicListViewModelTests {
         return sut
     }
 
-    private func topic(id: UUID = UUID(), name: String = "a topic", entries: [Int] = [.random(in: -2...10)], unsubmittedValue: Int = 0) -> Topic {
-        Topic(id: id, name: name, entries: entries, unsubmittedValue: unsubmittedValue)
+    private func topic(id: UUID = UUID(), name: String = "a topic", values: [Int] = [.random(in: -2...10)], unsubmittedValue: Int = 0) -> Topic {
+        Topic(id: id, name: name, entries: entries(from: values), unsubmittedValue: Double(unsubmittedValue))
+    }
+
+    private func entries(from values: [Int]) -> [Entry] {
+        values.map {
+            Entry(value: Double($0), timestamp: Date().advanced(by: -100))
+        }
     }
 
     private weak var weakSUT: TopicListViewModel?

@@ -17,7 +17,7 @@ class NavigatorTests {
 
     @Test func showDetail_addsDetailToStack() {
         let sut = makeSUT()
-        let topic = NavigationTopic(id: UUID(), name: "a topic", entries: [1, 3, 5], unsubmittedValue: 5)
+        let topic = NavigationTopic(id: UUID(), name: "a topic", entries: entries(from: [1, 3, 5]), unsubmittedValue: 5)
 
         sut.showDetail(for: topic)
 
@@ -26,8 +26,8 @@ class NavigatorTests {
 
     @Test func showDetail_whenAlreadyOnDetail_addsAnotherDetailToStack() {
         let sut = makeSUT()
-        let topic1 = NavigationTopic(id: UUID(), name: "a topic", entries: [1, 3, 5], unsubmittedValue: 4)
-        let topic2 = NavigationTopic(id: UUID(), name: "another topic", entries: [-1, -3], unsubmittedValue: 6)
+        let topic1 = NavigationTopic(id: UUID(), name: "a topic", entries: entries(from: [1, 3, 5]), unsubmittedValue: 4)
+        let topic2 = NavigationTopic(id: UUID(), name: "another topic", entries: entries(from: [-1, -3]), unsubmittedValue: 6)
 
         sut.showDetail(for: topic1)
         #expect(sut.path == [topic1])
@@ -38,8 +38,8 @@ class NavigatorTests {
 
     @Test func goBack_removesDetailRepeatedly() {
         let sut = makeSUT()
-        let topic1 = NavigationTopic(id: UUID(), name: "a topic", entries: [1, 3, 5], unsubmittedValue: 0)
-        let topic2 = NavigationTopic(id: UUID(), name: "another topic", entries: [-1, -3], unsubmittedValue: 18)
+        let topic1 = NavigationTopic(id: UUID(), name: "a topic", entries: entries(from: [1, 3, 5]), unsubmittedValue: 0)
+        let topic2 = NavigationTopic(id: UUID(), name: "another topic", entries: entries(from: [-1, -3]), unsubmittedValue: 18)
         sut.path = [topic1, topic2]
 
         sut.goBack()
@@ -55,7 +55,7 @@ class NavigatorTests {
     @Test func isObservable() async throws {
         let sut = makeSUT()
         let tracker = ObservationTracker()
-        let topic = NavigationTopic(id: UUID(), name: "a topic", entries: [2, -2, 1], unsubmittedValue: 1)
+        let topic = NavigationTopic(id: UUID(), name: "a topic", entries: entries(from: [2, -2, 1]), unsubmittedValue: 1)
 
         withObservationTracking {
             _ = sut.path
@@ -77,6 +77,12 @@ class NavigatorTests {
         let sut = Navigator()
         weakSUT = sut
         return sut
+    }
+
+    private func entries(from values: [Int]) -> [NavigationEntry] {
+        values.map {
+            NavigationEntry(value: Double($0), timestamp: Date().advanced(by: -100))
+        }
     }
 
     private weak var weakSUT: Navigator?

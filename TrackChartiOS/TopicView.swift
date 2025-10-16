@@ -18,8 +18,8 @@ struct TopicView: View {
 
 private struct TopicViewContent: View {
     @Binding var name: String
-    @Binding var entries: [Int]
-    @Binding var unsubmittedValue: Int
+    @Binding var entries: [ViewEntry]
+    @Binding var unsubmittedValue: Double
 
     @FocusState private var isTextFieldFocused: Bool
     @Environment(\.dismiss) private var dismiss
@@ -34,11 +34,11 @@ private struct TopicViewContent: View {
                 .padding(.bottom, 4)
                 .focused($isTextFieldFocused)
 
-            ChartView(values: entries)
+            ChartView(values: entries.map(\.value).map(Int.init))
 
             CounterView(
                 count: $unsubmittedValue,
-                submitNewValue: { entries.append($0) },
+                submitNewValue: { entries.append(ViewEntry(value: Double($0), timestamp: Date())) },
                 deleteLastValue: { if !entries.isEmpty { entries.removeLast() } }
             )
             .padding(.vertical)
@@ -59,8 +59,8 @@ private struct TopicViewContent: View {
 
 #Preview {
     @Previewable @State var name = "A Name"
-    @Previewable @State var values = [5, 6, 8, 2, 4, 3, 5, 2]
-    @Previewable @State var unsubmittedValue = 0
+    @Previewable @State var values = [5, 6, 8, 2, 4, 3, 5, 2].map { ViewEntry(value: $0, timestamp: Date()) }
+    @Previewable @State var unsubmittedValue = 0.0
 
     TopicViewContent(name: $name, entries: $values, unsubmittedValue: $unsubmittedValue)
         .padding()

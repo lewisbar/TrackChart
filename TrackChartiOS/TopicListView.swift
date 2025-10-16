@@ -48,9 +48,26 @@ private struct TopicListViewContent: View {
 
 #Preview {
     @Previewable @State var topics = [
-        TopicCellModel(id: UUID(), name: "Daily Pages Read", info: "15 entries", entries: [1, 2, 4, 8, 1]),
-        TopicCellModel(id: UUID(), name: "Pushups", info: "230 entries", entries: [4, 5, 2, -4, -5, -2, 9, 7, 4, 0]),
-        TopicCellModel(id: UUID(), name: "Hours Studied", info: "0 entries", entries: [])
+        TopicCellModel(
+            id: UUID(),
+            name: "Daily Pages Read",
+            info: "7 entries",
+            entries: [1, 2, 4, 8, 16, -1, -2].map { TopicCellEntry(value: $0, timestamp: Date()) }
+        ),
+
+        TopicCellModel(
+            id: UUID(),
+            name: "Daily Pages Read",
+            info: "7 entries",
+            entries: [].map { TopicCellEntry(value: $0, timestamp: Date()) }
+        ),
+
+        TopicCellModel(
+            id: UUID(),
+            name: "Daily Pages Read",
+            info: "7 entries",
+            entries: [1].map { TopicCellEntry(value: $0, timestamp: Date()) }
+        )
     ]
 
     TopicListViewContent(topics: $topics, showTopic: { _ in }, createTopic: {})
