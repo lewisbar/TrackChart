@@ -33,7 +33,7 @@ struct TopicView: View {
                 },
                 deleteLastValue: {
                     if !(topic.entries?.isEmpty ?? false) {
-                        topic.entries?.removeLast()
+                        topic.entries = topic.entries?.sorted(by: { $0.sortIndex < $1.sortIndex }).dropLast()
                     } }
             )
             .padding(.vertical)
