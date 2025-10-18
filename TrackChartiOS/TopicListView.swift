@@ -16,14 +16,36 @@ struct TopicListView: View {
 
     var body: some View {
         ZStack {
-            List {
-                ForEach(topics) { topic in
-                    TopicCell(topic: topic, showTopic: showTopic)
-                        .listRowSeparator(.hidden)
-                }
-            }
+            list
             plusButton
         }
+    }
+
+    private var list: some View {
+        List {
+            ForEach(topics) { topic in
+                TopicCell(topic: topic, showTopic: showTopic)
+                    .listRowSeparator(.hidden)
+            }
+            .onDelete(perform: deleteTopics)
+            .onMove(perform: moveTopics)
+        }
+    }
+
+    func deleteTopics(at indexSet: IndexSet) {
+        for index in indexSet {
+            let topic = topics[index]
+            modelContext.delete(topic)
+        }
+    }
+
+    func moveTopics(from indexSet: IndexSet, to destination: Int) {
+        var tempTopics = topics.sorted(by: { $0.sortIndex < $1.sortIndex })
+        tempTopics.move(fromOffsets: indexSet, toOffset: destination)
+        for (index, topic) in tempTopics.enumerated() {
+            topic.sortIndex = index
+        }
+        try? self.modelContext.save()
     }
 
     private var plusButton: some View {
