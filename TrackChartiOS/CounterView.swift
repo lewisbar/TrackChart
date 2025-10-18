@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CounterView: View {
     @Binding var count: Double
-    let submitNewValue: (Int) -> Void
+    let submitNewValue: (Double) -> Void
     let deleteLastValue: () -> Void
 
     var body: some View {
@@ -55,7 +55,7 @@ struct CounterView: View {
     private var submitButton: some View {
         CircleButton(
             action: {
-                submitNewValue(Int(count))
+                submitNewValue(count)
                 count = 0
             },
             image: Image(systemName: "checkmark"),

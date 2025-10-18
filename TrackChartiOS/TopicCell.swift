@@ -9,15 +9,15 @@ import SwiftUI
 import Presentation
 
 struct TopicCell: View {
-    let topic: TopicCellModel
-    let showTopic: (UUID) -> Void
+    let topic: Topic
+    let showTopic: (Topic) -> Void
 
     var body: some View {
         Button(action: action, label: label)
     }
 
     private func action() {
-        showTopic(topic.id)
+        showTopic(topic)
     }
 
     private func label() -> some View {
@@ -38,7 +38,7 @@ struct TopicCell: View {
                 .padding([.horizontal, .bottom])
 
                 ChartView(
-                    values: topic.entries.map(\.value).map(Int.init),  // TODO: Pass ViewEntries instead
+                    values: topic.entries?.map(\.value).map(Int.init) ?? [],
                     showPointMarks: false,
                     annotateExtrema: false,
                     showAxisLabels: false,
@@ -54,37 +54,37 @@ struct TopicCell: View {
     }
 }
 
-#Preview {
-    TopicCell(
-        topic: TopicCellModel(
-            id: UUID(),
-            name: "Daily Pages Read",
-            info: "7 entries",
-            entries: [1, 2, 4, 8, 16, -1, -2].map { TopicCellEntry(value: $0, timestamp: Date()) }
-        ),
-        showTopic: { _ in }
-    )
-    .padding()
-
-    TopicCell(
-        topic: TopicCellModel(
-            id: UUID(),
-            name: "Daily Pages Read",
-            info: "7 entries",
-            entries: [].map { TopicCellEntry(value: $0, timestamp: Date()) }
-        ),
-        showTopic: { _ in }
-    )
-    .padding()
-
-    TopicCell(
-        topic: TopicCellModel(
-            id: UUID(),
-            name: "Daily Pages Read",
-            info: "7 entries",
-            entries: [1].map { TopicCellEntry(value: $0, timestamp: Date()) }
-        ),
-        showTopic: { _ in }
-    )
-    .padding()
-}
+//#Preview {
+//    TopicCell(
+//        topic: TopicCellModel(
+//            id: UUID(),
+//            name: "Daily Pages Read",
+//            info: "7 entries",
+//            entries: [1, 2, 4, 8, 16, -1, -2].map { TopicCellEntry(value: $0, timestamp: Date()) }
+//        ),
+//        showTopic: { _ in }
+//    )
+//    .padding()
+//
+//    TopicCell(
+//        topic: TopicCellModel(
+//            id: UUID(),
+//            name: "Daily Pages Read",
+//            info: "7 entries",
+//            entries: [].map { TopicCellEntry(value: $0, timestamp: Date()) }
+//        ),
+//        showTopic: { _ in }
+//    )
+//    .padding()
+//
+//    TopicCell(
+//        topic: TopicCellModel(
+//            id: UUID(),
+//            name: "Daily Pages Read",
+//            info: "7 entries",
+//            entries: [1].map { TopicCellEntry(value: $0, timestamp: Date()) }
+//        ),
+//        showTopic: { _ in }
+//    )
+//    .padding()
+//}

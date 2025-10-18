@@ -9,7 +9,6 @@ import Domain
 @Observable
 public class AppModel {
     public var path: [NavigationTopic] { get { navigator.path } set { navigator.path = newValue } }
-    private(set) public var topicListModel: TopicListViewModel = .placeholder
     private(set) public var alertMessage = defaultAlertMessage
     public var isAlertViewPresented = false
 
@@ -19,9 +18,6 @@ public class AppModel {
     public init(store: TopicStore, navigator: Navigator) {
         self.store = store
         self.navigator = navigator
-        self.topicListModel = TopicListViewModel(topics: [], updateTopicList: { [weak self] newOrder in
-            self?.updateTopicList(to: newOrder)
-        })
     }
 
     public func navigate(toTopicWithID id: UUID) {
@@ -53,7 +49,7 @@ public class AppModel {
 
     public func loadTopics() {
         do { try store.load() } catch { handle(error) }
-        updateCellModelsFromStore()
+//        updateCellModelsFromStore()
     }
 
     public func topic(for id: UUID) -> Topic? {
@@ -62,7 +58,7 @@ public class AppModel {
 
     public func update(_ changedTopic: Topic) {
         do { try store.update(changedTopic) } catch { handle(error) }
-        updateCellModelsFromStore()
+//        updateCellModelsFromStore()
     }
 
     private func updateTopicList(to newOrder: [UUID]) {
@@ -79,13 +75,9 @@ public class AppModel {
             try store.reorder(to: reorderedTopics)
         } catch {
             store.topics = backup
-            updateCellModelsFromStore()
+//            updateCellModelsFromStore()
             handle(error)
         }
-    }
-
-    private func updateCellModelsFromStore() {
-        topicListModel.updateFromStore(topics: store.topics)
     }
 
     private func handle(_ error: Error) {
@@ -94,8 +86,4 @@ public class AppModel {
     }
 
     public static let defaultAlertMessage = (title: "Error", message: "An error occurred.")
-}
-
-private extension TopicListViewModel {
-    static let placeholder = TopicListViewModel(topics: [], updateTopicList: { _ in })
 }

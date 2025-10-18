@@ -9,24 +9,13 @@ import SwiftUI
 import Presentation
 
 struct TopicView: View {
-    @Bindable var model: TopicViewModel
-
-    var body: some View {
-        TopicViewContent(name: $model.name, entries: $model.entries, unsubmittedValue: $model.unsubmittedValue)
-    }
-}
-
-private struct TopicViewContent: View {
-    @Binding var name: String
-    @Binding var entries: [ViewEntry]
-    @Binding var unsubmittedValue: Double
-
+    @Bindable var topic: Topic
     @FocusState private var isTextFieldFocused: Bool
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         VStack {
-            TextField("Enter topic name", text: $name)
+            TextField("Enter topic name", text: $topic.name)
                 .font(.largeTitle)
                 .fontWeight(.medium)
                 .minimumScaleFactor(0.5)
@@ -34,12 +23,18 @@ private struct TopicViewContent: View {
                 .padding(.bottom, 4)
                 .focused($isTextFieldFocused)
 
-            ChartView(values: entries.map(\.value).map(Int.init))
+            ChartView(values: topic.entries?.sorted(by: { $0.sortIndex < $1.sortIndex }).map(\.value).map(Int.init) ?? [])
 
             CounterView(
-                count: $unsubmittedValue,
-                submitNewValue: { entries.append(ViewEntry(value: Double($0), timestamp: Date())) },
-                deleteLastValue: { if !entries.isEmpty { entries.removeLast() } }
+                count: $topic.unsubmittedValue,
+                submitNewValue: {
+                    let newEntry = Entry(value: $0, timestamp: .now, sortIndex: topic.entryCount)
+                    topic.entries?.append(newEntry)
+                },
+                deleteLastValue: {
+                    if !(topic.entries?.isEmpty ?? false) {
+                        topic.entries?.removeLast()
+                    } }
             )
             .padding(.vertical)
         }
@@ -57,11 +52,11 @@ private struct TopicViewContent: View {
     }
 }
 
-#Preview {
-    @Previewable @State var name = "A Name"
-    @Previewable @State var values = [5, 6, 8, 2, 4, 3, 5, 2].map { ViewEntry(value: $0, timestamp: Date()) }
-    @Previewable @State var unsubmittedValue = 0.0
-
-    TopicViewContent(name: $name, entries: $values, unsubmittedValue: $unsubmittedValue)
-        .padding()
-}
+//#Preview {
+//    @Previewable @State var name = "A Name"
+//    @Previewable @State var values = [5, 6, 8, 2, 4, 3, 5, 2].map { ViewEntry(value: $0, timestamp: Date()) }
+//    @Previewable @State var unsubmittedValue = 0.0
+//
+//    TopicViewContent(name: $name, entries: $values, unsubmittedValue: $unsubmittedValue)
+//        .padding()
+//}
