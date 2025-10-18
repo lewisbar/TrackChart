@@ -9,7 +9,6 @@ import SwiftData
 
 @Model
 final class Topic {
-    @Attribute(.unique) var id: UUID = UUID()
     var name: String = ""
     @Relationship(deleteRule: .cascade) var entries: [Entry]?
     var unsubmittedValue: Double = 0
@@ -19,9 +18,9 @@ final class Topic {
         entries?.count ?? 0
     }
 
-    init(id: UUID = UUID(), name: String, unsubmittedValue: Double, sortIndex: Int) {
-        self.id = id
+    init(name: String, entries: [Entry]? = nil, unsubmittedValue: Double, sortIndex: Int) {
         self.name = name
+        self.entries = entries
         self.unsubmittedValue = unsubmittedValue
         self.sortIndex = sortIndex
     }
