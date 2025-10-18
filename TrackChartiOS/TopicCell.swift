@@ -38,7 +38,7 @@ struct TopicCell: View {
                 .padding([.horizontal, .bottom])
 
                 ChartView(
-                    values: topic.entries?.map(\.value).map(Int.init) ?? [],
+                    values: topic.entries?.sorted(by: { $0.sortIndex < $1.sortIndex }).map(\.value).map(Int.init) ?? [],
                     showPointMarks: false,
                     annotateExtrema: false,
                     showAxisLabels: false,
