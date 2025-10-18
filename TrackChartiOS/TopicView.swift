@@ -52,11 +52,16 @@ struct TopicView: View {
     }
 }
 
-//#Preview {
-//    @Previewable @State var name = "A Name"
-//    @Previewable @State var values = [5, 6, 8, 2, 4, 3, 5, 2].map { ViewEntry(value: $0, timestamp: Date()) }
-//    @Previewable @State var unsubmittedValue = 0.0
-//
-//    TopicViewContent(name: $name, entries: $values, unsubmittedValue: $unsubmittedValue)
-//        .padding()
-//}
+#Preview {
+    let topic = Topic(name: "Topic", unsubmittedValue: 0, sortIndex: 0)
+    topic.entries = [
+        .init(value: 0, timestamp: .now, sortIndex: 0),
+        .init(value: 4, timestamp: .now, sortIndex: 1),
+        .init(value: 3, timestamp: .now, sortIndex: 2),
+        .init(value: 1, timestamp: .now, sortIndex: 3),
+        .init(value: -2, timestamp: .now, sortIndex: 4),
+    ]
+
+    return TopicView(topic: topic)
+        .padding()
+}

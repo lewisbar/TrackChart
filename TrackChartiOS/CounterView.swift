@@ -75,5 +75,7 @@ struct CounterView: View {
     @Previewable @State var count = 0.0
 
     CounterView(count: $count, submitNewValue: { _ in }, deleteLastValue: {})
+        .card()
+        .padding()
 //        .environment(\.layoutDirection, .rightToLeft)
 }

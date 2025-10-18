@@ -63,29 +63,47 @@ struct TopicListView: View {
     }
 }
 
-//#Preview {
-//    @Previewable @State var topics = [
-//        TopicCellModel(
-//            id: UUID(),
-//            name: "Daily Pages Read",
-//            info: "7 entries",
-//            entries: [1, 2, 4, 8, 16, -1, -2].map { TopicCellEntry(value: $0, timestamp: Date()) }
-//        ),
-//
-//        TopicCellModel(
-//            id: UUID(),
-//            name: "Daily Pages Read",
-//            info: "7 entries",
-//            entries: [].map { TopicCellEntry(value: $0, timestamp: Date()) }
-//        ),
-//
-//        TopicCellModel(
-//            id: UUID(),
-//            name: "Daily Pages Read",
-//            info: "7 entries",
-//            entries: [1].map { TopicCellEntry(value: $0, timestamp: Date()) }
-//        )
-//    ]
-//
-//    TopicListView(topics: topics, showTopic: { _ in }, createTopic: {})
-//}
+#Preview {
+    let container: ModelContainer = {
+        do {
+            let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
+            let container = try ModelContainer(for: Topic.self, configurations: configuration)
+            let context = container.mainContext
+
+
+            let topic1 = Topic(name: "Topic 1", entries: [
+                Entry(value: 4, timestamp: .now, sortIndex: 0),
+                Entry(value: -5, timestamp: .now, sortIndex: 1),
+                Entry(value: 0, timestamp: .now, sortIndex: 2),
+                Entry(value: 4, timestamp: .now, sortIndex: 3),
+                Entry(value: 14, timestamp: .now, sortIndex: 4),
+            ], unsubmittedValue: 0, sortIndex: 0)
+            let topic2 = Topic(name: "Topic 2", entries: [
+                Entry(value: -4, timestamp: .now, sortIndex: 0),
+                Entry(value: 50, timestamp: .now, sortIndex: 1),
+                Entry(value: 100, timestamp: .now, sortIndex: 2),
+                Entry(value: -44, timestamp: .now, sortIndex: 3),
+                Entry(value: 4, timestamp: .now, sortIndex: 4),
+            ], unsubmittedValue: 4, sortIndex: 1)
+            let topic3 = Topic(name: "Topic 3", entries: [
+                Entry(value: 40, timestamp: .now, sortIndex: 0),
+                Entry(value: 50, timestamp: .now, sortIndex: 1),
+                Entry(value: 10, timestamp: .now, sortIndex: 2),
+                Entry(value: 20, timestamp: .now, sortIndex: 3),
+                Entry(value: 30, timestamp: .now, sortIndex: 4),
+            ], unsubmittedValue: -1, sortIndex: 2)
+
+            context.insert(topic1)
+            context.insert(topic2)
+            context.insert(topic3)
+
+            try context.save()
+
+            return container
+        } catch {
+            fatalError("Failed to create container: \(error.localizedDescription)")
+        }
+    }()
+
+    TopicListView(showTopic: { _ in })            .modelContainer(container)
+}

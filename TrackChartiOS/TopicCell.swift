@@ -54,37 +54,15 @@ struct TopicCell: View {
     }
 }
 
-//#Preview {
-//    TopicCell(
-//        topic: TopicCellModel(
-//            id: UUID(),
-//            name: "Daily Pages Read",
-//            info: "7 entries",
-//            entries: [1, 2, 4, 8, 16, -1, -2].map { TopicCellEntry(value: $0, timestamp: Date()) }
-//        ),
-//        showTopic: { _ in }
-//    )
-//    .padding()
-//
-//    TopicCell(
-//        topic: TopicCellModel(
-//            id: UUID(),
-//            name: "Daily Pages Read",
-//            info: "7 entries",
-//            entries: [].map { TopicCellEntry(value: $0, timestamp: Date()) }
-//        ),
-//        showTopic: { _ in }
-//    )
-//    .padding()
-//
-//    TopicCell(
-//        topic: TopicCellModel(
-//            id: UUID(),
-//            name: "Daily Pages Read",
-//            info: "7 entries",
-//            entries: [1].map { TopicCellEntry(value: $0, timestamp: Date()) }
-//        ),
-//        showTopic: { _ in }
-//    )
-//    .padding()
-//}
+#Preview {
+    let topic = Topic(name: "Topic 1", entries: [
+        Entry(value: 4, timestamp: .now, sortIndex: 0),
+        Entry(value: -5, timestamp: .now, sortIndex: 1),
+        Entry(value: 0, timestamp: .now, sortIndex: 2),
+        Entry(value: 4, timestamp: .now, sortIndex: 3),
+        Entry(value: 14, timestamp: .now, sortIndex: 4),
+    ], unsubmittedValue: 0, sortIndex: 0)
+
+    TopicCell(topic: topic, showTopic: { _ in })
+        .padding()
+}
