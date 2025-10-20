@@ -43,8 +43,4 @@ public struct TopicCellEntry: Hashable, Codable {
         self.value = entry.value
         self.timestamp = entry.timestamp
     }
-
-    public var entry: Entry {
-        Entry(value: value, timestamp: timestamp)
-    }
 }
