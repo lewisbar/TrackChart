@@ -22,7 +22,7 @@ struct TrackChartApp: App {
 
     private func makeTopicListView() -> some View {
         NavigationStack(path: $path) {
-            SwiftDataTopicListView(showTopic: showTopic)
+            SwiftDataTopicListView(viewModel: SwiftDataTopicListViewModel(showTopic: showTopic))
                 .navigationDestination(for: TopicEntity.self, destination: SwiftDataTopicView.init)
         }
     }
