@@ -11,7 +11,7 @@ import Presentation
 struct TopicCell: View {
     let name: String
     let info: String
-    let entries: [Int]
+    let entries: [Double]
     let showTopic: () -> Void
 
     var body: some View {

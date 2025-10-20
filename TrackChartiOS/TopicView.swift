@@ -9,13 +9,18 @@ import SwiftUI
 import Presentation
 
 struct TopicView: View {
-    @Bindable var topic: Topic
+    @Binding var name: String
+    @Binding var unsubmittedValue: Double
+    let entries: [Double]
+    let submitNewValue: (Double) -> Void
+    let deleteLastValue: () -> Void
+
     @FocusState private var isTextFieldFocused: Bool
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         VStack {
-            TextField("Enter topic name", text: $topic.name)
+            TextField("Enter topic name", text: $name)
                 .font(.largeTitle)
                 .fontWeight(.medium)
                 .minimumScaleFactor(0.5)
@@ -23,18 +28,12 @@ struct TopicView: View {
                 .padding(.bottom, 4)
                 .focused($isTextFieldFocused)
 
-            ChartView(values: topic.entries?.sorted(by: { $0.sortIndex < $1.sortIndex }).map(\.value).map(Int.init) ?? [])
+            ChartView(values: entries)
 
             CounterView(
-                count: $topic.unsubmittedValue,
-                submitNewValue: {
-                    let newEntry = Entry(value: $0, timestamp: .now, sortIndex: topic.entryCount)
-                    topic.entries?.append(newEntry)
-                },
-                deleteLastValue: {
-                    if !(topic.entries?.isEmpty ?? false) {
-                        topic.entries = topic.entries?.sorted(by: { $0.sortIndex < $1.sortIndex }).dropLast()
-                    } }
+                count: $unsubmittedValue,
+                submitNewValue: submitNewValue,
+                deleteLastValue: deleteLastValue
             )
             .padding(.vertical)
         }
@@ -53,15 +52,12 @@ struct TopicView: View {
 }
 
 #Preview {
-    let topic = Topic(name: "Topic", unsubmittedValue: 0, sortIndex: 0)
-    topic.entries = [
-        .init(value: 0, timestamp: .now, sortIndex: 0),
-        .init(value: 4, timestamp: .now, sortIndex: 1),
-        .init(value: 3, timestamp: .now, sortIndex: 2),
-        .init(value: 1, timestamp: .now, sortIndex: 3),
-        .init(value: -2, timestamp: .now, sortIndex: 4),
-    ]
-
-    return TopicView(topic: topic)
-        .padding()
+    TopicView(
+        name: .constant("Topic 1"),
+        unsubmittedValue: .constant(0),
+        entries: [1, 2, 4, 8, 7, 3, 0, -2, -8, -3, 1],
+        submitNewValue: { _ in },
+        deleteLastValue: {}
+    )
+    .padding()
 }

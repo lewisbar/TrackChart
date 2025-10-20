@@ -18,7 +18,7 @@ struct SwiftDataTopicCell: View {
             info: topic.info,
             entries: topic.entries?
                 .sorted(by: { $0.sortIndex < $1.sortIndex })
-                .map(\.value).map(Int.init) ?? [],
+                .map(\.value) ?? [],
             showTopic: { showTopic(topic)}
         )
     }
