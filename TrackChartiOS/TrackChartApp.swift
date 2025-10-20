@@ -10,23 +10,24 @@ import SwiftData
 
 @main
 struct TrackChartApp: App {
-    @State private var path = [Topic]()
+    @State private var path = [TopicEntity]()
 
     var body: some Scene {
         WindowGroup {
             ContentView(mainView: makeTopicListView)
         }
-        .modelContainer(for: Topic.self)
+        .modelContainer(for: TopicEntity.self)
     }
 
     private func makeTopicListView() -> some View {
         NavigationStack(path: $path) {
-            TopicListView(showTopic: showTopic)
-                .navigationDestination(for: Topic.self, destination: SwiftDataTopicView.init)
+            SwiftDataTopicListView(showTopic: showTopic)
+                .navigationDestination(for: TopicEntity.self, destination: SwiftDataTopicView.init)
         }
     }
 
-    private func showTopic(_ topic: Topic) {
+    private func showTopic(_ topic: TopicEntity?) {
+        guard let topic else { return }
         path = [topic]
     }
 }

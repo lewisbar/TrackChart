@@ -6,11 +6,10 @@
 //
 
 import SwiftUI
+import Presentation
 
 struct TopicCell: View {
-    let name: String
-    let info: String
-    let entries: [Double]
+    let topic: TopicCellModel
     let showTopic: () -> Void
 
     var body: some View {
@@ -25,21 +24,21 @@ struct TopicCell: View {
         HStack {
             VStack {
                 HStack(alignment: .center) {
-                    Text(name)
+                    Text(topic.name)
                         .tint(.primary)
                         .font(.title3)
                         .minimumScaleFactor(0.5)
 
                     Spacer()
 
-                    Text(info)
+                    Text(topic.info)
                         .tint(.secondary)
                         .font(.caption)
                 }
                 .padding([.horizontal, .bottom])
 
                 ChartView(
-                    values: entries,
+                    values: topic.entries.map(\.value),
                     showPointMarks: false,
                     annotateExtrema: false,
                     showAxisLabels: false,
@@ -56,6 +55,22 @@ struct TopicCell: View {
 }
 
 #Preview {
-    TopicCell(name: "Topic 1", info: "5 entries", entries: [0, -1, 1, 4, 3], showTopic: {})
+    TopicCell(
+        topic: TopicCellModel(
+            id: UUID(),
+            name: "Topic 1",
+            info: "5 entries",
+            entries: [
+                TopicCellEntry(value: 0, timestamp: .now),
+                TopicCellEntry(value: -3, timestamp: .now),
+                TopicCellEntry(value: -2, timestamp: .now),
+                TopicCellEntry(value: 1, timestamp: .now),
+                TopicCellEntry(value: 5, timestamp: .now),
+                TopicCellEntry(value: 9, timestamp: .now),
+                TopicCellEntry(value: 10, timestamp: .now)
+            ]
+        ),
+        showTopic: {
+        })
         .padding()
 }

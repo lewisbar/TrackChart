@@ -7,8 +7,9 @@
 
 import SwiftUI
 
+/// Wrapper to decouple the actual View from SwiftData
 struct SwiftDataTopicView: View {
-    @Bindable var topic: Topic
+    @Bindable var topic: TopicEntity
 
     var body: some View {
         TopicView(
@@ -21,7 +22,7 @@ struct SwiftDataTopicView: View {
     }
 
     private func submitNewValue(_ value: Double) {
-        let newEntry = Entry(value: value, timestamp: .now, sortIndex: topic.entryCount)
+        let newEntry = EntryEntity(value: value, timestamp: .now, sortIndex: topic.entryCount)
         topic.entries?.append(newEntry)
     }
 
