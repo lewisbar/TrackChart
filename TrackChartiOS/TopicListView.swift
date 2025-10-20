@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Presentation
 import SwiftData
 
 struct TopicListView: View {
