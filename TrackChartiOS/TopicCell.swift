@@ -9,36 +9,38 @@ import SwiftUI
 import Presentation
 
 struct TopicCell: View {
-    let topic: Topic
-    let showTopic: (Topic) -> Void
+    let name: String
+    let info: String
+    let entries: [Int]
+    let showTopic: () -> Void
 
     var body: some View {
         Button(action: action, label: label)
     }
 
     private func action() {
-        showTopic(topic)
+        showTopic()
     }
 
     private func label() -> some View {
         HStack {
             VStack {
                 HStack(alignment: .center) {
-                    Text(topic.name)
+                    Text(name)
                         .tint(.primary)
                         .font(.title3)
                         .minimumScaleFactor(0.5)
 
                     Spacer()
 
-                    Text(topic.info)
+                    Text(info)
                         .tint(.secondary)
                         .font(.caption)
                 }
                 .padding([.horizontal, .bottom])
 
                 ChartView(
-                    values: topic.entries?.sorted(by: { $0.sortIndex < $1.sortIndex }).map(\.value).map(Int.init) ?? [],
+                    values: entries,
                     showPointMarks: false,
                     annotateExtrema: false,
                     showAxisLabels: false,
@@ -55,14 +57,6 @@ struct TopicCell: View {
 }
 
 #Preview {
-    let topic = Topic(name: "Topic 1", entries: [
-        Entry(value: 4, timestamp: .now, sortIndex: 0),
-        Entry(value: -5, timestamp: .now, sortIndex: 1),
-        Entry(value: 0, timestamp: .now, sortIndex: 2),
-        Entry(value: 4, timestamp: .now, sortIndex: 3),
-        Entry(value: 14, timestamp: .now, sortIndex: 4),
-    ], unsubmittedValue: 0, sortIndex: 0)
-
-    TopicCell(topic: topic, showTopic: { _ in })
+    TopicCell(name: "Topic 1", info: "5 entries", entries: [0, -1, 1, 4, 3], showTopic: {})
         .padding()
 }

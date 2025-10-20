@@ -24,7 +24,7 @@ struct TopicListView: View {
     private var list: some View {
         List {
             ForEach(topics) { topic in
-                TopicCell(topic: topic, showTopic: showTopic)
+                SwiftDataTopicCell(topic: topic, showTopic: showTopic)
                     .listRowSeparator(.hidden)
             }
             .onDelete(perform: deleteTopics)
