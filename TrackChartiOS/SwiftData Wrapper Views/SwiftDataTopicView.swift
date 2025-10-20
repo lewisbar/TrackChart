@@ -2,10 +2,11 @@
 //  SwiftDataTopicView.swift
 //  TrackChartiOS
 //
-//  Created by LennartWisbar on 20.10.25.
+//  Created by Lennart Wisbar on 20.10.25.
 //
 
 import SwiftUI
+import Persistence
 
 /// Wrapper to decouple the actual View from SwiftData
 struct SwiftDataTopicView: View {

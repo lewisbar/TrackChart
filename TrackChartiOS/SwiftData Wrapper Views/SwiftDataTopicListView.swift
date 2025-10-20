@@ -2,11 +2,12 @@
 //  SwiftDataTopicListView.swift
 //  TrackChartiOS
 //
-//  Created by LennartWisbar on 20.10.25.
+//  Created by Lennart Wisbar on 20.10.25.
 //
 
 import SwiftUI
 import SwiftData
+import Persistence
 import Presentation
 
 struct SwiftDataTopicListView: View {
