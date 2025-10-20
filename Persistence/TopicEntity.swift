@@ -1,7 +1,8 @@
 //
 //  TopicEntity.swift
+//  TrackChart
 //
-//  Created by Lennart Wisbar on 17.10.25.
+//  Created by Lennart Wisbar on 20.10.25.
 //
 
 import Foundation

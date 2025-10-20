@@ -22,7 +22,7 @@
     {
       "target" : {
         "containerPath" : "container:TrackChart.xcodeproj",
-        "identifier" : "305005632E79B95A00DEF76D",
+        "identifier" : "30A31C752EA6D27C00DEB9EB",
         "name" : "PersistenceTests"
       }
     },

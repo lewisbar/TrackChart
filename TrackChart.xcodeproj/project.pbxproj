@@ -13,11 +13,11 @@
 		3049D7D82E957FB000BEECA3 /* Presentation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3049D7D02E957FB000BEECA3 /* Presentation.framework */; };
 		3049D7ED2E9580A600BEECA3 /* Presentation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3049D7D02E957FB000BEECA3 /* Presentation.framework */; };
 		3049D7EE2E9580A600BEECA3 /* Presentation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3049D7D02E957FB000BEECA3 /* Presentation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		30841F5D2EA6BD950011C5F8 /* Persistence.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30841F4D2EA6BD670011C5F8 /* Persistence.framework */; };
-		30841F6D2EA6BEA90011C5F8 /* Persistence.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30841F4D2EA6BD670011C5F8 /* Persistence.framework */; };
-		30841F6E2EA6BEA90011C5F8 /* Persistence.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 30841F4D2EA6BD670011C5F8 /* Persistence.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		30841F712EA6C0530011C5F8 /* Domain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 301C95A82E818652008E3F16 /* Domain.framework */; };
-		30841F722EA6C0530011C5F8 /* Domain.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 301C95A82E818652008E3F16 /* Domain.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		30A31C772EA6D27C00DEB9EB /* Persistence.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A31C6F2EA6D27C00DEB9EB /* Persistence.framework */; };
+		30A31C892EA6D32100DEB9EB /* Domain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 301C95A82E818652008E3F16 /* Domain.framework */; };
+		30A31C8A2EA6D32100DEB9EB /* Domain.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 301C95A82E818652008E3F16 /* Domain.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		30A31C932EA6DF3500DEB9EB /* Persistence.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A31C6F2EA6D27C00DEB9EB /* Persistence.framework */; };
+		30A31C942EA6DF3500DEB9EB /* Persistence.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 30A31C6F2EA6D27C00DEB9EB /* Persistence.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		30C88B2F2E9581E000224777 /* Domain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 301C95A82E818652008E3F16 /* Domain.framework */; };
 		30C88B302E9581E000224777 /* Domain.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 301C95A82E818652008E3F16 /* Domain.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
@@ -58,26 +58,26 @@
 			remoteGlobalIDString = 3049D7CF2E957FB000BEECA3;
 			remoteInfo = Presentation;
 		};
-		30841F5E2EA6BD950011C5F8 /* PBXContainerItemProxy */ = {
+		30A31C782EA6D27C00DEB9EB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 30BDE06C2E7854DF00199C93 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 30841F4C2EA6BD670011C5F8;
+			remoteGlobalIDString = 30A31C6E2EA6D27C00DEB9EB;
 			remoteInfo = Persistence;
 		};
-		30841F6F2EA6BEA90011C5F8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 30BDE06C2E7854DF00199C93 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 30841F4C2EA6BD670011C5F8;
-			remoteInfo = Persistence;
-		};
-		30841F732EA6C0530011C5F8 /* PBXContainerItemProxy */ = {
+		30A31C8B2EA6D32100DEB9EB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 30BDE06C2E7854DF00199C93 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 301C95A72E818652008E3F16;
 			remoteInfo = Domain;
+		};
+		30A31C952EA6DF3500DEB9EB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 30BDE06C2E7854DF00199C93 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 30A31C6E2EA6D27C00DEB9EB;
+			remoteInfo = Persistence;
 		};
 		30C88B312E9581E000224777 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -97,18 +97,18 @@
 			files = (
 				301C95CC2E8187EF008E3F16 /* Domain.framework in Embed Frameworks */,
 				3049D7EE2E9580A600BEECA3 /* Presentation.framework in Embed Frameworks */,
-				30841F6E2EA6BEA90011C5F8 /* Persistence.framework in Embed Frameworks */,
+				30A31C942EA6DF3500DEB9EB /* Persistence.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		30841F752EA6C0530011C5F8 /* Embed Frameworks */ = {
+		30A31C8D2EA6D32100DEB9EB /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				30841F722EA6C0530011C5F8 /* Domain.framework in Embed Frameworks */,
+				30A31C8A2EA6D32100DEB9EB /* Domain.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -132,8 +132,11 @@
 		30438AD02E7990AF00F3C852 /* TrackChartiOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TrackChartiOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3049D7D02E957FB000BEECA3 /* Presentation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Presentation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3049D7D72E957FB000BEECA3 /* PresentationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PresentationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		30841F4D2EA6BD670011C5F8 /* Persistence.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Persistence.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		30841F592EA6BD950011C5F8 /* PersistenceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PersistenceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		30A31C6F2EA6D27C00DEB9EB /* Persistence.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Persistence.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		30A31C762EA6D27C00DEB9EB /* PersistenceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PersistenceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		30A31C902EA6D41800DEB9EB /* Persistence.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = Persistence.xctestplan; path = TestPlans/Persistence.xctestplan; sourceTree = "<group>"; };
+		30A31C912EA6D47C00DEB9EB /* Domain.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = Domain.xctestplan; path = TestPlans/Domain.xctestplan; sourceTree = "<group>"; };
+		30A31C922EA6D4D900DEB9EB /* Presentation.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = Presentation.xctestplan; path = TestPlans/Presentation.xctestplan; sourceTree = "<group>"; };
 		30BDE0742E7854E000199C93 /* TrackChartiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TrackChartiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		30C88B3A2E98863800224777 /* CI_macOS_Frameworks.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = CI_macOS_Frameworks.xctestplan; path = TestPlans/CI_macOS_Frameworks.xctestplan; sourceTree = "<group>"; };
 		30C88B3B2E9887E000224777 /* CI_iOS_App.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = CI_iOS_App.xctestplan; path = TestPlans/CI_iOS_App.xctestplan; sourceTree = "<group>"; };
@@ -154,12 +157,12 @@
 			);
 			target = 3049D7CF2E957FB000BEECA3 /* Presentation */;
 		};
-		30841F512EA6BD670011C5F8 /* Exceptions for "Persistence" folder in "Persistence" target */ = {
+		30A31C822EA6D27C00DEB9EB /* Exceptions for "Persistence" folder in "Persistence" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			publicHeaders = (
 				Persistence.h,
 			);
-			target = 30841F4C2EA6BD670011C5F8 /* Persistence */;
+			target = 30A31C6E2EA6D27C00DEB9EB /* Persistence */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -195,15 +198,15 @@
 			path = PresentationTests;
 			sourceTree = "<group>";
 		};
-		30841F4E2EA6BD670011C5F8 /* Persistence */ = {
+		30A31C702EA6D27C00DEB9EB /* Persistence */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				30841F512EA6BD670011C5F8 /* Exceptions for "Persistence" folder in "Persistence" target */,
+				30A31C822EA6D27C00DEB9EB /* Exceptions for "Persistence" folder in "Persistence" target */,
 			);
 			path = Persistence;
 			sourceTree = "<group>";
 		};
-		30841F5A2EA6BD950011C5F8 /* PersistenceTests */ = {
+		30A31C7A2EA6D27C00DEB9EB /* PersistenceTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = PersistenceTests;
 			sourceTree = "<group>";
@@ -254,19 +257,19 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		30841F4A2EA6BD670011C5F8 /* Frameworks */ = {
+		30A31C6C2EA6D27C00DEB9EB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				30841F712EA6C0530011C5F8 /* Domain.framework in Frameworks */,
+				30A31C892EA6D32100DEB9EB /* Domain.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		30841F562EA6BD950011C5F8 /* Frameworks */ = {
+		30A31C732EA6D27C00DEB9EB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				30841F5D2EA6BD950011C5F8 /* Persistence.framework in Frameworks */,
+				30A31C772EA6D27C00DEB9EB /* Persistence.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -276,7 +279,7 @@
 			files = (
 				301C95CB2E8187EF008E3F16 /* Domain.framework in Frameworks */,
 				3049D7ED2E9580A600BEECA3 /* Presentation.framework in Frameworks */,
-				30841F6D2EA6BEA90011C5F8 /* Persistence.framework in Frameworks */,
+				30A31C932EA6DF3500DEB9EB /* Persistence.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -294,6 +297,9 @@
 			isa = PBXGroup;
 			children = (
 				30C88B3A2E98863800224777 /* CI_macOS_Frameworks.xctestplan */,
+				30A31C902EA6D41800DEB9EB /* Persistence.xctestplan */,
+				30A31C912EA6D47C00DEB9EB /* Domain.xctestplan */,
+				30A31C922EA6D4D900DEB9EB /* Presentation.xctestplan */,
 				30C88B3B2E9887E000224777 /* CI_iOS_App.xctestplan */,
 				30BDE0762E7854E000199C93 /* TrackChartiOS */,
 				30438AD12E7990AF00F3C852 /* TrackChartiOSTests */,
@@ -301,8 +307,8 @@
 				301C95B32E818653008E3F16 /* DomainTests */,
 				3049D7D12E957FB000BEECA3 /* Presentation */,
 				3049D7DB2E957FB000BEECA3 /* PresentationTests */,
-				30841F4E2EA6BD670011C5F8 /* Persistence */,
-				30841F5A2EA6BD950011C5F8 /* PersistenceTests */,
+				30A31C702EA6D27C00DEB9EB /* Persistence */,
+				30A31C7A2EA6D27C00DEB9EB /* PersistenceTests */,
 				305005872E7A152000DEF76D /* Frameworks */,
 				30BDE0752E7854E000199C93 /* Products */,
 			);
@@ -317,8 +323,8 @@
 				301C95AF2E818653008E3F16 /* DomainTests.xctest */,
 				3049D7D02E957FB000BEECA3 /* Presentation.framework */,
 				3049D7D72E957FB000BEECA3 /* PresentationTests.xctest */,
-				30841F4D2EA6BD670011C5F8 /* Persistence.framework */,
-				30841F592EA6BD950011C5F8 /* PersistenceTests.xctest */,
+				30A31C6F2EA6D27C00DEB9EB /* Persistence.framework */,
+				30A31C762EA6D27C00DEB9EB /* PersistenceTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -340,7 +346,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		30841F482EA6BD670011C5F8 /* Headers */ = {
+		30A31C6A2EA6D27C00DEB9EB /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -467,52 +473,52 @@
 			productReference = 3049D7D72E957FB000BEECA3 /* PresentationTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		30841F4C2EA6BD670011C5F8 /* Persistence */ = {
+		30A31C6E2EA6D27C00DEB9EB /* Persistence */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 30841F522EA6BD670011C5F8 /* Build configuration list for PBXNativeTarget "Persistence" */;
+			buildConfigurationList = 30A31C832EA6D27C00DEB9EB /* Build configuration list for PBXNativeTarget "Persistence" */;
 			buildPhases = (
-				30841F482EA6BD670011C5F8 /* Headers */,
-				30841F492EA6BD670011C5F8 /* Sources */,
-				30841F4A2EA6BD670011C5F8 /* Frameworks */,
-				30841F4B2EA6BD670011C5F8 /* Resources */,
-				30841F752EA6C0530011C5F8 /* Embed Frameworks */,
+				30A31C6A2EA6D27C00DEB9EB /* Headers */,
+				30A31C6B2EA6D27C00DEB9EB /* Sources */,
+				30A31C6C2EA6D27C00DEB9EB /* Frameworks */,
+				30A31C6D2EA6D27C00DEB9EB /* Resources */,
+				30A31C8D2EA6D32100DEB9EB /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				30841F742EA6C0530011C5F8 /* PBXTargetDependency */,
+				30A31C8C2EA6D32100DEB9EB /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				30841F4E2EA6BD670011C5F8 /* Persistence */,
+				30A31C702EA6D27C00DEB9EB /* Persistence */,
 			);
 			name = Persistence;
 			packageProductDependencies = (
 			);
 			productName = Persistence;
-			productReference = 30841F4D2EA6BD670011C5F8 /* Persistence.framework */;
+			productReference = 30A31C6F2EA6D27C00DEB9EB /* Persistence.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		30841F582EA6BD950011C5F8 /* PersistenceTests */ = {
+		30A31C752EA6D27C00DEB9EB /* PersistenceTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 30841F602EA6BD950011C5F8 /* Build configuration list for PBXNativeTarget "PersistenceTests" */;
+			buildConfigurationList = 30A31C842EA6D27C00DEB9EB /* Build configuration list for PBXNativeTarget "PersistenceTests" */;
 			buildPhases = (
-				30841F552EA6BD950011C5F8 /* Sources */,
-				30841F562EA6BD950011C5F8 /* Frameworks */,
-				30841F572EA6BD950011C5F8 /* Resources */,
+				30A31C722EA6D27C00DEB9EB /* Sources */,
+				30A31C732EA6D27C00DEB9EB /* Frameworks */,
+				30A31C742EA6D27C00DEB9EB /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				30841F5F2EA6BD950011C5F8 /* PBXTargetDependency */,
+				30A31C792EA6D27C00DEB9EB /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				30841F5A2EA6BD950011C5F8 /* PersistenceTests */,
+				30A31C7A2EA6D27C00DEB9EB /* PersistenceTests */,
 			);
 			name = PersistenceTests;
 			packageProductDependencies = (
 			);
 			productName = PersistenceTests;
-			productReference = 30841F592EA6BD950011C5F8 /* PersistenceTests.xctest */;
+			productReference = 30A31C762EA6D27C00DEB9EB /* PersistenceTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		30BDE0732E7854E000199C93 /* TrackChartiOS */ = {
@@ -529,7 +535,7 @@
 			dependencies = (
 				301C95CE2E8187EF008E3F16 /* PBXTargetDependency */,
 				3049D7F02E9580A600BEECA3 /* PBXTargetDependency */,
-				30841F702EA6BEA90011C5F8 /* PBXTargetDependency */,
+				30A31C962EA6DF3500DEB9EB /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				30BDE0762E7854E000199C93 /* TrackChartiOS */,
@@ -567,10 +573,11 @@
 					3049D7D62E957FB000BEECA3 = {
 						CreatedOnToolsVersion = 16.1;
 					};
-					30841F4C2EA6BD670011C5F8 = {
+					30A31C6E2EA6D27C00DEB9EB = {
 						CreatedOnToolsVersion = 16.1;
+						LastSwiftMigration = 1610;
 					};
-					30841F582EA6BD950011C5F8 = {
+					30A31C752EA6D27C00DEB9EB = {
 						CreatedOnToolsVersion = 16.1;
 					};
 					30BDE0732E7854E000199C93 = {
@@ -598,8 +605,8 @@
 				301C95AE2E818653008E3F16 /* DomainTests */,
 				3049D7CF2E957FB000BEECA3 /* Presentation */,
 				3049D7D62E957FB000BEECA3 /* PresentationTests */,
-				30841F4C2EA6BD670011C5F8 /* Persistence */,
-				30841F582EA6BD950011C5F8 /* PersistenceTests */,
+				30A31C6E2EA6D27C00DEB9EB /* Persistence */,
+				30A31C752EA6D27C00DEB9EB /* PersistenceTests */,
 			);
 		};
 /* End PBXProject section */
@@ -640,14 +647,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		30841F4B2EA6BD670011C5F8 /* Resources */ = {
+		30A31C6D2EA6D27C00DEB9EB /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		30841F572EA6BD950011C5F8 /* Resources */ = {
+		30A31C742EA6D27C00DEB9EB /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -699,14 +706,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		30841F492EA6BD670011C5F8 /* Sources */ = {
+		30A31C6B2EA6D27C00DEB9EB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		30841F552EA6BD950011C5F8 /* Sources */ = {
+		30A31C722EA6D27C00DEB9EB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -748,20 +755,20 @@
 			target = 3049D7CF2E957FB000BEECA3 /* Presentation */;
 			targetProxy = 3049D7EF2E9580A600BEECA3 /* PBXContainerItemProxy */;
 		};
-		30841F5F2EA6BD950011C5F8 /* PBXTargetDependency */ = {
+		30A31C792EA6D27C00DEB9EB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 30841F4C2EA6BD670011C5F8 /* Persistence */;
-			targetProxy = 30841F5E2EA6BD950011C5F8 /* PBXContainerItemProxy */;
+			target = 30A31C6E2EA6D27C00DEB9EB /* Persistence */;
+			targetProxy = 30A31C782EA6D27C00DEB9EB /* PBXContainerItemProxy */;
 		};
-		30841F702EA6BEA90011C5F8 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 30841F4C2EA6BD670011C5F8 /* Persistence */;
-			targetProxy = 30841F6F2EA6BEA90011C5F8 /* PBXContainerItemProxy */;
-		};
-		30841F742EA6C0530011C5F8 /* PBXTargetDependency */ = {
+		30A31C8C2EA6D32100DEB9EB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 301C95A72E818652008E3F16 /* Domain */;
-			targetProxy = 30841F732EA6C0530011C5F8 /* PBXContainerItemProxy */;
+			targetProxy = 30A31C8B2EA6D32100DEB9EB /* PBXContainerItemProxy */;
+		};
+		30A31C962EA6DF3500DEB9EB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 30A31C6E2EA6D27C00DEB9EB /* Persistence */;
+			targetProxy = 30A31C952EA6DF3500DEB9EB /* PBXContainerItemProxy */;
 		};
 		30C88B322E9581E000224777 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1027,10 +1034,11 @@
 			};
 			name = Release;
 		};
-		30841F532EA6BD670011C5F8 /* Debug */ = {
+		30A31C7E2EA6D27C00DEB9EB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -1059,16 +1067,18 @@
 				SUPPORTED_PLATFORMS = "macosx iphoneos iphonesimulator";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
 			name = Debug;
 		};
-		30841F542EA6BD670011C5F8 /* Release */ = {
+		30A31C7F2EA6D27C00DEB9EB /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -1103,7 +1113,7 @@
 			};
 			name = Release;
 		};
-		30841F612EA6BD950011C5F8 /* Debug */ = {
+		30A31C802EA6D27C00DEB9EB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -1120,7 +1130,7 @@
 			};
 			name = Debug;
 		};
-		30841F622EA6BD950011C5F8 /* Release */ = {
+		30A31C812EA6D27C00DEB9EB /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -1364,20 +1374,20 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		30841F522EA6BD670011C5F8 /* Build configuration list for PBXNativeTarget "Persistence" */ = {
+		30A31C832EA6D27C00DEB9EB /* Build configuration list for PBXNativeTarget "Persistence" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				30841F532EA6BD670011C5F8 /* Debug */,
-				30841F542EA6BD670011C5F8 /* Release */,
+				30A31C7E2EA6D27C00DEB9EB /* Debug */,
+				30A31C7F2EA6D27C00DEB9EB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		30841F602EA6BD950011C5F8 /* Build configuration list for PBXNativeTarget "PersistenceTests" */ = {
+		30A31C842EA6D27C00DEB9EB /* Build configuration list for PBXNativeTarget "PersistenceTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				30841F612EA6BD950011C5F8 /* Debug */,
-				30841F622EA6BD950011C5F8 /* Release */,
+				30A31C802EA6D27C00DEB9EB /* Debug */,
+				30A31C812EA6D27C00DEB9EB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

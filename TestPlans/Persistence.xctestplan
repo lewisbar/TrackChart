@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "F2CC0052-C03E-47C4-A984-6D041E3CFCB1",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:TrackChart.xcodeproj",
+        "identifier" : "30A31C752EA6D27C00DEB9EB",
+        "name" : "PersistenceTests"
+      }
+    }
+  ],
+  "version" : 1
+}

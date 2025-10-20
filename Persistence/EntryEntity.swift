@@ -1,7 +1,8 @@
 //
 //  EntryEntity.swift
+//  Persistence
 //
-//  Created by Lennart Wisbar on 17.10.25.
+//  Created by Lennart Wisbar on 20.10.25.
 //
 
 import SwiftData
@@ -24,3 +25,4 @@ public final class EntryEntity {
         Entry(value: value, timestamp: timestamp)
     }
 }
+

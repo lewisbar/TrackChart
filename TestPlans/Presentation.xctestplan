@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "DD2A6463-B170-4A5B-9876-5BE1FCB5FF80",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:TrackChart.xcodeproj",
+        "identifier" : "3049D7D62E957FB000BEECA3",
+        "name" : "PresentationTests"
+      }
+    }
+  ],
+  "version" : 1
+}
