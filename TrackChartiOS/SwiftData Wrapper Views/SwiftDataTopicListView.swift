@@ -10,6 +10,7 @@ import SwiftData
 import Persistence
 import Presentation
 
+/// Wrapper to decouple the actual View from SwiftData
 struct SwiftDataTopicListView: View {
     @Environment(\.modelContext) var modelContext
     @Query(sort: \TopicEntity.sortIndex) var topics: [TopicEntity]
