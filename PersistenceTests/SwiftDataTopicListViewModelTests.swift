@@ -74,6 +74,23 @@ struct SwiftDataTopicListViewModelTests {
         #expect(result == expectedCellModels)
     }
 
+    @Test func showTopicForCellModel() throws {
+        let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
+        let context = try makeContext(with: configuration)
+        let topics = makeTopicEntities(names: ["0", "1", "2", "3", "4"])
+        try setUp(context: context, with: topics)
+        var shownTopics = [TopicEntity?]()
+        let sut = SwiftDataTopicListViewModel(showTopic: { shownTopics.append($0) })
+        let selectedTopic = topics[3]
+        let cellModel = TopicCellModel(id: selectedTopic.id, name: selectedTopic.name, info: "\(selectedTopic.entryCount) entries", entries: selectedTopic.entries?.map {
+            TopicCellEntry(value: $0.value, timestamp: $0.timestamp)
+        } ?? [])
+
+        sut.showTopic(for: cellModel, in: topics)
+
+        #expect(shownTopics == [selectedTopic])
+    }
+
     // MARK: - Helpers
 
     /// Runs a test with a fresh SwiftData persistent context, cleaning up the store before and after.
