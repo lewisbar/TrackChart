@@ -20,13 +20,3 @@ public struct Topic: Equatable {
         self.unsubmittedValue = unsubmittedValue
     }
 }
-
-public struct Entry: Equatable {
-    public let value: Double
-    public let timestamp: Date
-
-    public init(value: Double, timestamp: Date) {
-        self.value = value
-        self.timestamp = timestamp
-    }
-}

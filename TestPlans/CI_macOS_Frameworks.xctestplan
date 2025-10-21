@@ -15,13 +15,6 @@
     {
       "target" : {
         "containerPath" : "container:TrackChart.xcodeproj",
-        "identifier" : "301C95AE2E818653008E3F16",
-        "name" : "DomainTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:TrackChart.xcodeproj",
         "identifier" : "30A31C752EA6D27C00DEB9EB",
         "name" : "PersistenceTests"
       }
