@@ -8,7 +8,6 @@
 import SwiftUI
 import SwiftData
 import Persistence
-import Presentation
 
 /// Wrapper to decouple the actual View from SwiftData
 struct SwiftDataTopicListView: View {
