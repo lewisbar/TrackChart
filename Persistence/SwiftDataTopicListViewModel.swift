@@ -1,6 +1,6 @@
 //
 //  SwiftDataTopicListViewModel.swift
-//  TrackChartiOS
+//  Persistence
 //
 //  Created by Lennart Wisbar on 20.10.25.
 //
