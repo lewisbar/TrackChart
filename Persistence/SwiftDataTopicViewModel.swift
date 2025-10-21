@@ -9,7 +9,11 @@ import SwiftData
 
 public class SwiftDataTopicViewModel {
     public init() {}
-    
+
+    public func entries(for topic: TopicEntity) -> [Double] {
+        topic.entries?.sorted(by: { $0.sortIndex < $1.sortIndex }).map(\.value) ?? []
+    }
+
     public func submit(newValue: Double, to topic: TopicEntity, in modelContext: ModelContext) {
         let newEntry = EntryEntity(value: newValue, timestamp: .now, sortIndex: topic.entryCount)
         topic.entries?.append(newEntry)

@@ -18,7 +18,7 @@ struct SwiftDataTopicView: View {
         TopicView(
             name: $topic.name,
             unsubmittedValue: $topic.unsubmittedValue,
-            entries: topic.entries?.sorted(by: { $0.sortIndex < $1.sortIndex }).map(\.value) ?? [],
+            entries: viewModel.entries(for: topic),
             submitNewValue: { viewModel.submit(newValue: $0, to: topic, in: modelContext) },
             deleteLastValue: { viewModel.deleteLastValue(from: topic, in: modelContext)}
         )

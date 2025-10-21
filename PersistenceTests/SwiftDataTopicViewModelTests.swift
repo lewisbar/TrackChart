@@ -10,6 +10,19 @@ import Persistence
 import SwiftData
 
 struct SwiftDataTopicViewModelTests {
+    @Test func entriesForTopic() throws {
+        let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
+        let context = try makeContext(with: configuration)
+        let topics = makeTopicEntities(names: ["0", "1", "2", "3", "4"])
+        try setUp(context: context, with: topics)
+        let selectedTopic = topics[3]
+        let sut = SwiftDataTopicViewModel()
+
+        let result = sut.entries(for: selectedTopic)
+
+        #expect(result == selectedTopic.entries?.sorted(by: { $0.sortIndex < $1.sortIndex }).map(\.value))
+    }
+
     @Test func submitNewValue() throws {
         try withCleanContext(topicNames: ["0", "1", "2"]) { context, topics, sut in
             let selectedTopic = topics[1]
