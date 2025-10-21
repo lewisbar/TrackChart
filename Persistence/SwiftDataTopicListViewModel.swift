@@ -45,7 +45,7 @@ public class SwiftDataTopicListViewModel {
         try? modelContext.save()
     }
 
-    public func addAndShowNewTopic(to topics: [TopicEntity], in modelContext: ModelContext) {
+    public func addAndShowNewTopic(existingTopics topics: [TopicEntity], in modelContext: ModelContext) {
         let topic = TopicEntity(name: "", unsubmittedValue: 0, sortIndex: topics.count)
         modelContext.insert(topic)
         try? modelContext.save()

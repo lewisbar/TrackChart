@@ -34,10 +34,33 @@ struct SwiftDataTopicListViewModelTests {
         }
     }
 
+    @Test func addAndShowNewTopic() throws {
+        var shownTopics = [TopicEntity?]()
+
+        try withCleanContext(topicNames: ["0", "1", "2", "3", "4"], showTopic: { shownTopics.append($0) }) { context, topics, sut in
+            sut.addAndShowNewTopic(existingTopics: topics, in: context)
+
+            let newContext = ModelContext(context.container)
+            let remainingTopics = try fetchTopics(from: newContext)
+
+            #expect(remainingTopics.map(\.name) == ["0", "1", "2", "3", "4", ""])
+            #expect(remainingTopics.map(\.sortIndex) == [0, 1, 2, 3, 4, 5])
+            #expect(shownTopics.count == 1)
+            #expect(shownTopics.first??.name == "")
+            #expect(shownTopics.first??.unsubmittedValue == 0)
+            #expect(shownTopics.first??.sortIndex == 5)
+            #expect(shownTopics.first??.entries == [])
+        }
+    }
+
     // MARK: - Helpers
 
     /// Runs a test with a fresh SwiftData context, cleaning up the store before and after.
-    private func withCleanContext<T>(topicNames: [String], testBody: (ModelContext, [TopicEntity], SwiftDataTopicListViewModel) throws -> T) throws -> T {
+    private func withCleanContext<T>(
+        topicNames: [String],
+        showTopic: @escaping (TopicEntity?) -> Void = { _ in },
+        testBody: (ModelContext, [TopicEntity], SwiftDataTopicListViewModel) throws -> T
+    ) throws -> T {
         let uniqueURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".sqlite")
 
         try? FileManager.default.removeItem(at: uniqueURL)
@@ -50,7 +73,7 @@ struct SwiftDataTopicListViewModelTests {
         let topics = makeTopicEntities(names: topicNames)
         try setUp(context: context, with: topics)
 
-        let sut = SwiftDataTopicListViewModel(showTopic: { _ in })
+        let sut = SwiftDataTopicListViewModel(showTopic: showTopic)
 
         defer {
             try? FileManager.default.removeItem(at: uniqueURL)
