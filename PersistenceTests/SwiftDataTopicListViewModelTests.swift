@@ -11,49 +11,57 @@ import Persistence
 
 struct SwiftDataTopicListViewModelTests {
     @Test func delete() throws {
-        let uniqueURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".sqlite")
-        let configuration = ModelConfiguration(url: uniqueURL)
-        try? FileManager.default.removeItem(at: configuration.url)
-        let context = try makeContext(with: configuration)
-        let topics = makeTopicEntities(names: ["0", "1", "2", "3", "4"])
-        try setUp(context: context, with: topics)
-        let sut = SwiftDataTopicListViewModel(showTopic: { _ in })
+        try withCleanContext(topicNames: ["0", "1", "2", "3", "4"]) { context, topics, sut in
+            sut.deleteTopics(at: .init([1,4]), from: topics, in: context)
 
-        sut.deleteTopics(at: .init([1, 4]), from: topics, in: context)
+            let newContext = ModelContext(context.container)
+            let remainingTopics = try fetchTopics(from: newContext)
 
-        let newContext = try makeContext(with: configuration)
-        let fetchDescriptor = FetchDescriptor<TopicEntity>(sortBy: [SortDescriptor(\.sortIndex)])
-        let remainingTopics = try newContext.fetch(fetchDescriptor)
-        #expect(remainingTopics.map(\.name) == ["0", "2", "3"])
-        #expect(remainingTopics.map(\.sortIndex) == [0, 1, 2])
-        try FileManager.default.removeItem(at: configuration.url)
+            #expect(remainingTopics.map(\.name) == ["0", "2", "3"])
+            #expect(remainingTopics.map(\.sortIndex) == [0, 1, 2])
+        }
     }
 
     @Test func move() throws {
-        let uniqueURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".sqlite")
-        let configuration = ModelConfiguration(url: uniqueURL)
-        try? FileManager.default.removeItem(at: configuration.url)
-        let context = try makeContext(with: configuration)
-        let topics = makeTopicEntities(names: ["0", "1", "2", "3", "4"])
-        try setUp(context: context, with: topics)
-        let sut = SwiftDataTopicListViewModel(showTopic: { _ in })
+        try withCleanContext(topicNames: ["0", "1", "2", "3", "4"]) { context, topics, sut in
+            sut.moveTopics(from: .init([2, 3]), to: 1, inTopicList: topics, modelContext: context)
 
-        sut.moveTopics(from: .init([2, 3]), to: 1, inTopicList: topics, modelContext: context)
+            let newContext = ModelContext(context.container)
+            let remainingTopics = try fetchTopics(from: newContext)
 
-        let newContext = try makeContext(with: configuration)
-        let fetchDescriptor = FetchDescriptor<TopicEntity>(sortBy: [SortDescriptor(\.sortIndex)])
-        let remainingTopics = try newContext.fetch(fetchDescriptor)
-        #expect(remainingTopics.map(\.name) == ["0", "2", "3", "1", "4"])
-        #expect(remainingTopics.map(\.sortIndex) == [0, 1, 2, 3, 4])
-        try FileManager.default.removeItem(at: configuration.url)
+            #expect(remainingTopics.map(\.name) == ["0", "2", "3", "1", "4"])
+            #expect(remainingTopics.map(\.sortIndex) == [0, 1, 2, 3, 4])
+        }
     }
 
     // MARK: - Helpers
 
-    private func makeContext(with configuration: ModelConfiguration) throws -> ModelContext {
+    /// Runs a test with a fresh SwiftData context, cleaning up the store before and after.
+    private func withCleanContext<T>(topicNames: [String], testBody: (ModelContext, [TopicEntity], SwiftDataTopicListViewModel) throws -> T) throws -> T {
+        let uniqueURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".sqlite")
+
+        try? FileManager.default.removeItem(at: uniqueURL)
+
+        let configuration = ModelConfiguration(url: uniqueURL)
         let schema = Schema([TopicEntity.self])
         let container = try ModelContainer(for: schema, configurations: configuration)
-        return ModelContext(container)
+        let context = ModelContext(container)
+
+        let topics = makeTopicEntities(names: topicNames)
+        try setUp(context: context, with: topics)
+
+        let sut = SwiftDataTopicListViewModel(showTopic: { _ in })
+
+        defer {
+            try? FileManager.default.removeItem(at: uniqueURL)
+        }
+
+        return try testBody(context, topics, sut)
+    }
+
+    private func fetchTopics(from context: ModelContext) throws -> [TopicEntity] {
+        let fetchDescriptor = FetchDescriptor<TopicEntity>(sortBy: [SortDescriptor(\.sortIndex)])
+        return try context.fetch(fetchDescriptor)
     }
 
     private func makeTopicEntities(names: [String]) -> [TopicEntity] {
