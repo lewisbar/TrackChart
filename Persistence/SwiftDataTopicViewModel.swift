@@ -21,7 +21,9 @@ public class SwiftDataTopicViewModel {
     }
 
     public func deleteLastValue(from topic: TopicEntity, in modelContext: ModelContext) {
-        topic.entries = topic.entries?.sorted(by: { $0.sortIndex < $1.sortIndex }).dropLast()
-        try? modelContext.save()
+        if !(topic.entries?.isEmpty ?? false) {
+            topic.entries = topic.entries?.sorted(by: { $0.sortIndex < $1.sortIndex }).dropLast()
+            try? modelContext.save()
+        }
     }
 }
