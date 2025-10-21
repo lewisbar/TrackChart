@@ -7,8 +7,14 @@
 
 import SwiftData
 
+@MainActor
 public class SwiftDataTopicViewModel {
-    public init() {}
+    private let secondsToWaitBeforeSaving: Double
+    private var saveTask: Task<Void, Never>?
+
+    public init(secondsToWaitBeforeSaving: Double = 0.5) {
+        self.secondsToWaitBeforeSaving = secondsToWaitBeforeSaving
+    }
 
     public func entries(for topic: TopicEntity) -> [Double] {
         topic.entries?.sorted(by: { $0.sortIndex < $1.sortIndex }).map(\.value) ?? []
@@ -23,6 +29,16 @@ public class SwiftDataTopicViewModel {
     public func deleteLastValue(from topic: TopicEntity, in modelContext: ModelContext) {
         if !(topic.entries?.isEmpty ?? false) {
             topic.entries = topic.entries?.sorted(by: { $0.sortIndex < $1.sortIndex }).dropLast()
+            try? modelContext.save()
+        }
+    }
+
+    public func debounceSave(in modelContext: ModelContext) {
+        guard modelContext.hasChanges else { return }
+        saveTask?.cancel()
+        saveTask = Task {
+            try? await Task.sleep(nanoseconds: UInt64(secondsToWaitBeforeSaving * 1_000_000_000))
+            guard modelContext.hasChanges else { return }
             try? modelContext.save()
         }
     }

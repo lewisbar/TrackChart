@@ -22,5 +22,7 @@ struct SwiftDataTopicView: View {
             submitNewValue: { viewModel.submit(newValue: $0, to: topic, in: modelContext) },
             deleteLastValue: { viewModel.deleteLastValue(from: topic, in: modelContext)}
         )
+        .onChange(of: topic.name) { _, _ in viewModel.debounceSave(in: modelContext) }
+        .onChange(of: topic.unsubmittedValue) { _, _ in viewModel.debounceSave(in: modelContext) }
     }
 }

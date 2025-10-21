@@ -9,8 +9,9 @@ import Testing
 import Persistence
 import SwiftData
 
+@MainActor
 struct SwiftDataTopicViewModelTests {
-    @Test func entriesForTopic() throws {
+    @Test func entriesForTopic() async throws {
         let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
         let context = try makeContext(with: configuration)
         let topics = makeTopicEntities(names: ["0", "1", "2", "3", "4"])
@@ -23,8 +24,8 @@ struct SwiftDataTopicViewModelTests {
         #expect(result == selectedTopic.entries?.sorted(by: { $0.sortIndex < $1.sortIndex }).map(\.value))
     }
 
-    @Test func submitNewValue() throws {
-        try withCleanContext(topicNames: ["0", "1", "2"]) { context, topics, sut in
+    @Test func submitNewValue() async throws {
+        try await withCleanContext(topicNames: ["0", "1", "2"]) { context, topics, sut in
             let selectedTopic = topics[1]
             let selectedEntries = selectedTopic.entries ?? []
             
@@ -40,8 +41,8 @@ struct SwiftDataTopicViewModelTests {
         }
     }
 
-    @Test func deleteLastValue() throws {
-        try withCleanContext(topicNames: ["0", "1", "2"]) { context, topics, sut in
+    @Test func deleteLastValue() async throws {
+        try await withCleanContext(topicNames: ["0", "1", "2"]) { context, topics, sut in
             let selectedTopic = topics[1]
             let selectedEntries = selectedTopic.entries?.sorted(by: { $0.sortIndex < $1.sortIndex }) ?? []
 
@@ -57,8 +58,8 @@ struct SwiftDataTopicViewModelTests {
         }
     }
 
-    @Test func deleteLastValue_whenValuesAreEmpty_doesNotCauseProblems() throws {
-        try withCleanContext(topicNames: ["0", "1", "2"]) { context, topics, sut in
+    @Test func deleteLastValue_whenValuesAreEmpty_doesNotCauseProblems() async throws {
+        try await withCleanContext(topicNames: ["0", "1", "2"]) { context, topics, sut in
             let selectedTopic = topics[1]
             selectedTopic.entries?.removeAll()
             try context.save()
@@ -72,13 +73,42 @@ struct SwiftDataTopicViewModelTests {
         }
     }
 
+    @Test func debounceSave_savesContext() async throws {
+        try await withCleanContext(topicNames: ["0", "1", "2"]) { context, topics, sut in
+            let selectedTopic = topics[1]
+
+            selectedTopic.name = "New Name 1"
+
+            #expect(context.hasChanges)
+
+            let newContext1 = ModelContext(context.container)
+            let updatedTopics1 = try fetchTopics(from: newContext1)
+
+            #expect(!updatedTopics1.contains(where: { $0.name == "New Name 1"}))
+            #expect(!newContext1.hasChanges)
+
+            selectedTopic.name = "New Name 2"
+
+            #expect(context.hasChanges)
+
+            sut.debounceSave(in: context)
+            try await Task.sleep(nanoseconds: UInt64(0.2 * 1_000_000_000)) // Wait for debounce
+
+            let newContext2 = ModelContext(context.container)
+            let updatedTopics2 = try fetchTopics(from: newContext2)
+
+            #expect(updatedTopics2.contains(where: { $0.name == "New Name 2" }))
+            #expect(!newContext2.hasChanges)
+        }
+    }
+
     // MARK: - Helpers
 
     /// Runs a test with a fresh SwiftData persistent context, cleaning up the store before and after.
-    private func withCleanContext<T>(
+    private func withCleanContext<T: Sendable>(
         topicNames: [String],
-        testBody: (ModelContext, [TopicEntity], SwiftDataTopicViewModel) throws -> T
-    ) throws -> T {
+        testBody: @MainActor (ModelContext, [TopicEntity], SwiftDataTopicViewModel) async throws -> T
+    ) async throws -> T {
         let uniqueURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".sqlite")
 
         try? FileManager.default.removeItem(at: uniqueURL)
@@ -89,13 +119,13 @@ struct SwiftDataTopicViewModelTests {
         let topics = makeTopicEntities(names: topicNames)
         try setUp(context: context, with: topics)
 
-        let sut = SwiftDataTopicViewModel()
+        let sut = SwiftDataTopicViewModel(secondsToWaitBeforeSaving: 0)
 
         defer {
             try? FileManager.default.removeItem(at: uniqueURL)
         }
 
-        return try testBody(context, topics, sut)
+        return try await testBody(context, topics, sut)
     }
 
     private func makeContext(with configuration: ModelConfiguration) throws -> ModelContext {
