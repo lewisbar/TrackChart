@@ -8,6 +8,7 @@
 import Testing
 import SwiftData
 import Persistence
+import Presentation
 
 struct SwiftDataTopicListViewModelTests {
     @Test func delete() throws {
@@ -53,9 +54,29 @@ struct SwiftDataTopicListViewModelTests {
         }
     }
 
+    @Test func cellModelsFromTopics() throws {
+        let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
+        let context = try makeContext(with: configuration)
+        let topics = makeTopicEntities(names: ["0", "1", "2", "3", "4"])
+        try setUp(context: context, with: topics)
+        let sut = SwiftDataTopicListViewModel(showTopic: { _ in })
+
+        let result = sut.cellModels(from: topics)
+
+        let expectedCellModels = topics.map { topic in
+            let entries = topic.entries?.sorted(by: { $0.sortIndex < $1.sortIndex }).map { entry in
+                TopicCellEntry(value: entry.value, timestamp: entry.timestamp)
+            } ?? []
+
+            return TopicCellModel(id: topic.id, name: topic.name, info: "\(topic.entryCount) entries", entries: entries)
+        }
+
+        #expect(result == expectedCellModels)
+    }
+
     // MARK: - Helpers
 
-    /// Runs a test with a fresh SwiftData context, cleaning up the store before and after.
+    /// Runs a test with a fresh SwiftData persistent context, cleaning up the store before and after.
     private func withCleanContext<T>(
         topicNames: [String],
         showTopic: @escaping (TopicEntity?) -> Void = { _ in },
@@ -66,9 +87,7 @@ struct SwiftDataTopicListViewModelTests {
         try? FileManager.default.removeItem(at: uniqueURL)
 
         let configuration = ModelConfiguration(url: uniqueURL)
-        let schema = Schema([TopicEntity.self])
-        let container = try ModelContainer(for: schema, configurations: configuration)
-        let context = ModelContext(container)
+        let context = try makeContext(with: configuration)
 
         let topics = makeTopicEntities(names: topicNames)
         try setUp(context: context, with: topics)
@@ -82,6 +101,12 @@ struct SwiftDataTopicListViewModelTests {
         return try testBody(context, topics, sut)
     }
 
+    private func makeContext(with configuration: ModelConfiguration) throws -> ModelContext {
+        let schema = Schema([TopicEntity.self])
+        let container = try ModelContainer(for: schema, configurations: configuration)
+        return ModelContext(container)
+    }
+
     private func fetchTopics(from context: ModelContext) throws -> [TopicEntity] {
         let fetchDescriptor = FetchDescriptor<TopicEntity>(sortBy: [SortDescriptor(\.sortIndex)])
         return try context.fetch(fetchDescriptor)
@@ -92,7 +117,7 @@ struct SwiftDataTopicListViewModelTests {
             TopicEntity(
                 id: UUID(),
                 name: name,
-                entries: makeEntryEntities(from: Array(1...name.count)),
+                entries: makeEntryEntities(from: Array(-1...Int.random(in: 3...10))),
                 unsubmittedValue: 5,
                 sortIndex: index
             )
