@@ -28,10 +28,10 @@ struct SwiftDataTopicListViewModelTests {
             sut.moveTopics(from: .init([2, 3]), to: 1, inTopicList: topics, modelContext: context)
 
             let newContext = ModelContext(context.container)
-            let remainingTopics = try fetchTopics(from: newContext)
+            let updatedTopics = try fetchTopics(from: newContext)
 
-            #expect(remainingTopics.map(\.name) == ["0", "2", "3", "1", "4"])
-            #expect(remainingTopics.map(\.sortIndex) == [0, 1, 2, 3, 4])
+            #expect(updatedTopics.map(\.name) == ["0", "2", "3", "1", "4"])
+            #expect(updatedTopics.map(\.sortIndex) == [0, 1, 2, 3, 4])
         }
     }
 
@@ -42,10 +42,10 @@ struct SwiftDataTopicListViewModelTests {
             sut.addAndShowNewTopic(existingTopics: topics, in: context)
 
             let newContext = ModelContext(context.container)
-            let remainingTopics = try fetchTopics(from: newContext)
+            let updatedTopics = try fetchTopics(from: newContext)
 
-            #expect(remainingTopics.map(\.name) == ["0", "1", "2", "3", "4", ""])
-            #expect(remainingTopics.map(\.sortIndex) == [0, 1, 2, 3, 4, 5])
+            #expect(updatedTopics.map(\.name) == ["0", "1", "2", "3", "4", ""])
+            #expect(updatedTopics.map(\.sortIndex) == [0, 1, 2, 3, 4, 5])
             #expect(shownTopics.count == 1)
             #expect(shownTopics.first??.name == "")
             #expect(shownTopics.first??.unsubmittedValue == 0)
