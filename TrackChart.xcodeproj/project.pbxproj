@@ -18,6 +18,8 @@
 		30A31C8A2EA6D32100DEB9EB /* Domain.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 301C95A82E818652008E3F16 /* Domain.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		30A31C932EA6DF3500DEB9EB /* Persistence.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A31C6F2EA6D27C00DEB9EB /* Persistence.framework */; };
 		30A31C942EA6DF3500DEB9EB /* Persistence.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 30A31C6F2EA6D27C00DEB9EB /* Persistence.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		30A31CA42EA6EC5700DEB9EB /* Presentation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3049D7D02E957FB000BEECA3 /* Presentation.framework */; };
+		30A31CA52EA6EC5700DEB9EB /* Presentation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3049D7D02E957FB000BEECA3 /* Presentation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		30C88B2F2E9581E000224777 /* Domain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 301C95A82E818652008E3F16 /* Domain.framework */; };
 		30C88B302E9581E000224777 /* Domain.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 301C95A82E818652008E3F16 /* Domain.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
@@ -79,6 +81,13 @@
 			remoteGlobalIDString = 30A31C6E2EA6D27C00DEB9EB;
 			remoteInfo = Persistence;
 		};
+		30A31CA62EA6EC5700DEB9EB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 30BDE06C2E7854DF00199C93 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3049D7CF2E957FB000BEECA3;
+			remoteInfo = Presentation;
+		};
 		30C88B312E9581E000224777 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 30BDE06C2E7854DF00199C93 /* Project object */;
@@ -108,6 +117,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				30A31CA52EA6EC5700DEB9EB /* Presentation.framework in Embed Frameworks */,
 				30A31C8A2EA6D32100DEB9EB /* Domain.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -261,6 +271,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				30A31CA42EA6EC5700DEB9EB /* Presentation.framework in Frameworks */,
 				30A31C892EA6D32100DEB9EB /* Domain.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -487,6 +498,7 @@
 			);
 			dependencies = (
 				30A31C8C2EA6D32100DEB9EB /* PBXTargetDependency */,
+				30A31CA72EA6EC5700DEB9EB /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				30A31C702EA6D27C00DEB9EB /* Persistence */,
@@ -769,6 +781,11 @@
 			isa = PBXTargetDependency;
 			target = 30A31C6E2EA6D27C00DEB9EB /* Persistence */;
 			targetProxy = 30A31C952EA6DF3500DEB9EB /* PBXContainerItemProxy */;
+		};
+		30A31CA72EA6EC5700DEB9EB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3049D7CF2E957FB000BEECA3 /* Presentation */;
+			targetProxy = 30A31CA62EA6EC5700DEB9EB /* PBXContainerItemProxy */;
 		};
 		30C88B322E9581E000224777 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1068,7 +1085,7 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -1107,7 +1124,7 @@
 				SUPPORTED_PLATFORMS = "macosx iphoneos iphonesimulator";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_INSTALL_OBJC_HEADER = NO;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -1126,7 +1143,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 			};
 			name = Debug;
 		};
@@ -1143,7 +1160,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 			};
 			name = Release;
 		};
