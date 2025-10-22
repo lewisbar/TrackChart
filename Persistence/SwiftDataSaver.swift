@@ -12,17 +12,20 @@ public final class SwiftDataSaver {
     private let contextHasChanges: () -> Bool
     private let saveToContext: () throws -> Void
     private let sendError: (Error) -> Void
+    private let sleep: (UInt64) async throws -> Void
 
     private var saveTask: Task<Void, Never>?
 
     public init(
         contextHasChanges: @escaping () -> Bool,
         saveToContext: @escaping () throws -> Void,
-        sendError: @escaping (Error) -> Void
+        sendError: @escaping (Error) -> Void,
+        sleep: @escaping (UInt64) async throws -> Void = Task.sleep(nanoseconds:)
     ) {
         self.contextHasChanges = contextHasChanges
         self.saveToContext = saveToContext
         self.sendError = sendError
+        self.sleep = sleep
     }
 
     public func save() {
@@ -36,7 +39,7 @@ public final class SwiftDataSaver {
         guard contextHasChanges() else { return nil }
         saveTask?.cancel()
         saveTask = Task {
-            try? await Task.sleep(nanoseconds: UInt64(delayInSeconds * 1_000_000_000))
+            try? await sleep(UInt64(delayInSeconds * 1_000_000_000))
             guard !Task.isCancelled else { return }
             save()
         }
