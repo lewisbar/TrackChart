@@ -8,8 +8,6 @@
 import Foundation
 import Persistence
 
-import SwiftData
-
 @Observable
 public final class ErrorHandler {
     public var alertTitle = ""
