@@ -10,14 +10,14 @@ import Presentation
 
 struct TopicCell: View {
     let topic: TopicCellModel
-    let showTopic: (UUID) -> Void
+    let showTopic: () -> Void
 
     var body: some View {
         Button(action: action, label: label)
     }
 
     private func action() {
-        showTopic(topic.id)
+        showTopic()
     }
 
     private func label() -> some View {
@@ -38,7 +38,7 @@ struct TopicCell: View {
                 .padding([.horizontal, .bottom])
 
                 ChartView(
-                    values: topic.entries,
+                    values: topic.entries.map(\.value),
                     showPointMarks: false,
                     annotateExtrema: false,
                     showAxisLabels: false,
@@ -55,15 +55,22 @@ struct TopicCell: View {
 }
 
 #Preview {
-    TopicCell(topic: TopicCellModel(id: UUID(), name: "Daily Pages Read", info: "7 entries", entries: [1, 2, 4, 8, 16, -1, -2]), showTopic: { _ in })
-        .padding()
-
-    TopicCell(topic: TopicCellModel(id: UUID(), name: "Pushups", info: "10 entries", entries: [1, 2, 4, 8, -16, -1, -2, 6, 7, 8]), showTopic: { _ in })
-        .padding()
-
-    TopicCell(topic: TopicCellModel(id: UUID(), name: "Hours Studied", info: "0 entries", entries: []), showTopic: { _ in })
-        .padding()
-
-    TopicCell(topic: TopicCellModel(id: UUID(), name: "Some Other Topic", info: "1 entry", entries: [1]), showTopic: { _ in })
+    TopicCell(
+        topic: TopicCellModel(
+            id: UUID(),
+            name: "Topic 1",
+            info: "5 entries",
+            entries: [
+                TopicCellEntry(value: 0, timestamp: .now),
+                TopicCellEntry(value: -3, timestamp: .now),
+                TopicCellEntry(value: -2, timestamp: .now),
+                TopicCellEntry(value: 1, timestamp: .now),
+                TopicCellEntry(value: 5, timestamp: .now),
+                TopicCellEntry(value: 9, timestamp: .now),
+                TopicCellEntry(value: 10, timestamp: .now)
+            ]
+        ),
+        showTopic: {
+        })
         .padding()
 }

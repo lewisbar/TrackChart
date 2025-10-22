@@ -9,49 +9,57 @@ import SwiftUI
 import Presentation
 
 struct TopicListView: View {
-    @Bindable var model: TopicListViewModel
-    let showTopic: (UUID) -> Void
-    let createTopic: () -> Void
-
-    var body: some View {
-        TopicListViewContent(topics: $model.topics, showTopic: showTopic, createTopic: createTopic)
-    }
-}
-
-private struct TopicListViewContent: View {
-    @Binding var topics: [TopicCellModel]
-    let showTopic: (UUID) -> Void
-    let createTopic: () -> Void
+    let topics: [TopicCellModel]
+    let deleteTopics: (IndexSet) -> Void
+    let moveTopics: (IndexSet, Int) -> Void
+    let showTopic: (TopicCellModel) -> Void
+    let createNewTopic: () -> Void
 
     var body: some View {
         ZStack {
-            list(of: topics)
+            list
             plusButton
         }
     }
 
-    private func list(of topics: [TopicCellModel]) -> some View {
-        List($topics, editActions: .all) { $topic in
-            TopicCell(topic: topic, showTopic: showTopic)
-                .listRowSeparator(.hidden)
+    private var list: some View {
+        List {
+            ForEach(topics) { topic in
+                TopicCell(topic: topic, showTopic: { showTopic(topic) })
+                    .listRowSeparator(.hidden)
+            }
+            .onDelete(perform: deleteTopics)
+            .onMove(perform: moveTopics)
         }
     }
 
     private var plusButton: some View {
         VStack {
             Spacer()
-            CircleButton(action: createTopic, image: Image(systemName: "plus"), color: .blue)
+            CircleButton(action: createNewTopic, image: Image(systemName: "plus"), color: .blue)
                 .padding(.bottom)
         }
     }
 }
 
 #Preview {
-    @Previewable @State var topics = [
-        TopicCellModel(id: UUID(), name: "Daily Pages Read", info: "15 entries", entries: [1, 2, 4, 8, 1]),
-        TopicCellModel(id: UUID(), name: "Pushups", info: "230 entries", entries: [4, 5, 2, -4, -5, -2, 9, 7, 4, 0]),
-        TopicCellModel(id: UUID(), name: "Hours Studied", info: "0 entries", entries: [])
+    let topics = [
+        TopicCellModel(id: UUID(), name: "Topic 1", info: "3 entries", entries: [
+            .init(value: 2.1, timestamp: .now),
+            .init(value: 4, timestamp: .now),
+            .init(value: 3, timestamp: .now)
+        ]),
+        TopicCellModel(id: UUID(), name: "Topic 2", info: "3 entries", entries: [
+            .init(value: 1, timestamp: .now),
+            .init(value: -4, timestamp: .now),
+            .init(value: 30, timestamp: .now)
+        ]),
+        TopicCellModel(id: UUID(), name: "Topic 3", info: "3 entries", entries: [
+            .init(value: 2, timestamp: .now),
+            .init(value: 40, timestamp: .now),
+            .init(value: -13, timestamp: .now)
+        ]),
     ]
-
-    TopicListViewContent(topics: $topics, showTopic: { _ in }, createTopic: {})
+    
+    TopicListView(topics: topics, deleteTopics: { _ in }, moveTopics: { _, _ in }, showTopic: { _ in }, createNewTopic: {})
 }

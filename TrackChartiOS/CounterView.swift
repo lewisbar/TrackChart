@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct CounterView: View {
-    @Binding var count: Int
-    let submitNewValue: (Int) -> Void
+    @Binding var count: Double
+    let submitNewValue: (Double) -> Void
     let deleteLastValue: () -> Void
 
     var body: some View {
@@ -22,7 +22,7 @@ struct CounterView: View {
             minusButton
                 .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
 
-            CountLabel(count: count)
+            CountLabel(count: Int(count))
                 .dynamicTypeSize(...DynamicTypeSize.accessibility3)
 
             plusButton
@@ -72,8 +72,10 @@ struct CounterView: View {
 }
 
 #Preview {
-    @Previewable @State var count = 0
+    @Previewable @State var count = 0.0
 
     CounterView(count: $count, submitNewValue: { _ in }, deleteLastValue: {})
+        .card()
+        .padding()
 //        .environment(\.layoutDirection, .rightToLeft)
 }

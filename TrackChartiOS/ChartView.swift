@@ -2,7 +2,7 @@
 //  ChartView.swift
 //  TrackChart
 //
-//  Created by LennartWisbar on 15.09.25.
+//  Created by Lennart Wisbar on 15.09.25.
 //
 
 import SwiftUI
@@ -33,13 +33,13 @@ struct ChartView<Placeholder: View>: View {
 
     /// Disabling `showPointMarks` also disables extrema annotation
     init(
-        values: [Int],
+        values: [Double],
         showPointMarks: Bool = true,
         annotateExtrema: Bool = true,
         showAxisLabels: Bool = true,
         placeholder: @escaping () -> Placeholder = ChartPlaceholderView.init
     ) {
-        self.dataPoints = values.enumerated().map { index, value in DataPoint(value: value, label: index + 1) }
+        self.dataPoints = values.map(Int.init).enumerated().map { index, value in DataPoint(value: value, label: index + 1) }
         self.showPointMarks = showPointMarks
         self.annotateExtrema = annotateExtrema
         self.showAxisLabels = showAxisLabels

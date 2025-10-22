@@ -6,20 +6,13 @@
 //
 
 import SwiftUI
-import Presentation
 
 struct TopicView: View {
-    @Bindable var model: TopicViewModel
-
-    var body: some View {
-        TopicViewContent(name: $model.name, entries: $model.entries, unsubmittedValue: $model.unsubmittedValue)
-    }
-}
-
-private struct TopicViewContent: View {
     @Binding var name: String
-    @Binding var entries: [Int]
-    @Binding var unsubmittedValue: Int
+    @Binding var unsubmittedValue: Double
+    let entries: [Double]
+    let submitNewValue: (Double) -> Void
+    let deleteLastValue: () -> Void
 
     @FocusState private var isTextFieldFocused: Bool
     @Environment(\.dismiss) private var dismiss
@@ -38,8 +31,8 @@ private struct TopicViewContent: View {
 
             CounterView(
                 count: $unsubmittedValue,
-                submitNewValue: { entries.append($0) },
-                deleteLastValue: { if !entries.isEmpty { entries.removeLast() } }
+                submitNewValue: submitNewValue,
+                deleteLastValue: deleteLastValue
             )
             .padding(.vertical)
         }
@@ -58,10 +51,12 @@ private struct TopicViewContent: View {
 }
 
 #Preview {
-    @Previewable @State var name = "A Name"
-    @Previewable @State var values = [5, 6, 8, 2, 4, 3, 5, 2]
-    @Previewable @State var unsubmittedValue = 0
-
-    TopicViewContent(name: $name, entries: $values, unsubmittedValue: $unsubmittedValue)
-        .padding()
+    TopicView(
+        name: .constant("Topic 1"),
+        unsubmittedValue: .constant(0),
+        entries: [1, 2, 4, 8, 7, 3, 0, -2, -8, -3, 1],
+        submitNewValue: { _ in },
+        deleteLastValue: {}
+    )
+    .padding()
 }

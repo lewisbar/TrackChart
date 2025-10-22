@@ -35,20 +35,6 @@
                ReferencedContainer = "container:TrackChart.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3050055C2E79B95900DEF76D"
-               BuildableName = "Persistence.framework"
-               BlueprintName = "Persistence"
-               ReferencedContainer = "container:TrackChart.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction

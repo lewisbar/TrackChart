@@ -6,44 +6,70 @@
 //
 
 import SwiftUI
-import Domain
+import SwiftData
 import Persistence
-import Presentation
 
 @main
 struct TrackChartApp: App {
-    @State private var model = AppModel(
-        store: PersistentTopicStore(persistenceService: UserDefaultsTopicPersistenceService()),
-        navigator: Navigator()
-    )
+    private let modelContainer: ModelContainer
+    private var modelContext: ModelContext { modelContainer.mainContext }
+    private let saver: SwiftDataSaver
+    @Bindable private var errorHandler: ErrorHandler
+    @State private var path = [TopicEntity]()
+
+    init() {
+        do {
+            modelContainer = try ModelContainer(for: TopicEntity.self)
+            let context = modelContainer.mainContext
+            let errorHandler = ErrorHandler()
+            self.errorHandler = errorHandler
+            saver = SwiftDataSaver(
+                contextHasChanges: { context.hasChanges },
+                saveToContext: context.save,
+                sendError: errorHandler.handleError
+            )
+        } catch {
+            fatalError("Failed to create ModelContainer: \(error)")
+        }
+    }
 
     var body: some Scene {
         WindowGroup {
             ContentView(mainView: makeTopicListView)
-                .onAppear(perform: model.loadTopics)
-                .alert(model.alertMessage.title, isPresented: $model.isAlertViewPresented, actions: makeDismissButton, message: makeAlertText)
+                .alert(
+                    errorHandler.alertTitle,
+                    isPresented: $errorHandler.showAlert,
+                    actions: { Button("OK", action: errorHandler.reset) },
+                    message: { Text(errorHandler.alertMessage) }
+                )
         }
+        .modelContainer(modelContainer)
     }
 
     private func makeTopicListView() -> some View {
-        NavigationStack(path: $model.path) {
-            TopicListView(model: model.topicListModel, showTopic: model.navigate, createTopic: model.navigateToNewTopic)
-                .navigationDestination(for: NavigationTopic.self, destination: makeTopicView)
+        NavigationStack(path: $path) {
+            SwiftDataTopicListView(
+                viewModel: SwiftDataTopicListViewModel(
+                    save: saver.save,
+                    insert: modelContext.insert,
+                    delete: modelContext.delete,
+                    showTopic: showTopic
+                )
+            )
+            .navigationDestination(for: TopicEntity.self) {
+                SwiftDataTopicView(
+                    topic: $0,
+                    viewModel: SwiftDataTopicViewModel(
+                        save: saver.save,
+                        debounceSave: saver.debounceSave
+                    )
+                )
+            }
         }
     }
 
-    private func makeAlertText() -> some View {
-        Text(model.alertMessage.message)
-    }
-
-    private func makeDismissButton() -> some View {
-        Button("OK") { model.dismissAlert() }
-    }
-
-    @ViewBuilder
-    private func makeTopicView(for navigationTopic: NavigationTopic) -> some View {
-        if let topic = model.topic(for: navigationTopic.id) {
-            TopicView(model: TopicViewModel(topic: topic, updateTopic: model.update))
-        }
+    private func showTopic(_ topic: TopicEntity?) {
+        guard let topic else { return }
+        path = [topic]
     }
 }
