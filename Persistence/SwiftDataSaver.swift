@@ -31,7 +31,7 @@ public final class SwiftDataSaver {
     public func save() {
         guard contextHasChanges() else { return }
         do { try saveToContext() }
-        catch { sendError(error) }
+        catch { sendError(SwiftDataSaverError.saveFailed(error)) }
     }
 
     @discardableResult

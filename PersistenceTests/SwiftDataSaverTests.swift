@@ -25,7 +25,7 @@ struct SwiftDataSaverTests {
         #expect(capturedErrors.isEmpty)
     }
 
-    @Test func save_onError_sendsError() {
+    @Test func save_onError_sendsError() throws {
         var saveCallCount = 0
         var capturedErrors = [Error]()
         let error = anyNSError()
@@ -38,7 +38,13 @@ struct SwiftDataSaverTests {
         sut.save()
 
         #expect(saveCallCount == 1)
-        #expect(capturedErrors.map { $0 as NSError } == [error])
+
+        let receivedError = try #require(capturedErrors.first as? SwiftDataSaverError)
+        guard case let .saveFailed(underlyingError) = receivedError else {
+            Issue.record("Error case should be .saveFailed")
+            return
+        }
+        #expect(underlyingError as NSError == error)
     }
 
     @Test func save_whenContextHasChanges_saves() {
@@ -72,7 +78,7 @@ struct SwiftDataSaverTests {
         #expect(capturedErrors.isEmpty)
     }
 
-    @Test func debounceSave_onError_sendsError() async {
+    @Test func debounceSave_onError_sendsError() async throws {
         var saveCallCount = 0
         var capturedErrors = [Error]()
         let error = anyNSError()
@@ -85,7 +91,13 @@ struct SwiftDataSaverTests {
         await sut.debounceSave(delayInSeconds: 0)?.value
 
         #expect(saveCallCount == 1)
-        #expect(capturedErrors.map { $0 as NSError } == [error])
+
+        let receivedError = try #require(capturedErrors.first as? SwiftDataSaverError)
+        guard case let .saveFailed(underlyingError) = receivedError else {
+            Issue.record("Error case should be .saveFailed")
+            return
+        }
+        #expect(underlyingError as NSError == error)
     }
 
     @Test func debounceSave_whenContextHasChanges_saves() async {

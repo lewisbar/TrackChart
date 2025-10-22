@@ -13,16 +13,20 @@ import Persistence
 struct TrackChartApp: App {
     private let modelContainer: ModelContainer
     private let saver: SwiftDataSaver
+    @Bindable var errorHandler: ErrorHandler
     @State private var path = [TopicEntity]()
 
     init() {
         do {
             modelContainer = try ModelContainer(for: TopicEntity.self)
             let context = modelContainer.mainContext
+            let errorHandler = ErrorHandler()
+            self.errorHandler = errorHandler
             saver = SwiftDataSaver(
                 contextHasChanges: { context.hasChanges },
                 saveToContext: context.save,
-                sendError: { error in print(error.localizedDescription) /*TODO*/ })
+                sendError: errorHandler.handleError
+            )
         } catch {
             fatalError("Failed to create ModelContainer: \(error)")
         }
@@ -31,6 +35,12 @@ struct TrackChartApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView(mainView: makeTopicListView)
+                .alert(
+                    errorHandler.alertTitle,
+                    isPresented: $errorHandler.showAlert,
+                    actions: { Button("OK", action: errorHandler.reset) },
+                    message: { Text(errorHandler.alertMessage) }
+                )
         }
         .modelContainer(modelContainer)
     }
