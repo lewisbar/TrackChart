@@ -12,8 +12,9 @@ import Persistence
 @main
 struct TrackChartApp: App {
     private let modelContainer: ModelContainer
+    private var modelContext: ModelContext { modelContainer.mainContext }
     private let saver: SwiftDataSaver
-    @Bindable var errorHandler: ErrorHandler
+    @Bindable private var errorHandler: ErrorHandler
     @State private var path = [TopicEntity]()
 
     init() {
@@ -47,16 +48,23 @@ struct TrackChartApp: App {
 
     private func makeTopicListView() -> some View {
         NavigationStack(path: $path) {
-            SwiftDataTopicListView(viewModel: SwiftDataTopicListViewModel(showTopic: showTopic))
-                .navigationDestination(for: TopicEntity.self) {
-                    SwiftDataTopicView(
-                        topic: $0,
-                        viewModel: SwiftDataTopicViewModel(
-                            save: saver.save,
-                            debounceSave: saver.debounceSave
-                        )
+            SwiftDataTopicListView(
+                viewModel: SwiftDataTopicListViewModel(
+                    save: saver.save,
+                    insert: modelContext.insert,
+                    delete: modelContext.delete,
+                    showTopic: showTopic
+                )
+            )
+            .navigationDestination(for: TopicEntity.self) {
+                SwiftDataTopicView(
+                    topic: $0,
+                    viewModel: SwiftDataTopicViewModel(
+                        save: saver.save,
+                        debounceSave: saver.debounceSave
                     )
-                }
+                )
+            }
         }
     }
 

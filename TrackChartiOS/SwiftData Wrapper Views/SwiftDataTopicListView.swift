@@ -18,10 +18,10 @@ struct SwiftDataTopicListView: View {
     var body: some View {
         TopicListView(
             topics: viewModel.cellModels(from: topics),
-            deleteTopics: { viewModel.deleteTopics(at: $0, from: topics, in: modelContext) },
-            moveTopics: { viewModel.moveTopics(from: $0, to: $1, inTopicList: topics, modelContext: modelContext) },
+            deleteTopics: { viewModel.deleteTopics(at: $0, from: topics) },
+            moveTopics: { viewModel.moveTopics(from: $0, to: $1, inTopicList: topics) },
             showTopic: { viewModel.showTopic(for: $0, in: topics) },
-            createNewTopic: { viewModel.addAndShowNewTopic(existingTopics: topics, in: modelContext) }
+            createNewTopic: { viewModel.addAndShowNewTopic(existingTopics: topics) }
         )
     }
 }
