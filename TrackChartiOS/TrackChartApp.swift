@@ -18,7 +18,11 @@ struct TrackChartApp: App {
     init() {
         do {
             modelContainer = try ModelContainer(for: TopicEntity.self)
-            saver = SwiftDataSaver(modelContext: modelContainer.mainContext, sendError: { error in print(error.localizedDescription) /*TODO*/ })
+            let context = modelContainer.mainContext
+            saver = SwiftDataSaver(
+                contextHasChanges: { context.hasChanges },
+                saveToContext: context.save,
+                sendError: { error in print(error.localizedDescription) /*TODO*/ })
         } catch {
             fatalError("Failed to create ModelContainer: \(error)")
         }

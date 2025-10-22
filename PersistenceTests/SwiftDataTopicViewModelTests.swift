@@ -151,7 +151,7 @@ class SwiftDataTopicViewModelTests {
         var capturedErrors = [Error]()
 
         // Testing with the real saver because we need a ModelContainer anyway whenever working with @Models
-        let saver = SwiftDataSaver(modelContext: context, sendError: { capturedErrors.append($0) })
+        let saver = SwiftDataSaver(contextHasChanges: { context.hasChanges }, saveToContext: context.save, sendError: { capturedErrors.append($0) })
         let sut = SwiftDataTopicViewModel(
             save: saver.save,
             debounceSave: saver.debounceSave,
