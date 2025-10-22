@@ -2,7 +2,7 @@
 //  ChartView.swift
 //  TrackChart
 //
-//  Created by LennartWisbar on 15.09.25.
+//  Created by Lennart Wisbar on 15.09.25.
 //
 
 import SwiftUI
