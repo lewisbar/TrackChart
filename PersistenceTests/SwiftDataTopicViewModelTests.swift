@@ -10,7 +10,7 @@ import Persistence
 import SwiftData
 
 @MainActor
-struct SwiftDataTopicViewModelTests {
+class SwiftDataTopicViewModelTests {
     @Test func entriesForTopic() async throws {
         try await withCleanContext(topicNames: ["0", "1", "2", "3", "4"]) { context, topics, sut, errors in
             let selectedTopic = topics[2]
@@ -158,11 +158,22 @@ struct SwiftDataTopicViewModelTests {
             debounceSaveDelay: 0
         )
 
+        weakSUT = sut
+        weakSaver = saver
+
         defer {
             try? FileManager.default.removeItem(at: uniqueURL)
         }
 
         return try await testBody(context, topics, sut, capturedErrors)
+    }
+
+    private weak var weakSUT: SwiftDataTopicViewModel?
+    private weak var weakSaver: SwiftDataSaver?
+
+    deinit {
+        #expect(weakSUT == nil, "Instance should have been deallocated. Potential memory leak.")
+        #expect(weakSaver == nil, "Instance should have been deallocated. Potential memory leak.")
     }
 
     private func makeContext(with configuration: ModelConfiguration) throws -> ModelContext {
