@@ -6,6 +6,7 @@
 //
 
 import SwiftData
+import Presentation
 
 @MainActor
 public class SwiftDataTopicViewModel {
@@ -19,19 +20,19 @@ public class SwiftDataTopicViewModel {
         self.debounceSaveDelay = debounceSaveDelay
     }
 
-    public func entries(for topic: TopicEntity) -> [Double] {
-        topic.entries?.sorted(by: { $0.sortIndex < $1.sortIndex }).map(\.value) ?? []
+    public func entries(for topic: TopicEntity) -> [ChartEntry] {
+        topic.entries?.sorted(by: { $0.timestamp < $1.timestamp }).map(\.entry).map(ChartEntry.init) ?? []
     }
 
     public func submit(newValue: Double, to topic: TopicEntity) {
-        let newEntry = EntryEntity(value: newValue, timestamp: .now, sortIndex: topic.entryCount)
+        let newEntry = EntryEntity(value: newValue, timestamp: .now)
         topic.entries?.append(newEntry)
         save()
     }
 
     public func deleteLastValue(from topic: TopicEntity) {
         if !(topic.entries?.isEmpty ?? false) {
-            topic.entries = topic.entries?.sorted(by: { $0.sortIndex < $1.sortIndex }).dropLast()
+            topic.entries = topic.entries?.sorted(by: { $0.timestamp < $1.timestamp }).dropLast()
             save()
         }
     }

@@ -17,8 +17,8 @@ struct TopicEntityTests {
         let topicEntity = makeTopicEntity(with: entries)
         try setUp(context: context, with: topicEntity)
 
-        let expectedEntries = entries.map { Entry(value: $0.value, timestamp: $0.timestamp) }
-        let expectedTopic = Topic(id: topicEntity.id, name: topicEntity.name, entries: expectedEntries, unsubmittedValue: topicEntity.unsubmittedValue)
+        let expectedEntries = entries.sorted(by: { $0.timestamp < $1.timestamp }).map { Entry(value: $0.value, timestamp: $0.timestamp) }
+        let expectedTopic = Topic(id: topicEntity.id, name: topicEntity.name, entries: expectedEntries)
 
         let result = topicEntity.topic
 
@@ -37,16 +37,16 @@ struct TopicEntityTests {
 
     private func makeEntryEntities() -> [EntryEntity] {
         [
-            EntryEntity(value: 0, timestamp: .now.advanced(by: -120), sortIndex: 0),
-            EntryEntity(value: -4.3, timestamp: .now.advanced(by: -100), sortIndex: 1),
-            EntryEntity(value: 100, timestamp: .now.advanced(by: 0), sortIndex: 2),
-            EntryEntity(value: -2000, timestamp: .now.advanced(by: -60), sortIndex: 3),
-            EntryEntity(value: 10, timestamp: .now.advanced(by: -40), sortIndex: 4)
+            EntryEntity(value: 0, timestamp: .now.advanced(by: -120)),
+            EntryEntity(value: -4.3, timestamp: .now.advanced(by: -100)),
+            EntryEntity(value: 100, timestamp: .now.advanced(by: 0)),
+            EntryEntity(value: -2000, timestamp: .now.advanced(by: -60)),
+            EntryEntity(value: 10, timestamp: .now.advanced(by: -40))
         ]
     }
 
     private func makeTopicEntity(with entries: [EntryEntity]) -> TopicEntity {
-        TopicEntity(id: UUID(), name: "Topic 1", entries: entries, unsubmittedValue: 5, sortIndex: 7)
+        TopicEntity(id: UUID(), name: "Topic 1", entries: entries, sortIndex: 7)
     }
 
     private func setUp(context: ModelContext, with topicEntity: TopicEntity) throws {

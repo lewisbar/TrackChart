@@ -8,6 +8,7 @@
 import Testing
 import Persistence
 import SwiftData
+import Presentation
 
 @MainActor
 class SwiftDataTopicViewModelTests {
@@ -17,31 +18,31 @@ class SwiftDataTopicViewModelTests {
 
             let result = sut.entries(for: selectedTopic)
 
-            #expect(result == selectedTopic.entries?.sorted(by: { $0.sortIndex < $1.sortIndex }).map(\.value))
+            #expect(result.map(\.entry) == selectedTopic.entries?.sorted(by: { $0.timestamp < $1.timestamp }).map(\.entry))
         }
     }
 
     @Test func submitNewValue() async throws {
         try await withCleanContext(topicNames: ["0", "1", "2"]) { context, topics, sut, errors in
             let selectedTopic = topics[1]
-            let selectedEntries = selectedTopic.entries ?? []
-            
+            let selectedEntries = selectedTopic.entries?.sorted(by: { $0.timestamp < $1.timestamp }) ?? []
+
             sut.submit(newValue: 2.5, to: selectedTopic)
 
             let newContext = ModelContext(context.container)
             let updatedTopics = try fetchTopics(from: newContext)
 
             #expect(updatedTopics[1].entries?.count == selectedEntries.count + 1)
-            let lastEntry = updatedTopics[1].entries?.sorted(by: { $0.sortIndex < $1.sortIndex }).last
-            #expect(lastEntry?.value == 2.5)
-            #expect(lastEntry?.sortIndex == selectedEntries.count)
+
+            let updatedEntryValues = updatedTopics[1].entries?.sorted(by: { $0.timestamp < $1.timestamp }).map(\.value)
+            #expect(updatedEntryValues == selectedEntries.map(\.value) + [2.5])
         }
     }
 
     @Test func deleteLastValue() async throws {
         try await withCleanContext(topicNames: ["0", "1", "2"]) { context, topics, sut, errors in
             let selectedTopic = topics[1]
-            let selectedEntries = selectedTopic.entries?.sorted(by: { $0.sortIndex < $1.sortIndex }) ?? []
+            let selectedEntries = selectedTopic.entries?.sorted(by: { $0.timestamp < $1.timestamp }) ?? []
 
             sut.deleteLastValue(from: selectedTopic)
 
@@ -49,9 +50,8 @@ class SwiftDataTopicViewModelTests {
             let updatedTopics = try fetchTopics(from: newContext)
 
             #expect(updatedTopics[1].entries?.count == selectedEntries.count - 1)
-            let lastEntry = updatedTopics[1].entries?.sorted(by: { $0.sortIndex < $1.sortIndex }).last
+            let lastEntry = updatedTopics[1].entries?.sorted(by: { $0.timestamp < $1.timestamp }).last
             #expect(lastEntry?.value == selectedEntries.dropLast().last?.value)
-            #expect(lastEntry?.sortIndex == selectedEntries.count - 2)
         }
     }
 
@@ -96,37 +96,6 @@ class SwiftDataTopicViewModelTests {
             let updatedTopics2 = try fetchTopics(from: newContext2)
 
             #expect(updatedTopics2.contains(where: { $0.name == "New Name 2" }))
-            #expect(!newContext2.hasChanges)
-        }
-    }
-
-    @Test func changeUnsubmittedValue_doesNotPersistUnlessUnsubmittedValueChangedIsCalled_andThenDebounceSaves() async throws {
-        try await withCleanContext(topicNames: ["0", "1", "2"]) { context, topics, sut, errors in
-            let selectedTopic = topics[1]
-            let newUnsubmittedValue = 1234.567890
-
-            // Change value for the first time; will not be persisted without unsubmittedValueChanged call
-            selectedTopic.unsubmittedValue = newUnsubmittedValue
-            #expect(context.hasChanges)
-
-            // Create new context to show changes have not been persisted
-            let newContext1 = ModelContext(context.container)
-            let updatedTopics1 = try fetchTopics(from: newContext1)
-
-            #expect(!updatedTopics1.contains(where: { $0.unsubmittedValue == newUnsubmittedValue}))
-            #expect(!newContext1.hasChanges)
-
-            // Change value again, this time calling unsubmittedValueChanged afterwards
-            selectedTopic.unsubmittedValue = newUnsubmittedValue
-            #expect(context.hasChanges)
-
-            await sut.unsubmittedValueChanged()?.value
-
-            // After the unsubmittedValueChanged call, changes are persistent and therefore visible also in a new context
-            let newContext2 = ModelContext(context.container)
-            let updatedTopics2 = try fetchTopics(from: newContext2)
-
-            #expect(updatedTopics2.contains(where: { $0.unsubmittedValue == newUnsubmittedValue }))
             #expect(!newContext2.hasChanges)
         }
     }
@@ -192,8 +161,7 @@ class SwiftDataTopicViewModelTests {
             TopicEntity(
                 id: UUID(),
                 name: name,
-                entries: makeEntryEntities(from: Array(-1...Int.random(in: 3...10))),
-                unsubmittedValue: 5,
+                entries: makeEntryEntities(from: Array(-1...Int.random(in: 3...10)).shuffled()),
                 sortIndex: index
             )
         }
@@ -201,7 +169,8 @@ class SwiftDataTopicViewModelTests {
 
     private func makeEntryEntities(from values: [Int]) -> [EntryEntity] {
         values.map(Double.init).enumerated().map { index, value in
-            EntryEntity(value: value, timestamp: .now.advanced(by: -value), sortIndex: index)
+            let timestamp = Double(index * 86_400 - 86_400 * values.count)
+            return EntryEntity(value: value, timestamp: .now.advanced(by: timestamp))
         }
     }
 

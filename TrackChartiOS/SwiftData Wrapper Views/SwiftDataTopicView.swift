@@ -17,12 +17,10 @@ struct SwiftDataTopicView: View {
     var body: some View {
         TopicView(
             name: $topic.name,
-            unsubmittedValue: $topic.unsubmittedValue,
             entries: viewModel.entries(for: topic),
             submitNewValue: { viewModel.submit(newValue: $0, to: topic) },
             deleteLastValue: { viewModel.deleteLastValue(from: topic)}
         )
         .onChange(of: topic.name) { _, _ in viewModel.nameChanged() }
-        .onChange(of: topic.unsubmittedValue) { _, _ in viewModel.unsubmittedValueChanged() }
     }
 }

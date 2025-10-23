@@ -6,11 +6,11 @@
 //
 
 import SwiftUI
+import Presentation
 
 struct TopicView: View {
     @Binding var name: String
-    @Binding var unsubmittedValue: Double
-    let entries: [Double]
+    let entries: [ChartEntry]
     let submitNewValue: (Double) -> Void
     let deleteLastValue: () -> Void
 
@@ -27,18 +27,25 @@ struct TopicView: View {
                 .padding(.bottom, 4)
                 .focused($isTextFieldFocused)
 
-            ChartView(values: entries)
+            ChartView(entries: entries)
 
-            CounterView(
-                count: $unsubmittedValue,
-                submitNewValue: submitNewValue,
-                deleteLastValue: deleteLastValue
-            )
-            .padding(.vertical)
+            plusButton
         }
         .padding(.horizontal)
         .navigationBarBackButtonHidden(true)
         .toolbar { ToolbarItem(placement: .topBarLeading, content: chevronOnlyBackButton) }
+    }
+
+    private var plusButton: some View {
+        VStack {
+            Spacer()
+            CircleButton(action: showNumpad, image: Image(systemName: "plus"), color: .blue)
+                .padding(.bottom)
+        }
+    }
+
+    private func showNumpad() {
+        // TODO: show numpad with textfield
     }
 
     private func chevronOnlyBackButton() -> some View {
@@ -53,8 +60,12 @@ struct TopicView: View {
 #Preview {
     TopicView(
         name: .constant("Topic 1"),
-        unsubmittedValue: .constant(0),
-        entries: [1, 2, 4, 8, 7, 3, 0, -2, -8, -3, 1],
+        entries: [1, 2, 4, 8, 7, 3, 0, -2, -8, -3, 1].enumerated().map { index, value in
+            ChartEntry(
+                value: Double(value),
+                timestamp: .now.advanced(by: 86_400 * Double(index) - 40 * 86_400)
+            )
+        },
         submitNewValue: { _ in },
         deleteLastValue: {}
     )

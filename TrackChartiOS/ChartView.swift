@@ -7,18 +7,24 @@
 
 import SwiftUI
 import Charts
+import Presentation
 
 struct ChartView<Placeholder: View>: View {
-    private struct DataPoint: Identifiable, Equatable {
+    private struct Entry: Identifiable {
         let id = UUID()
-        let value: Int
-        let label: Int
+        let value: Double
+        let timestamp: Date
+
+        init(from chartEntry: ChartEntry) {
+            self.value = chartEntry.value
+            self.timestamp = chartEntry.timestamp
+        }
     }
 
-    private let dataPoints: [DataPoint]
+    private let entries: [Entry]
 
-    private let xLabel = "Data point"
-    private let yLabel = "Count"
+    private let xLabel = "Date"
+    private let yLabel = "Value"
 
     private let primaryColor = Color.blue
     private var topColor: Color { primaryColor.opacity(0.5) }
@@ -33,13 +39,13 @@ struct ChartView<Placeholder: View>: View {
 
     /// Disabling `showPointMarks` also disables extrema annotation
     init(
-        values: [Double],
+        entries: [ChartEntry],
         showPointMarks: Bool = true,
         annotateExtrema: Bool = true,
         showAxisLabels: Bool = true,
         placeholder: @escaping () -> Placeholder = ChartPlaceholderView.init
     ) {
-        self.dataPoints = values.map(Int.init).enumerated().map { index, value in DataPoint(value: value, label: index + 1) }
+        self.entries = entries.map(Entry.init)
         self.showPointMarks = showPointMarks
         self.annotateExtrema = annotateExtrema
         self.showAxisLabels = showAxisLabels
@@ -47,9 +53,9 @@ struct ChartView<Placeholder: View>: View {
     }
 
     var body: some View {
-        if !dataPoints.isEmpty {
-            Chart(dataPoints, content: chartContent)
-                .chartXScale(domain: 1...dataPoints.count)
+        if !entries.isEmpty {
+            Chart(entries, content: chartContent)
+                .chartXScale(domain: 1...entries.count)
                 .chartXAxis(content: xAxisContent)
                 .chartYAxis(content: yAxisContent)
         } else {
@@ -58,14 +64,14 @@ struct ChartView<Placeholder: View>: View {
     }
 
     @ChartContentBuilder
-    private func chartContent(for dataPoint: DataPoint) -> some ChartContent {
-        areaMark(for: dataPoint)
-        lineMark(for: dataPoint)
-        if showPointMarks || dataPoints.count == 1 { pointMark(for: dataPoint) }
+    private func chartContent(for entry: Entry) -> some ChartContent {
+        areaMark(for: entry)
+        lineMark(for: entry)
+        if showPointMarks || entries.count == 1 { pointMark(for: entry) }
     }
 
-    private func areaMark(for dataPoint: DataPoint) -> some ChartContent {
-        AreaMark(x: .value(xLabel, dataPoint.label), y: .value(yLabel, dataPoint.value))
+    private func areaMark(for entry: Entry) -> some ChartContent {
+        AreaMark(x: .value(xLabel, entry.timestamp), y: .value(yLabel, entry.value))
             .foregroundStyle(areaGradient)
             .interpolationMethod(.catmullRom)
     }
@@ -82,19 +88,19 @@ struct ChartView<Placeholder: View>: View {
         )
     }
 
-    private func lineMark(for dataPoint: DataPoint) -> some ChartContent {
-        LineMark(x: .value(xLabel, dataPoint.label), y: .value(yLabel, dataPoint.value))
+    private func lineMark(for entry: Entry) -> some ChartContent {
+        LineMark(x: .value(xLabel, entry.timestamp), y: .value(yLabel, entry.value))
             .foregroundStyle(primaryColor)
             .lineStyle(StrokeStyle(lineWidth: 2))
             .shadow(color: primaryColor.opacity(0.3), radius: 2)
             .interpolationMethod(.catmullRom)
     }
 
-    private func pointMark(for dataPoint: DataPoint) -> some ChartContent {
-        PointMark(x: .value(xLabel, dataPoint.label), y: .value(yLabel, dataPoint.value))
+    private func pointMark(for entry: Entry) -> some ChartContent {
+        PointMark(x: .value(xLabel, entry.timestamp), y: .value(yLabel, entry.value))
             .symbol(symbol: pointSymbol)
-            .annotation(position: .top, spacing: 2) { maxPositiveValueAnnotation(for: dataPoint) }
-            .annotation(position: .bottom, spacing: 2) { minNegativeValueAnnotation(for: dataPoint) }
+            .annotation(position: .top, spacing: 2) { maxPositiveValueAnnotation(for: entry) }
+            .annotation(position: .bottom, spacing: 2) { minNegativeValueAnnotation(for: entry) }
     }
 
     private func pointSymbol() -> some View {
@@ -106,28 +112,28 @@ struct ChartView<Placeholder: View>: View {
     }
 
     @ViewBuilder
-    private func maxPositiveValueAnnotation(for dataPoint: DataPoint) -> some View {
-        if annotateExtrema, isMaxPositiveValue(dataPoint.value) {
-            annotation(for: dataPoint.value)
+    private func maxPositiveValueAnnotation(for entry: Entry) -> some View {
+        if annotateExtrema, isMaxPositiveValue(entry.value) {
+            annotation(for: entry.value)
         }
     }
 
     @ViewBuilder
-    private func minNegativeValueAnnotation(for dataPoint: DataPoint) -> some View {
-        if annotateExtrema, isMinNegativeValue(dataPoint.value) {
-            annotation(for: dataPoint.value)
+    private func minNegativeValueAnnotation(for entry: Entry) -> some View {
+        if annotateExtrema, isMinNegativeValue(entry.value) {
+            annotation(for: entry.value)
         }
     }
 
-    private func isMaxPositiveValue(_ value: Int) -> Bool {
-        value > 0 && value == dataPoints.map(\.value).max()
+    private func isMaxPositiveValue(_ value: Double) -> Bool {
+        value > 0 && value == entries.map(\.value).max()
     }
 
-    private func isMinNegativeValue(_ value: Int) -> Bool {
-        value < 0 && value == dataPoints.map(\.value).min()
+    private func isMinNegativeValue(_ value: Double) -> Bool {
+        value < 0 && value == entries.map(\.value).min()
     }
 
-    private func annotation(for value: Int) -> some View {
+    private func annotation(for value: Double) -> some View {
         Text("\(value)")
             .font(.caption)
             .foregroundColor(pointOutlineColor)
@@ -168,32 +174,59 @@ struct ChartView<Placeholder: View>: View {
 }
 
 #Preview {
+    let entries1 = [0, 2, 1, 2, 3, 4, 3, 5, 8, 7].enumerated().map { index, value in
+        ChartEntry(
+            value: Double(value),
+            timestamp: .now.advanced(by: 86_400 * Double(index) - 40 * 86_400)
+        )
+    }
+
+    let entries2 = [0, -2, -1, -2, -3, -4, -3, -5, -8, -7].enumerated().map { index, value in
+        ChartEntry(
+            value: Double(value),
+            timestamp: .now.advanced(by: 86_400 * Double(index) - 40 * 86_400)
+        )
+    }
+
+    let entries3 = [0, 2, 1, 2, 3, 4, 3, -1, -2, -3, -4, 5, 8, 7, 2, 1, 2, 3, 4, 3, -1, -2, -3, -4, 5, 8, 7].enumerated().map { index, value in
+        ChartEntry(
+            value: Double(value),
+            timestamp: .now.advanced(by: 86_400 * Double(index) - 40 * 86_400)
+        )
+    }
+
     ScrollView {
         VStack(spacing: 32) {
             VStack {
                 Text("Chart 1")
-                ChartView(values: [0, 2, 1, 2, 3, 4, 3, 5, 8, 7])
+                ChartView(
+                    entries: entries1
+                )
             }
             .card()
             .frame(height: 200)
 
             VStack {
                 Text("Chart 2")
-                ChartView(values: [0, -2, -1, -2, -3, -4, -3, -5, -8, -7])
+                ChartView(
+                    entries: entries2
+                )
             }
             .card()
             .frame(height: 200)
 
             VStack {
                 Text("Chart 3")
-                ChartView(values: [0, 2, 1, 2, 3, 4, 3, -1, -2, -3, -4, 5, 8, 7, 2, 1, 2, 3, 4, 3, -1, -2, -3, -4, 5, 8, 7])
+                ChartView(
+                    entries: entries3
+                )
             }
             .card()
             .frame(height: 200)
 
             VStack {
                 Text("Chart 4")
-                ChartView(values: [], placeholder: { ChartPlaceholderView().font(.callout).padding(.bottom)})
+                ChartView(entries: [], placeholder: { ChartPlaceholderView().font(.callout).padding(.bottom)})
             }
             .card()
             .frame(height: 200)
