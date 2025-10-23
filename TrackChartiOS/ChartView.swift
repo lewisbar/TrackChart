@@ -22,6 +22,9 @@ struct ChartView<Placeholder: View>: View {
     }
 
     private let entries: [Entry]
+    private let highlightsExtrema: Bool
+    private let showsAxisLabels: Bool
+    @ViewBuilder private let placeholder: () -> Placeholder
 
     private let xLabel = "Date"
     private let yLabel = "Value"
@@ -32,23 +35,16 @@ struct ChartView<Placeholder: View>: View {
     private var bottomColor: Color { .teal.opacity(0.1) }
     private var pointOutlineColor: Color { .cyan }
     private var pointFillColor: Color { .white }
-    private let showPointMarks: Bool
-    private let annotateExtrema: Bool
-    private let showAxisLabels: Bool
-    @ViewBuilder private let placeholder: () -> Placeholder
 
-    /// Disabling `showPointMarks` also disables extrema annotation
     init(
         entries: [ChartEntry],
-        showPointMarks: Bool = true,
-        annotateExtrema: Bool = true,
-        showAxisLabels: Bool = true,
+        highlightsExtrema: Bool = true,
+        showsAxisLabels: Bool = true,
         placeholder: @escaping () -> Placeholder = ChartPlaceholderView.init
     ) {
         self.entries = entries.map(Entry.init)
-        self.showPointMarks = showPointMarks
-        self.annotateExtrema = annotateExtrema
-        self.showAxisLabels = showAxisLabels
+        self.highlightsExtrema = highlightsExtrema
+        self.showsAxisLabels = showsAxisLabels
         self.placeholder = placeholder
     }
 
@@ -77,7 +73,7 @@ struct ChartView<Placeholder: View>: View {
     private func chartContent(for entry: Entry) -> some ChartContent {
         areaMark(for: entry)
         lineMark(for: entry)
-        if showPointMarks || entries.count == 1 { pointMark(for: entry) }
+        if shouldShowPointMark(for: entry) { pointMark(for: entry) }
     }
 
     private func areaMark(for entry: Entry) -> some ChartContent {
@@ -106,6 +102,14 @@ struct ChartView<Placeholder: View>: View {
             .interpolationMethod(.catmullRom)
     }
 
+    private func shouldShowPointMark(for entry: Entry) -> Bool {
+        entries.count == 1 || (highlightsExtrema && isExtremum(entry))
+    }
+
+    private func isExtremum(_ entry: Entry) -> Bool {
+        isMaxPositiveValue(entry.value) || isMinNegativeValue(entry.value)
+    }
+
     private func pointMark(for entry: Entry) -> some ChartContent {
         PointMark(x: .value(xLabel, entry.timestamp), y: .value(yLabel, entry.value))
             .symbol(symbol: pointSymbol)
@@ -123,14 +127,14 @@ struct ChartView<Placeholder: View>: View {
 
     @ViewBuilder
     private func maxPositiveValueAnnotation(for entry: Entry) -> some View {
-        if annotateExtrema, isMaxPositiveValue(entry.value) {
+        if highlightsExtrema, isMaxPositiveValue(entry.value) {
             annotation(for: entry.value)
         }
     }
 
     @ViewBuilder
     private func minNegativeValueAnnotation(for entry: Entry) -> some View {
-        if annotateExtrema, isMinNegativeValue(entry.value) {
+        if highlightsExtrema, isMinNegativeValue(entry.value) {
             annotation(for: entry.value)
         }
     }
@@ -153,7 +157,7 @@ struct ChartView<Placeholder: View>: View {
 
     @AxisContentBuilder
     private func xAxisContent() -> some AxisContent {
-        if showAxisLabels {
+        if showsAxisLabels {
             AxisMarks(preset: .aligned, values: .automatic(desiredCount: 4, roundLowerBound: false, roundUpperBound: false)) {
                 AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [2, 2]))
 
@@ -166,7 +170,7 @@ struct ChartView<Placeholder: View>: View {
 
     @AxisContentBuilder
     private func yAxisContent() -> some AxisContent {
-        if showAxisLabels {
+        if showsAxisLabels {
             AxisMarks(values: .automatic(desiredCount: 2, roundLowerBound: false, roundUpperBound: false)) { value in
                 AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [2, 2]))
 

@@ -39,9 +39,8 @@ struct TopicCell: View {
 
                 ChartView(
                     entries: topic.entries,
-                    showPointMarks: false,
-                    annotateExtrema: false,
-                    showAxisLabels: false,
+                    highlightsExtrema: false,
+                    showsAxisLabels: false,
                     placeholder: { ChartPlaceholderView().font(.footnote).padding(.bottom, 30) }
                 )
                 .padding(.horizontal)
