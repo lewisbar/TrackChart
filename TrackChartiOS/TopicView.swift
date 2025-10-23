@@ -37,7 +37,7 @@ struct TopicView: View {
         .navigationBarBackButtonHidden(true)
         .toolbar { ToolbarItem(placement: .topBarLeading, content: chevronOnlyBackButton) }
         .sheet(isPresented: $isShowingInput) {
-            DecimalInputView(submitValue: { print($0) }, dismiss: { isShowingInput = false })
+            DecimalInputView(submitValue: submitNewValue, dismiss: { isShowingInput = false })
         }
     }
 
