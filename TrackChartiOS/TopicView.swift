@@ -38,6 +38,7 @@ struct TopicView: View {
         .toolbar { ToolbarItem(placement: .topBarLeading, content: chevronOnlyBackButton) }
         .sheet(isPresented: $isShowingInput) {
             DecimalInputView(submitValue: submitNewValue, dismiss: { isShowingInput = false })
+                .presentationDetents([.fraction(0.45)])
         }
     }
 

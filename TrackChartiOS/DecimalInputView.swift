@@ -24,7 +24,8 @@ struct DecimalInputView: View {
             // Display label
             Text(value)
                 .font(.largeTitle)
-                .padding(.top, 20)
+                .frame(maxHeight: 40)
+                .padding(.top, 10)
 
             Divider()
 
@@ -40,7 +41,7 @@ struct DecimalInputView: View {
                         ForEach(row, id: \.self) { key in
                             Button(action: { handleInput(key) }) {
                                 Text(key)
-                                    .frame(maxWidth: .infinity, maxHeight: 60)
+                                    .frame(maxWidth: .infinity, maxHeight: 80)
                                     .background(Color.gray.opacity(0.2))
                                     .cornerRadius(10)
                                     .font(.title2)
