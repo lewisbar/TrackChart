@@ -55,12 +55,22 @@ struct ChartView<Placeholder: View>: View {
     var body: some View {
         if !entries.isEmpty {
             Chart(entries, content: chartContent)
-                .chartXScale(domain: 1...entries.count)
+                .chartXScale(domain: dateRange)
                 .chartXAxis(content: xAxisContent)
                 .chartYAxis(content: yAxisContent)
         } else {
             placeholder()
         }
+    }
+
+    private var dateRange: ClosedRange<Date> {
+        let dates = entries.map(\.timestamp)
+        guard let minDate = dates.min(), let maxDate = dates.max() else {
+            // Fallback range if entries are empty (shouldn't happen since we check !entries.isEmpty)
+            let now = Date()
+            return now...now
+        }
+        return minDate...maxDate
     }
 
     @ChartContentBuilder
