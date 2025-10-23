@@ -87,6 +87,8 @@ struct DecimalInputView: View {
         default:
             if value == "0" {
                 value = key
+            } else if value == "-0" {
+                value = "-" + key
             } else {
                 value.append(key)
             }
@@ -95,15 +97,24 @@ struct DecimalInputView: View {
 
     private func toggleSign() {
         if let number = Double(value) {
-            value = String(number * -1)
+            let toggled = number * -1
+            value = formatNumberWithoutTrailingZeros(toggled)
+        }
+    }
+
+    private func formatNumberWithoutTrailingZeros(_ number: Double) -> String {
+        if number.truncatingRemainder(dividingBy: 1) == 0 {
+            return String(format: "%.0f", number)
+        } else {
+            return String(number)
         }
     }
 
     private func submitNumber() {
         if let value = Double(value) {
             submitValue(value)
-            dismiss()
         }
+        value = "0"
     }
 }
 
