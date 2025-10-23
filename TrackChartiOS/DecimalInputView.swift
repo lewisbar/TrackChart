@@ -98,8 +98,13 @@ struct DecimalInputView: View {
 
     private func toggleSign() {
         if let number = Double(value) {
+            let endsWithDecimalPoint = value.hasSuffix(".")
             let toggled = number * -1
-            value = formatNumberWithoutTrailingZeros(toggled)
+            var formattedNumber = formatNumberWithoutTrailingZeros(toggled)
+            if endsWithDecimalPoint {
+                formattedNumber.append(".")
+            }
+            value = formattedNumber
         }
     }
 
