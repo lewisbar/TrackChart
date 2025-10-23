@@ -13,6 +13,8 @@ struct TopicView: View {
     let entries: [ChartEntry]
     let submitNewValue: (Double) -> Void
     let deleteLastValue: () -> Void
+    @State private var isShowingInput = false
+    @State private var enteredValue: Double? = nil
 
     @FocusState private var isTextFieldFocused: Bool
     @Environment(\.dismiss) private var dismiss
@@ -34,6 +36,9 @@ struct TopicView: View {
         .padding(.horizontal)
         .navigationBarBackButtonHidden(true)
         .toolbar { ToolbarItem(placement: .topBarLeading, content: chevronOnlyBackButton) }
+        .sheet(isPresented: $isShowingInput) {
+            DecimalInputView(submitValue: { print($0) }, dismiss: { isShowingInput = false })
+        }
     }
 
     private var plusButton: some View {
@@ -45,7 +50,7 @@ struct TopicView: View {
     }
 
     private func showNumpad() {
-        // TODO: show numpad with textfield
+        isShowingInput = true
     }
 
     private func chevronOnlyBackButton() -> some View {
