@@ -144,7 +144,9 @@ struct ChartView<Placeholder: View>: View {
     }
 
     private func annotation(for value: Double) -> some View {
-        Text("\(value)")
+        let formattedValue = ChartNumberFormatter.extremaAnnotation.string(from: NSNumber(value: value)) ?? "\(value)"
+
+        return Text("\(formattedValue)")
             .font(.caption)
             .foregroundColor(pointOutlineColor)
     }
@@ -183,8 +185,17 @@ struct ChartView<Placeholder: View>: View {
     }
 }
 
+private enum ChartNumberFormatter {
+    static let extremaAnnotation: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 2
+        return formatter
+    }()
+}
+
 #Preview {
-    let entries1 = [0, 2, 1, 2, 3, 4, 3, 5, 8, 7].enumerated().map { index, value in
+    let entries1 = [0, 2, 1, 2, 3, 4, 3, 5, 8.437, 7].enumerated().map { index, value in
         ChartEntry(
             value: Double(value),
             timestamp: .now.advanced(by: 86_400 * Double(index) - 40 * 86_400)
