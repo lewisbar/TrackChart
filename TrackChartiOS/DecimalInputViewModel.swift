@@ -46,16 +46,10 @@ class DecimalInputViewModel {
     }
 
     func toggleSign() {
-        if let number = Double(value) {
-            let endsWithDecimalPoint = value.hasSuffix(".")
-            let toggled = number * -1
-            var formattedNumber = formatNumberWithoutTrailingZeros(toggled)
-            if endsWithDecimalPoint {
-                formattedNumber.append(".")
-            }
-            value = formattedNumber
+        if value.hasPrefix("-") {
+            value = String(value.trimmingPrefix("-"))
         } else {
-            resetValue()
+            value = "-" + value
         }
     }
 

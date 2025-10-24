@@ -46,12 +46,63 @@ struct DecimalInputViewModelTests {
         #expect(sut.value == "0")
     }
 
-    @Test func toggleSign_withInvalidValue_resetsValueToZero() {
+    @Test func toggleSign() {
         let sut = DecimalInputViewModel(submitValue: { _ in })
-        sut.value = "not a number"
 
+        sut.value = "0"
         sut.toggleSign()
+        #expect(sut.value == "-0")
 
+        sut.value = "-0"
+        sut.toggleSign()
         #expect(sut.value == "0")
+
+        sut.value = "1"
+        sut.toggleSign()
+        #expect(sut.value == "-1")
+
+        sut.value = "-1"
+        sut.toggleSign()
+        #expect(sut.value == "1")
+
+        sut.value = "10"
+        sut.toggleSign()
+        #expect(sut.value == "-10")
+
+        sut.value = "-10"
+        sut.toggleSign()
+        #expect(sut.value == "10")
+
+        sut.value = "0.01"
+        sut.toggleSign()
+        #expect(sut.value == "-0.01")
+
+        sut.value = "-0.01"
+        sut.toggleSign()
+        #expect(sut.value == "0.01")
+
+        sut.value = "0."
+        sut.toggleSign()
+        #expect(sut.value == "-0.")
+
+        sut.value = "-0."
+        sut.toggleSign()
+        #expect(sut.value == "0.")
+
+        sut.value = "10."
+        sut.toggleSign()
+        #expect(sut.value == "-10.")
+
+        sut.value = "-10."
+        sut.toggleSign()
+        #expect(sut.value == "10.")
+
+        sut.value = "1.00"
+        sut.toggleSign()
+        #expect(sut.value == "-1.00")
+
+        sut.value = "-1.00"
+        sut.toggleSign()
+        #expect(sut.value == "1.00")
     }
 }
