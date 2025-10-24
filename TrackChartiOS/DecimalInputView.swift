@@ -66,7 +66,7 @@ struct DecimalInputView: View {
 
     private var controlButtons: some View {
         HStack(spacing: 20) {
-            Button("+/-", action: toggleSign)
+            Button("+/-", action: model.toggleSign)
                 .buttonStyle(.bordered)
 
             Button("Submit", action: submitNumber)
@@ -74,26 +74,6 @@ struct DecimalInputView: View {
 
             Button("Hide", action: dismiss)
                 .buttonStyle(.bordered)
-        }
-    }
-
-    private func toggleSign() {
-        if let number = Double(value) {
-            let endsWithDecimalPoint = value.hasSuffix(".")
-            let toggled = number * -1
-            var formattedNumber = formatNumberWithoutTrailingZeros(toggled)
-            if endsWithDecimalPoint {
-                formattedNumber.append(".")
-            }
-            model.value = formattedNumber
-        }
-    }
-
-    private func formatNumberWithoutTrailingZeros(_ number: Double) -> String {
-        if number.truncatingRemainder(dividingBy: 1) == 0 {
-            return String(format: "%.0f", number)
-        } else {
-            return String(number)
         }
     }
 
@@ -129,6 +109,26 @@ class DecimalInputViewModel {
             } else {
                 value.append(key)
             }
+        }
+    }
+
+    func toggleSign() {
+        if let number = Double(value) {
+            let endsWithDecimalPoint = value.hasSuffix(".")
+            let toggled = number * -1
+            var formattedNumber = formatNumberWithoutTrailingZeros(toggled)
+            if endsWithDecimalPoint {
+                formattedNumber.append(".")
+            }
+            value = formattedNumber
+        }
+    }
+
+    private func formatNumberWithoutTrailingZeros(_ number: Double) -> String {
+        if number.truncatingRemainder(dividingBy: 1) == 0 {
+            return String(format: "%.0f", number)
+        } else {
+            return String(number)
         }
     }
 }
