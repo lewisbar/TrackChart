@@ -10,7 +10,8 @@ import SwiftUI
 struct DecimalInputView: View {
     let submitValue: (Double) -> Void
     let dismiss: () -> Void
-    @State private var value: String = "0"
+    @State private var model = DecimalInputViewModel()
+    private var value: String { model.value }
 
     private var numericValue: Double { Double(value) ?? 0 }
 
@@ -54,7 +55,7 @@ struct DecimalInputView: View {
     }
 
     private func numberButton(for key: String) -> some View {
-        Button(action: { handleInput(key) }) {
+        Button(action: { model.handleInput(key) }) {
             Text(key)
                 .frame(maxWidth: .infinity, maxHeight: 80)
                 .background(Color.gray.opacity(0.2))
@@ -76,7 +77,39 @@ struct DecimalInputView: View {
         }
     }
 
-    private func handleInput(_ key: String) {
+    private func toggleSign() {
+        if let number = Double(value) {
+            let endsWithDecimalPoint = value.hasSuffix(".")
+            let toggled = number * -1
+            var formattedNumber = formatNumberWithoutTrailingZeros(toggled)
+            if endsWithDecimalPoint {
+                formattedNumber.append(".")
+            }
+            model.value = formattedNumber
+        }
+    }
+
+    private func formatNumberWithoutTrailingZeros(_ number: Double) -> String {
+        if number.truncatingRemainder(dividingBy: 1) == 0 {
+            return String(format: "%.0f", number)
+        } else {
+            return String(number)
+        }
+    }
+
+    private func submitNumber() {
+        if let value = Double(value) {
+            submitValue(value)
+        }
+        model.value = "0"
+    }
+}
+
+@Observable
+class DecimalInputViewModel {
+    var value = "0"
+
+    func handleInput(_ key: String) {
         switch key {
         case "⌫":
             if value.count > 1 {
@@ -97,33 +130,6 @@ struct DecimalInputView: View {
                 value.append(key)
             }
         }
-    }
-
-    private func toggleSign() {
-        if let number = Double(value) {
-            let endsWithDecimalPoint = value.hasSuffix(".")
-            let toggled = number * -1
-            var formattedNumber = formatNumberWithoutTrailingZeros(toggled)
-            if endsWithDecimalPoint {
-                formattedNumber.append(".")
-            }
-            value = formattedNumber
-        }
-    }
-
-    private func formatNumberWithoutTrailingZeros(_ number: Double) -> String {
-        if number.truncatingRemainder(dividingBy: 1) == 0 {
-            return String(format: "%.0f", number)
-        } else {
-            return String(number)
-        }
-    }
-
-    private func submitNumber() {
-        if let value = Double(value) {
-            submitValue(value)
-        }
-        value = "0"
     }
 }
 
