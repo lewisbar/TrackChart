@@ -20,17 +20,8 @@ struct TopicView: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        VStack {
-            TextField("Enter topic name", text: $name)
-                .font(.largeTitle)
-                .fontWeight(.medium)
-                .minimumScaleFactor(0.5)
-                .padding(.top, 8)
-                .padding(.bottom, 4)
-                .focused($isTextFieldFocused)
-
-            ChartView(entries: entries)
-
+        ZStack {
+            mainContent
             plusButton
         }
         .padding(.horizontal)
@@ -39,6 +30,47 @@ struct TopicView: View {
         .sheet(isPresented: $isShowingInput) {
             DecimalInputView(submitValue: submitNewValue, dismiss: { isShowingInput = false })
                 .presentationDetents([.fraction(0.45)])
+        }
+    }
+
+    private var mainContent: some View {
+        VStack {
+            title
+            chartList
+        }
+    }
+
+    private var title: some View {
+        TextField("Enter topic name", text: $name)
+            .font(.largeTitle)
+            .fontWeight(.medium)
+            .minimumScaleFactor(0.5)
+            .padding(.top, 8)
+            .padding(.bottom, 4)
+            .focused($isTextFieldFocused)
+    }
+
+    private var chartList: some View {
+        List {
+            ChartView(rawEntries: entries, dataProvider: .raw)
+                .card()
+                .frame(height: 180)
+                .listRowSeparator(.hidden)
+
+            ChartView(rawEntries: entries, dataProvider: .dailySum)
+                .card()
+                .frame(height: 180)
+                .listRowSeparator(.hidden)
+
+            ChartView(rawEntries: entries, dataProvider: .dailyAverage)
+                .card()
+                .frame(height: 180)
+                .listRowSeparator(.hidden)
+
+            ChartView(rawEntries: entries, dataProvider: .weeklySum)
+                .card()
+                .frame(height: 180)
+                .listRowSeparator(.hidden)
         }
     }
 
