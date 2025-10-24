@@ -194,4 +194,73 @@ struct DecimalInputViewModelTests {
         sut.handleInput(backspace)
         #expect(sut.value == "0")
     }
+
+    @Test func handleInput_decimalPoint() {
+        let sut = DecimalInputViewModel(submitValue: { _ in })
+        let decimalPoint = "."
+
+        sut.value = "0"
+        sut.handleInput(decimalPoint)
+        #expect(sut.value == "0.")
+
+        sut.value = "-0"
+        sut.handleInput(decimalPoint)
+        #expect(sut.value == "-0.")
+
+        sut.value = "12"
+        sut.handleInput(decimalPoint)
+        #expect(sut.value == "12.")
+
+        sut.value = "-12"
+        sut.handleInput(decimalPoint)
+        #expect(sut.value == "-12.")
+
+        sut.value = "0."
+        sut.handleInput(decimalPoint)
+        #expect(sut.value == "0.")
+
+        sut.value = "-0."
+        sut.handleInput(decimalPoint)
+        #expect(sut.value == "-0.")
+
+        sut.value = "12."
+        sut.handleInput(decimalPoint)
+        #expect(sut.value == "12.")
+
+        sut.value = "-12."
+        sut.handleInput(decimalPoint)
+        #expect(sut.value == "-12.")
+
+        sut.value = "0.0"
+        sut.handleInput(decimalPoint)
+        #expect(sut.value == "0.0")
+
+        sut.value = "-0.0"
+        sut.handleInput(decimalPoint)
+        #expect(sut.value == "-0.0")
+
+        sut.value = "12.0"
+        sut.handleInput(decimalPoint)
+        #expect(sut.value == "12.0")
+
+        sut.value = "-12.0"
+        sut.handleInput(decimalPoint)
+        #expect(sut.value == "-12.0")
+
+        sut.value = "0.01"
+        sut.handleInput(decimalPoint)
+        #expect(sut.value == "0.01")
+
+        sut.value = "-0.01"
+        sut.handleInput(decimalPoint)
+        #expect(sut.value == "-0.01")
+
+        sut.value = "12.11"
+        sut.handleInput(decimalPoint)
+        #expect(sut.value == "12.11")
+
+        sut.value = "-12.11"
+        sut.handleInput(decimalPoint)
+        #expect(sut.value == "-12.11")
+    }
 }
