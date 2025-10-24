@@ -6,6 +6,7 @@
 //
 
 import Testing
+import SwiftUI
 @testable import TrackChartiOS
 
 struct DecimalInputViewModelTests {
@@ -311,4 +312,29 @@ struct DecimalInputViewModelTests {
         sut.handleInput("5")
         #expect(sut.value == "-12.055")
     }
+
+    @Test func isObservable() async throws {
+        let sut = DecimalInputViewModel(submitValue: { _ in })
+        let tracker = ObservationTracker()
+
+        withObservationTracking {
+            _ = sut.value
+        } onChange: {
+            Task { await tracker.setTriggered() }
+        }
+
+        sut.value = "2"
+
+        try await Task.sleep(for: .milliseconds(10))
+        let triggered = await tracker.getTriggered()
+        #expect(triggered, "Expected observation to be triggered after changing value")
+    }
+}
+
+// MARK: - Helpers
+
+private actor ObservationTracker {
+    var triggered = false
+    func setTriggered() { triggered = true }
+    func getTriggered() -> Bool { triggered }
 }
