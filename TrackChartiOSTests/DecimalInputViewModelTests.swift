@@ -45,4 +45,13 @@ struct DecimalInputViewModelTests {
         #expect(submittedValues.isEmpty)
         #expect(sut.value == "0")
     }
+
+    @Test func toggleSign_withInvalidValue_resetsValueToZero() {
+        let sut = DecimalInputViewModel(submitValue: { _ in })
+        sut.value = "not a number"
+
+        sut.toggleSign()
+
+        #expect(sut.value == "0")
+    }
 }

@@ -28,7 +28,7 @@ class DecimalInputViewModel {
             if value.trimmingPrefix("-").count > 1 {
                 value.removeLast()
             } else {
-                value = "0"
+                resetValue()
             }
         case ".":
             if !value.contains(".") {
@@ -54,7 +54,13 @@ class DecimalInputViewModel {
                 formattedNumber.append(".")
             }
             value = formattedNumber
+        } else {
+            resetValue()
         }
+    }
+
+    private func resetValue() {
+        value = "0"
     }
 
     private func formatNumberWithoutTrailingZeros(_ number: Double) -> String {
@@ -69,6 +75,6 @@ class DecimalInputViewModel {
         if let value = Double(value) {
             submitValue(value)
         }
-        value = "0"
+        resetValue()
     }
 }
