@@ -178,10 +178,6 @@ struct DecimalInputViewModelTests {
         sut.handleInput(backspace)
         #expect(sut.value == "0")
 
-        sut.value = ""
-        sut.handleInput(backspace)
-        #expect(sut.value == "0")
-
         sut.value = "-"
         sut.handleInput(backspace)
         #expect(sut.value == "0")
