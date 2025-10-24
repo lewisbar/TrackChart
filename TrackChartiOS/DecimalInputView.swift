@@ -18,56 +18,65 @@ struct DecimalInputView: View {
 
     var body: some View {
         VStack {
-            // Display label
-            Text(value)
-                .font(.largeTitle)
-                .frame(maxHeight: 40)
+            displayLabel
                 .padding(.top, 10)
 
             Divider()
 
-            // Number pad rows (with decimal and sign)
-            VStack(spacing: 10) {
-                ForEach([
-                    ["1", "2", "3"],
-                    ["4", "5", "6"],
-                    ["7", "8", "9"],
-                    [".", "0", "⌫"]
-                ], id: \.self) { row in
-                    HStack(spacing: 10) {
-                        ForEach(row, id: \.self) { key in
-                            Button(action: { handleInput(key) }) {
-                                Text(key)
-                                    .frame(maxWidth: .infinity, maxHeight: 80)
-                                    .background(Color.gray.opacity(0.2))
-                                    .cornerRadius(10)
-                                    .font(.title2)
-                            }
+            numberPad
+                .padding(.horizontal)
+
+            controlButtons
+                .padding(.bottom, 15)
+        }
+        .background(Color(uiColor: .systemBackground))
+        .transition(.move(edge: .bottom))
+    }
+
+    private var displayLabel: some View {
+        Text(value)
+            .font(.largeTitle)
+            .frame(maxHeight: 40)
+    }
+
+    private var numberPad: some View {
+        VStack(spacing: 10) {
+            ForEach([
+                ["1", "2", "3"],
+                ["4", "5", "6"],
+                ["7", "8", "9"],
+                [".", "0", "⌫"]
+            ], id: \.self) { row in
+                HStack(spacing: 10) {
+                    ForEach(row, id: \.self) { key in
+                        Button(action: { handleInput(key) }) {
+                            Text(key)
+                                .frame(maxWidth: .infinity, maxHeight: 80)
+                                .background(Color.gray.opacity(0.2))
+                                .cornerRadius(10)
+                                .font(.title2)
                         }
                     }
                 }
             }
-            .padding(.horizontal)
-
-            // Control buttons
-            HStack(spacing: 20) {
-                Button("+/-") { toggleSign() }
-                    .buttonStyle(.bordered)
-
-                Button("Submit") {
-                    submitNumber()
-                }
-                .buttonStyle(.borderedProminent)
-
-                Button("Hide") {
-                    dismiss()
-                }
-                .buttonStyle(.bordered)
-            }
-            .padding(.bottom, 15)
         }
-        .background(Color(uiColor: .systemBackground))
-        .transition(.move(edge: .bottom))
+    }
+
+    private var controlButtons: some View {
+        HStack(spacing: 20) {
+            Button("+/-") { toggleSign() }
+                .buttonStyle(.bordered)
+
+            Button("Submit") {
+                submitNumber()
+            }
+            .buttonStyle(.borderedProminent)
+
+            Button("Hide") {
+                dismiss()
+            }
+            .buttonStyle(.bordered)
+        }
     }
 
     private func handleInput(_ key: String) {
