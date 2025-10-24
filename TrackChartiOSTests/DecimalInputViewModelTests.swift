@@ -259,4 +259,56 @@ struct DecimalInputViewModelTests {
         sut.handleInput(decimalPoint)
         #expect(sut.value == "-12.11")
     }
+
+    @Test func handleInput_number() {
+        let sut = DecimalInputViewModel(submitValue: { _ in })
+
+        sut.value = "0"
+        sut.handleInput("5")
+        #expect(sut.value == "5")
+
+        sut.value = "-0"
+        sut.handleInput("5")
+        #expect(sut.value == "-5")
+
+        sut.value = "1"
+        sut.handleInput("5")
+        #expect(sut.value == "15")
+
+        sut.value = "-1"
+        sut.handleInput("5")
+        #expect(sut.value == "-15")
+
+        sut.value = "0."
+        sut.handleInput("5")
+        #expect(sut.value == "0.5")
+
+        sut.value = "-0."
+        sut.handleInput("5")
+        #expect(sut.value == "-0.5")
+
+        sut.value = "1."
+        sut.handleInput("5")
+        #expect(sut.value == "1.5")
+
+        sut.value = "-1."
+        sut.handleInput("5")
+        #expect(sut.value == "-1.5")
+
+        sut.value = "12.0"
+        sut.handleInput("5")
+        #expect(sut.value == "12.05")
+
+        sut.value = "-12.0"
+        sut.handleInput("5")
+        #expect(sut.value == "-12.05")
+
+        sut.value = "12.05"
+        sut.handleInput("5")
+        #expect(sut.value == "12.055")
+
+        sut.value = "-12.05"
+        sut.handleInput("5")
+        #expect(sut.value == "-12.055")
+    }
 }
