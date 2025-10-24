@@ -11,7 +11,6 @@ struct DecimalInputView: View {
     let submitValue: (Double) -> Void
     let dismiss: () -> Void
     @State private var value: String = "0"
-    @State private var isKeyboardVisible: Bool = false
 
     var numericValue: Double {
         Double(value) ?? 0
