@@ -23,4 +23,15 @@ struct DecimalInputViewModelTests {
             [".", "0", "⌫"]
         ])
     }
+
+    @Test func submitNumber_withInvalidValue_resetsValueToZeroAndDoesNotSubmit() {
+        var submittedValues = [Double]()
+        let sut = DecimalInputViewModel(submitValue: { submittedValues.append($0) })
+        sut.value = "not a number"
+
+        sut.submitNumber()
+
+        #expect(submittedValues.isEmpty)
+        #expect(sut.value == "0")
+    }
 }
