@@ -9,10 +9,10 @@ import SwiftUI
 import Presentation
 
 struct TopicListView: View {
-    let topics: [TopicCellModel]
+    let topics: [CellTopic]
     let deleteTopics: (IndexSet) -> Void
     let moveTopics: (IndexSet, Int) -> Void
-    let showTopic: (TopicCellModel) -> Void
+    let showTopic: (CellTopic) -> Void
     let createNewTopic: () -> Void
 
     var body: some View {
@@ -44,17 +44,17 @@ struct TopicListView: View {
 
 #Preview {
     let topics = [
-        TopicCellModel(id: UUID(), name: "Topic 1", info: "3 entries", entries: [
+        CellTopic(id: UUID(), name: "Topic 1", info: "3 entries", entries: [
             .init(value: 2.1, timestamp: .now),
             .init(value: 4, timestamp: .now),
             .init(value: 3, timestamp: .now)
         ]),
-        TopicCellModel(id: UUID(), name: "Topic 2", info: "3 entries", entries: [
+        CellTopic(id: UUID(), name: "Topic 2", info: "3 entries", entries: [
             .init(value: 1, timestamp: .now),
             .init(value: -4, timestamp: .now),
             .init(value: 30, timestamp: .now)
         ]),
-        TopicCellModel(id: UUID(), name: "Topic 3", info: "3 entries", entries: [
+        CellTopic(id: UUID(), name: "Topic 3", info: "3 entries", entries: [
             .init(value: 2, timestamp: .now),
             .init(value: 40, timestamp: .now),
             .init(value: -13, timestamp: .now)

@@ -9,7 +9,7 @@ import SwiftUI
 import Presentation
 
 struct TopicCell: View {
-    let topic: TopicCellModel
+    let topic: CellTopic
     let showTopic: () -> Void
 
     var body: some View {
@@ -38,10 +38,9 @@ struct TopicCell: View {
                 .padding([.horizontal, .bottom])
 
                 ChartView(
-                    values: topic.entries.map(\.value),
-                    showPointMarks: false,
-                    annotateExtrema: false,
-                    showAxisLabels: false,
+                    entries: topic.entries,
+                    highlightsExtrema: false,
+                    showsAxisLabels: false,
                     placeholder: { ChartPlaceholderView().font(.footnote).padding(.bottom, 30) }
                 )
                 .padding(.horizontal)
@@ -56,21 +55,21 @@ struct TopicCell: View {
 
 #Preview {
     TopicCell(
-        topic: TopicCellModel(
+        topic: CellTopic(
             id: UUID(),
             name: "Topic 1",
             info: "5 entries",
             entries: [
-                TopicCellEntry(value: 0, timestamp: .now),
-                TopicCellEntry(value: -3, timestamp: .now),
-                TopicCellEntry(value: -2, timestamp: .now),
-                TopicCellEntry(value: 1, timestamp: .now),
-                TopicCellEntry(value: 5, timestamp: .now),
-                TopicCellEntry(value: 9, timestamp: .now),
-                TopicCellEntry(value: 10, timestamp: .now)
+                ChartEntry(value: 0, timestamp: .now),
+                ChartEntry(value: -3, timestamp: .now),
+                ChartEntry(value: -2, timestamp: .now),
+                ChartEntry(value: 1, timestamp: .now),
+                ChartEntry(value: 5, timestamp: .now),
+                ChartEntry(value: 9, timestamp: .now),
+                ChartEntry(value: 10, timestamp: .now)
             ]
         ),
-        showTopic: {
-        })
-        .padding()
+        showTopic: {}
+    )
+    .padding()
 }

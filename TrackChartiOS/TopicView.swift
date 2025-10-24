@@ -6,13 +6,15 @@
 //
 
 import SwiftUI
+import Presentation
 
 struct TopicView: View {
     @Binding var name: String
-    @Binding var unsubmittedValue: Double
-    let entries: [Double]
+    let entries: [ChartEntry]
     let submitNewValue: (Double) -> Void
     let deleteLastValue: () -> Void
+    @State private var isShowingInput = false
+    @State private var enteredValue: Double? = nil
 
     @FocusState private var isTextFieldFocused: Bool
     @Environment(\.dismiss) private var dismiss
@@ -27,18 +29,29 @@ struct TopicView: View {
                 .padding(.bottom, 4)
                 .focused($isTextFieldFocused)
 
-            ChartView(values: entries)
+            ChartView(entries: entries)
 
-            CounterView(
-                count: $unsubmittedValue,
-                submitNewValue: submitNewValue,
-                deleteLastValue: deleteLastValue
-            )
-            .padding(.vertical)
+            plusButton
         }
         .padding(.horizontal)
         .navigationBarBackButtonHidden(true)
         .toolbar { ToolbarItem(placement: .topBarLeading, content: chevronOnlyBackButton) }
+        .sheet(isPresented: $isShowingInput) {
+            DecimalInputView(submitValue: submitNewValue, dismiss: { isShowingInput = false })
+                .presentationDetents([.fraction(0.45)])
+        }
+    }
+
+    private var plusButton: some View {
+        VStack {
+            Spacer()
+            CircleButton(action: showNumpad, image: Image(systemName: "plus"), color: .blue)
+                .padding(.bottom)
+        }
+    }
+
+    private func showNumpad() {
+        isShowingInput = true
     }
 
     private func chevronOnlyBackButton() -> some View {
@@ -53,8 +66,12 @@ struct TopicView: View {
 #Preview {
     TopicView(
         name: .constant("Topic 1"),
-        unsubmittedValue: .constant(0),
-        entries: [1, 2, 4, 8, 7, 3, 0, -2, -8, -3, 1],
+        entries: [1, 2, 4, 8, 7, 3, 0, -2, -8, -3, 1].enumerated().map { index, value in
+            ChartEntry(
+                value: Double(value),
+                timestamp: .now.advanced(by: 86_400 * Double(index) - 40 * 86_400)
+            )
+        },
         submitNewValue: { _ in },
         deleteLastValue: {}
     )

@@ -59,17 +59,17 @@ public class SwiftDataTopicListViewModel {
     }
 
     public func addAndShowNewTopic(existingTopics topics: [TopicEntity]) {
-        let topic = TopicEntity(name: "", unsubmittedValue: 0, sortIndex: topics.count)
+        let topic = TopicEntity(name: "", sortIndex: topics.count)
         insert(topic)
         save()
         showTopic(topic)
     }
 
-    public func cellModels(from topics: [TopicEntity]) -> [TopicCellModel] {
-        topics.map(\.topic).map(TopicCellModel.init)
+    public func cellModels(from topics: [TopicEntity]) -> [CellTopic] {
+        topics.map(\.topic).map(CellTopic.init)
     }
 
-    public func showTopic(for cellModel: TopicCellModel, in topics: [TopicEntity]) {
+    public func showTopic(for cellModel: CellTopic, in topics: [TopicEntity]) {
         showTopic(topics.first(where: { $0.id == cellModel.id }))
     }
 }

@@ -49,7 +49,6 @@ struct SwiftDataTopicListViewModelTests {
             #expect(updatedTopics.map(\.sortIndex) == [0, 1, 2, 3, 4, 5])
             #expect(shownTopics.count == 1)
             #expect(shownTopics.first??.name == "")
-            #expect(shownTopics.first??.unsubmittedValue == 0)
             #expect(shownTopics.first??.sortIndex == 5)
             #expect(shownTopics.first??.entries == [])
         }
@@ -60,11 +59,11 @@ struct SwiftDataTopicListViewModelTests {
             let result = sut.cellModels(from: topics)
 
             let expectedCellModels = topics.map { topic in
-                let entries = topic.entries?.sorted(by: { $0.sortIndex < $1.sortIndex }).map { entry in
-                    TopicCellEntry(value: entry.value, timestamp: entry.timestamp)
+                let entries = topic.entries?.sorted(by: { $0.timestamp < $1.timestamp }).map { entry in
+                    ChartEntry(value: entry.value, timestamp: entry.timestamp)
                 } ?? []
 
-                return TopicCellModel(id: topic.id, name: topic.name, info: "\(topic.entryCount) entries", entries: entries)
+                return CellTopic(id: topic.id, name: topic.name, info: "\(topic.entryCount) entries", entries: entries)
             }
 
             #expect(result == expectedCellModels)
@@ -76,8 +75,8 @@ struct SwiftDataTopicListViewModelTests {
 
         try withCleanContext(topicNames: ["0", "1", "2", "3", "4"], showTopic: { shownTopics.append($0) }) { context, topics, sut, errors in
             let selectedTopic = topics[3]
-            let cellModel = TopicCellModel(id: selectedTopic.id, name: selectedTopic.name, info: "\(selectedTopic.entryCount) entries", entries: selectedTopic.entries?.map {
-                TopicCellEntry(value: $0.value, timestamp: $0.timestamp)
+            let cellModel = CellTopic(id: selectedTopic.id, name: selectedTopic.name, info: "\(selectedTopic.entryCount) entries", entries: selectedTopic.entries?.map {
+                ChartEntry(value: $0.value, timestamp: $0.timestamp)
             } ?? [])
 
             sut.showTopic(for: cellModel, in: topics)
@@ -139,7 +138,6 @@ struct SwiftDataTopicListViewModelTests {
                 id: UUID(),
                 name: name,
                 entries: makeEntryEntities(from: Array(-1...Int.random(in: 3...10))),
-                unsubmittedValue: 5,
                 sortIndex: index
             )
         }
@@ -147,7 +145,7 @@ struct SwiftDataTopicListViewModelTests {
 
     private func makeEntryEntities(from values: [Int]) -> [EntryEntity] {
         values.map(Double.init).enumerated().map { index, value in
-            EntryEntity(value: value, timestamp: .now.advanced(by: -value), sortIndex: index)
+            EntryEntity(value: value, timestamp: .now.advanced(by: -value))
         }
     }
 
