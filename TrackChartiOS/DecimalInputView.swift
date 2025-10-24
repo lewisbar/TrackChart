@@ -92,7 +92,7 @@ class DecimalInputViewModel {
     func handleInput(_ key: String) {
         switch key {
         case "⌫":
-            if value.count > 1 {
+            if value.trimmingPrefix("-").count > 1 {
                 value.removeLast()
             } else {
                 value = "0"
