@@ -30,7 +30,6 @@ struct DecimalInputView: View {
                 .padding(.bottom, 15)
         }
         .background(Color(uiColor: .systemBackground))
-        .transition(.move(edge: .bottom))
     }
 
     private var displayLabel: some View {
