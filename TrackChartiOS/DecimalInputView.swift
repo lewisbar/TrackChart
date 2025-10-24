@@ -12,9 +12,7 @@ struct DecimalInputView: View {
     let dismiss: () -> Void
     @State private var value: String = "0"
 
-    var numericValue: Double {
-        Double(value) ?? 0
-    }
+    private var numericValue: Double { Double(value) ?? 0 }
 
     var body: some View {
         VStack {
@@ -48,33 +46,33 @@ struct DecimalInputView: View {
             ], id: \.self) { row in
                 HStack(spacing: 10) {
                     ForEach(row, id: \.self) { key in
-                        Button(action: { handleInput(key) }) {
-                            Text(key)
-                                .frame(maxWidth: .infinity, maxHeight: 80)
-                                .background(Color.gray.opacity(0.2))
-                                .cornerRadius(10)
-                                .font(.title2)
-                        }
+                        numberButton(for: key)
                     }
                 }
             }
         }
     }
 
+    private func numberButton(for key: String) -> some View {
+        Button(action: { handleInput(key) }) {
+            Text(key)
+                .frame(maxWidth: .infinity, maxHeight: 80)
+                .background(Color.gray.opacity(0.2))
+                .cornerRadius(10)
+                .font(.title2)
+        }
+    }
+
     private var controlButtons: some View {
         HStack(spacing: 20) {
-            Button("+/-") { toggleSign() }
+            Button("+/-", action: toggleSign)
                 .buttonStyle(.bordered)
 
-            Button("Submit") {
-                submitNumber()
-            }
-            .buttonStyle(.borderedProminent)
+            Button("Submit", action: submitNumber)
+                .buttonStyle(.borderedProminent)
 
-            Button("Hide") {
-                dismiss()
-            }
-            .buttonStyle(.bordered)
+            Button("Hide", action: dismiss)
+                .buttonStyle(.bordered)
         }
     }
 
