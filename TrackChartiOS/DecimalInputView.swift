@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-import SwiftUI
-
 struct DecimalInputView: View {
     let submitValue: (Double) -> Void
     let dismiss: () -> Void
