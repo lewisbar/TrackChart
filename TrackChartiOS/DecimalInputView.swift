@@ -8,12 +8,13 @@
 import SwiftUI
 
 struct DecimalInputView: View {
-    let submitValue: (Double) -> Void
-    let dismiss: () -> Void
-    @State private var model = DecimalInputViewModel()
-    private var value: String { model.value }
+    @State private var model: DecimalInputViewModel
+    private let dismiss: () -> Void
 
-    private var numericValue: Double { Double(value) ?? 0 }
+    init(submitValue: @escaping (Double) -> Void, dismiss: @escaping () -> Void) {
+        self.model = DecimalInputViewModel(submitValue: submitValue)
+        self.dismiss = dismiss
+    }
 
     var body: some View {
         VStack {
@@ -32,7 +33,7 @@ struct DecimalInputView: View {
     }
 
     private var displayLabel: some View {
-        Text(value)
+        Text(model.value)
             .font(.largeTitle)
             .frame(maxHeight: 40)
     }
@@ -69,25 +70,23 @@ struct DecimalInputView: View {
             Button("+/-", action: model.toggleSign)
                 .buttonStyle(.bordered)
 
-            Button("Submit", action: submitNumber)
+            Button("Submit", action: model.submitNumber)
                 .buttonStyle(.borderedProminent)
 
             Button("Hide", action: dismiss)
                 .buttonStyle(.bordered)
         }
     }
-
-    private func submitNumber() {
-        if let value = Double(value) {
-            submitValue(value)
-        }
-        model.value = "0"
-    }
 }
 
 @Observable
 class DecimalInputViewModel {
     var value = "0"
+    private let submitValue: (Double) -> Void
+
+    init(submitValue: @escaping (Double) -> Void) {
+        self.submitValue = submitValue
+    }
 
     func handleInput(_ key: String) {
         switch key {
@@ -130,6 +129,13 @@ class DecimalInputViewModel {
         } else {
             return String(number)
         }
+    }
+
+    func submitNumber() {
+        if let value = Double(value) {
+            submitValue(value)
+        }
+        value = "0"
     }
 }
 
