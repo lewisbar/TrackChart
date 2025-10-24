@@ -57,14 +57,6 @@ class DecimalInputViewModel {
         value = "0"
     }
 
-    private func formatNumberWithoutTrailingZeros(_ number: Double) -> String {
-        if number.truncatingRemainder(dividingBy: 1) == 0 {
-            return String(format: "%.0f", number)
-        } else {
-            return String(number)
-        }
-    }
-
     func submitNumber() {
         if let value = Double(value) {
             submitValue(value)
