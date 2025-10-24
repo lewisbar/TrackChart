@@ -53,14 +53,14 @@ class DecimalInputViewModel {
         }
     }
 
-    private func resetValue() {
-        value = "0"
-    }
-
     func submitNumber() {
         if let value = Double(value) {
             submitValue(value)
         }
         resetValue()
+    }
+
+    private func resetValue() {
+        value = "0"
     }
 }
