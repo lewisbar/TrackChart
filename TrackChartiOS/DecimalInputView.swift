@@ -40,12 +40,7 @@ struct DecimalInputView: View {
 
     private var numberPad: some View {
         VStack(spacing: 10) {
-            ForEach([
-                ["1", "2", "3"],
-                ["4", "5", "6"],
-                ["7", "8", "9"],
-                [".", "0", "⌫"]
-            ], id: \.self) { row in
+            ForEach(model.keys, id: \.self) { row in
                 HStack(spacing: 10) {
                     ForEach(row, id: \.self) { key in
                         numberButton(for: key)
