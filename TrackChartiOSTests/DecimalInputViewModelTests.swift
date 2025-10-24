@@ -105,4 +105,93 @@ struct DecimalInputViewModelTests {
         sut.toggleSign()
         #expect(sut.value == "1.00")
     }
+
+    @Test func handleInput_backspace() {
+        let sut = DecimalInputViewModel(submitValue: { _ in })
+        let backspace = "⌫"
+
+        sut.value = "0"
+        sut.handleInput(backspace)
+        #expect(sut.value == "0")
+
+        sut.value = "-0"
+        sut.handleInput(backspace)
+        #expect(sut.value == "0")
+
+        sut.value = "8"
+        sut.handleInput(backspace)
+        #expect(sut.value == "0")
+
+        sut.value = "-8"
+        sut.handleInput(backspace)
+        #expect(sut.value == "0")
+
+        sut.value = "0."
+        sut.handleInput(backspace)
+        #expect(sut.value == "0")
+
+        sut.value = "-0."
+        sut.handleInput(backspace)
+        #expect(sut.value == "-0")
+
+        sut.value = "1."
+        sut.handleInput(backspace)
+        #expect(sut.value == "1")
+
+        sut.value = "-1."
+        sut.handleInput(backspace)
+        #expect(sut.value == "-1")
+
+        sut.value = "0.0"
+        sut.handleInput(backspace)
+        #expect(sut.value == "0.")
+
+        sut.value = "-0.0"
+        sut.handleInput(backspace)
+        #expect(sut.value == "-0.")
+
+        sut.value = "0.1"
+        sut.handleInput(backspace)
+        #expect(sut.value == "0.")
+
+        sut.value = "-0.1"
+        sut.handleInput(backspace)
+        #expect(sut.value == "-0.")
+
+        sut.value = "1.1"
+        sut.handleInput(backspace)
+        #expect(sut.value == "1.")
+
+        sut.value = "-1.1"
+        sut.handleInput(backspace)
+        #expect(sut.value == "-1.")
+
+        sut.value = "78"
+        sut.handleInput(backspace)
+        #expect(sut.value == "7")
+
+        sut.value = "-78"
+        sut.handleInput(backspace)
+        #expect(sut.value == "-7")
+
+        sut.value = ""
+        sut.handleInput(backspace)
+        #expect(sut.value == "0")
+
+        sut.value = ""
+        sut.handleInput(backspace)
+        #expect(sut.value == "0")
+
+        sut.value = "-"
+        sut.handleInput(backspace)
+        #expect(sut.value == "0")
+
+        sut.value = "-."
+        sut.handleInput(backspace)
+        #expect(sut.value == "0")
+
+        sut.value = "."
+        sut.handleInput(backspace)
+        #expect(sut.value == "0")
+    }
 }
