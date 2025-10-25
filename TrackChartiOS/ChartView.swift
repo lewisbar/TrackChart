@@ -10,18 +10,9 @@ import Charts
 import Presentation
 
 struct ChartView<Placeholder: View>: View {
-    private struct Entry: Identifiable {
-        let id = UUID()
-        let value: Double
-        let timestamp: Date
-
-        init(from chartEntry: ChartEntry) {
-            self.value = chartEntry.value
-            self.timestamp = chartEntry.timestamp
-        }
-    }
-
-    private let entries: [Entry]
+    private let dataProvider: ChartDataProvider
+    private let rawEntries: [ChartEntry]
+    private var entries: [ProcessedEntry] { dataProvider.processedEntries(from: rawEntries) }
     private let highlightsExtrema: Bool
     private let showsAxisLabels: Bool
     @ViewBuilder private let placeholder: () -> Placeholder
@@ -37,12 +28,14 @@ struct ChartView<Placeholder: View>: View {
     private var pointFillColor: Color { .white }
 
     init(
-        entries: [ChartEntry],
+        rawEntries: [ChartEntry],
+        dataProvider: ChartDataProvider = .raw,
         highlightsExtrema: Bool = true,
         showsAxisLabels: Bool = true,
-        placeholder: @escaping () -> Placeholder = ChartPlaceholderView.init
+        placeholder: @escaping () -> Placeholder = { ChartPlaceholderView() }
     ) {
-        self.entries = entries.map(Entry.init)
+        self.rawEntries = rawEntries
+        self.dataProvider = dataProvider
         self.highlightsExtrema = highlightsExtrema
         self.showsAxisLabels = showsAxisLabels
         self.placeholder = placeholder
@@ -70,13 +63,13 @@ struct ChartView<Placeholder: View>: View {
     }
 
     @ChartContentBuilder
-    private func chartContent(for entry: Entry) -> some ChartContent {
+    private func chartContent(for entry: ProcessedEntry) -> some ChartContent {
         areaMark(for: entry)
         lineMark(for: entry)
         if shouldShowPointMark(for: entry) { pointMark(for: entry) }
     }
 
-    private func areaMark(for entry: Entry) -> some ChartContent {
+    private func areaMark(for entry: ProcessedEntry) -> some ChartContent {
         AreaMark(x: .value(xLabel, entry.timestamp), y: .value(yLabel, entry.value))
             .foregroundStyle(areaGradient)
             .interpolationMethod(.catmullRom)
@@ -94,7 +87,7 @@ struct ChartView<Placeholder: View>: View {
         )
     }
 
-    private func lineMark(for entry: Entry) -> some ChartContent {
+    private func lineMark(for entry: ProcessedEntry) -> some ChartContent {
         LineMark(x: .value(xLabel, entry.timestamp), y: .value(yLabel, entry.value))
             .foregroundStyle(primaryColor)
             .lineStyle(StrokeStyle(lineWidth: 2))
@@ -102,15 +95,15 @@ struct ChartView<Placeholder: View>: View {
             .interpolationMethod(.catmullRom)
     }
 
-    private func shouldShowPointMark(for entry: Entry) -> Bool {
+    private func shouldShowPointMark(for entry: ProcessedEntry) -> Bool {
         entries.count == 1 || (highlightsExtrema && isExtremum(entry))
     }
 
-    private func isExtremum(_ entry: Entry) -> Bool {
+    private func isExtremum(_ entry: ProcessedEntry) -> Bool {
         isMaxPositiveValue(entry.value) || isMinNegativeValue(entry.value)
     }
 
-    private func pointMark(for entry: Entry) -> some ChartContent {
+    private func pointMark(for entry: ProcessedEntry) -> some ChartContent {
         PointMark(x: .value(xLabel, entry.timestamp), y: .value(yLabel, entry.value))
             .symbol(symbol: pointSymbol)
             .annotation(position: .top, spacing: 2) { maxPositiveValueAnnotation(for: entry) }
@@ -126,14 +119,14 @@ struct ChartView<Placeholder: View>: View {
     }
 
     @ViewBuilder
-    private func maxPositiveValueAnnotation(for entry: Entry) -> some View {
+    private func maxPositiveValueAnnotation(for entry: ProcessedEntry) -> some View {
         if highlightsExtrema, isMaxPositiveValue(entry.value) {
             annotation(for: entry.value)
         }
     }
 
     @ViewBuilder
-    private func minNegativeValueAnnotation(for entry: Entry) -> some View {
+    private func minNegativeValueAnnotation(for entry: ProcessedEntry) -> some View {
         if highlightsExtrema, isMinNegativeValue(entry.value) {
             annotation(for: entry.value)
         }
@@ -225,7 +218,7 @@ private enum ChartNumberFormatter {
             VStack {
                 Text("Chart 1")
                 ChartView(
-                    entries: entries1
+                    rawEntries: entries1
                 )
             }
             .card()
@@ -234,7 +227,7 @@ private enum ChartNumberFormatter {
             VStack {
                 Text("Chart 2")
                 ChartView(
-                    entries: entries2
+                    rawEntries: entries2
                 )
             }
             .card()
@@ -243,7 +236,7 @@ private enum ChartNumberFormatter {
             VStack {
                 Text("Chart 3")
                 ChartView(
-                    entries: entries3
+                    rawEntries: entries3
                 )
             }
             .card()
@@ -251,7 +244,7 @@ private enum ChartNumberFormatter {
 
             VStack {
                 Text("Chart 4")
-                ChartView(entries: [], placeholder: { ChartPlaceholderView().font(.callout).padding(.bottom)})
+                ChartView(rawEntries: [], placeholder: { ChartPlaceholderView().font(.callout).padding(.bottom)})
             }
             .card()
             .frame(height: 200)

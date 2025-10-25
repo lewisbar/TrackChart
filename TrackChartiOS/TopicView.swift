@@ -20,25 +20,45 @@ struct TopicView: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        VStack {
-            TextField("Enter topic name", text: $name)
-                .font(.largeTitle)
-                .fontWeight(.medium)
-                .minimumScaleFactor(0.5)
-                .padding(.top, 8)
-                .padding(.bottom, 4)
-                .focused($isTextFieldFocused)
-
-            ChartView(entries: entries)
-
+        ZStack {
+            chartList
             plusButton
         }
-        .padding(.horizontal)
         .navigationBarBackButtonHidden(true)
-        .toolbar { ToolbarItem(placement: .topBarLeading, content: chevronOnlyBackButton) }
+        .navigationTitle(name)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading, content: chevronOnlyBackButton)
+            ToolbarItem(placement: .topBarTrailing, content: settingsButton)
+        }
         .sheet(isPresented: $isShowingInput) {
             DecimalInputView(submitValue: submitNewValue, dismiss: { isShowingInput = false })
                 .presentationDetents([.fraction(0.45)])
+        }
+    }
+
+    private var chartList: some View {
+        List {
+            ChartView(rawEntries: entries, dataProvider: .raw)
+                .card()
+                .frame(height: 180)
+                .listRowSeparator(.hidden)
+
+            ChartView(rawEntries: entries, dataProvider: .dailySum)
+                .card()
+                .frame(height: 180)
+                .listRowSeparator(.hidden)
+
+            ChartView(rawEntries: entries, dataProvider: .dailyAverage)
+                .card()
+                .frame(height: 180)
+                .listRowSeparator(.hidden)
+
+            ChartView(rawEntries: entries, dataProvider: .weeklySum)
+                .card()
+                .frame(height: 180)
+                .listRowSeparator(.hidden)
+
+            Spacer()
         }
     }
 
@@ -57,9 +77,21 @@ struct TopicView: View {
     private func chevronOnlyBackButton() -> some View {
         Button(action: { dismiss() }) {
             Image(systemName: "chevron.left")
-                .foregroundColor(.primary)
+                .foregroundStyle(.primary)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
+    }
+
+    private func settingsButton() -> some View {
+        Button(action: showSettings) {
+            Image(systemName: "gearshape.fill")
+                .foregroundStyle(.primary)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+        }
+    }
+
+    private func showSettings() {
+        // TODO
     }
 }
 
