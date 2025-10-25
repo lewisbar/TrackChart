@@ -24,7 +24,6 @@ struct TopicView: View {
             mainContent
             plusButton
         }
-        .padding(.horizontal)
         .navigationBarBackButtonHidden(true)
         .toolbar { ToolbarItem(placement: .topBarLeading, content: chevronOnlyBackButton) }
         .sheet(isPresented: $isShowingInput) {
@@ -47,6 +46,7 @@ struct TopicView: View {
             .minimumScaleFactor(0.5)
             .padding(.top, 8)
             .padding(.bottom, 4)
+            .padding(.horizontal)
             .focused($isTextFieldFocused)
     }
 
