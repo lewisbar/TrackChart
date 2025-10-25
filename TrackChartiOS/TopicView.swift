@@ -21,33 +21,16 @@ struct TopicView: View {
 
     var body: some View {
         ZStack {
-            mainContent
+            chartList
             plusButton
         }
         .navigationBarBackButtonHidden(true)
+        .navigationTitle(name)
         .toolbar { ToolbarItem(placement: .topBarLeading, content: chevronOnlyBackButton) }
         .sheet(isPresented: $isShowingInput) {
             DecimalInputView(submitValue: submitNewValue, dismiss: { isShowingInput = false })
                 .presentationDetents([.fraction(0.45)])
         }
-    }
-
-    private var mainContent: some View {
-        VStack {
-            title
-            chartList
-        }
-    }
-
-    private var title: some View {
-        TextField("Enter topic name", text: $name)
-            .font(.largeTitle)
-            .fontWeight(.medium)
-            .minimumScaleFactor(0.5)
-            .padding(.top, 8)
-            .padding(.bottom, 4)
-            .padding(.horizontal)
-            .focused($isTextFieldFocused)
     }
 
     private var chartList: some View {
