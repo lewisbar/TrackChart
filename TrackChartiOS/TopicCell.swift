@@ -53,6 +53,7 @@ struct TopicCell: View {
         .frame(height: 150)
     }
 
+    // TODO: Move logic elsewhere?
     private func dataProvider() -> ChartDataProvider {
         let timestamps = topic.entries.map(\.timestamp)
         guard let earliest = timestamps.min(), let latest = timestamps.max() else { return .raw }
