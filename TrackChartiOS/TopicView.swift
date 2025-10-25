@@ -54,6 +54,8 @@ struct TopicView: View {
                 .card()
                 .frame(height: 180)
                 .listRowSeparator(.hidden)
+
+            Spacer()
         }
     }
 

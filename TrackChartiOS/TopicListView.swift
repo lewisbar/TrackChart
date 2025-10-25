@@ -30,6 +30,7 @@ struct TopicListView: View {
             }
             .onDelete(perform: deleteTopics)
             .onMove(perform: moveTopics)
+            Spacer()
         }
     }
 
