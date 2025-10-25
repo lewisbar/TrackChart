@@ -10,23 +10,19 @@ import Domain
 public struct CellTopic: Identifiable, Hashable {
     public let id: UUID
     public let name: String
-    public let info: String
     public let entries: [ChartEntry]
+    public let palette: Palette
 
-    public init(id: UUID, name: String, info: String, entries: [ChartEntry]) {
-        self.id = id
-        self.name = name
-        self.info = info
-        self.entries = entries
+    public var info: String {
+        let infoPostfix = entries.count == 1 ? "entry" : "entries"
+        return "\(entries.count) \(infoPostfix)"
     }
 
-    public init(from topic: Topic) {
-        let infoPostfix = topic.entries.count == 1 ? "entry" : "entries"
-
-        self.id = topic.id
-        self.name = topic.name
-        self.info = "\(topic.entries.count) \(infoPostfix)"
-        self.entries = topic.entries.map(ChartEntry.init)
+    public init(id: UUID, name: String, entries: [ChartEntry], palette: Palette) {
+        self.id = id
+        self.name = name
+        self.entries = entries
+        self.palette = palette
     }
 }
 

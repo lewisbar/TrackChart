@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 import Persistence
+import Presentation
 
 @main
 struct TrackChartApp: App {
@@ -53,7 +54,8 @@ struct TrackChartApp: App {
                     save: saver.save,
                     insert: modelContext.insert,
                     delete: modelContext.delete,
-                    showTopic: showTopic
+                    showTopic: showTopic,
+                    randomPalette: { Palette.random.name }
                 )
             )
             .navigationDestination(for: TopicEntity.self) {

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Persistence
+import Presentation
 
 /// Wrapper to decouple the actual View from SwiftData
 struct SwiftDataTopicView: View {
@@ -17,10 +18,23 @@ struct SwiftDataTopicView: View {
     var body: some View {
         TopicView(
             name: $topic.name,
+            palette: paletteBinding,
             entries: viewModel.entries(for: topic),
             submitNewValue: { viewModel.submit(newValue: $0, to: topic) },
             deleteLastValue: { viewModel.deleteLastValue(from: topic)}
         )
         .onChange(of: topic.name) { _, _ in viewModel.nameChanged() }
+    }
+
+    private var paletteBinding: Binding<Palette> {
+        Binding<Palette>(
+            get: {
+                .palette(named: topic.palette)
+            },
+            set: { newPalette in
+                topic.palette = newPalette.name
+                try? modelContext.save()  // TODO: Extract to saver (via closure probably)
+            }
+        )
     }
 }

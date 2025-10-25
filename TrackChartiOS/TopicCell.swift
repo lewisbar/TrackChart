@@ -40,6 +40,7 @@ struct TopicCell: View {
                 ChartView(
                     rawEntries: topic.entries,
                     dataProvider: dataProvider(),
+                    palette: topic.palette,
                     highlightsExtrema: false,
                     showsAxisLabels: false,
                     placeholder: { ChartPlaceholderView().font(.footnote).padding(.bottom, 30) }
@@ -73,7 +74,6 @@ struct TopicCell: View {
         topic: CellTopic(
             id: UUID(),
             name: "Topic 1",
-            info: "5 entries",
             entries: [
                 ChartEntry(value: 0, timestamp: .now),
                 ChartEntry(value: -3, timestamp: .now),
@@ -82,7 +82,8 @@ struct TopicCell: View {
                 ChartEntry(value: 5, timestamp: .now),
                 ChartEntry(value: 9, timestamp: .now),
                 ChartEntry(value: 10, timestamp: .now)
-            ]
+            ],
+            palette: .sunset
         ),
         showTopic: {}
     )

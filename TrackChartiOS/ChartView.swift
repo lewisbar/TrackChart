@@ -13,6 +13,7 @@ struct ChartView<Placeholder: View>: View {
     private let dataProvider: ChartDataProvider
     private let rawEntries: [ChartEntry]
     private var entries: [ProcessedEntry] { dataProvider.processedEntries(from: rawEntries) }
+    private let palette: Palette
     private let highlightsExtrema: Bool
     private let showsAxisLabels: Bool
     @ViewBuilder private let placeholder: () -> Placeholder
@@ -20,22 +21,17 @@ struct ChartView<Placeholder: View>: View {
     private let xLabel = "Date"
     private let yLabel = "Value"
 
-    private let primaryColor = Color.blue
-    private var topColor: Color { primaryColor.opacity(0.5) }
-    private var midColor: Color { .cyan.opacity(0.3) }
-    private var bottomColor: Color { .teal.opacity(0.1) }
-    private var pointOutlineColor: Color { .cyan }
-    private var pointFillColor: Color { .white }
-
     init(
         rawEntries: [ChartEntry],
         dataProvider: ChartDataProvider = .raw,
+        palette: Palette,
         highlightsExtrema: Bool = true,
         showsAxisLabels: Bool = true,
         placeholder: @escaping () -> Placeholder = { ChartPlaceholderView() }
     ) {
         self.rawEntries = rawEntries
         self.dataProvider = dataProvider
+        self.palette = palette
         self.highlightsExtrema = highlightsExtrema
         self.showsAxisLabels = showsAxisLabels
         self.placeholder = placeholder
@@ -78,9 +74,9 @@ struct ChartView<Placeholder: View>: View {
     private var areaGradient: some ShapeStyle {
         LinearGradient(
             stops: [
-                .init(color: topColor, location: 0.0),
-                .init(color: midColor, location: 0.5),
-                .init(color: bottomColor, location: 1.0)
+                .init(color: palette.top, location: 0.0),
+                .init(color: palette.mid, location: 0.5),
+                .init(color: palette.bottom, location: 1.0)
             ],
             startPoint: .top,
             endPoint: .bottom
@@ -89,9 +85,9 @@ struct ChartView<Placeholder: View>: View {
 
     private func lineMark(for entry: ProcessedEntry) -> some ChartContent {
         LineMark(x: .value(xLabel, entry.timestamp), y: .value(yLabel, entry.value))
-            .foregroundStyle(primaryColor)
+            .foregroundStyle(palette.primary)
             .lineStyle(StrokeStyle(lineWidth: 2))
-            .shadow(color: primaryColor.opacity(0.3), radius: 2)
+            .shadow(color: palette.shadow, radius: 2)
             .interpolationMethod(.catmullRom)
     }
 
@@ -112,8 +108,8 @@ struct ChartView<Placeholder: View>: View {
 
     private func pointSymbol() -> some View {
         ZStack {
-            Circle().fill(pointFillColor)
-            Circle().stroke(pointOutlineColor, lineWidth: 2)
+            Circle().fill(palette.pointFill)
+            Circle().stroke(palette.pointOutline, lineWidth: 2)
         }
         .frame(width: 6)
     }
@@ -145,7 +141,7 @@ struct ChartView<Placeholder: View>: View {
 
         return Text("\(formattedValue)")
             .font(.caption)
-            .foregroundColor(pointOutlineColor)
+            .foregroundColor(palette.pointOutline)
     }
 
     @AxisContentBuilder
@@ -218,7 +214,7 @@ private enum ChartNumberFormatter {
             VStack {
                 Text("Chart 1")
                 ChartView(
-                    rawEntries: entries1
+                    rawEntries: entries1, palette: .ocean
                 )
             }
             .card()
@@ -227,7 +223,7 @@ private enum ChartNumberFormatter {
             VStack {
                 Text("Chart 2")
                 ChartView(
-                    rawEntries: entries2
+                    rawEntries: entries2, palette: .fire
                 )
             }
             .card()
@@ -236,7 +232,7 @@ private enum ChartNumberFormatter {
             VStack {
                 Text("Chart 3")
                 ChartView(
-                    rawEntries: entries3
+                    rawEntries: entries3, palette: .forest
                 )
             }
             .card()
@@ -244,7 +240,7 @@ private enum ChartNumberFormatter {
 
             VStack {
                 Text("Chart 4")
-                ChartView(rawEntries: [], placeholder: { ChartPlaceholderView().font(.callout).padding(.bottom)})
+                ChartView(rawEntries: [], palette: .sunset, placeholder: { ChartPlaceholderView().font(.callout).padding(.bottom)})
             }
             .card()
             .frame(height: 200)
