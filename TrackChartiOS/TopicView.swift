@@ -26,7 +26,10 @@ struct TopicView: View {
         }
         .navigationBarBackButtonHidden(true)
         .navigationTitle(name)
-        .toolbar { ToolbarItem(placement: .topBarLeading, content: chevronOnlyBackButton) }
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading, content: chevronOnlyBackButton)
+            ToolbarItem(placement: .topBarTrailing, content: settingsButton)
+        }
         .sheet(isPresented: $isShowingInput) {
             DecimalInputView(submitValue: submitNewValue, dismiss: { isShowingInput = false })
                 .presentationDetents([.fraction(0.45)])
@@ -74,9 +77,21 @@ struct TopicView: View {
     private func chevronOnlyBackButton() -> some View {
         Button(action: { dismiss() }) {
             Image(systemName: "chevron.left")
-                .foregroundColor(.primary)
+                .foregroundStyle(.primary)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
+    }
+
+    private func settingsButton() -> some View {
+        Button(action: showSettings) {
+            Image(systemName: "gearshape.fill")
+                .foregroundStyle(.primary)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+        }
+    }
+
+    private func showSettings() {
+        // TODO
     }
 }
 
