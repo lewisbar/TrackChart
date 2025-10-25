@@ -15,22 +15,38 @@ struct SettingsView: View {
     var body: some View {
         VStack {
             Text("Topic Settings")
-            Form {
-                TextField("Name", text: $name)
-                palettePicker
-            }
+                .font(.largeTitle)
+                .fontWeight(.medium)
+                .minimumScaleFactor(0.5)
+
+            TextField("Name", text: $name)
+
+            palettePicker
+
+            Spacer()
         }
+        .padding()
     }
 
     private var palettePicker: some View {
-        Picker("Palettes", selection: $palette) {
-            ForEach(Palette.availablePalettes, id: \.self) { palette in
-                Image(systemName: "circle.fill")
-                    .tint(palette.primary)
-                    .tag(palette)
+        HStack(spacing: 16) {
+            ForEach(Palette.availablePalettes, id: \.self) { availablePalette in
+                Button {
+                    palette = availablePalette
+                } label: {
+                    Circle()
+                        .fill(availablePalette.primary)
+                        .frame(width: 24, height: 24)
+                        .overlay {
+                            if palette == availablePalette {
+                                Circle()
+                                    .stroke(Color.white, lineWidth: 2)
+                            }
+                        }
+                }
             }
         }
-        .pickerStyle(.palette)
+        .padding()
     }
 }
 
