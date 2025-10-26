@@ -13,19 +13,32 @@ struct SettingsView: View {
     @Binding var palette: Palette
 
     var body: some View {
-        VStack {
+        VStack(alignment: .leading) {
             Text("Topic Settings")
                 .font(.largeTitle)
                 .fontWeight(.medium)
                 .minimumScaleFactor(0.5)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.bottom)
 
-            TextField("Name", text: $name)
+            VStack(alignment: .leading) {
+                Text("Name")
 
-            palettePicker
+                TextField("Name", text: $name)
+                    .textFieldStyle(.roundedBorder)
+            }
+            .padding(.bottom)
+
+            VStack(alignment: .leading) {
+                Text("Color Palette")
+
+                palettePicker
+            }
 
             Spacer()
         }
-        .padding()
+        .padding(.vertical)
+        .padding(.horizontal, 24)
     }
 
     private var palettePicker: some View {
@@ -40,13 +53,13 @@ struct SettingsView: View {
                         .overlay {
                             if palette == availablePalette {
                                 Circle()
-                                    .stroke(Color.white, lineWidth: 2)
+                                    .stroke(Color.primary, lineWidth: 2)
                             }
                         }
                 }
+                .tint(nil)
             }
         }
-        .padding()
     }
 }
 
