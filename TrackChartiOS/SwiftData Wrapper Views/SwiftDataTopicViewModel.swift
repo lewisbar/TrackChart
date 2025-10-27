@@ -38,6 +38,11 @@ public class SwiftDataTopicViewModel {
         }
     }
 
+    public func changePalette(to palette: Palette, for topic: TopicEntity) {
+        topic.palette = palette.name
+        save()
+    }
+
     @discardableResult
     public func nameChanged() -> Task<Void, Never>? {
         debounceSave(debounceSaveDelay)

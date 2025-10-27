@@ -28,13 +28,8 @@ struct SwiftDataTopicView: View {
 
     private var paletteBinding: Binding<Palette> {
         Binding<Palette>(
-            get: {
-                .palette(named: topic.palette)
-            },
-            set: { newPalette in
-                topic.palette = newPalette.name
-                try? modelContext.save()  // TODO: Extract to saver (via closure probably)
-            }
+            get: { .palette(named: topic.palette) },
+            set: { viewModel.changePalette(to: $0, for: topic) }
         )
     }
 }
