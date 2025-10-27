@@ -7,7 +7,6 @@
 
 import Foundation
 import SwiftData
-import Domain
 
 @Model
 public final class TopicEntity {
@@ -31,13 +30,5 @@ public final class TopicEntity {
         self.entries = entries
         self.palette = palette
         self.sortIndex = sortIndex
-    }
-
-    public var topic: Topic {
-        Topic(
-            id: id,
-            name: name,
-            entries: entries?.sorted(by: { $0.timestamp < $1.timestamp }).map(\.entry) ?? []
-        )
     }
 }

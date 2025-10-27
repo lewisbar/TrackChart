@@ -8,22 +8,50 @@
 import Testing
 import SwiftData
 import Persistence
-import Domain
 
+@MainActor
 struct TopicEntityTests {
-    @Test func mapToDomainModel() throws {
+    @Test func entryCount() throws {
         let context = try makeContext()
         let entries = makeEntryEntities()
         let topicEntity = makeTopicEntity(with: entries)
         try setUp(context: context, with: topicEntity)
 
-        let expectedEntries = entries.sorted(by: { $0.timestamp < $1.timestamp }).map { Entry(value: $0.value, timestamp: $0.timestamp) }
-        let expectedTopic = Topic(id: topicEntity.id, name: topicEntity.name, entries: expectedEntries)
+        let entryCount = topicEntity.entryCount
 
-        let result = topicEntity.topic
+        #expect(entryCount == entries.count)
+    }
 
-        #expect(result == expectedTopic)
-        #expect(result.entries == expectedEntries)
+    @Test func entryCount_withNilEntries_returnsZero() throws {
+        let context = try makeContext()
+        let topicEntity = makeTopicEntity(with: nil)
+        try setUp(context: context, with: topicEntity)
+
+        let entryCount = topicEntity.entryCount
+
+        #expect(entryCount == 0)
+    }
+
+    @Test func sortedEntries() throws {
+        let context = try makeContext()
+        let entries = makeEntryEntities()
+        let topicEntity = makeTopicEntity(with: entries)
+        try setUp(context: context, with: topicEntity)
+
+        let sortedEntries = topicEntity.sortedEntries
+
+        #expect(sortedEntries.map(\.value) == entries.sorted(by: { $0.timestamp < $1.timestamp }).map(\.value))
+        #expect(sortedEntries.map(\.timestamp) == entries.sorted(by: { $0.timestamp < $1.timestamp }).map(\.timestamp))
+    }
+
+    @Test func sortedEntries_withNilEntries_returnsEmpty() throws {
+        let context = try makeContext()
+        let topicEntity = makeTopicEntity(with: nil)
+        try setUp(context: context, with: topicEntity)
+
+        let sortedEntries = topicEntity.sortedEntries
+
+        #expect(sortedEntries.isEmpty)
     }
 
     // MARK: - Helpers
@@ -45,8 +73,8 @@ struct TopicEntityTests {
         ]
     }
 
-    private func makeTopicEntity(with entries: [EntryEntity]) -> TopicEntity {
-        TopicEntity(id: UUID(), name: "Topic 1", entries: entries, sortIndex: 7)
+    private func makeTopicEntity(with entries: [EntryEntity]?) -> TopicEntity {
+        TopicEntity(id: UUID(), name: "Topic 1", entries: entries, palette: "ocean", sortIndex: 7)
     }
 
     private func setUp(context: ModelContext, with topicEntity: TopicEntity) throws {

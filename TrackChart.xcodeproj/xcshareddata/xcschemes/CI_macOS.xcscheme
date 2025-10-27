@@ -15,23 +15,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "301C95A72E818652008E3F16"
-               BuildableName = "Domain.framework"
-               BlueprintName = "Domain"
-               ReferencedContainer = "container:TrackChart.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3049D7CF2E957FB000BEECA3"
-               BuildableName = "Presentation.framework"
-               BlueprintName = "Presentation"
+               BlueprintIdentifier = "30A31C6E2EA6D27C00DEB9EB"
+               BuildableName = "Persistence.framework"
+               BlueprintName = "Persistence"
                ReferencedContainer = "container:TrackChart.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -44,7 +30,7 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <TestPlans>
          <TestPlanReference
-            reference = "container:TestPlans/CI_macOS_Frameworks.xctestplan"
+            reference = "container:TestPlans/CI_macOS.xctestplan"
             default = "YES">
          </TestPlanReference>
       </TestPlans>
@@ -66,15 +52,6 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "301C95A72E818652008E3F16"
-            BuildableName = "Domain.framework"
-            BlueprintName = "Domain"
-            ReferencedContainer = "container:TrackChart.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

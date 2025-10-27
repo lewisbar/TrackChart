@@ -6,7 +6,6 @@
 //
 
 import SwiftData
-import Domain
 
 @Model
 public final class EntryEntity {
@@ -17,10 +16,6 @@ public final class EntryEntity {
     public init(value: Double, timestamp: Date) {
         self.value = value
         self.timestamp = timestamp
-    }
-
-    public var entry: Entry {
-        Entry(value: value, timestamp: timestamp)
     }
 }
 

@@ -5,7 +5,6 @@
 //
 
 import Foundation
-import Domain
 
 public struct CellTopic: Identifiable, Hashable {
     public let id: UUID
@@ -33,14 +32,5 @@ public struct ChartEntry: Hashable, Codable {
     public init(value: Double, timestamp: Date) {
         self.value = value
         self.timestamp = timestamp
-    }
-
-    public init(from entry: Entry) {
-        self.value = entry.value
-        self.timestamp = entry.timestamp
-    }
-
-    public var entry: Entry {
-        Entry(value: value, timestamp: timestamp)
     }
 }

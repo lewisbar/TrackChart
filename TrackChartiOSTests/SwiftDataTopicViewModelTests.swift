@@ -6,9 +6,9 @@
 //
 
 import Testing
-import Persistence
+import TrackChartiOS
 import SwiftData
-import Presentation
+import Persistence
 
 @MainActor
 class SwiftDataTopicViewModelTests {
@@ -18,7 +18,8 @@ class SwiftDataTopicViewModelTests {
 
             let result = sut.entries(for: selectedTopic)
 
-            #expect(result.map(\.entry) == selectedTopic.entries?.sorted(by: { $0.timestamp < $1.timestamp }).map(\.entry))
+            #expect(result.map(\.value) == selectedTopic.sortedEntries.map(\.value))
+            #expect(result.map(\.timestamp) == selectedTopic.sortedEntries.map(\.timestamp))
         }
     }
 
@@ -162,6 +163,7 @@ class SwiftDataTopicViewModelTests {
                 id: UUID(),
                 name: name,
                 entries: makeEntryEntities(from: Array(-1...Int.random(in: 3...10)).shuffled()),
+                palette: "ocean",
                 sortIndex: index
             )
         }
