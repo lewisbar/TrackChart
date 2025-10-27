@@ -31,22 +31,18 @@ struct ChartDataProvider: Sendable {
         }
 
         let calendar = Calendar.current
-        let components = calendar.dateComponents([.day, .month], from: earliest, to: latest)
+        let components = calendar.dateComponents([.day, .month, .year], from: earliest, to: latest)
         let totalDays = components.day ?? 0
         let totalMonths = components.month ?? 0
+        let totalYears = components.year ?? 0
 
-        let upToTwoDays = 0...2
-        let threeToThirtyDays = 3...30
-        let threeToTwelveMonths = 3...12
-
-        switch (totalDays, totalMonths) {
-        case (upToTwoDays, _):
+        if totalDays < 3 {
             return rawEntries.map { ProcessedEntry(value: $0.value, timestamp: $0.timestamp) }
-        case (threeToThirtyDays, _):
+        } else if totalMonths < 1 {
             return aggregatingProvider(timeUnit: .day, aggregator: .sum, calendar: calendar)(rawEntries)
-        case (_, threeToTwelveMonths):
+        } else if totalYears < 1 {
             return aggregatingProvider(timeUnit: .weekOfYear, aggregator: .sum, calendar: calendar)(rawEntries)
-        default:
+        } else {
             return aggregatingProvider(timeUnit: .month, aggregator: .sum, calendar: calendar)(rawEntries)
         }
     }
