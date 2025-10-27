@@ -29,13 +29,24 @@ struct ChartDataProvider: Sendable {
         guard let earliest = timestamps.min(), let latest = timestamps.max() else {
             return rawEntries.map { ProcessedEntry(value: $0.value, timestamp: $0.timestamp) }
         }
-        let numberOfDays = latest.timeIntervalSince(earliest) / 86_400
 
-        switch numberOfDays {
-        case 0...2: return rawEntries.map { ProcessedEntry(value: $0.value, timestamp: $0.timestamp) }
-        case 3...100: return aggregatingProvider(timeUnit: .day, aggregator: .sum, calendar: .current)(rawEntries)
-        case 101...365: return aggregatingProvider(timeUnit: .weekOfYear, aggregator: .sum, calendar: .current)(rawEntries)
-        default: return aggregatingProvider(timeUnit: .month, aggregator: .sum, calendar: .current)(rawEntries)
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.day, .month], from: earliest, to: latest)
+
+        // Extract total days and months for decision-making
+        let totalDays = components.day ?? 0
+        let totalMonths = components.month ?? 0
+
+        // Define thresholds based on calendar units
+        switch (totalDays, totalMonths) {
+        case (0...2, _): // Up to 2 days: Show raw data
+            return rawEntries.map { ProcessedEntry(value: $0.value, timestamp: $0.timestamp) }
+        case (3...30, _): // 3 to 30 days: Daily sum
+            return aggregatingProvider(timeUnit: .day, aggregator: .sum, calendar: calendar)(rawEntries)
+        case (_, 3...12): // 3 to 12 months: Weekly sum
+            return aggregatingProvider(timeUnit: .weekOfYear, aggregator: .sum, calendar: calendar)(rawEntries)
+        default: // Over 12 months: Monthly sum
+            return aggregatingProvider(timeUnit: .month, aggregator: .sum, calendar: calendar)(rawEntries)
         }
     }
 
