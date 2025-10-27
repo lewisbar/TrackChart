@@ -17,7 +17,7 @@ public struct Palette: Hashable, Sendable {
     // Derived colors
     public var top: Color { primary.opacity(0.5) }
     public var pointOutline: Color { mid.opacity(1.0) }
-    public var pointFill: Color { .white }  // Fixed, neutral
+    public var pointFill: Color { .white }
     public var shadow: Color { primary.opacity(0.3) }
 
     public static let availablePalettes = [
@@ -40,29 +40,28 @@ public struct Palette: Hashable, Sendable {
             name: "ocean",
             primary: Color(uiColor: UIColor { trait in
                 trait.userInterfaceStyle == .dark ?
-                    .systemBlue.withAlphaComponent(0.9) :  // Brighter for dark mode
-                    .systemBlue.withAlphaComponent(0.7)    // Muted for light mode
+                    .systemBlue.withAlphaComponent(0.9) :
+                    .systemBlue.withAlphaComponent(0.7)
             }),
             mid: Color(uiColor: UIColor { trait in
                 trait.userInterfaceStyle == .dark ?
-                    .systemCyan.withAlphaComponent(0.3) :  // Matches your 0.3 opacity
+                    .systemCyan.withAlphaComponent(0.3) :
                     .systemCyan.withAlphaComponent(0.25)
             }),
             bottom: Color(uiColor: UIColor { trait in
                 trait.userInterfaceStyle == .dark ?
-                    .systemTeal.withAlphaComponent(0.15) :  // Slightly brighter than 0.1
-                    .systemTeal.withAlphaComponent(0.1)    // Matches your original
+                    .systemTeal.withAlphaComponent(0.15) :
+                    .systemTeal.withAlphaComponent(0.1)
             })
         )
     }
 
-    // Fire palette (warm, bold tones)
     public static var fire: Palette {
         Palette(
             name: "fire",
             primary: Color(uiColor: UIColor { trait in
                 trait.userInterfaceStyle == .dark ?
-                    .systemRed.withAlphaComponent(0.9) :   // Vibrant red
+                    .systemRed.withAlphaComponent(0.9) :
                     .systemRed.withAlphaComponent(0.7)
             }),
             mid: Color(uiColor: UIColor { trait in
@@ -78,13 +77,12 @@ public struct Palette: Hashable, Sendable {
         )
     }
 
-    // Forest palette (earthy, natural tones)
     public static var forest: Palette {
         Palette(
             name: "forest",
             primary: Color(uiColor: UIColor { trait in
                 trait.userInterfaceStyle == .dark ?
-                UIColor(red: 0.0, green: 0.5, blue: 0.2, alpha: 0.9) :  // Deep green
+                UIColor(red: 0.0, green: 0.5, blue: 0.2, alpha: 0.9) :
                 UIColor(red: 0.0, green: 0.4, blue: 0.15, alpha: 0.7)
             }),
             mid: Color(uiColor: UIColor { trait in
@@ -100,23 +98,22 @@ public struct Palette: Hashable, Sendable {
         )
     }
 
-    // Sunset palette (vibrant, warm gradients)
     public static var sunset: Palette {
         Palette(
             name: "sunset",
             primary: Color(uiColor: UIColor { trait in
                 trait.userInterfaceStyle == .dark ?
-                UIColor(red: 1.0, green: 0.4, blue: 0.4, alpha: 0.9) :  // Warm coral
+                UIColor(red: 1.0, green: 0.4, blue: 0.4, alpha: 0.9) :
                 UIColor(red: 0.9, green: 0.3, blue: 0.3, alpha: 0.7)
             }),
             mid: Color(uiColor: UIColor { trait in
                 trait.userInterfaceStyle == .dark ?
-                UIColor(red: 1.0, green: 0.6, blue: 0.2, alpha: 0.3) :  // Orange
+                UIColor(red: 1.0, green: 0.6, blue: 0.2, alpha: 0.3) :
                 UIColor(red: 0.9, green: 0.5, blue: 0.15, alpha: 0.25)
             }),
             bottom: Color(uiColor: UIColor { trait in
                 trait.userInterfaceStyle == .dark ?
-                UIColor(red: 0.8, green: 0.2, blue: 0.5, alpha: 0.15) :  // Purple-pink
+                UIColor(red: 0.8, green: 0.2, blue: 0.5, alpha: 0.15) :
                 UIColor(red: 0.7, green: 0.15, blue: 0.4, alpha: 0.1)
             })
         )
