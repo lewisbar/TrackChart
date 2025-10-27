@@ -165,18 +165,9 @@ enum Aggregator {
 
 private extension Calendar {
     func startOfUnit(_ component: Calendar.Component, for date: Date) -> Date {
-        switch component {
-        case .day:
-            return startOfDay(for: date)
-        case .weekOfYear:
-            return dateComponents([.calendar, .yearForWeekOfYear, .weekOfYear], from: date)
-                .date ?? date
-        case .month:
-            return dateComponents([.year, .month], from: date).date ?? date
-        case .year:
-            return dateComponents([.year], from: date).date ?? date
-        default:
+        guard let interval = dateInterval(of: component, for: date) else {
             return date
         }
+        return interval.start
     }
 }
