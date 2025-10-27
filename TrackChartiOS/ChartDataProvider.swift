@@ -32,20 +32,21 @@ struct ChartDataProvider: Sendable {
 
         let calendar = Calendar.current
         let components = calendar.dateComponents([.day, .month], from: earliest, to: latest)
-
-        // Extract total days and months for decision-making
         let totalDays = components.day ?? 0
         let totalMonths = components.month ?? 0
 
-        // Define thresholds based on calendar units
+        let upToTwoDays = 0...2
+        let threeToThirtyDays = 3...30
+        let threeToTwelveMonths = 3...12
+
         switch (totalDays, totalMonths) {
-        case (0...2, _): // Up to 2 days: Show raw data
+        case (upToTwoDays, _):
             return rawEntries.map { ProcessedEntry(value: $0.value, timestamp: $0.timestamp) }
-        case (3...30, _): // 3 to 30 days: Daily sum
+        case (threeToThirtyDays, _):
             return aggregatingProvider(timeUnit: .day, aggregator: .sum, calendar: calendar)(rawEntries)
-        case (_, 3...12): // 3 to 12 months: Weekly sum
+        case (_, threeToTwelveMonths):
             return aggregatingProvider(timeUnit: .weekOfYear, aggregator: .sum, calendar: calendar)(rawEntries)
-        default: // Over 12 months: Monthly sum
+        default:
             return aggregatingProvider(timeUnit: .month, aggregator: .sum, calendar: calendar)(rawEntries)
         }
     }
