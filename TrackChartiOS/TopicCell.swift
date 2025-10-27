@@ -39,7 +39,7 @@ struct TopicCell: View {
 
                 ChartView(
                     rawEntries: topic.entries,
-                    dataProvider: dataProvider(),
+                    dataProvider: .automatic,
                     palette: topic.palette,
                     highlightsExtrema: false,
                     showsAxisLabels: false,
@@ -52,20 +52,6 @@ struct TopicCell: View {
         }
         .card()
         .frame(height: 150)
-    }
-
-    // TODO: Move logic elsewhere?
-    private func dataProvider() -> ChartDataProvider {
-        let timestamps = topic.entries.map(\.timestamp)
-        guard let earliest = timestamps.min(), let latest = timestamps.max() else { return .raw }
-        let numberOfDays = latest.timeIntervalSince(earliest) / 86_400
-
-        switch numberOfDays {
-        case 0...2: return .raw
-        case 3...100: return .dailySum
-        case 101...365: return .weeklySum
-        default: return .monthlySum
-        }
     }
 }
 

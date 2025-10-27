@@ -24,6 +24,21 @@ struct ChartDataProvider: Sendable {
         rawEntries.map { ProcessedEntry(value: $0.value, timestamp: $0.timestamp) }
     }
 
+    static let automatic = ChartDataProvider { rawEntries in
+        let timestamps = rawEntries.map(\.timestamp)
+        guard let earliest = timestamps.min(), let latest = timestamps.max() else {
+            return rawEntries.map { ProcessedEntry(value: $0.value, timestamp: $0.timestamp) }
+        }
+        let numberOfDays = latest.timeIntervalSince(earliest) / 86_400
+
+        switch numberOfDays {
+        case 0...2: return rawEntries.map { ProcessedEntry(value: $0.value, timestamp: $0.timestamp) }
+        case 3...100: return aggregatingProvider(timeUnit: .day, aggregator: .sum, calendar: .current)(rawEntries)
+        case 101...365: return aggregatingProvider(timeUnit: .weekOfYear, aggregator: .sum, calendar: .current)(rawEntries)
+        default: return aggregatingProvider(timeUnit: .month, aggregator: .sum, calendar: .current)(rawEntries)
+        }
+    }
+
     static let minutelySum = ChartDataProvider { rawEntries in
         aggregatingProvider(
             timeUnit: .minute,
