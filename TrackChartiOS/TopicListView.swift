@@ -14,10 +14,14 @@ struct TopicListView: View {
     let moveTopics: (IndexSet, Int) -> Void
     let showTopic: (CellTopic) -> Void
     let createNewTopic: () -> Void
+    @ScaledMetric(relativeTo: .title2) private var plusButtonBaseSize: CGFloat = 24
 
     var body: some View {
         ZStack {
             list
+                .padding(.bottom)
+                .padding(.bottom, plusButtonBaseSize)
+
             plusButton
         }
     }
@@ -30,7 +34,6 @@ struct TopicListView: View {
             }
             .onDelete(perform: deleteTopics)
             .onMove(perform: moveTopics)
-            Spacer()
         }
     }
 
