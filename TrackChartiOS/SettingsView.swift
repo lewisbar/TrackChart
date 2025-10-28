@@ -49,27 +49,38 @@ struct SettingsView: View {
     }
 
     private var palettePicker: some View {
-        HStack(spacing: 16) {
-            ForEach(Palette.availablePalettes, id: \.self) { availablePalette in
-                Button {
-                    palette = availablePalette
-                } label: {
-                    Circle()
-                        .fill(availablePalette.primary)
-                        .frame(width: 24, height: 24)
-                        .overlay {
-                            if palette == availablePalette {
-                                Circle()
-                                    .stroke(Color.primary, lineWidth: 2)
+        ScrollView(.horizontal) {
+            HStack(spacing: 16) {
+                ForEach(Palette.availablePalettes, id: \.self) { availablePalette in
+                    Button {
+                        palette = availablePalette
+                    } label: {
+                        Circle()
+                            .fill(availablePalette.radialGradient())
+                            .frame(width: 24, height: 24)
+                            .overlay {
+                                if palette == availablePalette {
+                                    Circle()
+                                        .stroke(Color.primary, lineWidth: 2)
+                                }
                             }
-                        }
+                            .frame(width: 28, height: 28)
+                    }
+                    .tint(nil)
                 }
-                .tint(nil)
             }
         }
+        .scrollIndicators(.hidden)
     }
 }
 
 #Preview {
-    SettingsView(name: .constant("Topic 1"), palette: .constant(.ocean))
+    @Previewable @State var palette: Palette = .ocean
+
+    VStack {
+        SettingsView(name: .constant("Topic 1"), palette: $palette)
+        Text(palette.name)
+            .font(.largeTitle)
+            .foregroundStyle(palette.linearGradient())
+    }
 }
