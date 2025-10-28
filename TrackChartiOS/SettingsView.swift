@@ -12,6 +12,7 @@ struct SettingsView: View {
     @Binding var name: String
     @Binding var palette: Palette
     @FocusState private var isTextFieldFocused: Bool
+    @Environment(\.dismiss) var dismiss
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -46,6 +47,9 @@ struct SettingsView: View {
         }
         .padding(.vertical)
         .padding(.horizontal, 24)
+        .overlay(alignment: .topTrailing) {
+            dismissButton
+        }
         .onAppear {
             if name.isEmpty {
                 isTextFieldFocused = true
@@ -92,6 +96,25 @@ struct SettingsView: View {
                 }
             }
         }
+    }
+
+    private var dismissButton: some View {
+        Button {
+            dismiss()
+        } label: {
+            Image(systemName: "xmark")
+                .font(.title3)
+                .foregroundStyle(.secondary)
+                .frame(width: 36, height: 36)
+                .background(
+                    Circle()
+                        .fill(.ultraThinMaterial)
+                        .overlay(Circle().stroke(Color(.systemGray4), lineWidth: 0.5))
+                )
+                .contentShape(Circle())
+        }
+        .buttonStyle(.plain)
+        .padding()
     }
 }
 
