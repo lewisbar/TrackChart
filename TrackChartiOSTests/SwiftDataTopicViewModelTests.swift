@@ -81,7 +81,7 @@ class SwiftDataTopicViewModelTests {
             let newContext = ModelContext(context.container)
             let updatedTopics = try fetchTopics(from: newContext)
 
-            #expect(updatedTopics[1].palette == "forest")
+            #expect(updatedTopics[1].palette == "Forest")
         }
     }
 

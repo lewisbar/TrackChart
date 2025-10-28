@@ -74,7 +74,7 @@ struct TopicEntityTests {
     }
 
     private func makeTopicEntity(with entries: [EntryEntity]?) -> TopicEntity {
-        TopicEntity(id: UUID(), name: "Topic 1", entries: entries, palette: "ocean", sortIndex: 7)
+        TopicEntity(id: UUID(), name: "Topic 1", entries: entries, palette: "Ocean", sortIndex: 7)
     }
 
     private func setUp(context: ModelContext, with topicEntity: TopicEntity) throws {
