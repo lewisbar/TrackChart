@@ -54,34 +54,50 @@ struct SettingsView: View {
     }
 
     private var palettePicker: some View {
-        ScrollView(.horizontal) {
-            HStack(spacing: 16) {
-                ForEach(Palette.availablePalettes, id: \.self) { availablePalette in
-                    Button {
-                        palette = availablePalette
-                    } label: {
-                        Circle()
-                            .fill(availablePalette.radialGradient())
-                            .frame(width: 24, height: 24)
-                            .overlay {
-                                if palette == availablePalette {
-                                    Circle()
-                                        .stroke(Color.primary, lineWidth: 2)
-                                }
+        ScrollViewReader { proxy in
+            ScrollView(.horizontal) {
+                HStack(spacing: 16) {
+                    ForEach(Palette.availablePalettes, id: \.self) { availablePalette in
+                        Button {
+                            palette = availablePalette
+                            withAnimation {
+                                proxy.scrollTo(availablePalette, anchor: .center)
                             }
-                            .frame(width: 28, height: 28)
+                        } label: {
+                            Circle()
+                                .fill(availablePalette.radialGradient())
+                                .frame(width: 24, height: 24)
+                                .overlay {
+                                    if palette == availablePalette {
+                                        Circle()
+                                            .stroke(Color.primary, lineWidth: 2)
+                                    }
+                                }
+                                .frame(width: 28, height: 28)
+                                .id(availablePalette) // Required for scrollTo
+                        }
+                        .tint(nil)
                     }
-                    .tint(nil)
+                }
+            }
+            .scrollIndicators(.hidden)
+            .onAppear {
+                withAnimation {
+                    proxy.scrollTo(palette, anchor: .center)
+                }
+            }
+            .onChange(of: palette) { _, newPalette in
+                withAnimation {
+                    proxy.scrollTo(newPalette, anchor: .center)
                 }
             }
         }
-        .scrollIndicators(.hidden)
     }
 }
 
 #Preview {
     @Previewable @State var name: String = "Topic 1"
-    @Previewable @State var palette: Palette = .ocean
+    @Previewable @State var palette: Palette = .lavenderField
 
     VStack {
         SettingsView(name: $name, palette: $palette)
