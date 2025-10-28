@@ -147,14 +147,27 @@ struct ChartView<Placeholder: View>: View {
     @AxisContentBuilder
     private func xAxisContent() -> some AxisContent {
         if showsAxisLabels {
-            AxisMarks(preset: .aligned, values: .automatic(desiredCount: 4, roundLowerBound: false, roundUpperBound: false)) { value in
+            AxisMarks(
+                // Align marks with the data points that belong to that day
+                preset: .aligned,
+                // One mark per day, starting at midnight
+                values: .stride(by: .day)
+            ) { mark in
                 AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [2, 2]))
 
-                if let date = value.as(Date.self) {
-                    AxisValueLabel(collisionResolution: .greedy()) {
-                        Text(AxisDateFormatter.day.string(from: date))
-                            .foregroundStyle(.gray)
-                            .font(.caption)
+                // `mark.as(Date.self)` is always the *start* of the day
+                if let date = mark.as(Date.self) {
+                    AxisValueLabel(
+                        // Greedy = hide overlapping labels when the view is too narrow
+                        collisionResolution: .greedy()
+                    ) {
+                        Text(date, format: .dateTime
+                            .month(.abbreviated)
+                            .day()
+                        )
+                        .font(.caption2)
+                        .foregroundStyle(.gray)
+                        .padding(.top, 4)
                     }
                 }
             }
@@ -187,14 +200,6 @@ private enum ChartNumberFormatter {
         let formatter = NumberFormatter()
         formatter.minimumFractionDigits = 0
         formatter.maximumFractionDigits = 2
-        return formatter
-    }()
-}
-
-private enum AxisDateFormatter {
-    static let day: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM d"
         return formatter
     }()
 }
