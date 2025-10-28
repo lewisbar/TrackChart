@@ -80,10 +80,11 @@ struct SettingsView: View {
 }
 
 #Preview {
+    @Previewable @State var name: String = "Topic 1"
     @Previewable @State var palette: Palette = .ocean
 
     VStack {
-        SettingsView(name: .constant("Topic 1"), palette: $palette)
+        SettingsView(name: $name, palette: $palette)
         Text(palette.name)
             .font(.largeTitle)
             .foregroundStyle(palette.linearGradient())
