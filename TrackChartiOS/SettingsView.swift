@@ -16,33 +16,9 @@ struct SettingsView: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            Text("Topic Settings")
-                .font(.largeTitle)
-                .fontWeight(.medium)
-                .minimumScaleFactor(0.5)
-                .frame(maxWidth: .infinity, alignment: .center)
-                .padding(.bottom)
-
-            VStack(alignment: .leading) {
-                Text("Name")
-
-                TextField("Name", text: $name)
-                    .textFieldStyle(.roundedBorder)
-                    .focused($isTextFieldFocused)
-            }
-            .padding(.bottom)
-
-            VStack(alignment: .leading) {
-                HStack {
-                    Text("Color Palette:")
-                    Spacer()
-                    Text(palette.name)
-                        .foregroundStyle(.secondary)
-                }
-
-                palettePicker
-            }
-
+            title
+            nameSetting
+            colorSetting
             Spacer()
         }
         .padding(.vertical)
@@ -57,30 +33,45 @@ struct SettingsView: View {
         }
     }
 
+    private var title: some View {
+        Text("Topic Settings")
+            .font(.largeTitle)
+            .fontWeight(.medium)
+            .minimumScaleFactor(0.5)
+            .frame(maxWidth: .infinity, alignment: .center)
+            .padding(.bottom)
+    }
+
+    private var nameSetting: some View {
+        VStack(alignment: .leading) {
+            Text("Name")
+
+            TextField("Name", text: $name)
+                .textFieldStyle(.roundedBorder)
+                .focused($isTextFieldFocused)
+        }
+        .padding(.bottom)
+    }
+
+    private var colorSetting: some View {
+        VStack(alignment: .leading) {
+            HStack {
+                Text("Color Palette:")
+                Spacer()
+                Text(palette.name)
+                    .foregroundStyle(.secondary)
+            }
+
+            palettePicker
+        }
+    }
+
     private var palettePicker: some View {
         ScrollViewReader { proxy in
             ScrollView(.horizontal) {
                 HStack(spacing: 16) {
                     ForEach(Palette.availablePalettes) { availablePalette in
-                        Button {
-                            palette = availablePalette
-                            withAnimation {
-                                proxy.scrollTo(availablePalette, anchor: .center)
-                            }
-                        } label: {
-                            Circle()
-                                .fill(availablePalette.radialGradient())
-                                .frame(width: 24, height: 24)
-                                .overlay {
-                                    if palette == availablePalette {
-                                        Circle()
-                                            .stroke(Color.primary, lineWidth: 2)
-                                    }
-                                }
-                                .frame(width: 28, height: 28)
-                                .id(availablePalette) // Required for scrollTo
-                        }
-                        .tint(nil)
+                        paletteButton(for: availablePalette, proxy: proxy)
                     }
                 }
             }
@@ -96,6 +87,28 @@ struct SettingsView: View {
                 }
             }
         }
+    }
+
+    private func paletteButton(for availablePalette: Palette, proxy: ScrollViewProxy) -> some View {
+        Button {
+            palette = availablePalette
+            withAnimation {
+                proxy.scrollTo(availablePalette, anchor: .center)
+            }
+        } label: {
+            Circle()
+                .fill(availablePalette.radialGradient())
+                .frame(width: 24, height: 24)
+                .overlay {
+                    if palette == availablePalette {
+                        Circle()
+                            .stroke(Color.primary, lineWidth: 2)
+                    }
+                }
+                .frame(width: 28, height: 28)
+                .id(availablePalette) // Required for scrollTo
+        }
+        .tint(nil)
     }
 
     private var dismissButton: some View {
