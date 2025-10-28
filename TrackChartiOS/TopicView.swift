@@ -87,14 +87,14 @@ struct TopicView: View {
         Button(action: { dismiss() }) {
             Image(systemName: "chevron.left")
         }
-        .tint(.primary)
+        .tint(.secondary)
     }
 
     private func settingsButton() -> some View {
         Button(action: showSettings) {
             Image(systemName: "gearshape.fill")
         }
-        .tint(.primary)
+        .tint(.secondary)
     }
 
     private func showSettings() {
