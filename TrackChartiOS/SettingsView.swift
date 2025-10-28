@@ -11,6 +11,7 @@ import Presentation
 struct SettingsView: View {
     @Binding var name: String
     @Binding var palette: Palette
+    @FocusState private var isTextFieldFocused: Bool
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -26,6 +27,7 @@ struct SettingsView: View {
 
                 TextField("Name", text: $name)
                     .textFieldStyle(.roundedBorder)
+                    .focused($isTextFieldFocused)
             }
             .padding(.bottom)
 
@@ -39,6 +41,11 @@ struct SettingsView: View {
         }
         .padding(.vertical)
         .padding(.horizontal, 24)
+        .onAppear {
+            if name.isEmpty {
+                isTextFieldFocused = true
+            }
+        }
     }
 
     private var palettePicker: some View {
