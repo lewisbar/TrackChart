@@ -150,7 +150,7 @@ struct ChartView<Placeholder: View>: View {
             AxisMarks(preset: .aligned, values: .automatic(desiredCount: 4, roundLowerBound: false, roundUpperBound: false)) {
                 AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [2, 2]))
 
-                AxisValueLabel()
+                AxisValueLabel(collisionResolution: .greedy())
                     .foregroundStyle(.gray)
                     .font(.caption)
             }
