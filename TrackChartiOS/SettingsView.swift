@@ -32,7 +32,12 @@ struct SettingsView: View {
             .padding(.bottom)
 
             VStack(alignment: .leading) {
-                Text("Color Palette: \(palette.name)")
+                HStack {
+                    Text("Color Palette:")
+                    Spacer()
+                    Text(palette.name)
+                        .foregroundStyle(.secondary)
+                }
 
                 palettePicker
             }
