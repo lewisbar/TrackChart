@@ -62,10 +62,12 @@ struct TrackChartApp: App {
                 ToolbarItem(placement: .principal) {
                     HStack {
                         Image(systemName: "chart.xyaxis.line")
-                            .font(.headline)
+                            .font(.title2)
                             .foregroundStyle(.red)
                         Text("TrackChart")
                             .font(.largeTitle)
+                            .fontWeight(.semibold)
+                            .fontDesign(.monospaced)
                     }
                 }
             }
