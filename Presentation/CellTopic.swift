@@ -5,28 +5,23 @@
 //
 
 import Foundation
-import Domain
 
 public struct CellTopic: Identifiable, Hashable {
     public let id: UUID
     public let name: String
-    public let info: String
     public let entries: [ChartEntry]
+    public let palette: Palette
 
-    public init(id: UUID, name: String, info: String, entries: [ChartEntry]) {
-        self.id = id
-        self.name = name
-        self.info = info
-        self.entries = entries
+    public var info: String {
+        let infoPostfix = entries.count == 1 ? "entry" : "entries"
+        return "\(entries.count) \(infoPostfix)"
     }
 
-    public init(from topic: Topic) {
-        let infoPostfix = topic.entries.count == 1 ? "entry" : "entries"
-
-        self.id = topic.id
-        self.name = topic.name
-        self.info = "\(topic.entries.count) \(infoPostfix)"
-        self.entries = topic.entries.map(ChartEntry.init)
+    public init(id: UUID, name: String, entries: [ChartEntry], palette: Palette) {
+        self.id = id
+        self.name = name
+        self.entries = entries
+        self.palette = palette
     }
 }
 
@@ -37,14 +32,5 @@ public struct ChartEntry: Hashable, Codable {
     public init(value: Double, timestamp: Date) {
         self.value = value
         self.timestamp = timestamp
-    }
-
-    public init(from entry: Entry) {
-        self.value = entry.value
-        self.timestamp = entry.timestamp
-    }
-
-    public var entry: Entry {
-        Entry(value: value, timestamp: timestamp)
     }
 }

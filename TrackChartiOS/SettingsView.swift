@@ -1,0 +1,68 @@
+//
+//  SettingsView.swift
+//  TrackChartiOS
+//
+//  Created by Lennart Wisbar on 25.10.25.
+//
+
+import SwiftUI
+import Presentation
+
+struct SettingsView: View {
+    @Binding var name: String
+    @Binding var palette: Palette
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text("Topic Settings")
+                .font(.largeTitle)
+                .fontWeight(.medium)
+                .minimumScaleFactor(0.5)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.bottom)
+
+            VStack(alignment: .leading) {
+                Text("Name")
+
+                TextField("Name", text: $name)
+                    .textFieldStyle(.roundedBorder)
+            }
+            .padding(.bottom)
+
+            VStack(alignment: .leading) {
+                Text("Color Palette")
+
+                palettePicker
+            }
+
+            Spacer()
+        }
+        .padding(.vertical)
+        .padding(.horizontal, 24)
+    }
+
+    private var palettePicker: some View {
+        HStack(spacing: 16) {
+            ForEach(Palette.availablePalettes, id: \.self) { availablePalette in
+                Button {
+                    palette = availablePalette
+                } label: {
+                    Circle()
+                        .fill(availablePalette.primary)
+                        .frame(width: 24, height: 24)
+                        .overlay {
+                            if palette == availablePalette {
+                                Circle()
+                                    .stroke(Color.primary, lineWidth: 2)
+                            }
+                        }
+                }
+                .tint(nil)
+            }
+        }
+    }
+}
+
+#Preview {
+    SettingsView(name: .constant("Topic 1"), palette: .constant(.ocean))
+}

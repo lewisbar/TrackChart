@@ -6,6 +6,7 @@
 //
 
 import Testing
+import TrackChartiOS
 import SwiftData
 import Persistence
 import Presentation
@@ -55,18 +56,22 @@ struct SwiftDataTopicListViewModelTests {
     }
 
     @Test func cellModelsFromTopics() throws {
-        try withCleanContext(topicNames: ["0", "1", "2", "3", "4"]) { context, topics, sut, errors in
+        try withCleanContext(topicNames: ["0", "1", "2", "3", "4"], palette: "ocean") { context, topics, sut, errors in
             let result = sut.cellModels(from: topics)
 
             let expectedCellModels = topics.map { topic in
-                let entries = topic.entries?.sorted(by: { $0.timestamp < $1.timestamp }).map { entry in
+                let entries = topic.sortedEntries.map { entry in
                     ChartEntry(value: entry.value, timestamp: entry.timestamp)
-                } ?? []
+                }
 
-                return CellTopic(id: topic.id, name: topic.name, info: "\(topic.entryCount) entries", entries: entries)
+                return CellTopic(id: topic.id, name: topic.name, entries: entries, palette: .ocean)
             }
 
-            #expect(result == expectedCellModels)
+            #expect(result.map(\.id) == expectedCellModels.map(\.id))
+            #expect(result.map(\.name) == expectedCellModels.map(\.name))
+            #expect(result.map(\.palette.name) == expectedCellModels.map(\.palette.name))
+            #expect(result.map { $0.entries.map(\.value) } == expectedCellModels.map { $0.entries.map(\.value) })
+            #expect(result.map { $0.entries.map(\.timestamp) } == expectedCellModels.map { $0.entries.map(\.timestamp) })
         }
     }
 
@@ -75,9 +80,9 @@ struct SwiftDataTopicListViewModelTests {
 
         try withCleanContext(topicNames: ["0", "1", "2", "3", "4"], showTopic: { shownTopics.append($0) }) { context, topics, sut, errors in
             let selectedTopic = topics[3]
-            let cellModel = CellTopic(id: selectedTopic.id, name: selectedTopic.name, info: "\(selectedTopic.entryCount) entries", entries: selectedTopic.entries?.map {
+            let cellModel = CellTopic(id: selectedTopic.id, name: selectedTopic.name, entries: selectedTopic.entries?.map {
                 ChartEntry(value: $0.value, timestamp: $0.timestamp)
-            } ?? [])
+            } ?? [], palette: .ocean)
 
             sut.showTopic(for: cellModel, in: topics)
 
@@ -90,6 +95,7 @@ struct SwiftDataTopicListViewModelTests {
     /// Runs a test with a fresh SwiftData persistent context, cleaning up the store before and after.
     private func withCleanContext<T>(
         topicNames: [String],
+        palette: String = "ocean",
         showTopic: @escaping (TopicEntity?) -> Void = { _ in },
         testBody: @MainActor (ModelContext, [TopicEntity], SwiftDataTopicListViewModel, [Error]) throws -> T
     ) throws -> T {
@@ -111,7 +117,8 @@ struct SwiftDataTopicListViewModelTests {
             save: saver.save,
             insert: context.insert,
             delete: context.delete,
-            showTopic: showTopic
+            showTopic: showTopic,
+            randomPalette: { "ocean" }
         )
 
         defer {
@@ -138,6 +145,7 @@ struct SwiftDataTopicListViewModelTests {
                 id: UUID(),
                 name: name,
                 entries: makeEntryEntities(from: Array(-1...Int.random(in: 3...10))),
+                palette: "ocean",
                 sortIndex: index
             )
         }

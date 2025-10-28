@@ -6,8 +6,9 @@
 //
 
 import Testing
-import Persistence
+import TrackChartiOS
 import SwiftData
+import Persistence
 import Presentation
 
 @MainActor
@@ -18,7 +19,8 @@ class SwiftDataTopicViewModelTests {
 
             let result = sut.entries(for: selectedTopic)
 
-            #expect(result.map(\.entry) == selectedTopic.entries?.sorted(by: { $0.timestamp < $1.timestamp }).map(\.entry))
+            #expect(result.map(\.value) == selectedTopic.sortedEntries.map(\.value))
+            #expect(result.map(\.timestamp) == selectedTopic.sortedEntries.map(\.timestamp))
         }
     }
 
@@ -70,6 +72,19 @@ class SwiftDataTopicViewModelTests {
         }
     }
 
+    @Test func changePalette() async throws {
+        try await withCleanContext(topicNames: ["0", "1", "2"], palette: .ocean) { context, topics, sut, errors in
+            let selectedTopic = topics[1]
+
+            sut.changePalette(to: .forest, for: selectedTopic)
+
+            let newContext = ModelContext(context.container)
+            let updatedTopics = try fetchTopics(from: newContext)
+
+            #expect(updatedTopics[1].palette == "forest")
+        }
+    }
+
     @Test func renameTopic_doesNotPersistUnlessNameChangedIsCalled_andThenDebounceSaves() async throws {
         try await withCleanContext(topicNames: ["0", "1", "2"]) { context, topics, sut, errors in
             let selectedTopic = topics[1]
@@ -105,6 +120,7 @@ class SwiftDataTopicViewModelTests {
     /// Runs a test with a fresh SwiftData persistent context, cleaning up the store before and after.
     private func withCleanContext<T: Sendable>(
         topicNames: [String],
+        palette: Palette = .ocean,
         testBody: @MainActor (ModelContext, [TopicEntity], SwiftDataTopicViewModel, [Error]) async throws -> T
     ) async throws -> T {
         let uniqueURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".sqlite")
@@ -114,7 +130,7 @@ class SwiftDataTopicViewModelTests {
         let configuration = ModelConfiguration(url: uniqueURL)
         let context = try makeContext(with: configuration)
 
-        let topics = makeTopicEntities(names: topicNames)
+        let topics = makeTopicEntities(names: topicNames, palette: palette)
         try setUp(context: context, with: topics)
 
         var capturedErrors = [Error]()
@@ -156,12 +172,13 @@ class SwiftDataTopicViewModelTests {
         return try context.fetch(fetchDescriptor)
     }
 
-    private func makeTopicEntities(names: [String]) -> [TopicEntity] {
+    private func makeTopicEntities(names: [String], palette: Palette) -> [TopicEntity] {
         names.enumerated().map { index, name in
             TopicEntity(
                 id: UUID(),
                 name: name,
                 entries: makeEntryEntities(from: Array(-1...Int.random(in: 3...10)).shuffled()),
+                palette: palette.name,
                 sortIndex: index
             )
         }

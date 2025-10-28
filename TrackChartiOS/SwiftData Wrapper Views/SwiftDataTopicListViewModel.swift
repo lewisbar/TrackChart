@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import Persistence
 import Presentation
 
 @MainActor
@@ -14,19 +15,21 @@ public class SwiftDataTopicListViewModel {
     private let save: () -> Void
     private let insert: (TopicEntity) -> Void
     private let delete: (TopicEntity) -> Void
-
     private let showTopic: (TopicEntity?) -> Void
+    private let randomPalette: () -> String
 
     public init(
         save: @escaping () -> Void,
         insert: @escaping (TopicEntity) -> Void,
         delete: @escaping (TopicEntity) -> Void,
-        showTopic: @escaping (TopicEntity?) -> Void
+        showTopic: @escaping (TopicEntity?) -> Void,
+        randomPalette: @escaping () -> String
     ) {
         self.save = save
         self.insert = insert
         self.delete = delete
         self.showTopic = showTopic
+        self.randomPalette = randomPalette
     }
 
     public func deleteTopics(at indexSet: IndexSet, from topics: [TopicEntity]) {
@@ -59,14 +62,25 @@ public class SwiftDataTopicListViewModel {
     }
 
     public func addAndShowNewTopic(existingTopics topics: [TopicEntity]) {
-        let topic = TopicEntity(name: "", sortIndex: topics.count)
+        let topic = TopicEntity(name: "", palette: randomPalette(), sortIndex: topics.count)
         insert(topic)
         save()
         showTopic(topic)
     }
 
     public func cellModels(from topics: [TopicEntity]) -> [CellTopic] {
-        topics.map(\.topic).map(CellTopic.init)
+        topics.map { topic in
+            let entries = topic.sortedEntries.map {
+                ChartEntry(value: $0.value, timestamp: $0.timestamp)
+            }
+
+            return CellTopic(
+                id: topic.id,
+                name: topic.name,
+                entries: entries,
+                palette: .palette(named: topic.palette)
+            )
+        }
     }
 
     public func showTopic(for cellModel: CellTopic, in topics: [TopicEntity]) {

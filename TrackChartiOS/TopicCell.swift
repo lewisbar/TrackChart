@@ -39,7 +39,8 @@ struct TopicCell: View {
 
                 ChartView(
                     rawEntries: topic.entries,
-                    dataProvider: dataProvider(),
+                    dataProvider: .automatic,
+                    palette: topic.palette,
                     highlightsExtrema: false,
                     showsAxisLabels: false,
                     placeholder: { ChartPlaceholderView().font(.footnote).padding(.bottom, 30) }
@@ -52,20 +53,6 @@ struct TopicCell: View {
         .card()
         .frame(height: 150)
     }
-
-    // TODO: Move logic elsewhere?
-    private func dataProvider() -> ChartDataProvider {
-        let timestamps = topic.entries.map(\.timestamp)
-        guard let earliest = timestamps.min(), let latest = timestamps.max() else { return .raw }
-        let numberOfDays = latest.timeIntervalSince(earliest) / 86_400
-
-        switch numberOfDays {
-        case 0...2: return .raw
-        case 3...100: return .dailySum
-        case 101...365: return .weeklySum
-        default: return .monthlySum
-        }
-    }
 }
 
 #Preview {
@@ -73,7 +60,6 @@ struct TopicCell: View {
         topic: CellTopic(
             id: UUID(),
             name: "Topic 1",
-            info: "5 entries",
             entries: [
                 ChartEntry(value: 0, timestamp: .now),
                 ChartEntry(value: -3, timestamp: .now),
@@ -82,7 +68,8 @@ struct TopicCell: View {
                 ChartEntry(value: 5, timestamp: .now),
                 ChartEntry(value: 9, timestamp: .now),
                 ChartEntry(value: 10, timestamp: .now)
-            ]
+            ],
+            palette: .sunset
         ),
         showTopic: {}
     )

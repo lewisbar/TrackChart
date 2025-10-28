@@ -24,6 +24,29 @@ struct ChartDataProvider: Sendable {
         rawEntries.map { ProcessedEntry(value: $0.value, timestamp: $0.timestamp) }
     }
 
+    static let automatic = ChartDataProvider { rawEntries in
+        let timestamps = rawEntries.map(\.timestamp)
+        guard let earliest = timestamps.min(), let latest = timestamps.max() else {
+            return rawEntries.map { ProcessedEntry(value: $0.value, timestamp: $0.timestamp) }
+        }
+
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.day, .month, .year], from: earliest, to: latest)
+        let totalDays = components.day ?? 0
+        let totalMonths = components.month ?? 0
+        let totalYears = components.year ?? 0
+
+        if totalDays < 3 {
+            return rawEntries.map { ProcessedEntry(value: $0.value, timestamp: $0.timestamp) }
+        } else if totalMonths < 1 {
+            return aggregatingProvider(timeUnit: .day, aggregator: .sum, calendar: calendar)(rawEntries)
+        } else if totalYears < 1 {
+            return aggregatingProvider(timeUnit: .weekOfYear, aggregator: .sum, calendar: calendar)(rawEntries)
+        } else {
+            return aggregatingProvider(timeUnit: .month, aggregator: .sum, calendar: calendar)(rawEntries)
+        }
+    }
+
     static let minutelySum = ChartDataProvider { rawEntries in
         aggregatingProvider(
             timeUnit: .minute,
@@ -142,18 +165,9 @@ enum Aggregator {
 
 private extension Calendar {
     func startOfUnit(_ component: Calendar.Component, for date: Date) -> Date {
-        switch component {
-        case .day:
-            return startOfDay(for: date)
-        case .weekOfYear:
-            return dateComponents([.calendar, .yearForWeekOfYear, .weekOfYear], from: date)
-                .date ?? date
-        case .month:
-            return dateComponents([.year, .month], from: date).date ?? date
-        case .year:
-            return dateComponents([.year], from: date).date ?? date
-        default:
+        guard let interval = dateInterval(of: component, for: date) else {
             return date
         }
+        return interval.start
     }
 }

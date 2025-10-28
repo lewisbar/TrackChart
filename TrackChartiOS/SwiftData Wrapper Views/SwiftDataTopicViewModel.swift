@@ -7,6 +7,7 @@
 
 import SwiftData
 import Presentation
+import Persistence
 
 @MainActor
 public class SwiftDataTopicViewModel {
@@ -21,7 +22,7 @@ public class SwiftDataTopicViewModel {
     }
 
     public func entries(for topic: TopicEntity) -> [ChartEntry] {
-        topic.entries?.sorted(by: { $0.timestamp < $1.timestamp }).map(\.entry).map(ChartEntry.init) ?? []
+        topic.entries?.sorted(by: { $0.timestamp < $1.timestamp }).map { ChartEntry(value: $0.value, timestamp: $0.timestamp)} ?? []
     }
 
     public func submit(newValue: Double, to topic: TopicEntity) {
@@ -35,6 +36,11 @@ public class SwiftDataTopicViewModel {
             topic.entries = topic.entries?.sorted(by: { $0.timestamp < $1.timestamp }).dropLast()
             save()
         }
+    }
+
+    public func changePalette(to palette: Palette, for topic: TopicEntity) {
+        topic.palette = palette.name
+        save()
     }
 
     @discardableResult

@@ -10,9 +10,11 @@ import Presentation
 
 struct TopicView: View {
     @Binding var name: String
+    @Binding var palette: Palette
     let entries: [ChartEntry]
     let submitNewValue: (Double) -> Void
     let deleteLastValue: () -> Void
+    @State private var isShowingSettings = false
     @State private var isShowingInput = false
     @State private var enteredValue: Double? = nil
 
@@ -34,26 +36,29 @@ struct TopicView: View {
             DecimalInputView(submitValue: submitNewValue, dismiss: { isShowingInput = false })
                 .presentationDetents([.fraction(0.45)])
         }
+        .sheet(isPresented: $isShowingSettings) {
+            SettingsView(name: $name, palette: $palette)
+        }
     }
 
     private var chartList: some View {
         List {
-            ChartView(rawEntries: entries, dataProvider: .raw)
+            ChartView(rawEntries: entries, dataProvider: .raw, palette: palette)
                 .card()
                 .frame(height: 180)
                 .listRowSeparator(.hidden)
 
-            ChartView(rawEntries: entries, dataProvider: .dailySum)
+            ChartView(rawEntries: entries, dataProvider: .dailySum, palette: palette)
                 .card()
                 .frame(height: 180)
                 .listRowSeparator(.hidden)
 
-            ChartView(rawEntries: entries, dataProvider: .dailyAverage)
+            ChartView(rawEntries: entries, dataProvider: .dailyAverage, palette: palette)
                 .card()
                 .frame(height: 180)
                 .listRowSeparator(.hidden)
 
-            ChartView(rawEntries: entries, dataProvider: .weeklySum)
+            ChartView(rawEntries: entries, dataProvider: .weeklySum, palette: palette)
                 .card()
                 .frame(height: 180)
                 .listRowSeparator(.hidden)
@@ -91,13 +96,14 @@ struct TopicView: View {
     }
 
     private func showSettings() {
-        // TODO
+        isShowingSettings = true
     }
 }
 
 #Preview {
     TopicView(
         name: .constant("Topic 1"),
+        palette: .constant(.ocean),
         entries: [1, 2, 4, 8, 7, 3, 0, -2, -8, -3, 1].enumerated().map { index, value in
             ChartEntry(
                 value: Double(value),
