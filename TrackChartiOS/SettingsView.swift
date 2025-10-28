@@ -57,7 +57,7 @@ struct SettingsView: View {
         ScrollViewReader { proxy in
             ScrollView(.horizontal) {
                 HStack(spacing: 16) {
-                    ForEach(Palette.availablePalettes, id: \.self) { availablePalette in
+                    ForEach(Palette.availablePalettes) { availablePalette in
                         Button {
                             palette = availablePalette
                             withAnimation {

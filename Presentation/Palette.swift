@@ -8,7 +8,8 @@
 import SwiftUI
 import UIKit
 
-public struct Palette: Hashable, Sendable {
+public struct Palette: Identifiable, Hashable, Sendable {
+    public var id: String { name }
     public let name: String
     public let primary: Color
     public let mid:     Color
