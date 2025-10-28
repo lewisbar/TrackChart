@@ -32,7 +32,7 @@ struct SettingsView: View {
             .padding(.bottom)
 
             VStack(alignment: .leading) {
-                Text("Color Palette")
+                Text("Color Palette: \(palette.name)")
 
                 palettePicker
             }
