@@ -97,7 +97,7 @@ struct SettingsView: View {
 
 #Preview {
     @Previewable @State var name: String = "Topic 1"
-    @Previewable @State var palette: Palette = .lavenderField
+    @Previewable @State var palette: Palette = Palette.palette(named: "Lavender Field")
 
     VStack {
         SettingsView(name: $name, palette: $palette)
