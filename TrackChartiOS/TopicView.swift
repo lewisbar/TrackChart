@@ -39,6 +39,11 @@ struct TopicView: View {
         .sheet(isPresented: $isShowingSettings) {
             SettingsView(name: $name, palette: $palette)
         }
+        .onAppear {
+            if name.isEmpty {
+                isShowingSettings = true
+            }
+        }
     }
 
     private var chartList: some View {
