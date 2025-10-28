@@ -20,10 +20,14 @@ struct TopicView: View {
 
     @FocusState private var isTextFieldFocused: Bool
     @Environment(\.dismiss) private var dismiss
+    @ScaledMetric(relativeTo: .title2) private var plusButtonBaseSize: CGFloat = 24
 
     var body: some View {
         ZStack {
             chartList
+                .padding(.bottom)
+                .padding(.bottom, plusButtonBaseSize)
+
             plusButton
         }
         .navigationBarBackButtonHidden(true)
@@ -52,8 +56,6 @@ struct TopicView: View {
             chartCard(named: "Daily Sum", dataProvider: .dailySum)
             chartCard(named: "Daily Average", dataProvider: .dailyAverage)
             chartCard(named: "Weekly Sum", dataProvider: .weeklySum)
-
-            Spacer()
         }
     }
 
