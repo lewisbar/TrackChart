@@ -147,12 +147,16 @@ struct ChartView<Placeholder: View>: View {
     @AxisContentBuilder
     private func xAxisContent() -> some AxisContent {
         if showsAxisLabels {
-            AxisMarks(preset: .aligned, values: .automatic(desiredCount: 4, roundLowerBound: false, roundUpperBound: false)) {
+            AxisMarks(preset: .aligned, values: .automatic(desiredCount: 4, roundLowerBound: false, roundUpperBound: false)) { value in
                 AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [2, 2]))
 
-                AxisValueLabel(collisionResolution: .greedy())
-                    .foregroundStyle(.gray)
-                    .font(.caption)
+                if let date = value.as(Date.self) {
+                    AxisValueLabel(collisionResolution: .greedy()) {
+                        Text(AxisDateFormatter.day.string(from: date))
+                            .foregroundStyle(.gray)
+                            .font(.caption)
+                    }
+                }
             }
         }
     }
@@ -183,6 +187,14 @@ private enum ChartNumberFormatter {
         let formatter = NumberFormatter()
         formatter.minimumFractionDigits = 0
         formatter.maximumFractionDigits = 2
+        return formatter
+    }()
+}
+
+private enum AxisDateFormatter {
+    static let day: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d"
         return formatter
     }()
 }
