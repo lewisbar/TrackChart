@@ -86,17 +86,15 @@ struct TopicView: View {
     private func chevronOnlyBackButton() -> some View {
         Button(action: { dismiss() }) {
             Image(systemName: "chevron.left")
-                .foregroundStyle(.primary)
-                .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .tint(.primary)
     }
 
     private func settingsButton() -> some View {
         Button(action: showSettings) {
             Image(systemName: "gearshape.fill")
-                .foregroundStyle(.primary)
-                .frame(maxWidth: .infinity, alignment: .trailing)
         }
+        .tint(.primary)
     }
 
     private func showSettings() {
