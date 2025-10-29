@@ -58,6 +58,19 @@ struct TrackChartApp: App {
                     randomPalette: { Palette.random.name }
                 )
             )
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    HStack {
+                        Image(systemName: "chart.xyaxis.line")
+                            .font(.title2)
+                            .foregroundStyle(.red)
+                        Text("TrackChart")
+                            .font(.largeTitle)
+                            .fontWeight(.semibold)
+                            .fontDesign(.monospaced)
+                    }
+                }
+            }
             .navigationDestination(for: TopicEntity.self) {
                 SwiftDataTopicView(
                     topic: $0,

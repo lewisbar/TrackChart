@@ -56,7 +56,7 @@ struct SwiftDataTopicListViewModelTests {
     }
 
     @Test func cellModelsFromTopics() throws {
-        try withCleanContext(topicNames: ["0", "1", "2", "3", "4"], palette: "ocean") { context, topics, sut, errors in
+        try withCleanContext(topicNames: ["0", "1", "2", "3", "4"], palette: "Ocean") { context, topics, sut, errors in
             let result = sut.cellModels(from: topics)
 
             let expectedCellModels = topics.map { topic in
@@ -95,7 +95,7 @@ struct SwiftDataTopicListViewModelTests {
     /// Runs a test with a fresh SwiftData persistent context, cleaning up the store before and after.
     private func withCleanContext<T>(
         topicNames: [String],
-        palette: String = "ocean",
+        palette: String = "Ocean",
         showTopic: @escaping (TopicEntity?) -> Void = { _ in },
         testBody: @MainActor (ModelContext, [TopicEntity], SwiftDataTopicListViewModel, [Error]) throws -> T
     ) throws -> T {
@@ -118,7 +118,7 @@ struct SwiftDataTopicListViewModelTests {
             insert: context.insert,
             delete: context.delete,
             showTopic: showTopic,
-            randomPalette: { "ocean" }
+            randomPalette: { "Ocean" }
         )
 
         defer {
@@ -145,7 +145,7 @@ struct SwiftDataTopicListViewModelTests {
                 id: UUID(),
                 name: name,
                 entries: makeEntryEntities(from: Array(-1...Int.random(in: 3...10))),
-                palette: "ocean",
+                palette: "Ocean",
                 sortIndex: index
             )
         }

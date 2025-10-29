@@ -48,28 +48,25 @@ struct TopicView: View {
 
     private var chartList: some View {
         List {
-            ChartView(rawEntries: entries, dataProvider: .raw, palette: palette)
-                .card()
-                .frame(height: 180)
-                .listRowSeparator(.hidden)
-
-            ChartView(rawEntries: entries, dataProvider: .dailySum, palette: palette)
-                .card()
-                .frame(height: 180)
-                .listRowSeparator(.hidden)
-
-            ChartView(rawEntries: entries, dataProvider: .dailyAverage, palette: palette)
-                .card()
-                .frame(height: 180)
-                .listRowSeparator(.hidden)
-
-            ChartView(rawEntries: entries, dataProvider: .weeklySum, palette: palette)
-                .card()
-                .frame(height: 180)
-                .listRowSeparator(.hidden)
+            chartCard(named: "Raw Data", dataProvider: .raw)
+            chartCard(named: "Daily Sum", dataProvider: .dailySum)
+            chartCard(named: "Daily Average", dataProvider: .dailyAverage)
+            chartCard(named: "Weekly Sum", dataProvider: .weeklySum)
 
             Spacer()
         }
+    }
+
+    private func chartCard(named title: String, dataProvider: ChartDataProvider) -> some View {
+        VStack {
+            Text(title)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            ChartView(rawEntries: entries, dataProvider: dataProvider, palette: palette)
+        }
+        .card()
+        .frame(height: 220)
+        .listRowSeparator(.hidden)
     }
 
     private var plusButton: some View {
@@ -87,17 +84,15 @@ struct TopicView: View {
     private func chevronOnlyBackButton() -> some View {
         Button(action: { dismiss() }) {
             Image(systemName: "chevron.left")
-                .foregroundStyle(.primary)
-                .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .tint(.secondary)
     }
 
     private func settingsButton() -> some View {
         Button(action: showSettings) {
             Image(systemName: "gearshape.fill")
-                .foregroundStyle(.primary)
-                .frame(maxWidth: .infinity, alignment: .trailing)
         }
+        .tint(.secondary)
     }
 
     private func showSettings() {
