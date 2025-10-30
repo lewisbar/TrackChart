@@ -10,9 +10,7 @@ import Charts
 import Presentation
 
 struct ChartView<Placeholder: View>: View {
-    private let dataProvider: ChartDataProvider
-    private let rawEntries: [ChartEntry]
-    private var entries: [ProcessedEntry] { dataProvider.processedEntries(from: rawEntries) }
+    private let pages: [ChartPage]
     private let palette: Palette
     private let highlightsExtrema: Bool
     private let showsAxisLabels: Bool
@@ -23,14 +21,12 @@ struct ChartView<Placeholder: View>: View {
 
     init(
         rawEntries: [ChartEntry],
-        dataProvider: ChartDataProvider = .raw,
         palette: Palette,
         highlightsExtrema: Bool = true,
         showsAxisLabels: Bool = true,
         placeholder: @escaping () -> Placeholder = { ChartPlaceholderView() }
     ) {
-        self.rawEntries = rawEntries
-        self.dataProvider = dataProvider
+        self.pages = TimeSpanPager.pages(for: rawEntries)
         self.palette = palette
         self.highlightsExtrema = highlightsExtrema
         self.showsAxisLabels = showsAxisLabels
@@ -38,31 +34,41 @@ struct ChartView<Placeholder: View>: View {
     }
 
     var body: some View {
-        if !entries.isEmpty {
-            Chart(entries, content: chartContent)
-                .chartXScale(domain: dateRange)
-                .chartXAxis(content: xAxisContent)
-                .chartYAxis(content: yAxisContent)
-        } else {
+        if pages.isEmpty {
             placeholder()
+        } else {
+            TabView {
+                ForEach(pages) { page in
+                    VStack {
+                        Text(page.span.title)
+                            .font(.caption).bold()
+                            .padding(.bottom, 4)
+
+                        chart(for: page)
+                    }
+                    .padding()
+                }
+            }
+            .tabViewStyle(.page)
+            .indexViewStyle(.page(backgroundDisplayMode: .always))
         }
     }
 
-    private var dateRange: ClosedRange<Date> {
-        let dates = entries.map(\.timestamp)
-        guard let minDate = dates.min(), let maxDate = dates.max() else {
-            // Fallback range if entries are empty (shouldn't happen since we check !entries.isEmpty)
-            let now = Date()
-            return now...now
+    private func chart(for page: ChartPage) -> some View {
+        Chart(page.entries) { entry in
+            chartContent(for: entry, on: page)
         }
-        return minDate...maxDate
+        .chartXScale(domain: page.dateRange)
+        .chartXAxis(content: xAxisContent)
+        .chartYAxis(content: yAxisContent)
+//        .frame(height: 160)
     }
 
     @ChartContentBuilder
-    private func chartContent(for entry: ProcessedEntry) -> some ChartContent {
+    private func chartContent(for entry: ProcessedEntry, on page: ChartPage) -> some ChartContent {
         areaMark(for: entry)
         lineMark(for: entry)
-        if shouldShowPointMark(for: entry) { pointMark(for: entry) }
+        if shouldShowPointMark(for: entry, on: page) { pointMark(for: entry, on: page) }
     }
 
     private func areaMark(for entry: ProcessedEntry) -> some ChartContent {
@@ -91,19 +97,15 @@ struct ChartView<Placeholder: View>: View {
             .interpolationMethod(.catmullRom)
     }
 
-    private func shouldShowPointMark(for entry: ProcessedEntry) -> Bool {
-        entries.count == 1 || (highlightsExtrema && isExtremum(entry))
+    private func shouldShowPointMark(for entry: ProcessedEntry, on page: ChartPage) -> Bool {
+        page.entries.count == 1 || (highlightsExtrema && page.isExtremum(entry))
     }
 
-    private func isExtremum(_ entry: ProcessedEntry) -> Bool {
-        isMaxPositiveValue(entry.value) || isMinNegativeValue(entry.value)
-    }
-
-    private func pointMark(for entry: ProcessedEntry) -> some ChartContent {
+    private func pointMark(for entry: ProcessedEntry, on page: ChartPage) -> some ChartContent {
         PointMark(x: .value(xLabel, entry.timestamp), y: .value(yLabel, entry.value))
             .symbol(symbol: pointSymbol)
-            .annotation(position: .top, spacing: 2) { maxPositiveValueAnnotation(for: entry) }
-            .annotation(position: .bottom, spacing: 2) { minNegativeValueAnnotation(for: entry) }
+            .annotation(position: .top, spacing: 2) { maxPositiveValueAnnotation(for: entry, on: page) }
+            .annotation(position: .bottom, spacing: 2) { minNegativeValueAnnotation(for: entry, on: page) }
     }
 
     private func pointSymbol() -> some View {
@@ -115,25 +117,17 @@ struct ChartView<Placeholder: View>: View {
     }
 
     @ViewBuilder
-    private func maxPositiveValueAnnotation(for entry: ProcessedEntry) -> some View {
-        if highlightsExtrema, isMaxPositiveValue(entry.value) {
+    private func maxPositiveValueAnnotation(for entry: ProcessedEntry, on page: ChartPage) -> some View {
+        if highlightsExtrema, page.isMaxPositiveEntry(entry) {
             annotation(for: entry.value)
         }
     }
 
     @ViewBuilder
-    private func minNegativeValueAnnotation(for entry: ProcessedEntry) -> some View {
-        if highlightsExtrema, isMinNegativeValue(entry.value) {
+    private func minNegativeValueAnnotation(for entry: ProcessedEntry, on page: ChartPage) -> some View {
+        if highlightsExtrema, page.isMinNegativeEntry(entry) {
             annotation(for: entry.value)
         }
-    }
-
-    private func isMaxPositiveValue(_ value: Double) -> Bool {
-        value > 0 && value == entries.map(\.value).max()
-    }
-
-    private func isMinNegativeValue(_ value: Double) -> Bool {
-        value < 0 && value == entries.map(\.value).min()
     }
 
     private func annotation(for value: Double) -> some View {

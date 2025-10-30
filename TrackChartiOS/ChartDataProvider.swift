@@ -20,125 +20,22 @@ struct ChartDataProvider: Sendable {
     }
 
     // Static factories for common providers
-    static let raw = ChartDataProvider { rawEntries in
-        rawEntries.map { ProcessedEntry(value: $0.value, timestamp: $0.timestamp) }
-    }
+    static let raw = ChartDataProvider { $0.map { ProcessedEntry(value: $0.value, timestamp: $0.timestamp) } }
+    static let dailySum = aggregating(.day, .sum)
+    static let dailyAverage = aggregating(.day, .average)
+    static let weeklySum = aggregating(.weekOfYear, .sum)
+    static let weeklyAverage = aggregating(.weekOfYear, .average)
+    static let monthlySum = aggregating(.month, .sum)
+    static let monthlyAverage = aggregating(.month, .average)
 
-    static let automatic = ChartDataProvider { rawEntries in
-        let timestamps = rawEntries.map(\.timestamp)
-        guard let earliest = timestamps.min(), let latest = timestamps.max() else {
-            return rawEntries.map { ProcessedEntry(value: $0.value, timestamp: $0.timestamp) }
-        }
-
-        let calendar = Calendar.current
-        let components = calendar.dateComponents([.day, .month, .year], from: earliest, to: latest)
-        let totalDays = components.day ?? 0
-        let totalMonths = components.month ?? 0
-        let totalYears = components.year ?? 0
-
-        if totalDays < 3 {
-            return rawEntries.map { ProcessedEntry(value: $0.value, timestamp: $0.timestamp) }
-        } else if totalMonths < 1 {
-            return aggregatingProvider(timeUnit: .day, aggregator: .sum, calendar: calendar)(rawEntries)
-        } else if totalYears < 1 {
-            return aggregatingProvider(timeUnit: .weekOfYear, aggregator: .sum, calendar: calendar)(rawEntries)
-        } else {
-            return aggregatingProvider(timeUnit: .month, aggregator: .sum, calendar: calendar)(rawEntries)
-        }
-    }
-
-    static let minutelySum = ChartDataProvider { rawEntries in
-        aggregatingProvider(
-            timeUnit: .minute,
-            aggregator: .sum,
-            calendar: .current
-        )(rawEntries)
-    }
-
-    static let hourlySum = ChartDataProvider { rawEntries in
-        aggregatingProvider(
-            timeUnit: .hour,
-            aggregator: .sum,
-            calendar: .current
-        )(rawEntries)
-    }
-
-    static let dailySum = ChartDataProvider { rawEntries in
-        aggregatingProvider(
-            timeUnit: .day,
-            aggregator: .sum,
-            calendar: .current
-        )(rawEntries)
-    }
-
-    static let weeklySum = ChartDataProvider { rawEntries in
-        aggregatingProvider(
-            timeUnit: .weekOfYear,
-            aggregator: .sum,
-            calendar: .current
-        )(rawEntries)
-    }
-
-    static let monthlySum = ChartDataProvider { rawEntries in
-        aggregatingProvider(
-            timeUnit: .month,
-            aggregator: .sum,
-            calendar: .current
-        )(rawEntries)
-    }
-
-    static let dailyAverage = ChartDataProvider { rawEntries in
-        aggregatingProvider(
-            timeUnit: .day,
-            aggregator: .average,
-            calendar: .current
-        )(rawEntries)
-    }
-
-    static let weeklyAverage = ChartDataProvider { rawEntries in
-        aggregatingProvider(
-            timeUnit: .weekOfYear,
-            aggregator: .average,
-            calendar: .current
-        )(rawEntries)
-    }
-
-    static let monthlyAverage = ChartDataProvider { rawEntries in
-        aggregatingProvider(
-            timeUnit: .month,
-            aggregator: .average,
-            calendar: .current
-        )(rawEntries)
-    }
-
-    static func custom(
-        timeUnit: Calendar.Component,
-        aggregator: Aggregator,
-        calendar: Calendar = .current
-    ) -> ChartDataProvider {
-        ChartDataProvider { rawEntries in
-            aggregatingProvider(
-                timeUnit: timeUnit,
-                aggregator: aggregator,
-                calendar: calendar
-            )(rawEntries)
-        }
-    }
-
-    // Reusable aggregation logic
-    private static func aggregatingProvider(
-        timeUnit: Calendar.Component,
-        aggregator: Aggregator,
-        calendar: Calendar
-    ) -> ([ChartEntry]) -> [ProcessedEntry] {
-        return { rawEntries in
-            let grouped = Dictionary(grouping: rawEntries) { entry in
-                calendar.startOfUnit(timeUnit, for: entry.timestamp)
+    private static func aggregating(_ unit: Calendar.Component, _ aggregator: Aggregator) -> ChartDataProvider {
+        ChartDataProvider { entries in
+            let grouped = Dictionary(grouping: entries) {
+                Calendar.current.startOfUnit(unit, for: $0.timestamp)
             }
             return grouped.map { date, entries in
-                let value = aggregator.aggregate(entries.map(\.value))
-                return ProcessedEntry(value: value, timestamp: date)
-            }.sorted(by: { $0.timestamp < $1.timestamp })
+                ProcessedEntry(value: aggregator.aggregate(entries.map(\.value)), timestamp: date)
+            }.sorted { $0.timestamp < $1.timestamp }
         }
     }
 }

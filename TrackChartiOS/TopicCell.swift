@@ -39,7 +39,6 @@ struct TopicCell: View {
 
                 ChartView(
                     rawEntries: topic.entries,
-                    dataProvider: .automatic,
                     palette: topic.palette,
                     highlightsExtrema: false,
                     showsAxisLabels: false,

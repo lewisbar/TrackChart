@@ -48,21 +48,21 @@ struct TopicView: View {
 
     private var chartList: some View {
         List {
-            chartCard(named: "Raw Data", dataProvider: .raw)
-            chartCard(named: "Daily Sum", dataProvider: .dailySum)
-            chartCard(named: "Daily Average", dataProvider: .dailyAverage)
-            chartCard(named: "Weekly Sum", dataProvider: .weeklySum)
+            chartCard(named: "All Time")
+//            chartCard(named: "Daily Sum", dataProvider: .dailySum)
+//            chartCard(named: "Daily Average", dataProvider: .dailyAverage)
+//            chartCard(named: "Weekly Sum", dataProvider: .weeklySum)
 
             Spacer()
         }
     }
 
-    private func chartCard(named title: String, dataProvider: ChartDataProvider) -> some View {
+    private func chartCard(named title: String) -> some View {
         VStack {
             Text(title)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            ChartView(rawEntries: entries, dataProvider: dataProvider, palette: palette)
+            ChartView(rawEntries: entries, palette: palette)
         }
         .card()
         .frame(height: 220)
