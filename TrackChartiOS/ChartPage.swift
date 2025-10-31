@@ -7,26 +7,30 @@
 
 import Foundation
 
-struct ChartPage: Identifiable {
+struct ChartPage: Identifiable, Equatable {
     let id = UUID()
-    let entries: [ProcessedEntry]   // ≤ ~60 points
+    let entries: [ProcessedEntry]
     let span: TimeSpan
+    let title: String
+    let dateRange: ClosedRange<Date>
 
-    var dateRange: ClosedRange<Date> {
+    init(entries: [ProcessedEntry], span: TimeSpan, title: String) {
+        self.entries = entries
+        self.span = span
+        self.title = title
         let dates = entries.map(\.timestamp)
-        guard let min = dates.min(), let max = dates.max() else { return Date()...Date() }
-        return min...max
+        self.dateRange = (dates.min() ?? Date()) ... (dates.max() ?? Date())
     }
 
-    func isExtremum(_ entry: ProcessedEntry) -> Bool {
-        isMaxPositiveEntry(entry) || isMinNegativeEntry(entry)
-    }
-
-    func isMaxPositiveEntry(_ entry: ProcessedEntry) -> Bool {
-        entry.value > 0 && entry.value == entries.map(\.value).max()
-    }
-
-    func isMinNegativeEntry(_ entry: ProcessedEntry) -> Bool {
-        entry.value < 0 && entry.value == entries.map(\.value).min()
-    }
+//    func isExtremum(_ entry: ProcessedEntry) -> Bool {
+//        isMaxPositiveEntry(entry) || isMinNegativeEntry(entry)
+//    }
+//
+//    func isMaxPositiveEntry(_ entry: ProcessedEntry) -> Bool {
+//        entry.value > 0 && entry.value == entries.map(\.value).max()
+//    }
+//
+//    func isMinNegativeEntry(_ entry: ProcessedEntry) -> Bool {
+//        entry.value < 0 && entry.value == entries.map(\.value).min()
+//    }
 }

@@ -48,26 +48,38 @@ struct TopicView: View {
 
     private var chartList: some View {
         List {
-            chartCard(named: "All Time")
-//            chartCard(named: "Daily Sum", dataProvider: .dailySum)
-//            chartCard(named: "Daily Average", dataProvider: .dailyAverage)
-//            chartCard(named: "Weekly Sum", dataProvider: .weeklySum)
-
+            ChartView(rawEntries: entries, palette: palette, mode: .preview)
+            pagedCard(span: .week,       default: .dailySum)
+            pagedCard(span: .month,      default: .dailySum)
+            pagedCard(span: .sixMonths,  default: .weeklySum)
+            pagedCard(span: .oneYear,    default: .monthlySum)
             Spacer()
         }
+        .listStyle(.plain)
     }
 
-    private func chartCard(named title: String) -> some View {
-        VStack {
-            Text(title)
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-            ChartView(rawEntries: entries, palette: palette)
-        }
+    private func pagedCard(span: TimeSpan, default agg: ChartDataProvider) -> some View {
+        PagedChartView(
+            rawEntries: entries,
+            span: span,
+            defaultAggregator: agg,
+            palette: palette
+        )
         .card()
-        .frame(height: 220)
-        .listRowSeparator(.hidden)
+        .frame(height: 240)
     }
+
+//    private func chartCard(named title: String) -> some View {
+//        VStack {
+//            Text(title)
+//                .frame(maxWidth: .infinity, alignment: .leading)
+//
+//            ChartView(rawEntries: entries, palette: palette)
+//        }
+//        .card()
+//        .frame(height: 220)
+//        .listRowSeparator(.hidden)
+//    }
 
     private var plusButton: some View {
         VStack {

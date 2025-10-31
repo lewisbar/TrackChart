@@ -37,14 +37,17 @@ struct TopicCell: View {
                 }
                 .padding([.horizontal, .bottom])
 
-                ChartView(
-                    rawEntries: topic.entries,
-                    palette: topic.palette,
-                    highlightsExtrema: false,
-                    showsAxisLabels: false,
-                    placeholder: { ChartPlaceholderView().font(.footnote).padding(.bottom, 30) }
-                )
-                .padding(.horizontal)
+                PreviewChartView(rawEntries: topic.entries, palette: topic.palette)
+                    .padding(.top, 4)
+
+//                ChartView(
+//                    rawEntries: topic.entries,
+//                    palette: topic.palette,
+//                    highlightsExtrema: false,
+//                    showsAxisLabels: false,
+//                    placeholder: { ChartPlaceholderView().font(.footnote).padding(.bottom, 30) }
+//                )
+//                .padding(.horizontal)
             }
             Image(systemName: "chevron.right")
                 .tint(.secondary)
