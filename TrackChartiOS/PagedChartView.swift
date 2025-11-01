@@ -78,9 +78,12 @@ struct PagedChartView: View {
             Chart(page.entries) { entry in
                 AreaMark(x: .value("Date", entry.timestamp), y: .value("Value", entry.value))
                     .foregroundStyle(areaGradient)
+                    .interpolationMethod(.catmullRom)
                 LineMark(x: .value("Date", entry.timestamp), y: .value("Value", entry.value))
                     .foregroundStyle(palette.primary)
-                    .lineStyle(.init(lineWidth: 2))
+                    .lineStyle(StrokeStyle(lineWidth: 2))
+                    .shadow(color: palette.shadow, radius: 2)
+                    .interpolationMethod(.catmullRom)
             }
             .chartXScale(domain: page.dateRange)
             .chartXAxis(content: xAxisContent)

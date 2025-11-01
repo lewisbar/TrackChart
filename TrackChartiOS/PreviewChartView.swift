@@ -18,9 +18,14 @@ struct PreviewChartView: View {
             ChartPlaceholderView()
         } else {
             Chart(entries) { entry in
+                AreaMark(x: .value("Date", entry.timestamp), y: .value("Value", entry.value))
+                    .foregroundStyle(areaGradient)
+                    .interpolationMethod(.catmullRom)
                 LineMark(x: .value("Date", entry.timestamp), y: .value("Value", entry.value))
                     .foregroundStyle(palette.primary)
-                    .lineStyle(.init(lineWidth: 1.5))
+                    .lineStyle(StrokeStyle(lineWidth: 1.5))
+                    .shadow(color: palette.shadow, radius: 2)
+                    .interpolationMethod(.catmullRom)
             }
             .chartXScale(domain: dateRange)
             .chartXAxis { AxisMarks(values: .automatic(desiredCount: 3)) { _ in AxisValueLabel() } }
@@ -31,6 +36,14 @@ struct PreviewChartView: View {
     private var dateRange: ClosedRange<Date> {
         let dates = entries.map(\.timestamp)
         return (dates.min() ?? Date()) ... (dates.max() ?? Date())
+    }
+
+    private var areaGradient: LinearGradient {
+        LinearGradient(stops: [
+            .init(color: palette.top, location: 0),
+            .init(color: palette.mid, location: 0.5),
+            .init(color: palette.bottom, location: 1)
+        ], startPoint: .top, endPoint: .bottom)
     }
 }
 
