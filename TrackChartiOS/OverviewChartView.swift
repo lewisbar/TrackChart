@@ -27,7 +27,7 @@ struct OverviewChartView: View {
                     .shadow(color: palette.shadow, radius: 2)
                     .interpolationMethod(.catmullRom)
             }
-            .chartXAxis { AxisMarks(values: .automatic(desiredCount: 3)) { _ in AxisValueLabel() } }
+            .chartXAxis { AxisMarks(preset: .aligned, values: .automatic(desiredCount: 3)) { _ in AxisValueLabel(collisionResolution: .greedy()) } }
             .frame(height: 80)
         }
     }
