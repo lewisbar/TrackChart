@@ -55,7 +55,6 @@ struct TopicView: View {
             pagedCard(span: .oneYear,    default: .monthlySum)
             Spacer()
         }
-        .listStyle(.plain)
     }
 
     private func pagedCard(span: TimeSpan, default agg: ChartDataProvider) -> some View {
@@ -67,6 +66,7 @@ struct TopicView: View {
         )
         .card()
         .frame(height: 240)
+        .listRowSeparator(.hidden)
     }
 
 //    private func chartCard(named title: String) -> some View {
