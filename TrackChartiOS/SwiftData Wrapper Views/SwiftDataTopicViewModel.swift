@@ -6,7 +6,6 @@
 //
 
 import SwiftData
-import Presentation
 import Persistence
 
 @MainActor

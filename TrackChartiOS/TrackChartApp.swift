@@ -8,7 +8,6 @@
 import SwiftUI
 import SwiftData
 import Persistence
-import Presentation
 
 @main
 struct TrackChartApp: App {

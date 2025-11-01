@@ -7,7 +7,6 @@
 
 import SwiftUI
 import Persistence
-import Presentation
 
 /// Wrapper to decouple the actual View from SwiftData
 struct SwiftDataTopicView: View {

@@ -7,7 +7,6 @@
 
 import SwiftUI
 import Charts
-import Presentation
 
 struct PagedChartView: View {
     @State private var pages: [ChartPage]

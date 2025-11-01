@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Presentation
 
 struct ChartDataProvider: Sendable {
     private let process: @Sendable ([ChartEntry]) -> [ProcessedEntry]

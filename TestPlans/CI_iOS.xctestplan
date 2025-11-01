@@ -18,13 +18,6 @@
         "identifier" : "30438ACF2E7990AF00F3C852",
         "name" : "TrackChartiOSTests"
       }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:TrackChart.xcodeproj",
-        "identifier" : "3049D7D62E957FB000BEECA3",
-        "name" : "PresentationTests"
-      }
     }
   ],
   "version" : 1

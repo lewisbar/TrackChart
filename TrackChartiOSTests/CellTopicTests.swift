@@ -6,7 +6,8 @@
 //
 
 import Testing
-import Presentation
+import Foundation
+import TrackChartiOS
 
 struct CellTopicTests {
     @Test func info_withMultipleEntries_usesPlural() {

@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Presentation
 
 struct TopicView: View {
     @Binding var name: String
