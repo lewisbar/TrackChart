@@ -35,10 +35,11 @@ struct TopicCell: View {
                         .tint(.secondary)
                         .font(.caption)
                 }
-                .padding([.horizontal, .bottom])
+                .padding(.horizontal)
 
                 PreviewChartView(rawEntries: topic.entries, palette: topic.palette)
-                    .padding(.top, 4)
+                    .padding(.horizontal)
+                    .padding(.bottom, 4)
 
 //                ChartView(
 //                    rawEntries: topic.entries,
