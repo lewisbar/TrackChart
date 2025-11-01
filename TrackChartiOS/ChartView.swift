@@ -12,6 +12,7 @@ import Presentation
 enum ChartMode {
     case paged(TimeSpan, defaultAggregator: ChartDataProvider)
     case preview
+    case overview
 }
 
 struct ChartView: View {
@@ -25,6 +26,8 @@ struct ChartView: View {
             PagedChartView(rawEntries: rawEntries, span: span, defaultAggregator: agg, palette: palette)
         case .preview:
             PreviewChartView(rawEntries: rawEntries, palette: palette)
+        case .overview:
+            OverviewChartView(rawEntries: rawEntries, palette: palette)
         }
     }
 }

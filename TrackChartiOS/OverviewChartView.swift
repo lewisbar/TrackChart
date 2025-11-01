@@ -1,15 +1,15 @@
 //
-//  PreviewChartView.swift
+//  OverviewChartView.swift
 //  TrackChartiOS
 //
-//  Created by LennartWisbar on 31.10.25.
+//  Created by Lennart Wisbar on 01.11.25.
 //
 
 import SwiftUI
 import Charts
 import Presentation
 
-struct PreviewChartView: View {
+struct OverviewChartView: View {
     let entries: [ProcessedEntry]
     let palette: Palette
 
@@ -27,9 +27,7 @@ struct PreviewChartView: View {
                     .shadow(color: palette.shadow, radius: 2)
                     .interpolationMethod(.catmullRom)
             }
-            .chartXScale(domain: dateRange)
-            .chartXAxis(.hidden)
-            .chartYAxis(.hidden)
+            .chartXAxis { AxisMarks(values: .automatic(desiredCount: 3)) { _ in AxisValueLabel() } }
             .frame(height: 80)
         }
     }
@@ -49,7 +47,7 @@ struct PreviewChartView: View {
 }
 
 // Auto-aggregation
-extension PreviewChartView {
+extension OverviewChartView {
     init(rawEntries: [ChartEntry], palette: Palette) {
         let provider = ChartDataProvider.automaticPreview
         let processed = provider.processedEntries(from: rawEntries)
