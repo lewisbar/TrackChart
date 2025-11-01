@@ -120,59 +120,31 @@ struct PagedChartView: View {
         ], startPoint: .top, endPoint: .bottom)
     }
 
-    private func xAxisContent() -> some AxisContent {
-        AxisMarks(values: .stride(by: .day)) { _ in
-            AxisValueLabel(format: .dateTime.month(.abbreviated).day())
-        }
-    }
-
-//    @AxisContentBuilder
-//    private func xAxisContent() -> some AxisContent {
-////        if showsAxisLabels {
-//            AxisMarks(
-//                // Align marks with the data points that belong to that day
-//                preset: .aligned,
-//                // One mark per day, starting at midnight
-//                values: .stride(by: .day)
-//            ) { mark in
-//                AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [2, 2]))
-//
-//                // `mark.as(Date.self)` is always the *start* of the day
-//                if let date = mark.as(Date.self) {
-//                    AxisValueLabel(
-//                        // Greedy = hide overlapping labels when the view is too narrow
-//                        collisionResolution: .greedy()
-//                    ) {
-//                        Text(date, format: .dateTime
-//                            .month(.abbreviated)
-//                            .day()
-//                        )
-//                        .font(.caption2)
-//                        .foregroundStyle(.gray)
-//                        .padding(.top, 4)
-//                    }
-//                }
-////            }
-//        }
-//    }
-
     @AxisContentBuilder
-    private func yAxisContent() -> some AxisContent {
-//        if showsAxisLabels {
-            AxisMarks(values: .automatic(desiredCount: 2, roundLowerBound: false, roundUpperBound: false)) { value in
+    private func xAxisContent() -> some AxisContent {
+            AxisMarks(
+                // Align marks with the data points that belong to that day
+                preset: .aligned,
+                // One mark per day, starting at midnight
+                values: .stride(by: .day)
+            ) { mark in
                 AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [2, 2]))
 
-                AxisTick(stroke: StrokeStyle(lineWidth: 0.5))
-
-                AxisValueLabel()
-                    .foregroundStyle(.gray)
-                    .font(.caption)
-
-                if value.as(Int.self) == 0 {
-                    AxisGridLine(stroke: StrokeStyle(lineWidth: 1, dash: []))
-                        .foregroundStyle(.black.opacity(0.5)) // Highlight y=0
+                // `mark.as(Date.self)` is always the *start* of the day
+                if let date = mark.as(Date.self) {
+                    AxisValueLabel(
+                        // Greedy = hide overlapping labels when the view is too narrow
+                        collisionResolution: .greedy()
+                    ) {
+                        Text(date, format: .dateTime
+                            .month(.abbreviated)
+                            .day()
+                        )
+                        .font(.caption2)
+                        .foregroundStyle(.gray)
+                        .padding(.top, 4)
+                    }
                 }
-            }
-//        }
+        }
     }
 }
