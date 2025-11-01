@@ -27,7 +27,6 @@ struct OverviewChartView: View {
                     .shadow(color: palette.shadow, radius: 2)
                     .interpolationMethod(.catmullRom)
             }
-            .frame(height: 80)
             .chartXAxis(content: xAxisContent)
         }
     }

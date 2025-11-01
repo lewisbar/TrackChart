@@ -30,7 +30,6 @@ struct PreviewChartView: View {
             .chartXScale(domain: dateRange)
             .chartXAxis(.hidden)
             .chartYAxis(.hidden)
-            .frame(height: 80)
         }
     }
 
