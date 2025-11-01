@@ -65,7 +65,7 @@ struct TopicView: View {
             palette: palette
         )
         .card()
-        .frame(height: 240)
+        .frame(height: 260)
         .listRowSeparator(.hidden)
     }
 

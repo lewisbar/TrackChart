@@ -42,22 +42,11 @@ struct PagedChartView: View {
             TabView(selection: $selectedPage) {
                 ForEach(pages) { page in
                     chart(for: page)
-                        .frame(height: 180)
+                        .padding(.bottom, 44)
                         .tag(page.id)
                 }
             }
             .tabViewStyle(.page)
-            .indexViewStyle(.page(backgroundDisplayMode: .always))
-            .overlay(alignment: .topTrailing) {
-                Menu {
-                    aggregatorButtons(for: span)
-                } label: {
-                    Image(systemName: "ellipsis")
-                        .font(.title3)
-                        .padding(8)
-                }
-                .padding()
-            }
             .onAppear {
                 selectedPage = pages.last?.id ?? UUID()
             }
@@ -71,9 +60,19 @@ struct PagedChartView: View {
     @ViewBuilder
     private func chart(for page: ChartPage) -> some View {
         VStack {
-            Text(page.title)
-                .font(.caption).bold()
-                .padding(.bottom, 4)
+            ZStack {
+                Text(page.title)
+                    .font(.caption).bold()
+
+                Menu {
+                    aggregatorButtons(for: span)
+                } label: {
+                    Image(systemName: "ellipsis")
+                        .font(.title3)
+                }
+                .frame(maxWidth: .infinity, alignment: .trailing)
+            }
+            .padding(.bottom, 8)
 
             Chart(page.entries) { entry in
                 AreaMark(x: .value("Date", entry.timestamp), y: .value("Value", entry.value))
