@@ -27,8 +27,8 @@ struct OverviewChartView: View {
                     .shadow(color: palette.shadow, radius: 2)
                     .interpolationMethod(.catmullRom)
             }
-            .chartXAxis { AxisMarks(preset: .aligned, values: .automatic(desiredCount: 3)) { _ in AxisValueLabel(collisionResolution: .greedy()) } }
             .frame(height: 80)
+            .chartXAxis(content: xAxisContent)
         }
     }
 
@@ -43,6 +43,13 @@ struct OverviewChartView: View {
             .init(color: palette.mid, location: 0.5),
             .init(color: palette.bottom, location: 1)
         ], startPoint: .top, endPoint: .bottom)
+    }
+
+    @AxisContentBuilder
+    private func xAxisContent() -> some AxisContent {
+        AxisMarks(preset: .aligned, values: .automatic(desiredCount: 3)) { _ in
+            AxisValueLabel(collisionResolution: .greedy())
+        }
     }
 }
 
