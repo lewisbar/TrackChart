@@ -13,6 +13,17 @@ struct SettingsView: View {
     @FocusState private var isTextFieldFocused: Bool
     @Environment(\.dismiss) var dismiss
 
+    // Local state to delay back propagation of changes to prevent blocking of the UI
+    @State private var localName: String
+    @State private var localPalette: Palette
+
+    init(name: Binding<String>, palette: Binding<Palette>) {
+        self._name = name
+        self._palette = palette
+        self._localName = State(initialValue: name.wrappedValue)
+        self._localPalette = State(initialValue: palette.wrappedValue)
+    }
+
     var body: some View {
         VStack(alignment: .leading) {
             title
@@ -26,9 +37,17 @@ struct SettingsView: View {
             dismissButton
         }
         .onAppear {
-            if name.isEmpty {
+            if localName.isEmpty {
                 isTextFieldFocused = true
             }
+        }
+        .onDisappear {
+            guard palette != localPalette else { return }
+            palette = localPalette
+        }
+        .onDisappear {
+            guard name != localName else { return }
+            name = localName
         }
     }
 
@@ -45,7 +64,7 @@ struct SettingsView: View {
         VStack(alignment: .leading) {
             Text("Name")
 
-            TextField("Name", text: $name)
+            TextField("Name", text: $localName)
                 .textFieldStyle(.roundedBorder)
                 .focused($isTextFieldFocused)
         }
@@ -57,7 +76,7 @@ struct SettingsView: View {
             HStack {
                 Text("Color Palette:")
                 Spacer()
-                Text(palette.name)
+                Text(localPalette.name)
                     .foregroundStyle(.secondary)
             }
 
@@ -76,21 +95,28 @@ struct SettingsView: View {
             }
             .scrollIndicators(.hidden)
             .onAppear {
+                localPalette = palette
+
                 withAnimation {
-                    proxy.scrollTo(palette, anchor: .center)
+                    proxy.scrollTo(localPalette, anchor: .center)
                 }
             }
-            .onChange(of: palette) { _, newPalette in
+            .onChange(of: localPalette) { _, newPalette in
                 withAnimation {
                     proxy.scrollTo(newPalette, anchor: .center)
                 }
+            }
+            .onChange(of: palette) { oldValue, newValue in
+                guard newValue != oldValue else { return }
+                localPalette = newValue
             }
         }
     }
 
     private func paletteButton(for availablePalette: Palette, proxy: ScrollViewProxy) -> some View {
         Button {
-            palette = availablePalette
+            localPalette = availablePalette
+
             withAnimation {
                 proxy.scrollTo(availablePalette, anchor: .center)
             }
@@ -99,7 +125,7 @@ struct SettingsView: View {
                 .fill(availablePalette.radialGradient())
                 .frame(width: 24, height: 24)
                 .overlay {
-                    if palette == availablePalette {
+                    if localPalette == availablePalette {
                         Circle()
                             .stroke(Color.primary, lineWidth: 2)
                     }
