@@ -8,9 +8,11 @@
 import Foundation
 
 struct ChartDataProvider: Sendable {
+    let name: String
     private let process: @Sendable ([ChartEntry]) -> [ProcessedEntry]
 
-    private init(process: @escaping @Sendable ([ChartEntry]) -> [ProcessedEntry]) {
+    private init(name: String, process: @escaping @Sendable ([ChartEntry]) -> [ProcessedEntry]) {
+        self.name = name
         self.process = process
     }
 
@@ -18,17 +20,16 @@ struct ChartDataProvider: Sendable {
         process(rawEntries)
     }
 
-    // Static factories for common providers
-    static let raw = ChartDataProvider { $0.map { ProcessedEntry(value: $0.value, timestamp: $0.timestamp) } }
-    static let dailySum = aggregating(.day, .sum)
-    static let dailyAverage = aggregating(.day, .average)
-    static let weeklySum = aggregating(.weekOfYear, .sum)
-    static let weeklyAverage = aggregating(.weekOfYear, .average)
-    static let monthlySum = aggregating(.month, .sum)
-    static let monthlyAverage = aggregating(.month, .average)
+    static let raw = ChartDataProvider(name: "Raw Data") { $0.map { ProcessedEntry(value: $0.value, timestamp: $0.timestamp) } }
+    static let dailySum = aggregating(.day, .sum, name: "Daily Sum")
+    static let dailyAverage = aggregating(.day, .average, name: "Daily Average")
+    static let weeklySum = aggregating(.weekOfYear, .sum, name: "Weekly Sum")
+    static let weeklyAverage = aggregating(.weekOfYear, .average, name: "Weekly Average")
+    static let monthlySum = aggregating(.month, .sum, name: "Monthly Sum")
+    static let monthlyAverage = aggregating(.month, .average, name: "Monthly Average")
 
-    private static func aggregating(_ unit: Calendar.Component, _ aggregator: Aggregator) -> ChartDataProvider {
-        ChartDataProvider { entries in
+    private static func aggregating(_ unit: Calendar.Component, _ aggregator: Aggregator, name: String) -> ChartDataProvider {
+        ChartDataProvider(name: name) { entries in
             let grouped = Dictionary(grouping: entries) {
                 Calendar.current.startOfUnit(unit, for: $0.timestamp)
             }
@@ -36,6 +37,16 @@ struct ChartDataProvider: Sendable {
                 ProcessedEntry(value: aggregator.aggregate(entries.map(\.value)), timestamp: date)
             }.sorted { $0.timestamp < $1.timestamp }
         }
+    }
+}
+
+extension ChartDataProvider: Hashable {
+    static func == (lhs: ChartDataProvider, rhs: ChartDataProvider) -> Bool {
+        lhs.name == rhs.name
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
     }
 }
 
@@ -71,7 +82,7 @@ private extension Calendar {
 extension ChartDataProvider {
     /// Used only for **preview charts** (TopicCell).
     /// Returns ≤ 60 points, automatically aggregated.
-    static let automaticPreview = ChartDataProvider { raw in
+    static let automaticPreview = ChartDataProvider(name: "Automatic Preview") { raw in
         guard !raw.isEmpty else { return [] }
 
         let sorted = raw.sorted { $0.timestamp < $1.timestamp }

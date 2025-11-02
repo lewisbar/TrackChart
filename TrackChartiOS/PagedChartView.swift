@@ -52,6 +52,9 @@ struct PagedChartView: View {
             .onChange(of: pages) { _, newPages in
                 selectedPage = newPages.last?.id ?? UUID()
             }
+            .onChange(of: selectedAggregator) { _, newAggregator in
+                pages = ChartPageProvider.pages(for: rawEntries, span: span, aggregator: newAggregator)
+            }
         }
     }
 
@@ -64,7 +67,11 @@ struct PagedChartView: View {
                     .font(.caption).bold()
 
                 Menu {
-                    aggregatorButtons(for: span)
+                    Picker("Select an aggregator type", selection: $selectedAggregator) {
+                        ForEach(span.availableDataProviders, id: \.self) {
+                            Text($0.name)
+                        }
+                    }
                 } label: {
                     Image(systemName: "ellipsis")
                         .font(.title3)
@@ -86,27 +93,6 @@ struct PagedChartView: View {
             .chartXScale(domain: page.dateRange)
             .chartXAxis(content: xAxisContent)
         }
-    }
-
-    // MARK: – Aggregator Menu
-    @ViewBuilder
-    private func aggregatorButtons(for span: TimeSpan) -> some View {
-        switch span {
-        case .week, .month:
-            Button("Daily Sum") { updateAggregator(.dailySum) }
-            Button("Daily Average") { updateAggregator(.dailyAverage) }
-        case .sixMonths:
-            Button("Weekly Sum") { updateAggregator(.weeklySum) }
-            Button("Weekly Average") { updateAggregator(.weeklyAverage) }
-        case .oneYear:
-            Button("Monthly Sum") { updateAggregator(.monthlySum) }
-            Button("Monthly Average") { updateAggregator(.monthlyAverage) }
-        }
-    }
-
-    private func updateAggregator(_ agg: ChartDataProvider) {
-        selectedAggregator = agg
-        pages = ChartPageProvider.pages(for: rawEntries, span: span, aggregator: agg)
     }
 
     // MARK: – Styling

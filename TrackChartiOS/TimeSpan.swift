@@ -39,4 +39,12 @@ public enum TimeSpan: CaseIterable {
         case .oneYear:    return 1
         }
     }
+
+    var availableDataProviders: [ChartDataProvider] {
+        switch self {
+        case .week, .month: [.dailySum, .dailyAverage]
+        case .sixMonths: [.weeklySum, .weeklyAverage]
+        case .oneYear: [.monthlySum, .monthlyAverage]
+        }
+    }
 }
