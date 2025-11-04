@@ -31,6 +31,9 @@ struct TrackChartApp: App {
         } catch {
             fatalError("Failed to create ModelContainer: \(error)")
         }
+
+        UIPageControl.appearance().currentPageIndicatorTintColor = UIColor(.primary)
+        UIPageControl.appearance().pageIndicatorTintColor = UIColor(.secondary)
     }
 
     var body: some Scene {
