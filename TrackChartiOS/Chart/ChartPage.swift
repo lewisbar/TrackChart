@@ -22,15 +22,15 @@ struct ChartPage: Identifiable, Equatable {
         self.dateRange = (dates.min() ?? Date()) ... (dates.max() ?? Date())
     }
 
-//    func isExtremum(_ entry: ProcessedEntry) -> Bool {
-//        isMaxPositiveEntry(entry) || isMinNegativeEntry(entry)
-//    }
-//
-//    func isMaxPositiveEntry(_ entry: ProcessedEntry) -> Bool {
-//        entry.value > 0 && entry.value == entries.map(\.value).max()
-//    }
-//
-//    func isMinNegativeEntry(_ entry: ProcessedEntry) -> Bool {
-//        entry.value < 0 && entry.value == entries.map(\.value).min()
-//    }
+    func isExtremum(_ entry: ProcessedEntry) -> Bool {
+        isMaxPositiveEntry(entry) || isMinNegativeEntry(entry)
+    }
+
+    func isMaxPositiveEntry(_ entry: ProcessedEntry) -> Bool {
+        entry.value > 0 && entry.value == entries.map(\.value).max()
+    }
+
+    func isMinNegativeEntry(_ entry: ProcessedEntry) -> Bool {
+        entry.value < 0 && entry.value == entries.map(\.value).min()
+    }
 }

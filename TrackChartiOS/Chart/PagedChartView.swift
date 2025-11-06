@@ -17,6 +17,9 @@ struct PagedChartView: View {
     private let span: TimeSpan
     private let palette: Palette
 
+    private let xLabel = "Date"
+    private let yLabel = "Value"
+
     init(
         rawEntries: [ChartEntry],
         span: TimeSpan,
@@ -59,6 +62,7 @@ struct PagedChartView: View {
     }
 
     // MARK: – Chart
+
     @ViewBuilder
     private func chart(for page: ChartPage) -> some View {
         VStack {
@@ -81,14 +85,15 @@ struct PagedChartView: View {
             .padding(.bottom, 8)
 
             Chart(page.entries) { entry in
-                AreaMark(x: .value("Date", entry.timestamp), y: .value("Value", entry.value))
+                AreaMark(x: .value(xLabel, entry.timestamp), y: .value(yLabel, entry.value))
                     .foregroundStyle(areaGradient)
                     .interpolationMethod(.catmullRom)
-                LineMark(x: .value("Date", entry.timestamp), y: .value("Value", entry.value))
+                LineMark(x: .value(xLabel, entry.timestamp), y: .value(yLabel, entry.value))
                     .foregroundStyle(palette.primary)
                     .lineStyle(StrokeStyle(lineWidth: 2))
                     .shadow(color: palette.shadow, radius: 2)
                     .interpolationMethod(.catmullRom)
+                if shouldShowPointMark(for: entry, on: page) { pointMark(for: entry, on: page) }
             }
             .chartXScale(domain: page.dateRange)
             .chartXAxis(content: xAxisContent)
@@ -96,6 +101,7 @@ struct PagedChartView: View {
     }
 
     // MARK: – Styling
+    
     private var areaGradient: LinearGradient {
         LinearGradient(stops: [
             .init(color: palette.top, location: 0),
@@ -131,4 +137,56 @@ struct PagedChartView: View {
                 }
         }
     }
+
+    // MARK: - Point Marks and Annotations
+
+    private func shouldShowPointMark(for entry: ProcessedEntry, on page: ChartPage) -> Bool {
+        page.entries.count == 1 || page.isExtremum(entry)
+    }
+
+    private func pointMark(for entry: ProcessedEntry, on page: ChartPage) -> some ChartContent {
+        PointMark(x: .value(xLabel, entry.timestamp), y: .value(yLabel, entry.value))
+            .symbol(symbol: pointSymbol)
+            .annotation(position: .top, spacing: 2) { maxPositiveValueAnnotation(for: entry, on: page) }
+            .annotation(position: .bottom, spacing: 2) { minNegativeValueAnnotation(for: entry, on: page) }
+    }
+
+    private func pointSymbol() -> some View {
+        ZStack {
+            Circle().fill(palette.pointFill)
+            Circle().stroke(palette.pointOutline, lineWidth: 2)
+        }
+        .frame(width: 6)
+    }
+
+    @ViewBuilder
+    private func maxPositiveValueAnnotation(for entry: ProcessedEntry, on page: ChartPage) -> some View {
+        if page.isMaxPositiveEntry(entry) {
+            annotation(for: entry.value)
+        }
+    }
+
+    @ViewBuilder
+    private func minNegativeValueAnnotation(for entry: ProcessedEntry, on page: ChartPage) -> some View {
+        if page.isMinNegativeEntry(entry) {
+            annotation(for: entry.value)
+        }
+    }
+
+    private func annotation(for value: Double) -> some View {
+        let formattedValue = ChartNumberFormatter.extremaAnnotation.string(from: NSNumber(value: value)) ?? "\(value)"
+
+        return Text("\(formattedValue)")
+            .font(.caption)
+            .foregroundColor(palette.pointOutline)
+    }
+}
+
+private enum ChartNumberFormatter {
+    static let extremaAnnotation: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 2
+        return formatter
+    }()
 }
