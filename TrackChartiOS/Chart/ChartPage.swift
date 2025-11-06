@@ -7,14 +7,14 @@
 
 import Foundation
 
-struct ChartPage: Identifiable, Equatable {
-    let id = UUID()
-    let entries: [ProcessedEntry]
-    let span: TimeSpan
-    let title: String
-    let dateRange: ClosedRange<Date>
+public struct ChartPage: Identifiable, Equatable {
+    public let id = UUID()
+    public let entries: [ProcessedEntry]
+    public let span: TimeSpan
+    public let title: String
+    public let dateRange: ClosedRange<Date>
 
-    init(entries: [ProcessedEntry], span: TimeSpan, title: String) {
+    public init(entries: [ProcessedEntry], span: TimeSpan, title: String) {
         self.entries = entries
         self.span = span
         self.title = title
@@ -22,15 +22,15 @@ struct ChartPage: Identifiable, Equatable {
         self.dateRange = (dates.min() ?? Date()) ... (dates.max() ?? Date())
     }
 
-    func isExtremum(_ entry: ProcessedEntry) -> Bool {
+    public func isExtremum(_ entry: ProcessedEntry) -> Bool {
         isMaxPositiveEntry(entry) || isMinNegativeEntry(entry)
     }
 
-    func isMaxPositiveEntry(_ entry: ProcessedEntry) -> Bool {
+    public func isMaxPositiveEntry(_ entry: ProcessedEntry) -> Bool {
         entry.value > 0 && entry.value == entries.map(\.value).max()
     }
 
-    func isMinNegativeEntry(_ entry: ProcessedEntry) -> Bool {
+    public func isMinNegativeEntry(_ entry: ProcessedEntry) -> Bool {
         entry.value < 0 && entry.value == entries.map(\.value).min()
     }
 }

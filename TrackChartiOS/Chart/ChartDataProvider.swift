@@ -54,6 +54,11 @@ public struct ProcessedEntry: Identifiable, Equatable {
     public let id = UUID()
     public let value: Double
     public let timestamp: Date
+
+    public init(value: Double, timestamp: Date) {
+        self.value = value
+        self.timestamp = timestamp
+    }
 }
 
 enum Aggregator {
