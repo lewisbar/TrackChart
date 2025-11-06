@@ -36,7 +36,7 @@ final class ChartPageProvider {
             let aggregated = aggregator.processedEntries(from: pageEntries)
             let limited = Array(aggregated.prefix(60))
 
-            let title = formatPageTitle(start: startDate, end: endDate, span: span, calendar: calendar)
+            let title = formatPageTitle(start: startDate, end: endDate, span: span)
             pages.append(ChartPage(
                 entries: limited,
                 span: span,
@@ -49,30 +49,61 @@ final class ChartPageProvider {
         return pages.reversed()
     }
 
-    private static func formatPageTitle(
-        start: Date, end: Date, span: TimeSpan, calendar: Calendar
-    ) -> String {
-        let fmt = DateFormatter()
-        fmt.calendar = calendar
-        fmt.locale = .current
-
+    private static func formatPageTitle(start: Date, end: Date, span: TimeSpan) -> String {
         switch span {
         case .week:
-            fmt.dateFormat = "MMM d"
-            let startStr = fmt.string(from: start)
-            fmt.dateFormat = "d, yyyy"
-            let endExcl = calendar.date(byAdding: .day, value: -1, to: end) ?? end
-            return "\(startStr) – \(fmt.string(from: endExcl))"
+            let formattedStart = ChartPageDateFormatter.weekStart.string(from: start)
+            let lastIncludedDay = Calendar.current.date(byAdding: .day, value: -1, to: end) ?? end
+            return "\(formattedStart) – \(ChartPageDateFormatter.weekEnd.string(from: lastIncludedDay))"
         case .month:
-            fmt.dateFormat = "MMMM yyyy"
-            return fmt.string(from: start)
+            return ChartPageDateFormatter.month.string(from: start)
         case .sixMonths:
-            fmt.dateFormat = "MMM yyyy"
-            let endExcl = calendar.date(byAdding: .day, value: -1, to: end) ?? end
-            return "\(fmt.string(from: start)) – \(fmt.string(from: endExcl))"
+            let lastIncludedDay = Calendar.current.date(byAdding: .day, value: -1, to: end) ?? end
+            return "\(ChartPageDateFormatter.sixMonths.string(from: start)) – \(ChartPageDateFormatter.sixMonths.string(from: lastIncludedDay))"
         case .oneYear:
-            fmt.dateFormat = "yyyy"
-            return fmt.string(from: start)
+            return ChartPageDateFormatter.oneYear.string(from: start)
         }
     }
+}
+
+private enum ChartPageDateFormatter {
+    static let weekStart: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.calendar = .current
+        formatter.locale = .current
+        formatter.dateFormat = "MMM d"
+        return formatter
+    }()
+
+    static let weekEnd: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.calendar = .current
+        formatter.locale = .current
+        formatter.dateFormat = "d, yyyy"
+        return formatter
+    }()
+
+    static let month: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.calendar = .current
+        formatter.locale = .current
+        formatter.dateFormat = "MMMM yyyy"
+        return formatter
+    }()
+
+    static let sixMonths: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.calendar = .current
+        formatter.locale = .current
+        formatter.dateFormat = "MMM yyyy"
+        return formatter
+    }()
+
+    static let oneYear: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.calendar = .current
+        formatter.locale = .current
+        formatter.dateFormat = "yyyy"
+        return formatter
+    }()
 }
