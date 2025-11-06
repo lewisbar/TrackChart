@@ -9,6 +9,13 @@ import SwiftUI
 import UIKit
 
 public struct Palette: Identifiable, Hashable, Sendable {
+    private init(name: String, primary: Color, mid: Color, bottom: Color) {
+        self.name = name
+        self.primary = primary
+        self.mid = mid
+        self.bottom = bottom
+    }
+
     public var id: String { name }
     public let name: String
     public let primary: Color
@@ -16,6 +23,7 @@ public struct Palette: Identifiable, Hashable, Sendable {
     public let bottom:  Color
 
     // MARK: Derived colors
+
     public var top:          Color { primary.opacity(0.5) }
     public var pointOutline: Color { mid.opacity(1.0) }
     public var pointFill:    Color { .white }
@@ -30,6 +38,7 @@ public struct Palette: Identifiable, Hashable, Sendable {
     }
 
     // MARK: All palettes
+
     public static let availablePalettes: [Palette] = [
         ocean, fire, forest, sunset,
         aurora, volcano, meadow, twilight,
@@ -38,6 +47,7 @@ public struct Palette: Identifiable, Hashable, Sendable {
     ]
 
     // MARK: Helpers
+    
     public static func palette(named name: String) -> Palette {
         availablePalettes.first { $0.name == name } ?? ocean
     }
