@@ -36,7 +36,7 @@ struct TopicView: View {
                 .presentationDetents([.fraction(0.45)])
         }
         .sheet(isPresented: $isShowingSettings) {
-            SettingsView(name: $name, palette: $palette)
+            SettingsView(name: name, palette: palette, rename: { name = $0 }, changePalette: { palette = $0 })
         }
         .onAppear {
             if name.isEmpty {

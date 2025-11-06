@@ -8,20 +8,29 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @Binding var name: String
-    @Binding var palette: Palette
+    @State private var name: String
+    @State private var palette: Palette
+    let rename: (String) -> Void
+    let changePalette: (Palette) -> Void
     @FocusState private var isTextFieldFocused: Bool
     @Environment(\.dismiss) var dismiss
 
-    // Local state to delay back propagation of changes to prevent blocking of the UI
-    @State private var localName: String
-    @State private var localPalette: Palette
+    private let originalName: String
+    private let originalPalette: Palette
 
-    init(name: Binding<String>, palette: Binding<Palette>) {
-        self._name = name
-        self._palette = palette
-        self._localName = State(initialValue: name.wrappedValue)
-        self._localPalette = State(initialValue: palette.wrappedValue)
+    init(
+        name: String,
+        palette: Palette,
+        rename: @escaping (String) -> Void,
+        changePalette: @escaping (Palette) -> Void
+    ) {
+        self.name = name
+        self.palette = palette
+        self.rename = rename
+        self.changePalette = changePalette
+
+        self.originalName = name
+        self.originalPalette = palette
     }
 
     var body: some View {
@@ -37,17 +46,17 @@ struct SettingsView: View {
             dismissButton
         }
         .onAppear {
-            if localName.isEmpty {
+            if name.isEmpty {
                 isTextFieldFocused = true
             }
         }
         .onDisappear {
-            guard palette != localPalette else { return }
-            palette = localPalette
+            guard name != originalName else { return }
+            rename(name)
         }
         .onDisappear {
-            guard name != localName else { return }
-            name = localName
+            guard palette != originalPalette else { return }
+            changePalette(palette)
         }
     }
 
@@ -64,7 +73,7 @@ struct SettingsView: View {
         VStack(alignment: .leading) {
             Text("Name")
 
-            TextField("Name", text: $localName)
+            TextField("Name", text: $name)
                 .textFieldStyle(.roundedBorder)
                 .focused($isTextFieldFocused)
         }
@@ -76,7 +85,7 @@ struct SettingsView: View {
             HStack {
                 Text("Color Palette:")
                 Spacer()
-                Text(localPalette.name)
+                Text(palette.name)
                     .foregroundStyle(.secondary)
             }
 
@@ -95,27 +104,25 @@ struct SettingsView: View {
             }
             .scrollIndicators(.hidden)
             .onAppear {
-                localPalette = palette
-
                 withAnimation {
-                    proxy.scrollTo(localPalette, anchor: .center)
+                    proxy.scrollTo(palette, anchor: .center)
                 }
             }
-            .onChange(of: localPalette) { _, newPalette in
+            .onChange(of: palette) { oldPalette, newPalette in
+                guard newPalette != oldPalette else { return }
+                palette = newPalette
+
                 withAnimation {
                     proxy.scrollTo(newPalette, anchor: .center)
                 }
-            }
-            .onChange(of: palette) { oldValue, newValue in
-                guard newValue != oldValue else { return }
-                localPalette = newValue
+
             }
         }
     }
 
     private func paletteButton(for availablePalette: Palette, proxy: ScrollViewProxy) -> some View {
         Button {
-            localPalette = availablePalette
+            palette = availablePalette
 
             withAnimation {
                 proxy.scrollTo(availablePalette, anchor: .center)
@@ -125,7 +132,7 @@ struct SettingsView: View {
                 .fill(availablePalette.radialGradient())
                 .frame(width: 24, height: 24)
                 .overlay {
-                    if localPalette == availablePalette {
+                    if palette == availablePalette {
                         Circle()
                             .stroke(Color.primary, lineWidth: 2)
                     }
@@ -161,7 +168,7 @@ struct SettingsView: View {
     @Previewable @State var palette: Palette = Palette.palette(named: "Lavender Field")
 
     VStack {
-        SettingsView(name: $name, palette: $palette)
+        SettingsView(name: name, palette: palette, rename: { _ in }, changePalette: { _ in })
         Text(palette.name)
             .font(.largeTitle)
             .foregroundStyle(palette.linearGradient())
