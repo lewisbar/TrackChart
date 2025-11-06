@@ -29,7 +29,7 @@ class SwiftDataTopicViewModelTests {
 
         let (sut, context) = try makeSUT(topics: topics)
         let selectedTopic = topics[1]
-        let selectedEntries = selectedTopic.entries?.sorted(by: { $0.timestamp < $1.timestamp }) ?? []
+        let selectedEntries = selectedTopic.sortedEntries
 
         sut.submit(newValue: 2.5, to: selectedTopic)
 
@@ -37,7 +37,7 @@ class SwiftDataTopicViewModelTests {
 
         #expect(updatedTopics[1].entries?.count == selectedEntries.count + 1)
 
-        let updatedEntryValues = updatedTopics[1].entries?.sorted(by: { $0.timestamp < $1.timestamp }).map(\.value)
+        let updatedEntryValues = updatedTopics[1].sortedEntries.map(\.value)
         #expect(updatedEntryValues == selectedEntries.map(\.value) + [2.5])
     }
 
@@ -46,14 +46,14 @@ class SwiftDataTopicViewModelTests {
 
         let (sut, context) = try makeSUT(topics: topics)
         let selectedTopic = topics[1]
-        let selectedEntries = selectedTopic.entries?.sorted(by: { $0.timestamp < $1.timestamp }) ?? []
+        let selectedEntries = selectedTopic.sortedEntries
 
         sut.deleteLastValue(from: selectedTopic)
 
         let updatedTopics = try fetchTopics(from: context)
 
         #expect(updatedTopics[1].entries?.count == selectedEntries.count - 1)
-        let lastEntry = updatedTopics[1].entries?.sorted(by: { $0.timestamp < $1.timestamp }).last
+        let lastEntry = updatedTopics[1].sortedEntries.last
         #expect(lastEntry?.value == selectedEntries.dropLast().last?.value)
     }
 

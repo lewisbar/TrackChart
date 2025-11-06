@@ -11,7 +11,7 @@ import Persistence
 @MainActor
 public class SwiftDataTopicViewModel {
     public func entries(for topic: TopicEntity) -> [ChartEntry] {
-        topic.entries?.sorted(by: { $0.timestamp < $1.timestamp }).map { ChartEntry(value: $0.value, timestamp: $0.timestamp)} ?? []
+        topic.sortedEntries.map { ChartEntry(value: $0.value, timestamp: $0.timestamp)}
     }
 
     public func submit(newValue: Double, to topic: TopicEntity) {
@@ -21,7 +21,7 @@ public class SwiftDataTopicViewModel {
 
     public func deleteLastValue(from topic: TopicEntity) {
         if !(topic.entries?.isEmpty ?? false) {
-            topic.entries = topic.entries?.sorted(by: { $0.timestamp < $1.timestamp }).dropLast()
+            topic.entries = topic.sortedEntries.dropLast()
         }
     }
 
