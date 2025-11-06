@@ -11,120 +11,109 @@ import SwiftData
 import Persistence
 
 @MainActor
-struct SwiftDataTopicListViewModelTests {
+class SwiftDataTopicListViewModelTests {
     @Test func delete() throws {
-        try withCleanContext(topicNames: ["0", "1", "2", "3", "4"]) { context, topics, sut, errors in
-            sut.deleteTopics(at: .init([1,4]), from: topics)
+        let topics = makeTopicEntities(names: ["0", "1", "2", "3", "4"])
+        let (sut, context) = try makeSUT(topics: topics)
+        sut.deleteTopics(at: .init([1,4]), from: topics)
 
-            let newContext = ModelContext(context.container)
-            let remainingTopics = try fetchTopics(from: newContext)
+        let remainingTopics = try fetchTopics(from: context)
 
-            #expect(remainingTopics.map(\.name) == ["0", "2", "3"])
-            #expect(remainingTopics.map(\.sortIndex) == [0, 1, 2])
-        }
+        #expect(remainingTopics.map(\.name) == ["0", "2", "3"])
+        #expect(remainingTopics.map(\.sortIndex) == [0, 1, 2])
     }
 
     @Test func move() throws {
-        try withCleanContext(topicNames: ["0", "1", "2", "3", "4"]) { context, topics, sut, errors in
-            sut.moveTopics(from: .init([2, 3]), to: 1, inTopicList: topics)
+        let topics = makeTopicEntities(names: ["0", "1", "2", "3", "4"])
+        let (sut, context) = try makeSUT(topics: topics)
+        sut.moveTopics(from: .init([2, 3]), to: 1, inTopicList: topics)
 
-            let newContext = ModelContext(context.container)
-            let updatedTopics = try fetchTopics(from: newContext)
+        let updatedTopics = try fetchTopics(from: context)
 
-            #expect(updatedTopics.map(\.name) == ["0", "2", "3", "1", "4"])
-            #expect(updatedTopics.map(\.sortIndex) == [0, 1, 2, 3, 4])
-        }
+        #expect(updatedTopics.map(\.name) == ["0", "2", "3", "1", "4"])
+        #expect(updatedTopics.map(\.sortIndex) == [0, 1, 2, 3, 4])
     }
 
     @Test func addAndShowNewTopic() throws {
         var shownTopics = [TopicEntity?]()
+        let topics = makeTopicEntities(names: ["0", "1", "2", "3", "4"])
+        let (sut, context) = try makeSUT(topics: topics, showTopic: { shownTopics.append($0) })
 
-        try withCleanContext(topicNames: ["0", "1", "2", "3", "4"], showTopic: { shownTopics.append($0) }) { context, topics, sut, errors in
-            sut.addAndShowNewTopic(existingTopics: topics)
+        sut.addAndShowNewTopic(existingTopics: topics)
+        try context.save()
 
-            let newContext = ModelContext(context.container)
-            let updatedTopics = try fetchTopics(from: newContext)
+        let updatedTopics = try fetchTopics(from: context)
 
-            #expect(updatedTopics.map(\.name) == ["0", "1", "2", "3", "4", ""])
-            #expect(updatedTopics.map(\.sortIndex) == [0, 1, 2, 3, 4, 5])
-            #expect(shownTopics.count == 1)
-            #expect(shownTopics.first??.name == "")
-            #expect(shownTopics.first??.sortIndex == 5)
-            #expect(shownTopics.first??.entries == [])
-        }
+        #expect(updatedTopics.map(\.name) == ["0", "1", "2", "3", "4", ""])
+        #expect(updatedTopics.map(\.sortIndex) == [0, 1, 2, 3, 4, 5])
+        #expect(shownTopics.count == 1)
+        #expect(shownTopics.first??.name == "")
+        #expect(shownTopics.first??.sortIndex == 5)
+        #expect(shownTopics.first??.entries == [])
     }
 
     @Test func cellModelsFromTopics() throws {
-        try withCleanContext(topicNames: ["0", "1", "2", "3", "4"], palette: "Ocean") { context, topics, sut, errors in
-            let result = sut.cellModels(from: topics)
+        let topics = makeTopicEntities(names: ["0", "1", "2", "3", "4"])
+        let (sut, _) = try makeSUT(topics: topics, palette: "Ocean")
+        let result = sut.cellModels(from: topics)
 
-            let expectedCellModels = topics.map { topic in
-                let entries = topic.sortedEntries.map { entry in
-                    ChartEntry(value: entry.value, timestamp: entry.timestamp)
-                }
-
-                return CellTopic(id: topic.id, name: topic.name, entries: entries, palette: .ocean)
+        let expectedCellModels = topics.map { topic in
+            let entries = topic.sortedEntries.map { entry in
+                ChartEntry(value: entry.value, timestamp: entry.timestamp)
             }
 
-            #expect(result.map(\.id) == expectedCellModels.map(\.id))
-            #expect(result.map(\.name) == expectedCellModels.map(\.name))
-            #expect(result.map(\.palette.name) == expectedCellModels.map(\.palette.name))
-            #expect(result.map { $0.entries.map(\.value) } == expectedCellModels.map { $0.entries.map(\.value) })
-            #expect(result.map { $0.entries.map(\.timestamp) } == expectedCellModels.map { $0.entries.map(\.timestamp) })
+            return CellTopic(id: topic.id, name: topic.name, entries: entries, palette: .ocean)
         }
+
+        #expect(result.map(\.id) == expectedCellModels.map(\.id))
+        #expect(result.map(\.name) == expectedCellModels.map(\.name))
+        #expect(result.map(\.palette.name) == expectedCellModels.map(\.palette.name))
+        #expect(result.map { $0.entries.map(\.value) } == expectedCellModels.map { $0.entries.map(\.value) })
+        #expect(result.map { $0.entries.map(\.timestamp) } == expectedCellModels.map { $0.entries.map(\.timestamp) })
     }
 
     @Test func showTopicForCellModel() throws {
         var shownTopics = [TopicEntity?]()
+        let topics = makeTopicEntities(names: ["0", "1", "2", "3", "4"])
+        let (sut, _) = try makeSUT(topics: topics, showTopic: { shownTopics.append($0) })
+        let selectedTopic = topics[3]
+        let cellModel = CellTopic(id: selectedTopic.id, name: selectedTopic.name, entries: selectedTopic.entries?.map {
+            ChartEntry(value: $0.value, timestamp: $0.timestamp)
+        } ?? [], palette: .ocean)
 
-        try withCleanContext(topicNames: ["0", "1", "2", "3", "4"], showTopic: { shownTopics.append($0) }) { context, topics, sut, errors in
-            let selectedTopic = topics[3]
-            let cellModel = CellTopic(id: selectedTopic.id, name: selectedTopic.name, entries: selectedTopic.entries?.map {
-                ChartEntry(value: $0.value, timestamp: $0.timestamp)
-            } ?? [], palette: .ocean)
+        sut.showTopic(for: cellModel, in: topics)
 
-            sut.showTopic(for: cellModel, in: topics)
-
-            #expect(shownTopics == [selectedTopic])
-        }
+        #expect(shownTopics == [selectedTopic])
     }
 
     // MARK: - Helpers
 
-    /// Runs a test with a fresh SwiftData persistent context, cleaning up the store before and after.
-    private func withCleanContext<T>(
-        topicNames: [String],
+    private func makeSUT(
+        topics: [TopicEntity],
         palette: String = "Ocean",
-        showTopic: @escaping (TopicEntity?) -> Void = { _ in },
-        testBody: @MainActor (ModelContext, [TopicEntity], SwiftDataTopicListViewModel, [Error]) throws -> T
-    ) throws -> T {
-        let uniqueURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".sqlite")
-
-        try? FileManager.default.removeItem(at: uniqueURL)
-
-        let configuration = ModelConfiguration(url: uniqueURL)
+        showTopic: @escaping (TopicEntity?) -> Void = { _ in }
+    ) throws -> (SwiftDataTopicListViewModel, ModelContext) {
+        let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
         let context = try makeContext(with: configuration)
 
-        let topics = makeTopicEntities(names: topicNames)
         try setUp(context: context, with: topics)
 
-        var capturedErrors = [Error]()
-
-        let saver = SwiftDataSaver(contextHasChanges: { context.hasChanges }, saveToContext: context.save, sendError: { capturedErrors.append($0) })
-
         let sut = SwiftDataTopicListViewModel(
-            save: saver.save,
             insert: context.insert,
             delete: context.delete,
             showTopic: showTopic,
-            randomPalette: { "Ocean" }
+            randomPalette: { palette }
         )
 
-        defer {
-            try? FileManager.default.removeItem(at: uniqueURL)
-        }
+        weakSUT = sut
 
-        return try testBody(context, topics, sut, capturedErrors)
+        return (sut, context)
+    }
+
+    private weak var weakSUT: SwiftDataTopicListViewModel?
+
+    deinit {
+        #expect(weakSUT == nil, "Instance should have been deallocated. Potential memory leak.")
     }
 
     private func makeContext(with configuration: ModelConfiguration) throws -> ModelContext {

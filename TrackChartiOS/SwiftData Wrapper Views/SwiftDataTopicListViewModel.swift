@@ -11,20 +11,17 @@ import Persistence
 
 @MainActor
 public class SwiftDataTopicListViewModel {
-    private let save: () -> Void
     private let insert: (TopicEntity) -> Void
     private let delete: (TopicEntity) -> Void
     private let showTopic: (TopicEntity?) -> Void
     private let randomPalette: () -> String
 
     public init(
-        save: @escaping () -> Void,
         insert: @escaping (TopicEntity) -> Void,
         delete: @escaping (TopicEntity) -> Void,
         showTopic: @escaping (TopicEntity?) -> Void,
         randomPalette: @escaping () -> String
     ) {
-        self.save = save
         self.insert = insert
         self.delete = delete
         self.showTopic = showTopic
@@ -37,7 +34,6 @@ public class SwiftDataTopicListViewModel {
             delete(topic)
         }
         cleanUpDeletedSortIndices(indexSet, in: topics)
-        save()
     }
 
     private func cleanUpDeletedSortIndices(_ indexSet: IndexSet, in topics: [TopicEntity]) {
@@ -57,13 +53,11 @@ public class SwiftDataTopicListViewModel {
         for (index, topic) in tempTopics.enumerated() {
             topic.sortIndex = index
         }
-        save()
     }
 
     public func addAndShowNewTopic(existingTopics topics: [TopicEntity]) {
         let topic = TopicEntity(name: "", palette: randomPalette(), sortIndex: topics.count)
         insert(topic)
-        save()
         showTopic(topic)
     }
 

@@ -10,7 +10,6 @@ import Persistence
 
 /// Wrapper to decouple the actual View from SwiftData
 struct SwiftDataTopicView: View {
-    @Environment(\.modelContext) var modelContext
     @Bindable var topic: TopicEntity
     let viewModel: SwiftDataTopicViewModel
 
@@ -22,7 +21,6 @@ struct SwiftDataTopicView: View {
             submitNewValue: { viewModel.submit(newValue: $0, to: topic) },
             deleteLastValue: { viewModel.deleteLastValue(from: topic)}
         )
-        .onChange(of: topic.name) { _, _ in viewModel.nameChanged() }
     }
 
     private var paletteBinding: Binding<Palette> {

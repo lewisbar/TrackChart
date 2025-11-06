@@ -6,158 +6,105 @@
 //
 
 import Testing
-import TrackChartiOS
+@testable import TrackChartiOS
 import SwiftData
 import Persistence
 
 @MainActor
 class SwiftDataTopicViewModelTests {
-    @Test func entriesForTopic() async throws {
-        try await withCleanContext(topicNames: ["0", "1", "2", "3", "4"]) { context, topics, sut, errors in
-            let selectedTopic = topics[2]
+    @Test func entriesForTopic() throws {
+        let topics = makeTopicEntities(names: ["0", "1", "2"])
 
-            let result = sut.entries(for: selectedTopic)
+        let (sut, context) = try makeSUT(topics: topics)
+        let selectedTopic = topics[2]
 
-            #expect(result.map(\.value) == selectedTopic.sortedEntries.map(\.value))
-            #expect(result.map(\.timestamp) == selectedTopic.sortedEntries.map(\.timestamp))
-        }
+        let result = sut.entries(for: selectedTopic)
+
+        #expect(result.map(\.value) == selectedTopic.sortedEntries.map(\.value))
+        #expect(result.map(\.timestamp) == selectedTopic.sortedEntries.map(\.timestamp))
     }
 
-    @Test func submitNewValue() async throws {
-        try await withCleanContext(topicNames: ["0", "1", "2"]) { context, topics, sut, errors in
-            let selectedTopic = topics[1]
-            let selectedEntries = selectedTopic.entries?.sorted(by: { $0.timestamp < $1.timestamp }) ?? []
+    @Test func submitNewValue()  throws {
+        let topics = makeTopicEntities(names: ["0", "1", "2"])
 
-            sut.submit(newValue: 2.5, to: selectedTopic)
+        let (sut, context) = try makeSUT(topics: topics)
+        let selectedTopic = topics[1]
+        let selectedEntries = selectedTopic.entries?.sorted(by: { $0.timestamp < $1.timestamp }) ?? []
 
-            let newContext = ModelContext(context.container)
-            let updatedTopics = try fetchTopics(from: newContext)
+        sut.submit(newValue: 2.5, to: selectedTopic)
 
-            #expect(updatedTopics[1].entries?.count == selectedEntries.count + 1)
+        let updatedTopics = try fetchTopics(from: context)
 
-            let updatedEntryValues = updatedTopics[1].entries?.sorted(by: { $0.timestamp < $1.timestamp }).map(\.value)
-            #expect(updatedEntryValues == selectedEntries.map(\.value) + [2.5])
-        }
+        #expect(updatedTopics[1].entries?.count == selectedEntries.count + 1)
+
+        let updatedEntryValues = updatedTopics[1].entries?.sorted(by: { $0.timestamp < $1.timestamp }).map(\.value)
+        #expect(updatedEntryValues == selectedEntries.map(\.value) + [2.5])
     }
 
-    @Test func deleteLastValue() async throws {
-        try await withCleanContext(topicNames: ["0", "1", "2"]) { context, topics, sut, errors in
-            let selectedTopic = topics[1]
-            let selectedEntries = selectedTopic.entries?.sorted(by: { $0.timestamp < $1.timestamp }) ?? []
+    @Test func deleteLastValue() throws {
+        let topics = makeTopicEntities(names: ["0", "1", "2"])
 
-            sut.deleteLastValue(from: selectedTopic)
+        let (sut, context) = try makeSUT(topics: topics)
+        let selectedTopic = topics[1]
+        let selectedEntries = selectedTopic.entries?.sorted(by: { $0.timestamp < $1.timestamp }) ?? []
 
-            let newContext = ModelContext(context.container)
-            let updatedTopics = try fetchTopics(from: newContext)
+        sut.deleteLastValue(from: selectedTopic)
 
-            #expect(updatedTopics[1].entries?.count == selectedEntries.count - 1)
-            let lastEntry = updatedTopics[1].entries?.sorted(by: { $0.timestamp < $1.timestamp }).last
-            #expect(lastEntry?.value == selectedEntries.dropLast().last?.value)
-        }
+        let updatedTopics = try fetchTopics(from: context)
+
+        #expect(updatedTopics[1].entries?.count == selectedEntries.count - 1)
+        let lastEntry = updatedTopics[1].entries?.sorted(by: { $0.timestamp < $1.timestamp }).last
+        #expect(lastEntry?.value == selectedEntries.dropLast().last?.value)
     }
 
-    @Test func deleteLastValue_whenValuesAreEmpty_doesNotCauseProblems() async throws {
-        try await withCleanContext(topicNames: ["0", "1", "2"]) { context, topics, sut, errors in
+    @Test func deleteLastValue_whenValuesAreEmpty_doesNotCauseProblems() throws {
+        let topics = makeTopicEntities(names: ["0", "1", "2"], palette: .ocean)
+
+        let (sut, context) = try makeSUT(topics: topics)
             let selectedTopic = topics[1]
             selectedTopic.entries?.removeAll()
-            try context.save()
 
             sut.deleteLastValue(from: selectedTopic)
 
-            let newContext = ModelContext(context.container)
-            let updatedTopics = try fetchTopics(from: newContext)
+            let updatedTopics = try fetchTopics(from: context)
 
             #expect(updatedTopics[1].entries == [])
-        }
     }
 
-    @Test func changePalette() async throws {
-        try await withCleanContext(topicNames: ["0", "1", "2"], palette: .ocean) { context, topics, sut, errors in
-            let selectedTopic = topics[1]
+    @Test func changePalette() throws {
+        let topics = makeTopicEntities(names: ["0", "1", "2"], palette: .ocean)
+        let (sut, context) = try makeSUT(topics: topics)
+        let selectedTopic = topics[1]
 
-            sut.changePalette(to: .forest, for: selectedTopic)
+        sut.changePalette(to: .forest, for: selectedTopic)
 
-            let newContext = ModelContext(context.container)
-            let updatedTopics = try fetchTopics(from: newContext)
+        let updatedTopics = try fetchTopics(from: context)
 
-            #expect(updatedTopics[1].palette == "Forest")
-        }
-    }
-
-    @Test func renameTopic_doesNotPersistUnlessNameChangedIsCalled_andThenDebounceSaves() async throws {
-        try await withCleanContext(topicNames: ["0", "1", "2"]) { context, topics, sut, errors in
-            let selectedTopic = topics[1]
-
-            // Change name for the first time; will not be persisted without nameChanged call
-            selectedTopic.name = "New Name 1"
-            #expect(context.hasChanges)
-
-            // Create new context to show changes have not been persisted
-            let newContext1 = ModelContext(context.container)
-            let updatedTopics1 = try fetchTopics(from: newContext1)
-
-            #expect(!updatedTopics1.contains(where: { $0.name == "New Name 1"}))
-            #expect(!newContext1.hasChanges)
-
-            // Change name again, this time calling nameChanged afterwards
-            selectedTopic.name = "New Name 2"
-            #expect(context.hasChanges)
-
-            await sut.nameChanged()?.value
-
-            // After the nameChanged call, changes are persistent and therefore visible also in a new context
-            let newContext2 = ModelContext(context.container)
-            let updatedTopics2 = try fetchTopics(from: newContext2)
-
-            #expect(updatedTopics2.contains(where: { $0.name == "New Name 2" }))
-            #expect(!newContext2.hasChanges)
-        }
+        #expect(updatedTopics[1].palette == "Forest")
     }
 
     // MARK: - Helpers
 
-    /// Runs a test with a fresh SwiftData persistent context, cleaning up the store before and after.
-    private func withCleanContext<T: Sendable>(
-        topicNames: [String],
-        palette: Palette = .ocean,
-        testBody: @MainActor (ModelContext, [TopicEntity], SwiftDataTopicViewModel, [Error]) async throws -> T
-    ) async throws -> T {
-        let uniqueURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".sqlite")
-
-        try? FileManager.default.removeItem(at: uniqueURL)
-
-        let configuration = ModelConfiguration(url: uniqueURL)
+    private func makeSUT(
+        topics: [TopicEntity],
+        showTopic: @escaping (TopicEntity?) -> Void = { _ in }
+    ) throws -> (SwiftDataTopicViewModel, ModelContext) {
+        let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
         let context = try makeContext(with: configuration)
 
-        let topics = makeTopicEntities(names: topicNames, palette: palette)
         try setUp(context: context, with: topics)
 
-        var capturedErrors = [Error]()
-
-        // Testing with the real saver because we need a ModelContainer anyway whenever working with @Models
-        let saver = SwiftDataSaver(contextHasChanges: { context.hasChanges }, saveToContext: context.save, sendError: { capturedErrors.append($0) })
-        let sut = SwiftDataTopicViewModel(
-            save: saver.save,
-            debounceSave: saver.debounceSave,
-            debounceSaveDelay: 0
-        )
+        let sut = SwiftDataTopicViewModel()
 
         weakSUT = sut
-        weakSaver = saver
 
-        defer {
-            try? FileManager.default.removeItem(at: uniqueURL)
-        }
-
-        return try await testBody(context, topics, sut, capturedErrors)
+        return (sut, context)
     }
 
     private weak var weakSUT: SwiftDataTopicViewModel?
-    private weak var weakSaver: SwiftDataSaver?
 
     deinit {
         #expect(weakSUT == nil, "Instance should have been deallocated. Potential memory leak.")
-        #expect(weakSaver == nil, "Instance should have been deallocated. Potential memory leak.")
     }
 
     private func makeContext(with configuration: ModelConfiguration) throws -> ModelContext {
@@ -171,7 +118,7 @@ class SwiftDataTopicViewModelTests {
         return try context.fetch(fetchDescriptor)
     }
 
-    private func makeTopicEntities(names: [String], palette: Palette) -> [TopicEntity] {
+    private func makeTopicEntities(names: [String], palette: Palette = .ocean) -> [TopicEntity] {
         names.enumerated().map { index, name in
             TopicEntity(
                 id: UUID(),
