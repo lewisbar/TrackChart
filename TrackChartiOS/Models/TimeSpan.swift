@@ -13,7 +13,7 @@ public enum TimeSpan: CaseIterable {
     case sixMonths
     case oneYear
 
-    var title: String {
+    public var title: String {
         switch self {
         case .week:       return "Week"
         case .month:      return "Month"
@@ -22,7 +22,7 @@ public enum TimeSpan: CaseIterable {
         }
     }
 
-    var calendarComponent: Calendar.Component {
+    public var calendarComponent: Calendar.Component {
         switch self {
         case .week:       return .weekOfYear
         case .month:      return .month
@@ -31,7 +31,7 @@ public enum TimeSpan: CaseIterable {
         }
     }
 
-    var componentCount: Int {
+    public var componentCount: Int {
         switch self {
         case .week:       return 1
         case .month:      return 1
@@ -40,7 +40,7 @@ public enum TimeSpan: CaseIterable {
         }
     }
 
-    var availableDataProviders: [ChartDataProvider] {
+    public var availableDataProviders: [ChartDataProvider] {
         switch self {
         case .week, .month: [.dailySum, .dailyAverage]
         case .sixMonths: [.weeklySum, .weeklyAverage]

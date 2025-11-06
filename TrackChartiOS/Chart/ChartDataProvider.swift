@@ -7,8 +7,8 @@
 
 import Foundation
 
-struct ChartDataProvider: Sendable {
-    let name: String
+public struct ChartDataProvider: Sendable {
+    public let name: String
     private let process: @Sendable ([ChartEntry]) -> [ProcessedEntry]
 
     private init(name: String, process: @escaping @Sendable ([ChartEntry]) -> [ProcessedEntry]) {
@@ -16,17 +16,17 @@ struct ChartDataProvider: Sendable {
         self.process = process
     }
 
-    func processedEntries(from rawEntries: [ChartEntry]) -> [ProcessedEntry] {
+    public func processedEntries(from rawEntries: [ChartEntry]) -> [ProcessedEntry] {
         process(rawEntries)
     }
 
-    static let raw = ChartDataProvider(name: "Raw Data") { $0.map { ProcessedEntry(value: $0.value, timestamp: $0.timestamp) } }
-    static let dailySum = aggregating(.day, .sum, name: "Daily Sum")
-    static let dailyAverage = aggregating(.day, .average, name: "Daily Average")
-    static let weeklySum = aggregating(.weekOfYear, .sum, name: "Weekly Sum")
-    static let weeklyAverage = aggregating(.weekOfYear, .average, name: "Weekly Average")
-    static let monthlySum = aggregating(.month, .sum, name: "Monthly Sum")
-    static let monthlyAverage = aggregating(.month, .average, name: "Monthly Average")
+    public static let raw = ChartDataProvider(name: "Raw Data") { $0.map { ProcessedEntry(value: $0.value, timestamp: $0.timestamp) } }
+    public static let dailySum = aggregating(.day, .sum, name: "Daily Sum")
+    public static let dailyAverage = aggregating(.day, .average, name: "Daily Average")
+    public static let weeklySum = aggregating(.weekOfYear, .sum, name: "Weekly Sum")
+    public static let weeklyAverage = aggregating(.weekOfYear, .average, name: "Weekly Average")
+    public static let monthlySum = aggregating(.month, .sum, name: "Monthly Sum")
+    public static let monthlyAverage = aggregating(.month, .average, name: "Monthly Average")
 
     private static func aggregating(_ unit: Calendar.Component, _ aggregator: Aggregator, name: String) -> ChartDataProvider {
         ChartDataProvider(name: name) { entries in
@@ -41,19 +41,19 @@ struct ChartDataProvider: Sendable {
 }
 
 extension ChartDataProvider: Hashable {
-    static func == (lhs: ChartDataProvider, rhs: ChartDataProvider) -> Bool {
+    public static func == (lhs: ChartDataProvider, rhs: ChartDataProvider) -> Bool {
         lhs.name == rhs.name
     }
 
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(name)
     }
 }
 
-struct ProcessedEntry: Identifiable, Equatable {
-    let id = UUID()
-    let value: Double
-    let timestamp: Date
+public struct ProcessedEntry: Identifiable, Equatable {
+    public let id = UUID()
+    public let value: Double
+    public let timestamp: Date
 }
 
 enum Aggregator {
