@@ -58,6 +58,9 @@ struct PagedChartView: View {
             .onChange(of: selectedAggregator) { _, newAggregator in
                 pages = ChartPageProvider.pages(for: rawEntries, span: span, aggregator: newAggregator)
             }
+            .onChange(of: rawEntries) { _, newEntries in
+                pages = ChartPageProvider.pages(for: newEntries, span: span, aggregator: selectedAggregator)
+            }
         }
     }
 

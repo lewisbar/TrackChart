@@ -8,42 +8,51 @@
 import Foundation
 
 @MainActor
-final class ChartPageProvider {
-    static func pages(
+public final class ChartPageProvider {
+    public static func pages(
         for raw: [ChartEntry],
         span: TimeSpan,
         aggregator: ChartDataProvider
     ) -> [ChartPage] {
-        guard !raw.isEmpty else { return [] }
-
         let sorted = raw.sorted { $0.timestamp < $1.timestamp }
+        guard let lastEntry = sorted.last else { return [] }
         let calendar = Calendar.current
         var pages: [ChartPage] = []
 
-        var endDate = calendar.startOfDay(for: sorted.last!.timestamp)
+        // End date should be the start of the day AFTER the last entry
+        // This ensures the last entry is included in the range
+        let endDate = calendar.date(
+            byAdding: .day,
+            value: 1,
+            to: calendar.startOfDay(for: lastEntry.timestamp)
+        ) ?? calendar.startOfDay(for: lastEntry.timestamp)
+
         let count = span.componentCount
+        var currentEndDate = endDate
 
-        while true {
-            let startDate = calendar.date(
-                byAdding: span.calendarComponent,
-                value: -count,
-                to: endDate
-            ) ?? endDate
+        // Keep going as long as we have a valid start date
+        while let startDate = calendar.date(
+            byAdding: span.calendarComponent,
+            value: -count,
+            to: currentEndDate
+        ) {
+            let pageEntries = sorted.filter {
+                $0.timestamp >= startDate && $0.timestamp < currentEndDate
+            }
 
-            let pageEntries = sorted.filter { $0.timestamp >= startDate && $0.timestamp < endDate }
+            // Break if we've gone past all entries
             guard !pageEntries.isEmpty else { break }
 
             let aggregated = aggregator.processedEntries(from: pageEntries)
-            let limited = Array(aggregated.prefix(60))
 
-            let title = formatPageTitle(start: startDate, end: endDate, span: span)
+            let title = formatPageTitle(start: startDate, end: currentEndDate, span: span)
             pages.append(ChartPage(
-                entries: limited,
+                entries: aggregated,
                 span: span,
                 title: title
             ))
 
-            endDate = startDate
+            currentEndDate = startDate
         }
 
         return pages.reversed()
