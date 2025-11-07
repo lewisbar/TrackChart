@@ -11,20 +11,24 @@ import Charts
 struct PreviewChartView: View {
     let entries: [ProcessedEntry]
     let palette: Palette
+    private let xLabel = "Date"
+    private let yLabel = "Value"
 
     var body: some View {
         if entries.isEmpty {
             ChartPlaceholderView()
         } else {
             Chart(entries) { entry in
-                AreaMark(x: .value("Date", entry.timestamp), y: .value("Value", entry.value))
+                AreaMark(x: .value(xLabel, entry.timestamp), y: .value(yLabel, entry.value))
                     .foregroundStyle(areaGradient)
                     .interpolationMethod(.catmullRom)
-                LineMark(x: .value("Date", entry.timestamp), y: .value("Value", entry.value))
+                LineMark(x: .value(xLabel, entry.timestamp), y: .value(yLabel, entry.value))
                     .foregroundStyle(palette.primary)
                     .lineStyle(StrokeStyle(lineWidth: 1.5))
                     .shadow(color: palette.shadow, radius: 2)
                     .interpolationMethod(.catmullRom)
+                UnpagedPointMarks(palette: palette, xLabel: xLabel, yLabel: yLabel)
+                    .pointMark(for: entry, in: entries)
             }
             .chartXScale(domain: dateRange)
             .chartXAxis(.hidden)
@@ -50,8 +54,7 @@ struct PreviewChartView: View {
 extension PreviewChartView {
     init(rawEntries: [ChartEntry], palette: Palette) {
         let provider = ChartDataProvider.automaticPreview
-        let processed = provider.processedEntries(from: rawEntries)
-        self.entries = Array(processed.prefix(60))
+        self.entries = provider.processedEntries(from: rawEntries)
         self.palette = palette
     }
 }

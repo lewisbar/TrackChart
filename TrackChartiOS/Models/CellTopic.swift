@@ -24,13 +24,3 @@ public struct CellTopic: Identifiable, Hashable {
         self.palette = palette
     }
 }
-
-public struct ChartEntry: Hashable, Codable {
-    public let value: Double
-    public let timestamp: Date
-
-    public init(value: Double, timestamp: Date) {
-        self.value = value
-        self.timestamp = timestamp
-    }
-}

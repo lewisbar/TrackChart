@@ -38,56 +38,8 @@ public struct ChartDataProvider: Sendable {
             }.sorted { $0.timestamp < $1.timestamp }
         }
     }
-}
 
-extension ChartDataProvider: Hashable {
-    public static func == (lhs: ChartDataProvider, rhs: ChartDataProvider) -> Bool {
-        lhs.name == rhs.name
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(name)
-    }
-}
-
-public struct ProcessedEntry: Identifiable, Equatable {
-    public let id = UUID()
-    public let value: Double
-    public let timestamp: Date
-
-    public init(value: Double, timestamp: Date) {
-        self.value = value
-        self.timestamp = timestamp
-    }
-}
-
-enum Aggregator {
-    case sum
-    case average
-
-    func aggregate(_ values: [Double]) -> Double {
-        switch self {
-        case .sum:
-            return values.reduce(0, +)
-        case .average:
-            return values.isEmpty ? 0 : values.reduce(0, +) / Double(values.count)
-        }
-    }
-}
-
-private extension Calendar {
-    func startOfUnit(_ component: Calendar.Component, for date: Date) -> Date {
-        guard let interval = dateInterval(of: component, for: date) else {
-            return date
-        }
-        return interval.start
-    }
-}
-
-extension ChartDataProvider {
-    /// Used only for **preview charts** (TopicCell).
-    /// Returns ≤ 60 points, automatically aggregated.
-    static let automaticPreview = ChartDataProvider(name: "Automatic Preview") { raw in
+    public static let automaticPreview = ChartDataProvider(name: "Automatic Preview") { raw in
         guard !raw.isEmpty else { return [] }
 
         let sorted = raw.sorted { $0.timestamp < $1.timestamp }
@@ -120,5 +72,24 @@ extension ChartDataProvider {
                 return ProcessedEntry(value: sum, timestamp: date)
             }
             .sorted { $0.timestamp < $1.timestamp }
+    }
+}
+
+extension ChartDataProvider: Hashable {
+    public static func == (lhs: ChartDataProvider, rhs: ChartDataProvider) -> Bool {
+        lhs.name == rhs.name
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
+    }
+}
+
+private extension Calendar {
+    func startOfUnit(_ component: Calendar.Component, for date: Date) -> Date {
+        guard let interval = dateInterval(of: component, for: date) else {
+            return date
+        }
+        return interval.start
     }
 }
