@@ -193,7 +193,7 @@ struct PagedChartView: View {
 
         return Text("\(formattedValue)")
             .font(.caption)
-            .foregroundColor(palette.pointOutline)
+            .foregroundColor(palette.primary)
     }
 }
 
