@@ -52,58 +52,29 @@ final class ChartPageProvider {
     private static func formatPageTitle(start: Date, end: Date, span: TimeSpan) -> String {
         switch span {
         case .week:
-            let formattedStart = ChartPageDateFormatter.weekStart.string(from: start)
-            let lastIncludedDay = Calendar.current.date(byAdding: .day, value: -1, to: end) ?? end
-            return "\(formattedStart) – \(ChartPageDateFormatter.weekEnd.string(from: lastIncludedDay))"
+            let first = start.formatted(DateStyle.weekStart)
+            let last = lastIncludedDay(from: end).formatted(DateStyle.weekEnd)
+            return "\(first) – \(last)"
         case .month:
-            return ChartPageDateFormatter.month.string(from: start)
+            return start.formatted(DateStyle.month)
         case .sixMonths:
-            let lastIncludedDay = Calendar.current.date(byAdding: .day, value: -1, to: end) ?? end
-            return "\(ChartPageDateFormatter.sixMonths.string(from: start)) – \(ChartPageDateFormatter.sixMonths.string(from: lastIncludedDay))"
+            let first = start.formatted(DateStyle.sixMonths)
+            let last = lastIncludedDay(from: end).formatted(DateStyle.sixMonths)
+            return "\(first) – \(last)"
         case .oneYear:
-            return ChartPageDateFormatter.oneYear.string(from: start)
+            return start.formatted(DateStyle.oneYear)
         }
+    }
+
+    private static func lastIncludedDay(from end: Date) -> Date {
+        Calendar.current.date(byAdding: .day, value: -1, to: end) ?? end
     }
 }
 
-private enum ChartPageDateFormatter {
-    static let weekStart: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.calendar = .current
-        formatter.locale = .current
-        formatter.dateFormat = "MMM d"
-        return formatter
-    }()
-
-    static let weekEnd: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.calendar = .current
-        formatter.locale = .current
-        formatter.dateFormat = "d, yyyy"
-        return formatter
-    }()
-
-    static let month: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.calendar = .current
-        formatter.locale = .current
-        formatter.dateFormat = "MMMM yyyy"
-        return formatter
-    }()
-
-    static let sixMonths: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.calendar = .current
-        formatter.locale = .current
-        formatter.dateFormat = "MMM yyyy"
-        return formatter
-    }()
-
-    static let oneYear: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.calendar = .current
-        formatter.locale = .current
-        formatter.dateFormat = "yyyy"
-        return formatter
-    }()
+private enum DateStyle {
+    static let weekStart = Date.FormatStyle().day().month(.abbreviated)
+    static let weekEnd = Date.FormatStyle().day().month(.abbreviated).year()
+    static let month = Date.FormatStyle().month(.wide).year()
+    static let sixMonths = Date.FormatStyle().month(.abbreviated).year()
+    static let oneYear = Date.FormatStyle().year()
 }
