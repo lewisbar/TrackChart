@@ -73,34 +73,46 @@ struct PagedChartView: View {
                 Text(page.title)
                     .font(.caption).bold()
 
-                Menu {
-                    Picker("Select an aggregator type", selection: $selectedAggregator) {
-                        ForEach(span.availableDataProviders, id: \.self) {
-                            Text($0.name)
-                        }
-                    }
-                } label: {
-                    Image(systemName: "ellipsis")
-                        .font(.title3)
-                }
-                .frame(maxWidth: .infinity, alignment: .trailing)
+                aggregatorMenu
+                    .frame(maxWidth: .infinity, alignment: .trailing)
             }
             .padding(.bottom, 8)
 
             Chart(page.entries) { entry in
-                AreaMark(x: .value(xLabel, entry.timestamp), y: .value(yLabel, entry.value))
-                    .foregroundStyle(areaGradient)
-                    .interpolationMethod(.catmullRom)
-                LineMark(x: .value(xLabel, entry.timestamp), y: .value(yLabel, entry.value))
-                    .foregroundStyle(palette.primary)
-                    .lineStyle(StrokeStyle(lineWidth: 2))
-                    .shadow(color: palette.shadow, radius: 2)
-                    .interpolationMethod(.catmullRom)
+                areaMark(for: entry)
+                lineMark(for: entry)
                 if shouldShowPointMark(for: entry, on: page) { pointMark(for: entry, on: page) }
             }
             .chartXScale(domain: page.dateRange)
             .chartXAxis(content: xAxisContent)
         }
+    }
+
+    private var aggregatorMenu: some View {
+        Menu {
+            Picker("Select an aggregator type", selection: $selectedAggregator) {
+                ForEach(span.availableDataProviders, id: \.self) {
+                    Text($0.name)
+                }
+            }
+        } label: {
+            Image(systemName: "ellipsis")
+                .font(.title3)
+        }
+    }
+
+    private func areaMark(for entry: ProcessedEntry) -> some ChartContent {
+        AreaMark(x: .value(xLabel, entry.timestamp), y: .value(yLabel, entry.value))
+            .foregroundStyle(areaGradient)
+            .interpolationMethod(.catmullRom)
+    }
+
+    private func lineMark(for entry: ProcessedEntry) -> some ChartContent {
+        LineMark(x: .value(xLabel, entry.timestamp), y: .value(yLabel, entry.value))
+            .foregroundStyle(palette.primary)
+            .lineStyle(StrokeStyle(lineWidth: 2))
+            .shadow(color: palette.shadow, radius: 2)
+            .interpolationMethod(.catmullRom)
     }
 
     // MARK: – Styling
@@ -192,4 +204,43 @@ private enum ChartNumberFormatter {
         formatter.maximumFractionDigits = 2
         return formatter
     }()
+}
+
+#Preview {
+    let entries: [ChartEntry] = [
+        .init(value: 2.3, timestamp: .now.advanced(by: -86_400 * 16)),
+        .init(value: -2.3, timestamp: .now.advanced(by: -86_400 * 15)),
+        .init(value: 2.5, timestamp: .now.advanced(by: -86_400 * 14)),
+        .init(value: 1.3, timestamp: .now.advanced(by: -86_400 * 13)),
+        .init(value: 0, timestamp: .now.advanced(by: -86_400 * 12)),
+        .init(value: -1, timestamp: .now.advanced(by: -86_400 * 11)),
+        .init(value: 2, timestamp: .now.advanced(by: -86_400 * 10)),
+        .init(value: 1, timestamp: .now.advanced(by: -86_400 * 9)),
+        .init(value: 2.3, timestamp: .now.advanced(by: -86_400 * 8)),
+        .init(value: -2.3, timestamp: .now.advanced(by: -86_400 * 7)),
+        .init(value: 2.5, timestamp: .now.advanced(by: -86_400 * 6)),
+        .init(value: 1.3, timestamp: .now.advanced(by: -86_400 * 5)),
+        .init(value: 0, timestamp: .now.advanced(by: -86_400 * 4)),
+        .init(value: -1, timestamp: .now.advanced(by: -86_400 * 3)),
+        .init(value: 0, timestamp: .now.advanced(by: -86_400 * 2)),
+        .init(value: 2, timestamp: .now.advanced(by: -86_400 * 1.8)),
+        .init(value: 4, timestamp: .now.advanced(by: -86_400 * 1.4)),
+        .init(value: 1, timestamp: .now.advanced(by: -86_400 * 1)),
+        .init(value: -1, timestamp: .now.advanced(by: -86_400 * 0.9)),
+        .init(value: 3, timestamp: .now.advanced(by: -86_400 * 0.4))
+    ]
+
+    ScrollView {
+        VStack {
+            PagedChartView(rawEntries: entries, span: .week, defaultAggregator: .dailySum, palette: .arcticIce).card().frame(height: 250)
+            PagedChartView(rawEntries: entries, span: .month, defaultAggregator: .dailySum, palette: .aurora).card().frame(height: 250)
+            PagedChartView(rawEntries: entries, span: .sixMonths, defaultAggregator: .weeklySum, palette: .coralReef).card().frame(height: 250)
+            PagedChartView(rawEntries: entries, span: .oneYear, defaultAggregator: .monthlySum, palette: .desertDune).card().frame(height: 250)
+            PagedChartView(rawEntries: entries, span: .week, defaultAggregator: .dailyAverage, palette: .fire).card().frame(height: 250)
+            PagedChartView(rawEntries: entries, span: .month, defaultAggregator: .dailyAverage, palette: .fire).card().frame(height: 250)
+            PagedChartView(rawEntries: entries, span: .sixMonths, defaultAggregator: .weeklyAverage, palette: .lavenderField).card().frame(height: 250)
+            PagedChartView(rawEntries: entries, span: .oneYear, defaultAggregator: .monthlyAverage, palette: .meadow).card().frame(height: 250)
+        }
+        .padding()
+    }
 }
