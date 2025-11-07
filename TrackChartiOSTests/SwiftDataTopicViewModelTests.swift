@@ -15,7 +15,7 @@ class SwiftDataTopicViewModelTests {
     @Test func entriesForTopic() throws {
         let topics = makeTopicEntities(names: ["0", "1", "2"])
 
-        let (sut, context) = try makeSUT(topics: topics)
+        let (sut, _) = try makeSUT(topics: topics)
         let selectedTopic = topics[2]
 
         let result = sut.entries(for: selectedTopic)
