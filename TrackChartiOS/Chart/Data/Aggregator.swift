@@ -7,11 +7,11 @@
 
 import Foundation
 
-enum Aggregator {
+public enum Aggregator: Sendable {
     case sum
     case average
 
-    func aggregate(_ values: [Double]) -> Double {
+    public func aggregate(_ values: [Double]) -> Double {
         switch self {
         case .sum:
             return values.reduce(0, +)
