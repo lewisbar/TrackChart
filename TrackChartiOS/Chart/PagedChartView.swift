@@ -189,21 +189,12 @@ struct PagedChartView: View {
     }
 
     private func annotation(for value: Double) -> some View {
-        let formattedValue = ChartNumberFormatter.extremaAnnotation.string(from: NSNumber(value: value)) ?? "\(value)"
+        let formattedValue = value.formatted(.number.precision(.fractionLength(0...2)))
 
         return Text("\(formattedValue)")
             .font(.caption)
             .foregroundColor(palette.primary)
     }
-}
-
-private enum ChartNumberFormatter {
-    static let extremaAnnotation: NumberFormatter = {
-        let formatter = NumberFormatter()
-        formatter.minimumFractionDigits = 0
-        formatter.maximumFractionDigits = 2
-        return formatter
-    }()
 }
 
 #Preview {
