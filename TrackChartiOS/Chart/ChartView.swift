@@ -55,7 +55,6 @@ struct ChartView: View {
         .init(value: 3, timestamp: .now.advanced(by: -86_400 * 0.4))
     ]
 
-
     VStack {
         ChartView(rawEntries: entries, palette: .fire, mode: .preview).card()
         ChartView(rawEntries: entries, palette: .fire, mode: .overview).card()
