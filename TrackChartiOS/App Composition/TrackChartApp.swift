@@ -30,7 +30,7 @@ struct TrackChartApp: App {
         WindowGroup {
             ContentView(mainView: makeTopicListView)
         }
-        .modelContainer(for: TopicEntity.self)
+        .modelContainer(modelContainer)
     }
 
     private func makeTopicListView() -> some View {
