@@ -47,13 +47,20 @@ struct TopicView: View {
 
     private var chartList: some View {
         List {
-            ChartView(rawEntries: entries, palette: palette, mode: .overview).padding()
+            overviewChart
             pagedCard(span: .week,       default: .dailySum)
             pagedCard(span: .month,      default: .dailySum)
             pagedCard(span: .sixMonths,  default: .weeklySum)
             pagedCard(span: .oneYear,    default: .monthlySum)
             Spacer()
         }
+    }
+
+    private var overviewChart: some View {
+        ChartView(rawEntries: entries, palette: palette, mode: .overview)
+            .frame(height: 150)
+            .padding(.top)
+            .padding(.horizontal)
     }
 
     private func pagedCard(span: TimeSpan, default aggregator: ChartDataProvider) -> some View {
