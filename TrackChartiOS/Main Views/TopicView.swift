@@ -67,18 +67,6 @@ struct TopicView: View {
         .listRowSeparator(.hidden)
     }
 
-//    private func chartCard(named title: String) -> some View {
-//        VStack {
-//            Text(title)
-//                .frame(maxWidth: .infinity, alignment: .leading)
-//
-//            ChartView(rawEntries: entries, palette: palette)
-//        }
-//        .card()
-//        .frame(height: 220)
-//        .listRowSeparator(.hidden)
-//    }
-
     private var plusButton: some View {
         VStack {
             Spacer()
