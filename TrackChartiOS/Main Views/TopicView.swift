@@ -56,11 +56,11 @@ struct TopicView: View {
         }
     }
 
-    private func pagedCard(span: TimeSpan, default agg: ChartDataProvider) -> some View {
+    private func pagedCard(span: TimeSpan, default aggregator: ChartDataProvider) -> some View {
         PagedChartView(
             rawEntries: entries,
             span: span,
-            defaultAggregator: agg,
+            defaultAggregator: aggregator,
             palette: palette
         )
         .card()
