@@ -49,7 +49,8 @@ public final class ChartPageProvider {
             pages.append(ChartPage(
                 entries: aggregated,
                 span: span,
-                title: title
+                title: title,
+                periodStart: startDate
             ))
 
             currentEndDate = startDate

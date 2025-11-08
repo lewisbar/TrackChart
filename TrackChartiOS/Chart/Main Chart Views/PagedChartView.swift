@@ -11,7 +11,7 @@ import Charts
 struct PagedChartView: View {
     @State private var pages: [ChartPage]
     @State private var selectedAggregator: ChartDataProvider
-    @State private var selectedPage = UUID()
+    @State private var selectedPage: String = ""
 
     private let rawEntries: [ChartEntry]
     private let span: TimeSpan
@@ -38,30 +38,39 @@ struct PagedChartView: View {
     }
 
     var body: some View {
-        if pages.isEmpty {
-            ChartPlaceholderView()
-        } else {
-            TabView(selection: $selectedPage) {
-                ForEach(pages) { page in
-                    chart(for: page)
-                        .padding(.bottom, 44)
-                        .tag(page.id)
+        Group {
+            if pages.isEmpty {
+                ChartPlaceholderView()
+            } else {
+                TabView(selection: $selectedPage) {
+                    ForEach(pages) { page in
+                        chart(for: page)
+                            .padding(.bottom, 44)
+                            .tag(page.id)
+                    }
+                }
+                .tabViewStyle(.page)
+                .onAppear {
+                    selectedPage = pages.last?.id ?? ""
                 }
             }
-            .tabViewStyle(.page)
-            .onAppear {
-                selectedPage = pages.last?.id ?? UUID()
-            }
-            .onChange(of: pages) { _, newPages in
-                selectedPage = newPages.last?.id ?? UUID()
-            }
-            .onChange(of: selectedAggregator) { _, newAggregator in
-                pages = ChartPageProvider.pages(for: rawEntries, span: span, aggregator: newAggregator)
-            }
-            .onChange(of: rawEntries) { _, newEntries in
-                pages = ChartPageProvider.pages(for: newEntries, span: span, aggregator: selectedAggregator)
-            }
         }
+        .onChange(of: rawEntries.count) { _, _ in  // might have to be changed to rawEntries once entries can be edited
+            updatePages()
+            selectedPage = pages.last?.id ?? ""
+        }
+        .onChange(of: selectedAggregator) { _, _ in
+            updatePages()
+            selectedPage = pages.last?.id ?? ""
+        }
+    }
+
+    private func updatePages() {
+        pages = ChartPageProvider.pages(
+            for: rawEntries,
+            span: span,
+            aggregator: selectedAggregator
+        )
     }
 
     // MARK: – Chart
