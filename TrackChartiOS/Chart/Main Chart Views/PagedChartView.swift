@@ -8,7 +8,7 @@
 import SwiftUI
 import Charts
 
-struct PagedChartView: View {
+struct PagedChartView<Placeholder: View>: View {
     @State private var pages: [ChartPage]
     @State private var selectedAggregator: ChartDataProvider
     @State private var selectedPage: String = ""
@@ -16,6 +16,7 @@ struct PagedChartView: View {
     private let rawEntries: [ChartEntry]
     private let span: TimeSpan
     private let palette: Palette
+    private let placeholder: () -> Placeholder
 
     private let xLabel = "Date"
     private let yLabel = "Value"
@@ -24,11 +25,13 @@ struct PagedChartView: View {
         rawEntries: [ChartEntry],
         span: TimeSpan,
         defaultAggregator: ChartDataProvider,
-        palette: Palette
+        palette: Palette,
+        placeholder: @escaping () -> Placeholder = ChartPlaceholderView.init
     ) {
         self.rawEntries = rawEntries
         self.span = span
         self.palette = palette
+        self.placeholder = placeholder
         self._selectedAggregator = State(initialValue: defaultAggregator)
         self._pages = State(initialValue: ChartPageProvider.pages(
             for: rawEntries,
@@ -40,7 +43,7 @@ struct PagedChartView: View {
     var body: some View {
         Group {
             if pages.isEmpty {
-                ChartPlaceholderView()
+                placeholder()
             } else {
                 TabView(selection: $selectedPage) {
                     ForEach(pages) { page in

@@ -8,15 +8,24 @@
 import SwiftUI
 import Charts
 
-struct OverviewChartView: View {
+struct OverviewChartView<Placeholder: View>: View {
     let entries: [ProcessedEntry]
     let palette: Palette
     private let xLabel = "Date"
     private let yLabel = "Value"
+    private let placeholder: () -> Placeholder
+
+    init(rawEntries: [ChartEntry], palette: Palette, placeholder: @escaping () -> Placeholder = ChartPlaceholderView.init) {
+        let provider = ChartDataProvider.automaticPreview
+        let processed = provider.processedEntries(from: rawEntries)
+        self.entries = Array(processed.prefix(60))
+        self.palette = palette
+        self.placeholder = placeholder
+    }
 
     var body: some View {
         if entries.isEmpty {
-            ChartPlaceholderView()
+            placeholder()
         } else {
             Chart(entries) { entry in
                 AreaMark(x: .value(xLabel, entry.timestamp), y: .value(yLabel, entry.value))
@@ -52,15 +61,5 @@ struct OverviewChartView: View {
         AxisMarks(preset: .aligned, values: .automatic(desiredCount: 3)) { _ in
             AxisValueLabel(collisionResolution: .greedy())
         }
-    }
-}
-
-// Auto-aggregation
-extension OverviewChartView {
-    init(rawEntries: [ChartEntry], palette: Palette) {
-        let provider = ChartDataProvider.automaticPreview
-        let processed = provider.processedEntries(from: rawEntries)
-        self.entries = Array(processed.prefix(60))
-        self.palette = palette
     }
 }

@@ -2,21 +2,29 @@
 //  PreviewChartView.swift
 //  TrackChartiOS
 //
-//  Created by LennartWisbar on 31.10.25.
+//  Created by Lennar tWisbar on 31.10.25.
 //
 
 import SwiftUI
 import Charts
 
-struct PreviewChartView: View {
+struct PreviewChartView<Placeholder: View>: View {
     let entries: [ProcessedEntry]
     let palette: Palette
+    private let placeholder: () -> Placeholder
     private let xLabel = "Date"
     private let yLabel = "Value"
 
+    init(rawEntries: [ChartEntry], palette: Palette, placeholder: @escaping () -> Placeholder = ChartPlaceholderView.init) {
+        let provider = ChartDataProvider.automaticPreview
+        self.entries = provider.processedEntries(from: rawEntries)
+        self.palette = palette
+        self.placeholder = placeholder
+    }
+
     var body: some View {
         if entries.isEmpty {
-            ChartPlaceholderView()
+            placeholder()
         } else {
             Chart(entries) { entry in
                 AreaMark(x: .value(xLabel, entry.timestamp), y: .value(yLabel, entry.value))
@@ -47,14 +55,5 @@ struct PreviewChartView: View {
             .init(color: palette.mid, location: 0.5),
             .init(color: palette.bottom, location: 1)
         ], startPoint: .top, endPoint: .bottom)
-    }
-}
-
-// Auto-aggregation
-extension PreviewChartView {
-    init(rawEntries: [ChartEntry], palette: Palette) {
-        let provider = ChartDataProvider.automaticPreview
-        self.entries = provider.processedEntries(from: rawEntries)
-        self.palette = palette
     }
 }

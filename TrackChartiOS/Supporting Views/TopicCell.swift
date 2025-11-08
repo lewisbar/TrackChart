@@ -36,18 +36,14 @@ struct TopicCell: View {
                 }
                 .padding(.horizontal)
 
-                ChartView(rawEntries: topic.entries, palette: topic.palette, mode: .preview)
-                    .padding(.horizontal)
-                    .padding(.bottom)
-
-//                ChartView(
-//                    rawEntries: topic.entries,
-//                    palette: topic.palette,
-//                    highlightsExtrema: false,
-//                    showsAxisLabels: false,
-//                    placeholder: { ChartPlaceholderView().font(.footnote).padding(.bottom, 30) }
-//                )
-//                .padding(.horizontal)
+                ChartView(
+                    rawEntries: topic.entries,
+                    palette: topic.palette,
+                    mode: .preview,
+                    placeholder: { ChartPlaceholderView().font(.footnote).padding(.bottom, 20) }
+                )
+                .padding(.horizontal)
+                .padding(.bottom)
             }
             Image(systemName: "chevron.right")
                 .tint(.secondary)
@@ -75,6 +71,17 @@ struct TopicCell: View {
                 ChartEntry(value: 10, timestamp: .now.advanced(by: -200))
             ],
             palette: .sunset
+        ),
+        showTopic: {}
+    )
+    .padding()
+
+    TopicCell(
+        topic: CellTopic(
+            id: UUID(),
+            name: "Topic 2",
+            entries: [],
+            palette: .coralReef
         ),
         showTopic: {}
     )
