@@ -19,7 +19,7 @@ struct ChartPageTests {
             .init(value: 1, timestamp: earliest),
             .init(value: 2, timestamp: latest),
             .init(value: 3, timestamp: middle)
-        ], span: .week, title: "Title")
+        ], span: .week, title: "Title", periodStart: Calendar.current.startOfDay(for: earliest))
 
         #expect(sut.dateRange == earliest...latest)
     }
@@ -29,7 +29,7 @@ struct ChartPageTests {
         let other1 = ProcessedEntry(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 200))
         let other2 = ProcessedEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 300))
 
-        let sut = ChartPage(entries: [other1, highest, other2], span: .week, title: "Title")
+        let sut = ChartPage(entries: [other1, highest, other2], span: .week, title: "Title", periodStart: Calendar.current.startOfDay(for: highest.timestamp))
 
         #expect(sut.isExtremum(highest))
         #expect(!sut.isExtremum(other1))
@@ -41,7 +41,7 @@ struct ChartPageTests {
         let other1 = ProcessedEntry(value: -4, timestamp: Date(timeIntervalSinceReferenceDate: 200))
         let other2 = ProcessedEntry(value: -2, timestamp: Date(timeIntervalSinceReferenceDate: 300))
 
-        let sut = ChartPage(entries: [other1, lowest, other2], span: .week, title: "Title")
+        let sut = ChartPage(entries: [other1, lowest, other2], span: .week, title: "Title", periodStart: Calendar.current.startOfDay(for: lowest.timestamp))
 
         #expect(sut.isExtremum(lowest))
         #expect(!sut.isExtremum(other1))
@@ -53,7 +53,7 @@ struct ChartPageTests {
         let other1 = ProcessedEntry(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 200))
         let lowest = ProcessedEntry(value: -2, timestamp: Date(timeIntervalSinceReferenceDate: 300))
 
-        let sut = ChartPage(entries: [other1, highest, lowest], span: .week, title: "Title")
+        let sut = ChartPage(entries: [other1, highest, lowest], span: .week, title: "Title", periodStart: Calendar.current.startOfDay(for: highest.timestamp))
 
         #expect(sut.isExtremum(highest))
         #expect(sut.isExtremum(lowest))
@@ -65,7 +65,7 @@ struct ChartPageTests {
         let other1 = ProcessedEntry(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 200))
         let other2 = ProcessedEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 300))
 
-        let sut = ChartPage(entries: [other1, highest, other2], span: .week, title: "Title")
+        let sut = ChartPage(entries: [other1, highest, other2], span: .week, title: "Title", periodStart: Calendar.current.startOfDay(for: highest.timestamp))
 
         #expect(sut.isMaxPositiveEntry(highest))
         #expect(!sut.isMaxPositiveEntry(other1))
@@ -77,7 +77,7 @@ struct ChartPageTests {
         let other1 = ProcessedEntry(value: -4, timestamp: Date(timeIntervalSinceReferenceDate: 200))
         let other2 = ProcessedEntry(value: -2, timestamp: Date(timeIntervalSinceReferenceDate: 300))
 
-        let sut = ChartPage(entries: [other1, lowest, other2], span: .week, title: "Title")
+        let sut = ChartPage(entries: [other1, lowest, other2], span: .week, title: "Title", periodStart: Calendar.current.startOfDay(for: lowest.timestamp))
 
         #expect(!sut.isMaxPositiveEntry(lowest))
         #expect(!sut.isMaxPositiveEntry(other1))
@@ -89,7 +89,7 @@ struct ChartPageTests {
         let other1 = ProcessedEntry(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 200))
         let lowest = ProcessedEntry(value: -2, timestamp: Date(timeIntervalSinceReferenceDate: 300))
 
-        let sut = ChartPage(entries: [other1, highest, lowest], span: .week, title: "Title")
+        let sut = ChartPage(entries: [other1, highest, lowest], span: .week, title: "Title", periodStart: Calendar.current.startOfDay(for: highest.timestamp))
 
         #expect(sut.isMaxPositiveEntry(highest))
         #expect(!sut.isMaxPositiveEntry(lowest))
@@ -101,7 +101,7 @@ struct ChartPageTests {
         let other1 = ProcessedEntry(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 200))
         let other2 = ProcessedEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 300))
 
-        let sut = ChartPage(entries: [other1, highest, other2], span: .week, title: "Title")
+        let sut = ChartPage(entries: [other1, highest, other2], span: .week, title: "Title", periodStart: Calendar.current.startOfDay(for: highest.timestamp))
 
         #expect(!sut.isMinNegativeEntry(highest))
         #expect(!sut.isMinNegativeEntry(other1))
@@ -113,7 +113,7 @@ struct ChartPageTests {
         let other1 = ProcessedEntry(value: -4, timestamp: Date(timeIntervalSinceReferenceDate: 200))
         let other2 = ProcessedEntry(value: -2, timestamp: Date(timeIntervalSinceReferenceDate: 300))
 
-        let sut = ChartPage(entries: [other1, lowest, other2], span: .week, title: "Title")
+        let sut = ChartPage(entries: [other1, lowest, other2], span: .week, title: "Title", periodStart: Calendar.current.startOfDay(for: lowest.timestamp))
 
         #expect(sut.isMinNegativeEntry(lowest))
         #expect(!sut.isMinNegativeEntry(other1))
@@ -125,7 +125,7 @@ struct ChartPageTests {
         let other1 = ProcessedEntry(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 200))
         let lowest = ProcessedEntry(value: -2, timestamp: Date(timeIntervalSinceReferenceDate: 300))
 
-        let sut = ChartPage(entries: [other1, highest, lowest], span: .week, title: "Title")
+        let sut = ChartPage(entries: [other1, highest, lowest], span: .week, title: "Title", periodStart: Calendar.current.startOfDay(for: highest.timestamp))
 
         #expect(sut.isMinNegativeEntry(lowest))
         #expect(!sut.isMinNegativeEntry(highest))
