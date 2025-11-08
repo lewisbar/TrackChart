@@ -36,7 +36,7 @@ extension View {
         cornerRadius: CGFloat = 10,
         backgroundColor: Color = Color(uiColor: .systemBackground),
         shadowRadius: CGFloat = 5,
-        padding: CGFloat? = nil
+        padding: CGFloat? = 0
     ) -> some View {
         modifier(
             CardModifier(
@@ -57,5 +57,5 @@ extension View {
         Text("Hello world!")
     }
     .font(.largeTitle)
-    .card()
+    .card(padding: nil)
 }

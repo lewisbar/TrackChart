@@ -55,7 +55,7 @@ struct TopicCell: View {
         .padding(.top)
         .padding(.horizontal, 4)
         .padding(.bottom, 4)
-        .card(padding: 0)
+        .card()
         .frame(height: 150)
     }
 }

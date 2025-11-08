@@ -62,7 +62,7 @@ struct TopicView: View {
             palette: palette,
             mode: .paged(span, defaultAggregator: aggregator)
         )
-        .card(padding: 0)
+        .card()
         .frame(height: 260)
         .listRowSeparator(.hidden)
     }
