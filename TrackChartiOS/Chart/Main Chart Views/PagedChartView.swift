@@ -83,6 +83,11 @@ struct PagedChartView<Placeholder: View>: View {
     private func chart(for page: ChartPage) -> some View {
         VStack {
             ZStack {
+                Text(span.title)
+                    .font(.caption2)
+                    .foregroundStyle(Color.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
                 Text(page.title)
                     .font(.caption).bold()
 
