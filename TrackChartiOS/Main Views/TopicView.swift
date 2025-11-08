@@ -47,7 +47,7 @@ struct TopicView: View {
 
     private var chartList: some View {
         List {
-            ChartView(rawEntries: entries, palette: palette, mode: .overview)
+            overviewChart
             pagedCard(span: .week,       default: .dailySum)
             pagedCard(span: .month,      default: .dailySum)
             pagedCard(span: .sixMonths,  default: .weeklySum)
@@ -56,29 +56,23 @@ struct TopicView: View {
         }
     }
 
+    private var overviewChart: some View {
+        ChartView(rawEntries: entries, palette: palette, mode: .overview)
+            .frame(height: 150)
+            .padding(.top)
+            .padding(.horizontal)
+    }
+
     private func pagedCard(span: TimeSpan, default aggregator: ChartDataProvider) -> some View {
-        PagedChartView(
+        ChartView(
             rawEntries: entries,
-            span: span,
-            defaultAggregator: aggregator,
-            palette: palette
+            palette: palette,
+            mode: .paged(span, defaultAggregator: aggregator)
         )
         .card()
         .frame(height: 260)
         .listRowSeparator(.hidden)
     }
-
-//    private func chartCard(named title: String) -> some View {
-//        VStack {
-//            Text(title)
-//                .frame(maxWidth: .infinity, alignment: .leading)
-//
-//            ChartView(rawEntries: entries, palette: palette)
-//        }
-//        .card()
-//        .frame(height: 220)
-//        .listRowSeparator(.hidden)
-//    }
 
     private var plusButton: some View {
         VStack {
@@ -115,7 +109,7 @@ struct TopicView: View {
     TopicView(
         name: .constant("Topic 1"),
         palette: .constant(.ocean),
-        entries: [1, 2, 4, 8, 7, 3, 0, -2, -8, -3, 1].enumerated().map { index, value in
+        entries: [1, 2, 4, 8, 17, 3, 0, -2, -8, -3, 1].enumerated().map { index, value in
             ChartEntry(
                 value: Double(value),
                 timestamp: .now.advanced(by: 86_400 * Double(index) - 40 * 86_400)
@@ -124,5 +118,4 @@ struct TopicView: View {
         submitNewValue: { _ in },
         deleteLastValue: {}
     )
-    .padding()
 }

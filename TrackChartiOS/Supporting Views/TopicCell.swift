@@ -36,22 +36,21 @@ struct TopicCell: View {
                 }
                 .padding(.horizontal)
 
-                PreviewChartView(rawEntries: topic.entries, palette: topic.palette)
-                    .padding(.horizontal)
-                    .padding(.bottom, 4)
-
-//                ChartView(
-//                    rawEntries: topic.entries,
-//                    palette: topic.palette,
-//                    highlightsExtrema: false,
-//                    showsAxisLabels: false,
-//                    placeholder: { ChartPlaceholderView().font(.footnote).padding(.bottom, 30) }
-//                )
-//                .padding(.horizontal)
+                ChartView(
+                    rawEntries: topic.entries,
+                    palette: topic.palette,
+                    mode: .preview,
+                    placeholder: { ChartPlaceholderView().font(.footnote).padding(.bottom, 20) }
+                )
+                .padding(.horizontal)
+                .padding(.bottom)
             }
             Image(systemName: "chevron.right")
                 .tint(.secondary)
         }
+        .padding(.top)
+        .padding(.horizontal, 4)
+        .padding(.bottom, 4)
         .card()
         .frame(height: 150)
     }
@@ -63,15 +62,26 @@ struct TopicCell: View {
             id: UUID(),
             name: "Topic 1",
             entries: [
-                ChartEntry(value: 0, timestamp: .now),
-                ChartEntry(value: -3, timestamp: .now),
-                ChartEntry(value: -2, timestamp: .now),
-                ChartEntry(value: 1, timestamp: .now),
-                ChartEntry(value: 5, timestamp: .now),
-                ChartEntry(value: 9, timestamp: .now),
-                ChartEntry(value: 10, timestamp: .now)
+                ChartEntry(value: 0, timestamp: .now.advanced(by: -800)),
+                ChartEntry(value: -3, timestamp: .now.advanced(by: -700)),
+                ChartEntry(value: -2, timestamp: .now.advanced(by: -600)),
+                ChartEntry(value: 1, timestamp: .now.advanced(by: -500)),
+                ChartEntry(value: 5, timestamp: .now.advanced(by: -400)),
+                ChartEntry(value: 9, timestamp: .now.advanced(by: -300)),
+                ChartEntry(value: 10, timestamp: .now.advanced(by: -200))
             ],
             palette: .sunset
+        ),
+        showTopic: {}
+    )
+    .padding()
+
+    TopicCell(
+        topic: CellTopic(
+            id: UUID(),
+            name: "Topic 2",
+            entries: [],
+            palette: .coralReef
         ),
         showTopic: {}
     )

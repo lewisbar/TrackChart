@@ -14,19 +14,27 @@ enum ChartMode {
     case overview
 }
 
-struct ChartView: View {
+struct ChartView<Placeholder: View>: View {
     let rawEntries: [ChartEntry]
     let palette: Palette
     let mode: ChartMode
+    private let placeholder: () -> Placeholder
+
+    init(rawEntries: [ChartEntry], palette: Palette, mode: ChartMode, placeholder: @escaping () -> Placeholder = ChartPlaceholderView.init) {
+        self.rawEntries = rawEntries
+        self.palette = palette
+        self.mode = mode
+        self.placeholder = placeholder
+    }
 
     var body: some View {
         switch mode {
         case .paged(let span, let aggregator):
-            PagedChartView(rawEntries: rawEntries, span: span, defaultAggregator: aggregator, palette: palette)
+            PagedChartView(rawEntries: rawEntries, span: span, defaultAggregator: aggregator, palette: palette, placeholder: placeholder)
         case .preview:
-            PreviewChartView(rawEntries: rawEntries, palette: palette)
+            PreviewChartView(rawEntries: rawEntries, palette: palette, placeholder: placeholder)
         case .overview:
-            OverviewChartView(rawEntries: rawEntries, palette: palette)
+            OverviewChartView(rawEntries: rawEntries, palette: palette, placeholder: placeholder)
         }
     }
 }
@@ -55,10 +63,13 @@ struct ChartView: View {
         .init(value: 3, timestamp: .now.advanced(by: -86_400 * 0.4))
     ]
 
-    VStack {
-        ChartView(rawEntries: entries, palette: .fire, mode: .preview).card()
-        ChartView(rawEntries: entries, palette: .fire, mode: .overview).card()
-        ChartView(rawEntries: entries, palette: .fire, mode: .paged(.week, defaultAggregator: .dailySum)).card()
+    ScrollView {
+        VStack {
+            ChartView(rawEntries: entries, palette: .fire, mode: .preview).frame(height: 260).card(padding: nil)
+            ChartView(rawEntries: entries, palette: .fire, mode: .overview).frame(height: 260).card(padding: nil)
+            ChartView(rawEntries: entries, palette: .fire, mode: .paged(.week, defaultAggregator: .dailySum)).frame(height: 260).card()
+            ChartView(rawEntries: [], palette: .arcticIce, mode: .preview).frame(height: 260).card(padding: nil)
+        }
+        .padding()
     }
-    .padding()
 }
