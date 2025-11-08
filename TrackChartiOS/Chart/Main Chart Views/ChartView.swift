@@ -55,10 +55,13 @@ struct ChartView: View {
         .init(value: 3, timestamp: .now.advanced(by: -86_400 * 0.4))
     ]
 
-    VStack {
-        ChartView(rawEntries: entries, palette: .fire, mode: .preview).card()
-        ChartView(rawEntries: entries, palette: .fire, mode: .overview).card()
-        ChartView(rawEntries: entries, palette: .fire, mode: .paged(.week, defaultAggregator: .dailySum)).card()
+    ScrollView {
+        VStack {
+            ChartView(rawEntries: entries, palette: .fire, mode: .preview).frame(height: 260).card()
+            ChartView(rawEntries: entries, palette: .fire, mode: .overview).frame(height: 260).card()
+            ChartView(rawEntries: entries, palette: .fire, mode: .paged(.week, defaultAggregator: .dailySum)).frame(height: 260).card(padding: 0)
+            ChartView(rawEntries: [], palette: .arcticIce, mode: .preview).frame(height: 260).card()
+        }
+        .padding()
     }
-    .padding()
 }

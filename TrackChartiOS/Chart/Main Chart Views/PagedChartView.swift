@@ -45,7 +45,8 @@ struct PagedChartView: View {
                 TabView(selection: $selectedPage) {
                     ForEach(pages) { page in
                         chart(for: page)
-                            .padding(.bottom, 44)
+                            .padding(.bottom, 24)
+                            .padding(.horizontal, 4)
                             .tag(page.id)
                     }
                 }
@@ -96,6 +97,7 @@ struct PagedChartView: View {
             .chartXScale(domain: page.dateRange)
             .chartXAxis(content: xAxisContent)
         }
+        .padding()
     }
 
     private var aggregatorMenu: some View {

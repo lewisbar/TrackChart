@@ -47,7 +47,7 @@ struct TopicView: View {
 
     private var chartList: some View {
         List {
-            ChartView(rawEntries: entries, palette: palette, mode: .overview)
+            ChartView(rawEntries: entries, palette: palette, mode: .overview).padding()
             pagedCard(span: .week,       default: .dailySum)
             pagedCard(span: .month,      default: .dailySum)
             pagedCard(span: .sixMonths,  default: .weeklySum)
@@ -57,13 +57,12 @@ struct TopicView: View {
     }
 
     private func pagedCard(span: TimeSpan, default aggregator: ChartDataProvider) -> some View {
-        PagedChartView(
+        ChartView(
             rawEntries: entries,
-            span: span,
-            defaultAggregator: aggregator,
-            palette: palette
+            palette: palette,
+            mode: .paged(span, defaultAggregator: aggregator)
         )
-        .card()
+        .card(padding: 0)
         .frame(height: 260)
         .listRowSeparator(.hidden)
     }
@@ -115,7 +114,7 @@ struct TopicView: View {
     TopicView(
         name: .constant("Topic 1"),
         palette: .constant(.ocean),
-        entries: [1, 2, 4, 8, 7, 3, 0, -2, -8, -3, 1].enumerated().map { index, value in
+        entries: [1, 2, 4, 8, 17, 3, 0, -2, -8, -3, 1].enumerated().map { index, value in
             ChartEntry(
                 value: Double(value),
                 timestamp: .now.advanced(by: 86_400 * Double(index) - 40 * 86_400)
@@ -124,5 +123,4 @@ struct TopicView: View {
         submitNewValue: { _ in },
         deleteLastValue: {}
     )
-    .padding()
 }
