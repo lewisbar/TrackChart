@@ -18,4 +18,3 @@ public final class EntryEntity {
         self.timestamp = timestamp
     }
 }
-

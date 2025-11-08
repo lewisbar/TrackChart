@@ -24,7 +24,7 @@ public final class TopicEntity {
         entries?.sorted(by: { $0.timestamp < $1.timestamp }) ?? []
     }
 
-    public init(id: UUID = UUID(), name: String, entries: [EntryEntity]? = nil, palette: String, sortIndex: Int) {
+    public init(id: UUID = UUID(), name: String, entries: [EntryEntity]? = [], palette: String, sortIndex: Int) {
         self.id = id
         self.name = name
         self.entries = entries

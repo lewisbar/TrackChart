@@ -1,0 +1,64 @@
+//
+//  ChartView.swift
+//  TrackChart
+//
+//  Created by Lennart Wisbar on 15.09.25.
+//
+
+import SwiftUI
+import Charts
+
+enum ChartMode {
+    case paged(TimeSpan, defaultAggregator: ChartDataProvider)
+    case preview
+    case overview
+}
+
+struct ChartView: View {
+    let rawEntries: [ChartEntry]
+    let palette: Palette
+    let mode: ChartMode
+
+    var body: some View {
+        switch mode {
+        case .paged(let span, let aggregator):
+            PagedChartView(rawEntries: rawEntries, span: span, defaultAggregator: aggregator, palette: palette)
+        case .preview:
+            PreviewChartView(rawEntries: rawEntries, palette: palette)
+        case .overview:
+            OverviewChartView(rawEntries: rawEntries, palette: palette)
+        }
+    }
+}
+
+#Preview {
+    let entries: [ChartEntry] = [
+        .init(value: 2.3, timestamp: .now.advanced(by: -86_400 * 16)),
+        .init(value: -2.3, timestamp: .now.advanced(by: -86_400 * 15)),
+        .init(value: 2.5, timestamp: .now.advanced(by: -86_400 * 14)),
+        .init(value: 1.3, timestamp: .now.advanced(by: -86_400 * 13)),
+        .init(value: 0, timestamp: .now.advanced(by: -86_400 * 12)),
+        .init(value: -1, timestamp: .now.advanced(by: -86_400 * 11)),
+        .init(value: 2, timestamp: .now.advanced(by: -86_400 * 10)),
+        .init(value: 1, timestamp: .now.advanced(by: -86_400 * 9)),
+        .init(value: 2.3, timestamp: .now.advanced(by: -86_400 * 8)),
+        .init(value: -2.3, timestamp: .now.advanced(by: -86_400 * 7)),
+        .init(value: 2.5, timestamp: .now.advanced(by: -86_400 * 6)),
+        .init(value: 1.3, timestamp: .now.advanced(by: -86_400 * 5)),
+        .init(value: 0, timestamp: .now.advanced(by: -86_400 * 4)),
+        .init(value: -1, timestamp: .now.advanced(by: -86_400 * 3)),
+        .init(value: 0, timestamp: .now.advanced(by: -86_400 * 2)),
+        .init(value: 2, timestamp: .now.advanced(by: -86_400 * 1.8)),
+        .init(value: 4, timestamp: .now.advanced(by: -86_400 * 1.4)),
+        .init(value: 1, timestamp: .now.advanced(by: -86_400 * 1)),
+        .init(value: -1, timestamp: .now.advanced(by: -86_400 * 0.9)),
+        .init(value: 3, timestamp: .now.advanced(by: -86_400 * 0.4))
+    ]
+
+    VStack {
+        ChartView(rawEntries: entries, palette: .fire, mode: .preview).card()
+        ChartView(rawEntries: entries, palette: .fire, mode: .overview).card()
+        ChartView(rawEntries: entries, palette: .fire, mode: .paged(.week, defaultAggregator: .dailySum)).card()
+    }
+    .padding()
+}

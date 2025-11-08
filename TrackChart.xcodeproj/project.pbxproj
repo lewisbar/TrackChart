@@ -9,9 +9,6 @@
 /* Begin PBXBuildFile section */
 		301C95CB2E8187EF008E3F16 /* Domain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 301C95A82E818652008E3F16 /* Domain.framework */; };
 		301C95CC2E8187EF008E3F16 /* Domain.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 301C95A82E818652008E3F16 /* Domain.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		3049D7D82E957FB000BEECA3 /* Presentation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3049D7D02E957FB000BEECA3 /* Presentation.framework */; };
-		3049D7ED2E9580A600BEECA3 /* Presentation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3049D7D02E957FB000BEECA3 /* Presentation.framework */; };
-		3049D7EE2E9580A600BEECA3 /* Presentation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3049D7D02E957FB000BEECA3 /* Presentation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		30A31C772EA6D27C00DEB9EB /* Persistence.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A31C6F2EA6D27C00DEB9EB /* Persistence.framework */; };
 		30A31C932EA6DF3500DEB9EB /* Persistence.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A31C6F2EA6D27C00DEB9EB /* Persistence.framework */; };
 		30A31C942EA6DF3500DEB9EB /* Persistence.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 30A31C6F2EA6D27C00DEB9EB /* Persistence.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -31,20 +28,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 30BDE0732E7854E000199C93;
 			remoteInfo = TrackChart;
-		};
-		3049D7D92E957FB000BEECA3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 30BDE06C2E7854DF00199C93 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 3049D7CF2E957FB000BEECA3;
-			remoteInfo = Presentation;
-		};
-		3049D7EF2E9580A600BEECA3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 30BDE06C2E7854DF00199C93 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 3049D7CF2E957FB000BEECA3;
-			remoteInfo = Presentation;
 		};
 		30A31C782EA6D27C00DEB9EB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -70,7 +53,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				301C95CC2E8187EF008E3F16 /* Domain.framework in Embed Frameworks */,
-				3049D7EE2E9580A600BEECA3 /* Presentation.framework in Embed Frameworks */,
 				30A31C942EA6DF3500DEB9EB /* Persistence.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -80,13 +62,11 @@
 
 /* Begin PBXFileReference section */
 		301C95A82E818652008E3F16 /* Domain.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Domain.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		30336FEA2EB6CEF40028D129 /* TrackChartiOS.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = TrackChartiOS.xctestplan; path = TestPlans/TrackChartiOS.xctestplan; sourceTree = "<group>"; };
 		30438AD02E7990AF00F3C852 /* TrackChartiOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TrackChartiOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		3049D7D02E957FB000BEECA3 /* Presentation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Presentation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		3049D7D72E957FB000BEECA3 /* PresentationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PresentationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		30A31C6F2EA6D27C00DEB9EB /* Persistence.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Persistence.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		30A31C762EA6D27C00DEB9EB /* PersistenceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PersistenceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		30A31C902EA6D41800DEB9EB /* Persistence.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = Persistence.xctestplan; path = TestPlans/Persistence.xctestplan; sourceTree = "<group>"; };
-		30A31C922EA6D4D900DEB9EB /* Presentation.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = Presentation.xctestplan; path = TestPlans/Presentation.xctestplan; sourceTree = "<group>"; };
 		30BDE0742E7854E000199C93 /* TrackChartiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TrackChartiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		30C88B3A2E98863800224777 /* CI_macOS.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = CI_macOS.xctestplan; path = TestPlans/CI_macOS.xctestplan; sourceTree = "<group>"; };
 		30E8561F2EB023C000668B7A /* CI_iOS.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = CI_iOS.xctestplan; path = TestPlans/CI_iOS.xctestplan; sourceTree = "<group>"; };
@@ -99,13 +79,6 @@
 				Domain.h,
 			);
 			target = 301C95A72E818652008E3F16 /* Domain */;
-		};
-		3049D7DF2E957FB000BEECA3 /* Exceptions for "Presentation" folder in "Presentation" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			publicHeaders = (
-				Presentation.h,
-			);
-			target = 3049D7CF2E957FB000BEECA3 /* Presentation */;
 		};
 		30A31C822EA6D27C00DEB9EB /* Exceptions for "Persistence" folder in "Persistence" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
@@ -128,19 +101,6 @@
 		30438AD12E7990AF00F3C852 /* TrackChartiOSTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = TrackChartiOSTests;
-			sourceTree = "<group>";
-		};
-		3049D7D12E957FB000BEECA3 /* Presentation */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				3049D7DF2E957FB000BEECA3 /* Exceptions for "Presentation" folder in "Presentation" target */,
-			);
-			path = Presentation;
-			sourceTree = "<group>";
-		};
-		3049D7DB2E957FB000BEECA3 /* PresentationTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = PresentationTests;
 			sourceTree = "<group>";
 		};
 		30A31C702EA6D27C00DEB9EB /* Persistence */ = {
@@ -178,21 +138,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		3049D7CD2E957FB000BEECA3 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		3049D7D42E957FB000BEECA3 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				3049D7D82E957FB000BEECA3 /* Presentation.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		30A31C6C2EA6D27C00DEB9EB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -213,7 +158,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				301C95CB2E8187EF008E3F16 /* Domain.framework in Frameworks */,
-				3049D7ED2E9580A600BEECA3 /* Presentation.framework in Frameworks */,
 				30A31C932EA6DF3500DEB9EB /* Persistence.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -231,15 +175,13 @@
 		30BDE06B2E7854DF00199C93 = {
 			isa = PBXGroup;
 			children = (
+				30336FEA2EB6CEF40028D129 /* TrackChartiOS.xctestplan */,
 				30C88B3A2E98863800224777 /* CI_macOS.xctestplan */,
 				30A31C902EA6D41800DEB9EB /* Persistence.xctestplan */,
-				30A31C922EA6D4D900DEB9EB /* Presentation.xctestplan */,
 				30E8561F2EB023C000668B7A /* CI_iOS.xctestplan */,
 				30BDE0762E7854E000199C93 /* TrackChartiOS */,
 				30438AD12E7990AF00F3C852 /* TrackChartiOSTests */,
 				301C95A92E818652008E3F16 /* Domain */,
-				3049D7D12E957FB000BEECA3 /* Presentation */,
-				3049D7DB2E957FB000BEECA3 /* PresentationTests */,
 				30A31C702EA6D27C00DEB9EB /* Persistence */,
 				30A31C7A2EA6D27C00DEB9EB /* PersistenceTests */,
 				305005872E7A152000DEF76D /* Frameworks */,
@@ -253,8 +195,6 @@
 				30BDE0742E7854E000199C93 /* TrackChartiOS.app */,
 				30438AD02E7990AF00F3C852 /* TrackChartiOSTests.xctest */,
 				301C95A82E818652008E3F16 /* Domain.framework */,
-				3049D7D02E957FB000BEECA3 /* Presentation.framework */,
-				3049D7D72E957FB000BEECA3 /* PresentationTests.xctest */,
 				30A31C6F2EA6D27C00DEB9EB /* Persistence.framework */,
 				30A31C762EA6D27C00DEB9EB /* PersistenceTests.xctest */,
 			);
@@ -265,13 +205,6 @@
 
 /* Begin PBXHeadersBuildPhase section */
 		301C95A32E818652008E3F16 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		3049D7CB2E957FB000BEECA3 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -334,52 +267,6 @@
 			productReference = 30438AD02E7990AF00F3C852 /* TrackChartiOSTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		3049D7CF2E957FB000BEECA3 /* Presentation */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 3049D7E02E957FB000BEECA3 /* Build configuration list for PBXNativeTarget "Presentation" */;
-			buildPhases = (
-				3049D7CB2E957FB000BEECA3 /* Headers */,
-				3049D7CC2E957FB000BEECA3 /* Sources */,
-				3049D7CD2E957FB000BEECA3 /* Frameworks */,
-				3049D7CE2E957FB000BEECA3 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				3049D7D12E957FB000BEECA3 /* Presentation */,
-			);
-			name = Presentation;
-			packageProductDependencies = (
-			);
-			productName = Presentation;
-			productReference = 3049D7D02E957FB000BEECA3 /* Presentation.framework */;
-			productType = "com.apple.product-type.framework";
-		};
-		3049D7D62E957FB000BEECA3 /* PresentationTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 3049D7E32E957FB000BEECA3 /* Build configuration list for PBXNativeTarget "PresentationTests" */;
-			buildPhases = (
-				3049D7D32E957FB000BEECA3 /* Sources */,
-				3049D7D42E957FB000BEECA3 /* Frameworks */,
-				3049D7D52E957FB000BEECA3 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				3049D7DA2E957FB000BEECA3 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				3049D7DB2E957FB000BEECA3 /* PresentationTests */,
-			);
-			name = PresentationTests;
-			packageProductDependencies = (
-			);
-			productName = PresentationTests;
-			productReference = 3049D7D72E957FB000BEECA3 /* PresentationTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 		30A31C6E2EA6D27C00DEB9EB /* Persistence */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 30A31C832EA6D27C00DEB9EB /* Build configuration list for PBXNativeTarget "Persistence" */;
@@ -439,7 +326,6 @@
 			);
 			dependencies = (
 				301C95CE2E8187EF008E3F16 /* PBXTargetDependency */,
-				3049D7F02E9580A600BEECA3 /* PBXTargetDependency */,
 				30A31C962EA6DF3500DEB9EB /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
@@ -468,12 +354,6 @@
 					30438ACF2E7990AF00F3C852 = {
 						CreatedOnToolsVersion = 16.1;
 						TestTargetID = 30BDE0732E7854E000199C93;
-					};
-					3049D7CF2E957FB000BEECA3 = {
-						CreatedOnToolsVersion = 16.1;
-					};
-					3049D7D62E957FB000BEECA3 = {
-						CreatedOnToolsVersion = 16.1;
 					};
 					30A31C6E2EA6D27C00DEB9EB = {
 						CreatedOnToolsVersion = 16.1;
@@ -504,8 +384,6 @@
 				30BDE0732E7854E000199C93 /* TrackChartiOS */,
 				30438ACF2E7990AF00F3C852 /* TrackChartiOSTests */,
 				301C95A72E818652008E3F16 /* Domain */,
-				3049D7CF2E957FB000BEECA3 /* Presentation */,
-				3049D7D62E957FB000BEECA3 /* PresentationTests */,
 				30A31C6E2EA6D27C00DEB9EB /* Persistence */,
 				30A31C752EA6D27C00DEB9EB /* PersistenceTests */,
 			);
@@ -521,20 +399,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		30438ACE2E7990AF00F3C852 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		3049D7CE2E957FB000BEECA3 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		3049D7D52E957FB000BEECA3 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -579,20 +443,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		3049D7CC2E957FB000BEECA3 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		3049D7D32E957FB000BEECA3 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		30A31C6B2EA6D27C00DEB9EB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -626,16 +476,6 @@
 			isa = PBXTargetDependency;
 			target = 30BDE0732E7854E000199C93 /* TrackChartiOS */;
 			targetProxy = 30438AD42E7990AF00F3C852 /* PBXContainerItemProxy */;
-		};
-		3049D7DA2E957FB000BEECA3 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 3049D7CF2E957FB000BEECA3 /* Presentation */;
-			targetProxy = 3049D7D92E957FB000BEECA3 /* PBXContainerItemProxy */;
-		};
-		3049D7F02E9580A600BEECA3 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 3049D7CF2E957FB000BEECA3 /* Presentation */;
-			targetProxy = 3049D7EF2E9580A600BEECA3 /* PBXContainerItemProxy */;
 		};
 		30A31C792EA6D27C00DEB9EB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -759,120 +599,6 @@
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TrackChartiOS.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TrackChartiOS";
-			};
-			name = Release;
-		};
-		3049D7E12E957FB000BEECA3 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = 9SPL76B3GR;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				ENABLE_MODULE_VERIFIER = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 14.7;
-				MARKETING_VERSION = 1.0;
-				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
-				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
-				PRODUCT_BUNDLE_IDENTIFIER = com.lewisbar.Presentation;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_INSTALL_OBJC_HEADER = NO;
-				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Debug;
-		};
-		3049D7E22E957FB000BEECA3 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = 9SPL76B3GR;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				ENABLE_MODULE_VERIFIER = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 14.7;
-				MARKETING_VERSION = 1.0;
-				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
-				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
-				PRODUCT_BUNDLE_IDENTIFIER = com.lewisbar.Presentation;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_INSTALL_OBJC_HEADER = NO;
-				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
-		};
-		3049D7E42E957FB000BEECA3 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 9SPL76B3GR;
-				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 14.7;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.lewisbar.PresentationTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 6.0;
-			};
-			name = Debug;
-		};
-		3049D7E52E957FB000BEECA3 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 9SPL76B3GR;
-				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 14.7;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.lewisbar.PresentationTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 6.0;
 			};
 			name = Release;
 		};
@@ -1185,24 +911,6 @@
 			buildConfigurations = (
 				30438AD62E7990AF00F3C852 /* Debug */,
 				30438AD72E7990AF00F3C852 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		3049D7E02E957FB000BEECA3 /* Build configuration list for PBXNativeTarget "Presentation" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				3049D7E12E957FB000BEECA3 /* Debug */,
-				3049D7E22E957FB000BEECA3 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		3049D7E32E957FB000BEECA3 /* Build configuration list for PBXNativeTarget "PresentationTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				3049D7E42E957FB000BEECA3 /* Debug */,
-				3049D7E52E957FB000BEECA3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
