@@ -40,6 +40,15 @@ public enum TimeSpan: CaseIterable {
         }
     }
 
+    public var naturalAlignment: Calendar.Component {
+        switch self {
+        case .week:       return .weekOfYear
+        case .month:      return .month
+        case .sixMonths:  return .month  // Jan/Jul
+        case .oneYear:    return .year
+        }
+    }
+
     public var availableDataProviders: [ChartDataProvider] {
         switch self {
         case .week, .month: [.dailySum, .dailyAverage]
