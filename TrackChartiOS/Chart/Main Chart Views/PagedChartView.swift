@@ -202,11 +202,9 @@ struct PagedChartView<Placeholder: View>: View {
         VStack {
             PagedChartView(rawEntries: entries, span: .week, defaultAggregator: .dailySum, palette: .arcticIce).card().frame(height: 250)
             PagedChartView(rawEntries: entries, span: .month, defaultAggregator: .dailySum, palette: .aurora).card().frame(height: 250)
-            PagedChartView(rawEntries: entries, span: .sixMonths, defaultAggregator: .weeklySum, palette: .coralReef).card().frame(height: 250)
             PagedChartView(rawEntries: entries, span: .oneYear, defaultAggregator: .monthlySum, palette: .desertDune).card().frame(height: 250)
             PagedChartView(rawEntries: entries, span: .week, defaultAggregator: .dailyAverage, palette: .fire).card().frame(height: 250)
             PagedChartView(rawEntries: entries, span: .month, defaultAggregator: .dailyAverage, palette: .fire).card().frame(height: 250)
-            PagedChartView(rawEntries: entries, span: .sixMonths, defaultAggregator: .weeklyAverage, palette: .lavenderField).card().frame(height: 250)
             PagedChartView(rawEntries: entries, span: .oneYear, defaultAggregator: .monthlyAverage, palette: .meadow).card().frame(height: 250)
         }
         .padding()

@@ -50,7 +50,6 @@ struct TopicView: View {
             overviewChart
             pagedCard(span: .week,       default: .dailySum)
             pagedCard(span: .month,      default: .dailySum)
-            pagedCard(span: .sixMonths,  default: .weeklySum)
             pagedCard(span: .oneYear,    default: .monthlySum)
             Spacer()
         }

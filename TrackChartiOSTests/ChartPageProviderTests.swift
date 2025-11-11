@@ -32,9 +32,9 @@ struct ChartPageProviderTests {
     @Test("Last entry is included in results")
     func lastEntryIncluded() {
         let entries = [
-            ChartEntry(value: 1, timestamp: date(2024, 11, 1)),
-            ChartEntry(value: 2, timestamp: date(2024, 11, 5)),
-            ChartEntry(value: 3, timestamp: date(2024, 11, 7)) // Last entry
+            ChartEntry(value: 1, timestamp: date(2025, 11, 3)),
+            ChartEntry(value: 2, timestamp: date(2025, 11, 5)),
+            ChartEntry(value: 3, timestamp: date(2025, 11, 7)) // Last entry
         ]
 
         let pages = ChartPageProvider.pages(for: entries, span: .week, aggregator: .dailySum)
@@ -42,10 +42,7 @@ struct ChartPageProviderTests {
         // All entries should be in the same week
         #expect(pages.count == 1)
         #expect(pages[0].entries.count == 3)
-
-        // Verify last entry is present
-        let lastValue = pages[0].entries.last?.value
-        #expect(lastValue == 3)
+        #expect(pages.map { $0.entries.map(\.value) } == [[1.0, 2.0, 3.0]])
     }
 
     @Test("Entries spanning two weeks create two pages")
@@ -83,9 +80,9 @@ struct ChartPageProviderTests {
     @Test("Unsorted entries are handled correctly")
     func unsortedEntries() {
         let entries = [
-            ChartEntry(value: 3, timestamp: date(2024, 11, 7)),
-            ChartEntry(value: 1, timestamp: date(2024, 11, 1)),
-            ChartEntry(value: 2, timestamp: date(2024, 11, 5))
+            ChartEntry(value: 3, timestamp: date(2025, 11, 7)),
+            ChartEntry(value: 1, timestamp: date(2025, 11, 3)),
+            ChartEntry(value: 2, timestamp: date(2025, 11, 5))
         ]
 
         let pages = ChartPageProvider.pages(for: entries, span: .week, aggregator: .dailySum)
@@ -94,8 +91,7 @@ struct ChartPageProviderTests {
         #expect(pages[0].entries.count == 3)
 
         // Entries should be sorted by timestamp
-        let values = pages[0].entries.map(\.value)
-        #expect(values == [1, 2, 3])
+        #expect(pages.map { $0.entries.map(\.value) } == [[1.0, 2.0, 3.0]])
     }
 
     @Test("Entries at midnight are included correctly")
@@ -144,19 +140,6 @@ struct ChartPageProviderTests {
         #expect(pages[0].entries[0].value == 1)
         // Last page should contain November entry
         #expect(pages[2].entries[0].value == 3)
-    }
-
-    @Test("Six months span groups correctly")
-    func sixMonthsSpan() {
-        let entries = [
-            ChartEntry(value: 1, timestamp: date(2024, 1, 15)),  // First period
-            ChartEntry(value: 2, timestamp: date(2024, 7, 15)),  // Second period
-            ChartEntry(value: 3, timestamp: date(2024, 11, 7))   // Still second period
-        ]
-
-        let pages = ChartPageProvider.pages(for: entries, span: .sixMonths, aggregator: .weeklySum)
-
-        #expect(pages.count == 2)
     }
 
     @Test("One year span groups correctly")

@@ -44,10 +44,6 @@ public final class ChartPageProvider {
             return "\(first) – \(last)"
         case .month:
             return start.formatted(DateStyle.month)
-        case .sixMonths:
-            let first = start.formatted(DateStyle.sixMonths)
-            let last = end.formatted(DateStyle.sixMonths)
-            return "\(first) – \(last)"
         case .oneYear:
             return start.formatted(DateStyle.oneYear)
         }
@@ -90,11 +86,6 @@ private extension Calendar {
             return self.date(from: self.dateComponents([.yearForWeekOfYear, .weekOfYear], from: date))!
         case .month:
             return self.date(from: self.dateComponents([.year, .month], from: date))!
-        case .sixMonths:
-            let components = self.dateComponents([.year, .month], from: date)
-            let month = components.month!
-            let startMonth = month <= 6 ? 1 : 7
-            return self.date(from: DateComponents(year: components.year!, month: startMonth, day: 1))!
         case .oneYear:
             return self.date(from: self.dateComponents([.year], from: date))!
         }
@@ -107,9 +98,6 @@ private extension Calendar {
             return self.date(byAdding: .day, value: 6, to: start)!
         case .month:
             return self.date(byAdding: .month, value: 1, to: startOfPeriod(span, for: date))!.addingTimeInterval(-1)
-        case .sixMonths:
-            let start = startOfPeriod(span, for: date)
-            return self.date(byAdding: .month, value: 6, to: start)!.addingTimeInterval(-1)
         case .oneYear:
             return self.date(byAdding: .year, value: 1, to: startOfPeriod(span, for: date))!.addingTimeInterval(-1)
         }
@@ -120,6 +108,5 @@ private enum DateStyle {
     static let weekStart = Date.FormatStyle().day().month(.abbreviated)
     static let weekEnd = Date.FormatStyle().day().month(.abbreviated).year()
     static let month = Date.FormatStyle().month(.wide).year()
-    static let sixMonths = Date.FormatStyle().month(.abbreviated).year()
     static let oneYear = Date.FormatStyle().year()
 }
