@@ -12,79 +12,89 @@ public final class ChartPageProvider {
     public static func pages(
         for raw: [ChartEntry],
         span: TimeSpan,
-        aggregator: ChartDataProvider
+        aggregator: ChartDataProvider,
+        calendar: Calendar = .current
     ) -> [ChartPage] {
         let sorted = raw.sorted { $0.timestamp < $1.timestamp }
-        guard let lastEntry = sorted.last else { return [] }
-        let calendar = Calendar.current
-        var pages: [ChartPage] = []
+        guard !sorted.isEmpty else { return [] }
 
-        // End date should be the start of the day AFTER the last entry
-        // This ensures the last entry is included in the range
-        let endDate = calendar.date(
-            byAdding: .day,
-            value: 1,
-            to: calendar.startOfDay(for: lastEntry.timestamp)
-        ) ?? calendar.startOfDay(for: lastEntry.timestamp)
+        let ranges = pageRanges(from: sorted, span: span, calendar: calendar)
 
-        let count = span.componentCount
-        var currentEndDate = endDate
-
-        // Keep going as long as we have a valid start date
-        while let startDate = calendar.date(
-            byAdding: span.calendarComponent,
-            value: -count,
-            to: currentEndDate
-        ) {
-            let pageEntries = sorted.filter {
-                $0.timestamp >= startDate && $0.timestamp < currentEndDate
-            }
-
-            // Break if we've gone past all entries
-            guard !pageEntries.isEmpty else { break }
+        return ranges.compactMap { range in
+            let pageEntries = sorted.filter { range.contains($0.timestamp) }
+            guard !pageEntries.isEmpty else { return nil }
 
             let aggregated = aggregator.processedEntries(from: pageEntries)
+            let title = formatPageTitle(start: range.lowerBound, end: range.upperBound, span: span, calendar: calendar)
 
-            let title = formatPageTitle(start: startDate, end: currentEndDate, span: span)
-            pages.append(ChartPage(
+            return ChartPage(
                 entries: aggregated,
                 span: span,
                 title: title,
-                periodStart: startDate
-            ))
-
-            currentEndDate = startDate
+                periodStart: range.lowerBound
+            )
         }
-
-        return pages.reversed()
     }
 
-    private static func formatPageTitle(start: Date, end: Date, span: TimeSpan) -> String {
+    private static func formatPageTitle(start: Date, end: Date, span: TimeSpan, calendar: Calendar) -> String {
+        var formatStyle = Date.FormatStyle(calendar: calendar)
+
         switch span {
         case .week:
-            let first = start.formatted(DateStyle.weekStart)
-            let last = lastIncludedDay(from: end).formatted(DateStyle.weekEnd)
+            let lastDay = calendar.date(byAdding: .second, value: -1, to: end) ?? end
+            let first = start.formatted(formatStyle.day().month(.abbreviated))
+            let last = lastDay.formatted(formatStyle.day().month(.abbreviated).year())
             return "\(first) – \(last)"
         case .month:
-            return start.formatted(DateStyle.month)
-        case .sixMonths:
-            let first = start.formatted(DateStyle.sixMonths)
-            let last = lastIncludedDay(from: end).formatted(DateStyle.sixMonths)
-            return "\(first) – \(last)"
+            return start.formatted(formatStyle.month(.wide).year())
         case .oneYear:
-            return start.formatted(DateStyle.oneYear)
+            return start.formatted(formatStyle.year())
         }
     }
 
-    private static func lastIncludedDay(from end: Date) -> Date {
-        Calendar.current.date(byAdding: .day, value: -1, to: end) ?? end
+    private static func pageRanges(
+        from entries: [ChartEntry],
+        span: TimeSpan,
+        calendar: Calendar
+    ) -> [Range<Date>] {
+        guard let minDate = entries.min(by: { $0.timestamp < $1.timestamp })?.timestamp,
+              let maxDate = entries.max(by: { $0.timestamp < $1.timestamp })?.timestamp
+        else { return [] }
+
+        let start = calendar.startOfPeriod(span, for: minDate)
+        let endPeriodStart = calendar.startOfPeriod(span, for: maxDate)
+
+        var ranges: [Range<Date>] = []
+        var current = start
+
+        while current <= endPeriodStart {
+            guard let next = calendar.date(
+                byAdding: span.calendarComponent,
+                value: span.componentCount,
+                to: current
+            ) else { break }
+
+            ranges.append(current ..< next)
+            current = next
+        }
+
+        return ranges
     }
 }
 
-private enum DateStyle {
-    static let weekStart = Date.FormatStyle().day().month(.abbreviated)
-    static let weekEnd = Date.FormatStyle().day().month(.abbreviated).year()
-    static let month = Date.FormatStyle().month(.wide).year()
-    static let sixMonths = Date.FormatStyle().month(.abbreviated).year()
-    static let oneYear = Date.FormatStyle().year()
+private extension Calendar {
+    func startOfPeriod(_ span: TimeSpan, for date: Date) -> Date {
+        switch span {
+        case .week:
+            // Use yearForWeekOfYear and weekOfYear for proper week calculation
+            let components = self.dateComponents([.yearForWeekOfYear, .weekOfYear], from: date)
+            return self.date(from: components) ?? date
+        case .month:
+            let components = self.dateComponents([.year, .month], from: date)
+            return self.date(from: components) ?? date
+        case .oneYear:
+            let components = self.dateComponents([.year], from: date)
+            return self.date(from: components) ?? date
+        }
+    }
 }

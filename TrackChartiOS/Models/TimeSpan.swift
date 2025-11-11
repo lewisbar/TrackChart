@@ -10,14 +10,12 @@ import Foundation
 public enum TimeSpan: CaseIterable {
     case week
     case month
-    case sixMonths
     case oneYear
 
     public var title: String {
         switch self {
         case .week:       return "Week"
         case .month:      return "Month"
-        case .sixMonths:  return "6 Months"
         case .oneYear:    return "Year"
         }
     }
@@ -26,7 +24,6 @@ public enum TimeSpan: CaseIterable {
         switch self {
         case .week:       return .weekOfYear
         case .month:      return .month
-        case .sixMonths:  return .month
         case .oneYear:    return .year
         }
     }
@@ -35,16 +32,22 @@ public enum TimeSpan: CaseIterable {
         switch self {
         case .week:       return 1
         case .month:      return 1
-        case .sixMonths:  return 6
         case .oneYear:    return 1
         }
     }
 
-    public var availableDataProviders: [ChartDataProvider] {
+    public var naturalAlignment: Calendar.Component {
         switch self {
-        case .week, .month: [.dailySum, .dailyAverage]
-        case .sixMonths: [.weeklySum, .weeklyAverage]
-        case .oneYear: [.monthlySum, .monthlyAverage]
+        case .week:       return .weekOfYear
+        case .month:      return .month
+        case .oneYear:    return .year
+        }
+    }
+
+    public func availableDataProviders(calendar: Calendar = .current) -> [ChartDataProvider] {
+        switch self {
+        case .week, .month: [.dailySum(calendar: calendar), .dailyAverage(calendar: calendar)]
+        case .oneYear: [.monthlySum(calendar: calendar), .monthlyAverage(calendar: calendar)]
         }
     }
 }

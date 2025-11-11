@@ -29,13 +29,14 @@ struct ChartDataProviderTests {
         let entry2b = ChartEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 100_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
-        let sut = ChartDataProvider.dailySum
+        let calendar = Calendar(identifier: .gregorian)
+        let sut = ChartDataProvider.dailySum(calendar: calendar)
         let processedEntries = sut.processedEntries(from: originalEntries)
 
         #expect(processedEntries.count == 2, "Expected 2 grouped entries")
         #expect(processedEntries.map(\.value) == [2, 4])
         #expect(
-            processedEntries.map(\.timestamp) == [entry1a.timestamp, entry2a.timestamp].map { Calendar.current.startOfDay(for: $0) },
+            processedEntries.map(\.timestamp) == [entry1a.timestamp, entry2a.timestamp].map { calendar.startOfDay(for: $0) },
             "Expected timestamps to match earliest in each day"
         )
     }
@@ -47,13 +48,14 @@ struct ChartDataProviderTests {
         let entry2b = ChartEntry(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 100_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
-        let sut = ChartDataProvider.dailyAverage
+        let calendar = Calendar(identifier: .gregorian)
+        let sut = ChartDataProvider.dailyAverage(calendar: calendar)
         let processedEntries = sut.processedEntries(from: originalEntries)
 
         #expect(processedEntries.count == 2, "Expected 2 grouped entries")
         #expect(processedEntries.map(\.value) == [2, 3])
         #expect(
-            processedEntries.map(\.timestamp) == [entry1a.timestamp, entry2a.timestamp].map { Calendar.current.startOfDay(for: $0) },
+            processedEntries.map(\.timestamp) == [entry1a.timestamp, entry2a.timestamp].map { calendar.startOfDay(for: $0) },
             "Expected timestamps to match earliest in each day"
         )
     }
@@ -65,13 +67,16 @@ struct ChartDataProviderTests {
         let entry2b = ChartEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 800_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
-        let sut = ChartDataProvider.weeklySum
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2  // Monday
+        let sut = ChartDataProvider.weeklySum(calendar: calendar)
+
         let processedEntries = sut.processedEntries(from: originalEntries)
 
         #expect(processedEntries.count == 2, "Expected 2 grouped entries")
         #expect(processedEntries.map(\.value) == [2, 4])
         #expect(
-            processedEntries.map(\.timestamp) == [entry1a.timestamp, entry2a.timestamp].map { Calendar.current.dateInterval(of: .weekOfYear, for: $0)?.start },
+            processedEntries.map(\.timestamp) == [entry1a.timestamp, entry2a.timestamp].map { calendar.dateInterval(of: .weekOfYear, for: $0)?.start },
             "Expected timestamps to match earliest in each week"
         )
     }
@@ -83,13 +88,15 @@ struct ChartDataProviderTests {
         let entry2b = ChartEntry(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 800_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
-        let sut = ChartDataProvider.weeklyAverage
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2  // Monday
+        let sut = ChartDataProvider.weeklyAverage(calendar: calendar)
         let processedEntries = sut.processedEntries(from: originalEntries)
 
         #expect(processedEntries.count == 2, "Expected 2 grouped entries")
         #expect(processedEntries.map(\.value) == [2, 3])
         #expect(
-            processedEntries.map(\.timestamp) == [entry1a.timestamp, entry2a.timestamp].map { Calendar.current.dateInterval(of: .weekOfYear, for: $0)?.start },
+            processedEntries.map(\.timestamp) == [entry1a.timestamp, entry2a.timestamp].map { calendar.dateInterval(of: .weekOfYear, for: $0)?.start },
             "Expected timestamps to match earliest in each week"
         )
     }
@@ -101,13 +108,14 @@ struct ChartDataProviderTests {
         let entry2b = ChartEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 4_000_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
-        let sut = ChartDataProvider.monthlySum
+        let calendar = Calendar(identifier: .gregorian)
+        let sut = ChartDataProvider.monthlySum(calendar: calendar)
         let processedEntries = sut.processedEntries(from: originalEntries)
 
         #expect(processedEntries.count == 2, "Expected 2 grouped entries")
         #expect(processedEntries.map(\.value) == [2, 4])
         #expect(
-            processedEntries.map(\.timestamp) == [entry1a.timestamp, entry2a.timestamp].map { Calendar.current.dateInterval(of: .month, for: $0)?.start },
+            processedEntries.map(\.timestamp) == [entry1a.timestamp, entry2a.timestamp].map { calendar.dateInterval(of: .month, for: $0)?.start },
             "Expected timestamps to match earliest in each month"
         )
     }
@@ -119,13 +127,14 @@ struct ChartDataProviderTests {
         let entry2b = ChartEntry(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 4_000_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
-        let sut = ChartDataProvider.monthlyAverage
+        let calendar = Calendar(identifier: .gregorian)
+        let sut = ChartDataProvider.monthlyAverage(calendar: calendar)
         let processedEntries = sut.processedEntries(from: originalEntries)
 
         #expect(processedEntries.count == 2, "Expected 2 grouped entries")
         #expect(processedEntries.map(\.value) == [2, 3])
         #expect(
-            processedEntries.map(\.timestamp) == [entry1a.timestamp, entry2a.timestamp].map { Calendar.current.dateInterval(of: .month, for: $0)?.start },
+            processedEntries.map(\.timestamp) == [entry1a.timestamp, entry2a.timestamp].map { calendar.dateInterval(of: .month, for: $0)?.start },
             "Expected timestamps to match earliest in each month"
         )
     }
