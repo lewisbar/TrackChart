@@ -111,7 +111,7 @@ struct PagedChartView<Placeholder: View>: View {
     private var aggregatorMenu: some View {
         Menu {
             Picker("Select an aggregator type", selection: $selectedAggregator) {
-                ForEach(span.availableDataProviders, id: \.self) {
+                ForEach(span.availableDataProviders(), id: \.self) {
                     Text($0.name)
                 }
             }
@@ -200,12 +200,12 @@ struct PagedChartView<Placeholder: View>: View {
 
     ScrollView {
         VStack {
-            PagedChartView(rawEntries: entries, span: .week, defaultAggregator: .dailySum, palette: .arcticIce).card().frame(height: 250)
-            PagedChartView(rawEntries: entries, span: .month, defaultAggregator: .dailySum, palette: .aurora).card().frame(height: 250)
-            PagedChartView(rawEntries: entries, span: .oneYear, defaultAggregator: .monthlySum, palette: .desertDune).card().frame(height: 250)
-            PagedChartView(rawEntries: entries, span: .week, defaultAggregator: .dailyAverage, palette: .fire).card().frame(height: 250)
-            PagedChartView(rawEntries: entries, span: .month, defaultAggregator: .dailyAverage, palette: .fire).card().frame(height: 250)
-            PagedChartView(rawEntries: entries, span: .oneYear, defaultAggregator: .monthlyAverage, palette: .meadow).card().frame(height: 250)
+            PagedChartView(rawEntries: entries, span: .week, defaultAggregator: .dailySum(), palette: .arcticIce).card().frame(height: 250)
+            PagedChartView(rawEntries: entries, span: .month, defaultAggregator: .dailySum(), palette: .aurora).card().frame(height: 250)
+            PagedChartView(rawEntries: entries, span: .oneYear, defaultAggregator: .monthlySum(), palette: .desertDune).card().frame(height: 250)
+            PagedChartView(rawEntries: entries, span: .week, defaultAggregator: .dailyAverage(), palette: .fire).card().frame(height: 250)
+            PagedChartView(rawEntries: entries, span: .month, defaultAggregator: .dailyAverage(), palette: .fire).card().frame(height: 250)
+            PagedChartView(rawEntries: entries, span: .oneYear, defaultAggregator: .monthlyAverage(), palette: .meadow).card().frame(height: 250)
         }
         .padding()
     }

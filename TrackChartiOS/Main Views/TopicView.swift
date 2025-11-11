@@ -48,9 +48,9 @@ struct TopicView: View {
     private var chartList: some View {
         List {
             overviewChart
-            pagedCard(span: .week,       default: .dailySum)
-            pagedCard(span: .month,      default: .dailySum)
-            pagedCard(span: .oneYear,    default: .monthlySum)
+            pagedCard(span: .week,       default: .dailySum())
+            pagedCard(span: .month,      default: .dailySum())
+            pagedCard(span: .oneYear,    default: .monthlySum())
             Spacer()
         }
     }

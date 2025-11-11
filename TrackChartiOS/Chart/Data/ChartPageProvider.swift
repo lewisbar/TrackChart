@@ -12,12 +12,12 @@ public final class ChartPageProvider {
     public static func pages(
         for raw: [ChartEntry],
         span: TimeSpan,
-        aggregator: ChartDataProvider
+        aggregator: ChartDataProvider,
+        calendar: Calendar = .current
     ) -> [ChartPage] {
         let sorted = raw.sorted { $0.timestamp < $1.timestamp }
         guard !sorted.isEmpty else { return [] }
 
-        let calendar = Calendar.current
         let ranges = pageRanges(from: sorted, span: span, calendar: calendar)
 
         return ranges.compactMap { range in
@@ -25,7 +25,7 @@ public final class ChartPageProvider {
             guard !pageEntries.isEmpty else { return nil }
 
             let aggregated = aggregator.processedEntries(from: pageEntries)
-            let title = formatPageTitle(start: range.lowerBound, end: range.upperBound, span: span)
+            let title = formatPageTitle(start: range.lowerBound, end: range.upperBound, span: span, calendar: calendar)
 
             return ChartPage(
                 entries: aggregated,
@@ -36,42 +36,45 @@ public final class ChartPageProvider {
         }
     }
 
-    private static func formatPageTitle(start: Date, end: Date, span: TimeSpan) -> String {
+    private static func formatPageTitle(start: Date, end: Date, span: TimeSpan, calendar: Calendar) -> String {
+        var formatStyle = Date.FormatStyle(calendar: calendar)
+
         switch span {
         case .week:
-            let first = start.formatted(DateStyle.weekStart)
-            let last = end.formatted(DateStyle.weekEnd)
+            let lastDay = calendar.date(byAdding: .second, value: -1, to: end) ?? end
+            let first = start.formatted(formatStyle.day().month(.abbreviated))
+            let last = lastDay.formatted(formatStyle.day().month(.abbreviated).year())
             return "\(first) – \(last)"
         case .month:
-            return start.formatted(DateStyle.month)
+            return start.formatted(formatStyle.month(.wide).year())
         case .oneYear:
-            return start.formatted(DateStyle.oneYear)
+            return start.formatted(formatStyle.year())
         }
-    }
-    
-    private static func lastIncludedDay(from end: Date) -> Date {
-        Calendar.current.date(byAdding: .day, value: -1, to: end) ?? end
     }
 
     private static func pageRanges(
         from entries: [ChartEntry],
         span: TimeSpan,
-        calendar: Calendar = .current
-    ) -> [ClosedRange<Date>] {
+        calendar: Calendar
+    ) -> [Range<Date>] {
         guard let minDate = entries.min(by: { $0.timestamp < $1.timestamp })?.timestamp,
               let maxDate = entries.max(by: { $0.timestamp < $1.timestamp })?.timestamp
         else { return [] }
 
         let start = calendar.startOfPeriod(span, for: minDate)
-        let end = calendar.endOfPeriod(span, for: maxDate)
+        let endPeriodStart = calendar.startOfPeriod(span, for: maxDate)
 
-        var ranges: [ClosedRange<Date>] = []
+        var ranges: [Range<Date>] = []
         var current = start
 
-        while current <= end {
-            let next = calendar.date(byAdding: span.calendarComponent, value: span.componentCount, to: current)!
-            let rangeEnd = min(next.addingTimeInterval(-1), end) // inclusive
-            ranges.append(current ... rangeEnd)
+        while current <= endPeriodStart {
+            guard let next = calendar.date(
+                byAdding: span.calendarComponent,
+                value: span.componentCount,
+                to: current
+            ) else { break }
+
+            ranges.append(current ..< next)
             current = next
         }
 
@@ -83,30 +86,22 @@ private extension Calendar {
     func startOfPeriod(_ span: TimeSpan, for date: Date) -> Date {
         switch span {
         case .week:
-            return self.date(from: self.dateComponents([.yearForWeekOfYear, .weekOfYear], from: date))!
+            // Use yearForWeekOfYear and weekOfYear for proper week calculation
+            let components = self.dateComponents([.yearForWeekOfYear, .weekOfYear], from: date)
+            return self.date(from: components) ?? date
         case .month:
-            return self.date(from: self.dateComponents([.year, .month], from: date))!
+            let components = self.dateComponents([.year, .month], from: date)
+            return self.date(from: components) ?? date
         case .oneYear:
-            return self.date(from: self.dateComponents([.year], from: date))!
-        }
-    }
-
-    func endOfPeriod(_ span: TimeSpan, for date: Date) -> Date {
-        switch span {
-        case .week:
-            let start = startOfPeriod(span, for: date)
-            return self.date(byAdding: .day, value: 6, to: start)!
-        case .month:
-            return self.date(byAdding: .month, value: 1, to: startOfPeriod(span, for: date))!.addingTimeInterval(-1)
-        case .oneYear:
-            return self.date(byAdding: .year, value: 1, to: startOfPeriod(span, for: date))!.addingTimeInterval(-1)
+            let components = self.dateComponents([.year], from: date)
+            return self.date(from: components) ?? date
         }
     }
 }
 
-private enum DateStyle {
-    static let weekStart = Date.FormatStyle().day().month(.abbreviated)
-    static let weekEnd = Date.FormatStyle().day().month(.abbreviated).year()
-    static let month = Date.FormatStyle().month(.wide).year()
-    static let oneYear = Date.FormatStyle().year()
-}
+//private enum DateStyle {
+//    static let weekStart = Date.FormatStyle().day().month(.abbreviated)
+//    static let weekEnd = Date.FormatStyle().day().month(.abbreviated).year()
+//    static let month = Date.FormatStyle().month(.wide).year()
+//    static let oneYear = Date.FormatStyle().year()
+//}

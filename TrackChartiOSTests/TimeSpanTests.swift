@@ -28,8 +28,8 @@ struct TimeSpanTests {
     }
 
     @Test func availableDataProviders() {
-        #expect(TimeSpan.week.availableDataProviders == [.dailySum, .dailyAverage])
-        #expect(TimeSpan.month.availableDataProviders == [.dailySum, .dailyAverage])
-        #expect(TimeSpan.oneYear.availableDataProviders == [.monthlySum, .monthlyAverage])
+        #expect(TimeSpan.week.availableDataProviders() == [.dailySum(), .dailyAverage()])
+        #expect(TimeSpan.month.availableDataProviders() == [.dailySum(), .dailyAverage()])
+        #expect(TimeSpan.oneYear.availableDataProviders() == [.monthlySum(), .monthlyAverage()])
     }
 }

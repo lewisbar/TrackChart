@@ -16,7 +16,7 @@ struct PreviewChartView<Placeholder: View>: View {
     private let yLabel = "Value"
 
     init(rawEntries: [ChartEntry], palette: Palette, placeholder: @escaping () -> Placeholder = ChartPlaceholderView.init) {
-        let provider = ChartDataProvider.automaticPreview
+        let provider = ChartDataProvider.automaticPreview()
         self.entries = provider.processedEntries(from: rawEntries)
         self.palette = palette
         self.placeholder = placeholder

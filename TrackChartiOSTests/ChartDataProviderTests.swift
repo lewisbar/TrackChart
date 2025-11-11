@@ -29,7 +29,7 @@ struct ChartDataProviderTests {
         let entry2b = ChartEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 100_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
-        let sut = ChartDataProvider.dailySum
+        let sut = ChartDataProvider.dailySum(calendar: Calendar(identifier: .gregorian))
         let processedEntries = sut.processedEntries(from: originalEntries)
 
         #expect(processedEntries.count == 2, "Expected 2 grouped entries")
@@ -47,7 +47,7 @@ struct ChartDataProviderTests {
         let entry2b = ChartEntry(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 100_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
-        let sut = ChartDataProvider.dailyAverage
+        let sut = ChartDataProvider.dailyAverage(calendar: Calendar(identifier: .gregorian))
         let processedEntries = sut.processedEntries(from: originalEntries)
 
         #expect(processedEntries.count == 2, "Expected 2 grouped entries")
@@ -65,7 +65,10 @@ struct ChartDataProviderTests {
         let entry2b = ChartEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 800_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
-        let sut = ChartDataProvider.weeklySum
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2  // Monday
+        let sut = ChartDataProvider.weeklySum(calendar: calendar)
+
         let processedEntries = sut.processedEntries(from: originalEntries)
 
         #expect(processedEntries.count == 2, "Expected 2 grouped entries")
@@ -83,7 +86,9 @@ struct ChartDataProviderTests {
         let entry2b = ChartEntry(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 800_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
-        let sut = ChartDataProvider.weeklyAverage
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2  // Monday
+        let sut = ChartDataProvider.weeklyAverage(calendar: calendar)
         let processedEntries = sut.processedEntries(from: originalEntries)
 
         #expect(processedEntries.count == 2, "Expected 2 grouped entries")
@@ -101,7 +106,7 @@ struct ChartDataProviderTests {
         let entry2b = ChartEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 4_000_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
-        let sut = ChartDataProvider.monthlySum
+        let sut = ChartDataProvider.monthlySum(calendar: Calendar(identifier: .gregorian))
         let processedEntries = sut.processedEntries(from: originalEntries)
 
         #expect(processedEntries.count == 2, "Expected 2 grouped entries")
@@ -119,7 +124,7 @@ struct ChartDataProviderTests {
         let entry2b = ChartEntry(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 4_000_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
-        let sut = ChartDataProvider.monthlyAverage
+        let sut = ChartDataProvider.monthlyAverage(calendar: Calendar(identifier: .gregorian))
         let processedEntries = sut.processedEntries(from: originalEntries)
 
         #expect(processedEntries.count == 2, "Expected 2 grouped entries")
