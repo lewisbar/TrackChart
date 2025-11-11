@@ -98,10 +98,3 @@ private extension Calendar {
         }
     }
 }
-
-//private enum DateStyle {
-//    static let weekStart = Date.FormatStyle().day().month(.abbreviated)
-//    static let weekEnd = Date.FormatStyle().day().month(.abbreviated).year()
-//    static let month = Date.FormatStyle().month(.wide).year()
-//    static let oneYear = Date.FormatStyle().year()
-//}
