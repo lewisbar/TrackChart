@@ -73,7 +73,9 @@ struct TrackChartApp: App {
             name: topic.name,
             palette: Palette.palette(named: topic.palette),
             rename: { topic.name = $0 },
-            changePalette: { topic.palette = $0.name })
+            changePalette: { topic.palette = $0.name }
+        )
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
     }
 
     private func showTopic(_ topic: TopicEntity?) {
