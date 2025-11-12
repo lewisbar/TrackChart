@@ -37,7 +37,7 @@ public final class ChartPageProvider {
     }
 
     private static func formatPageTitle(start: Date, end: Date, span: TimeSpan, calendar: Calendar) -> String {
-        var formatStyle = Date.FormatStyle(calendar: calendar)
+        let formatStyle = Date.FormatStyle(calendar: calendar)
 
         switch span {
         case .week:
