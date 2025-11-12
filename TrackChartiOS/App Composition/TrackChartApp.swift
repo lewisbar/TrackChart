@@ -54,6 +54,7 @@ struct TrackChartApp: App {
                             .fontWeight(.semibold)
                             .fontDesign(.monospaced)
                     }
+                    .accessibilityHidden(true)
                 }
             }
             .navigationDestination(for: TopicEntity.self) {

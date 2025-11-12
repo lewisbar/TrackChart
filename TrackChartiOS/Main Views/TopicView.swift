@@ -79,6 +79,7 @@ struct TopicView: View {
             CircleButton(action: showNumpad, image: Image(systemName: "plus"), color: .blue)
                 .padding(.bottom)
         }
+        .accessibilityHint("Add a new entry")
     }
 
     private func showNumpad() {
@@ -97,6 +98,7 @@ struct TopicView: View {
             Image(systemName: "gearshape.fill")
         }
         .tint(.secondary)
+        .accessibilityLabel("Settings button")
     }
 
     private func showSettings() {

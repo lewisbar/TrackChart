@@ -64,6 +64,7 @@ struct DecimalInputView: View {
         HStack(spacing: 20) {
             Button("+/-", action: model.toggleSign)
                 .buttonStyle(.bordered)
+                .accessibilityLabel("Change sign")
 
             Button("Submit", action: model.submitNumber)
                 .buttonStyle(.borderedProminent)
