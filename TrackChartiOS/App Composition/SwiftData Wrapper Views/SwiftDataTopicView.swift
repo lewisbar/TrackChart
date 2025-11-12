@@ -19,7 +19,9 @@ struct SwiftDataTopicView: View {
             palette: paletteBinding,
             entries: viewModel.entries(for: topic),
             submitNewValue: { viewModel.submit(newValue: $0, to: topic) },
-            deleteLastValue: { viewModel.deleteLastValue(from: topic)}
+            deleteLastValue: { viewModel.deleteLastValue(from: topic)},
+            settingsView: { SettingsView(name: topic.name, palette: Palette.palette(named: topic.palette), rename: { topic.name = $0 }, changePalette: { topic.palette = $0.name })
+}
         )
     }
 
