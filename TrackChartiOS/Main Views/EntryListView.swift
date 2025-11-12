@@ -15,12 +15,14 @@ struct ListEntry: Identifiable {
 
 struct EntryListView: View {
     @Binding var entries: [ListEntry]
+    let deleteEntries: (IndexSet) -> Void
 
     var body: some View {
         List {
             ForEach(entries) { entry in
                 entryCell(for: entry)
             }
+            .onDelete(perform: deleteEntries)
         }
     }
 
@@ -47,5 +49,5 @@ struct EntryListView: View {
         .init(value: 4, timestamp: .now.advanced(by: -100))
     ]
 
-    EntryListView(entries: $entries)
+    EntryListView(entries: $entries, deleteEntries: { entries.remove(atOffsets: $0) })
 }
