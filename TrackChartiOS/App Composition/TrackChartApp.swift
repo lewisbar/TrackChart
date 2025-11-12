@@ -64,6 +64,7 @@ struct TrackChartApp: App {
                 )
             }
         }
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
     }
 
     private func showTopic(_ topic: TopicEntity?) {

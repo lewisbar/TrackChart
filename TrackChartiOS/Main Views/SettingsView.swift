@@ -58,6 +58,7 @@ struct SettingsView: View {
             guard palette != originalPalette else { return }
             changePalette(palette)
         }
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
     }
 
     private var title: some View {
