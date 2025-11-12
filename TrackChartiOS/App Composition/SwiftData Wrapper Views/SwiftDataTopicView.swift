@@ -9,9 +9,10 @@ import SwiftUI
 import Persistence
 
 /// Wrapper to decouple the actual View from SwiftData
-struct SwiftDataTopicView: View {
+struct SwiftDataTopicView<Settings: View>: View {
     @Bindable var topic: TopicEntity
     let viewModel: SwiftDataTopicViewModel
+    let settingsView: () -> Settings
 
     var body: some View {
         TopicView(
@@ -19,7 +20,8 @@ struct SwiftDataTopicView: View {
             palette: paletteBinding,
             entries: viewModel.entries(for: topic),
             submitNewValue: { viewModel.submit(newValue: $0, to: topic) },
-            deleteLastValue: { viewModel.deleteLastValue(from: topic)}
+            deleteLastValue: { viewModel.deleteLastValue(from: topic)},
+            settingsView: settingsView
         )
     }
 

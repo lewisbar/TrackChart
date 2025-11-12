@@ -54,15 +54,28 @@ struct TrackChartApp: App {
                             .fontWeight(.semibold)
                             .fontDesign(.monospaced)
                     }
+                    .accessibilityHidden(true)
                 }
             }
-            .navigationDestination(for: TopicEntity.self) {
+            .navigationDestination(for: TopicEntity.self) { topic in
                 SwiftDataTopicView(
-                    topic: $0,
-                    viewModel: SwiftDataTopicViewModel()
+                    topic: topic,
+                    viewModel: SwiftDataTopicViewModel(),
+                    settingsView: { makeSettingsView(for: topic) }
                 )
             }
         }
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+    }
+
+    private func makeSettingsView(for topic: TopicEntity) -> some View {
+        SettingsView(
+            name: topic.name,
+            palette: Palette.palette(named: topic.palette),
+            rename: { topic.name = $0 },
+            changePalette: { topic.palette = $0.name }
+        )
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
     }
 
     private func showTopic(_ topic: TopicEntity?) {

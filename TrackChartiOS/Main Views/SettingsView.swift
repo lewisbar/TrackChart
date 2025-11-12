@@ -88,6 +88,8 @@ struct SettingsView: View {
                 Text(palette.name)
                     .foregroundStyle(.secondary)
             }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("Selected color palette: \(palette.name)")
 
             palettePicker
         }
@@ -141,6 +143,8 @@ struct SettingsView: View {
                 .id(availablePalette) // Required for scrollTo
         }
         .tint(nil)
+        .accessibilityLabel("\(availablePalette.name)\(palette == availablePalette ? " , selected" : "")")
+        .accessibilityHint("Selects this color palette for chart rendering", isEnabled: palette != availablePalette)
     }
 
     private var dismissButton: some View {

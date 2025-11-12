@@ -7,12 +7,13 @@
 
 import SwiftUI
 
-struct TopicView: View {
+struct TopicView<Settings: View>: View {
     @Binding var name: String
     @Binding var palette: Palette
     let entries: [ChartEntry]
     let submitNewValue: (Double) -> Void
     let deleteLastValue: () -> Void
+    let settingsView: () -> Settings
     @State private var isShowingSettings = false
     @State private var isShowingInput = false
     @State private var enteredValue: Double? = nil
@@ -36,7 +37,7 @@ struct TopicView: View {
                 .presentationDetents([.fraction(0.45)])
         }
         .sheet(isPresented: $isShowingSettings) {
-            SettingsView(name: name, palette: palette, rename: { name = $0 }, changePalette: { palette = $0 })
+            settingsView()
         }
         .onAppear {
             if name.isEmpty {
@@ -79,6 +80,7 @@ struct TopicView: View {
             CircleButton(action: showNumpad, image: Image(systemName: "plus"), color: .blue)
                 .padding(.bottom)
         }
+        .accessibilityHint("Add a new entry")
     }
 
     private func showNumpad() {
@@ -97,6 +99,7 @@ struct TopicView: View {
             Image(systemName: "gearshape.fill")
         }
         .tint(.secondary)
+        .accessibilityLabel("Settings button")
     }
 
     private func showSettings() {
@@ -115,6 +118,7 @@ struct TopicView: View {
             )
         },
         submitNewValue: { _ in },
-        deleteLastValue: {}
+        deleteLastValue: {},
+        settingsView: EmptyView.init
     )
 }
