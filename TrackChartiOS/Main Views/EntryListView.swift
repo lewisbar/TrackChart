@@ -16,6 +16,7 @@ struct ListEntry: Identifiable {
 struct EntryListView: View {
     @Binding var entries: [ListEntry]
     let deleteEntries: (IndexSet) -> Void
+    @State private var isShowingInput = false
 
     var body: some View {
         List {
@@ -23,6 +24,14 @@ struct EntryListView: View {
                 entryCell(for: entry)
             }
             .onDelete(perform: deleteEntries)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                isShowingInput = true
+            }
+        }
+        .sheet(isPresented: $isShowingInput) {
+            DecimalInputView(submitValue: { _ in }, dismiss: { isShowingInput = false })
+                .presentationDetents([.fraction(0.45)])
         }
     }
 
