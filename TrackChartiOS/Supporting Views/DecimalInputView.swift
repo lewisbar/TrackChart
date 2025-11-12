@@ -11,8 +11,8 @@ struct DecimalInputView: View {
     @State private var model: DecimalInputViewModel
     private let dismiss: () -> Void
 
-    init(submitValue: @escaping (Double) -> Void, dismiss: @escaping () -> Void) {
-        self.model = DecimalInputViewModel(submitValue: submitValue)
+    init(initialValue: Double = 0, initialTimestamp: Date? = nil, submit: @escaping (Double, Date) -> Void, dismiss: @escaping () -> Void) {
+        self.model = DecimalInputViewModel(initialValue: initialValue, initialTimestamp: initialTimestamp, submit: submit)
         self.dismiss = dismiss
     }
 
@@ -76,5 +76,5 @@ struct DecimalInputView: View {
 }
 
 #Preview {
-    DecimalInputView(submitValue: { _ in }, dismiss: {})
+    DecimalInputView(submit: { _, _ in }, dismiss: {})
 }

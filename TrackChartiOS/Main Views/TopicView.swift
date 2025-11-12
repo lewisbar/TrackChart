@@ -11,7 +11,7 @@ struct TopicView<Settings: View>: View {
     @Binding var name: String
     @Binding var palette: Palette
     let entries: [ChartEntry]
-    let submitNewValue: (Double) -> Void
+    let submitNewValue: (Double, Date) -> Void
     let deleteLastValue: () -> Void
     let settingsView: () -> Settings
     @State private var isShowingSettings = false
@@ -33,7 +33,7 @@ struct TopicView<Settings: View>: View {
             ToolbarItem(placement: .topBarTrailing, content: settingsButton)
         }
         .sheet(isPresented: $isShowingInput) {
-            DecimalInputView(submitValue: submitNewValue, dismiss: { isShowingInput = false })
+            DecimalInputView(submit: submitNewValue, dismiss: { isShowingInput = false })
                 .presentationDetents([.fraction(0.45)])
         }
         .sheet(isPresented: $isShowingSettings) {
@@ -117,7 +117,7 @@ struct TopicView<Settings: View>: View {
                 timestamp: .now.advanced(by: 86_400 * Double(index) - 40 * 86_400)
             )
         },
-        submitNewValue: { _ in },
+        submitNewValue: { _, _ in },
         deleteLastValue: {},
         settingsView: EmptyView.init
     )

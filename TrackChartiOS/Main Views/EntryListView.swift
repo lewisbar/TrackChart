@@ -17,20 +17,22 @@ struct EntryListView: View {
     @Binding var entries: [ListEntry]
     let deleteEntries: (IndexSet) -> Void
     @State private var isShowingInput = false
+    @State private var selectedEntry: ListEntry?
 
     var body: some View {
         List {
             ForEach(entries) { entry in
                 entryCell(for: entry)
+                    .onTapGesture {
+                        selectedEntry = entry
+                        isShowingInput = true
+                    }
             }
             .onDelete(perform: deleteEntries)
             .contentShape(Rectangle())
-            .onTapGesture {
-                isShowingInput = true
-            }
         }
         .sheet(isPresented: $isShowingInput) {
-            DecimalInputView(submitValue: { _ in }, dismiss: { isShowingInput = false })
+            DecimalInputView(initialValue: selectedEntry?.value ?? 0, initialTimestamp: selectedEntry?.timestamp, submit: { _, _ in }, dismiss: { isShowingInput = false })
                 .presentationDetents([.fraction(0.45)])
         }
     }

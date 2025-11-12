@@ -9,14 +9,14 @@ import Testing
 import SwiftUI
 @testable import TrackChartiOS
 
-struct DecimalInputViewModelTests {
+class DecimalInputViewModelTests {
     @Test func startsWithZero() {
-        let sut = DecimalInputViewModel(submitValue: { _ in })
+        let sut = makeSUT(submit: { _, _ in })
         #expect(sut.value == "0")
     }
 
     @Test func hasCorrectKeys() {
-        let sut = DecimalInputViewModel(submitValue: { _ in })
+        let sut = makeSUT(submit: { _, _ in })
         #expect(sut.keys == [
             ["1", "2", "3"],
             ["4", "5", "6"],
@@ -26,19 +26,19 @@ struct DecimalInputViewModelTests {
     }
 
     @Test func submitNumber() {
-        var submittedValues = [Double]()
-        let sut = DecimalInputViewModel(submitValue: { submittedValues.append($0) })
+        var submittedValues = [(Double, Date)]()
+        let sut = makeSUT(submit: { submittedValues.append(($0, $1)) })
         sut.value = "-32.6"
 
         sut.submitNumber()
 
-        #expect(submittedValues == [-32.6])
+        #expect(submittedValues.map(\.0) == [-32.6])
         #expect(sut.value == "0")
     }
 
     @Test func submitNumber_withInvalidValue_resetsValueToZeroAndDoesNotSubmit() {
-        var submittedValues = [Double]()
-        let sut = DecimalInputViewModel(submitValue: { submittedValues.append($0) })
+        var submittedValues = [(Double, Date)]()
+        let sut = makeSUT(submit: { submittedValues.append(($0, $1)) })
         sut.value = "not a number"
 
         sut.submitNumber()
@@ -48,7 +48,7 @@ struct DecimalInputViewModelTests {
     }
 
     @Test func toggleSign() {
-        let sut = DecimalInputViewModel(submitValue: { _ in })
+        let sut = makeSUT(submit: { _, _ in })
 
         sut.value = "0"
         sut.toggleSign()
@@ -108,7 +108,7 @@ struct DecimalInputViewModelTests {
     }
 
     @Test func handleInput_backspace() {
-        let sut = DecimalInputViewModel(submitValue: { _ in })
+        let sut = makeSUT(submit: { _, _ in })
         let backspace = "⌫"
 
         sut.value = "0"
@@ -193,7 +193,7 @@ struct DecimalInputViewModelTests {
     }
 
     @Test func handleInput_decimalPoint() {
-        let sut = DecimalInputViewModel(submitValue: { _ in })
+        let sut = makeSUT(submit: { _, _ in })
         let decimalPoint = "."
 
         sut.value = "0"
@@ -262,7 +262,7 @@ struct DecimalInputViewModelTests {
     }
 
     @Test func handleInput_number() {
-        let sut = DecimalInputViewModel(submitValue: { _ in })
+        let sut = makeSUT(submit: { _, _ in })
 
         sut.value = "0"
         sut.handleInput("5")
@@ -314,7 +314,7 @@ struct DecimalInputViewModelTests {
     }
 
     @Test func isObservable() async throws {
-        let sut = DecimalInputViewModel(submitValue: { _ in })
+        let sut = makeSUT(submit: { _, _ in })
         let tracker = ObservationTracker()
 
         withObservationTracking {
@@ -329,9 +329,22 @@ struct DecimalInputViewModelTests {
         let triggered = await tracker.getTriggered()
         #expect(triggered, "Expected observation to be triggered after changing value")
     }
+
+    // MARK: - Helpers
+
+    private func makeSUT(initialValue: Double = 0, initialTimestamp: Date? = nil, submit: @escaping (Double, Date) -> Void = { _, _ in }) -> DecimalInputViewModel {
+        let sut = DecimalInputViewModel(initialValue: initialValue, initialTimestamp: initialTimestamp, submit: submit)
+        weakSUT = sut
+        return sut
+    }
+
+    private weak var weakSUT: DecimalInputViewModel?
+
+    deinit {
+        #expect(weakSUT == nil, "Instance should have been deallocated. Potential memory leak.")
+    }
 }
 
-// MARK: - Helpers
 
 private actor ObservationTracker {
     var triggered = false

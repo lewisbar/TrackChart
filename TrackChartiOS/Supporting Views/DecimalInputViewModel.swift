@@ -9,17 +9,20 @@ import Foundation
 
 @Observable
 class DecimalInputViewModel {
-    var value = "0"
+    var value: String
+    var timestamp: Date?
     let keys = [
         ["1", "2", "3"],
         ["4", "5", "6"],
         ["7", "8", "9"],
         [".", "0", "⌫"]
     ]
-    private let submitValue: (Double) -> Void
+    private let submit: (Double, Date) -> Void
 
-    init(submitValue: @escaping (Double) -> Void) {
-        self.submitValue = submitValue
+    init(initialValue: Double, initialTimestamp: Date?, submit: @escaping (Double, Date) -> Void) {
+        self.value = initialValue.formatted()
+        self.timestamp = initialTimestamp
+        self.submit = submit
     }
 
     func handleInput(_ key: String) {
@@ -55,7 +58,7 @@ class DecimalInputViewModel {
 
     func submitNumber() {
         if let value = Double(value) {
-            submitValue(value)
+            submit(value, timestamp ?? .now)
         }
         resetValue()
     }
