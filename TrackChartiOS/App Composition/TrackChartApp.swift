@@ -57,10 +57,11 @@ struct TrackChartApp: App {
                     .accessibilityHidden(true)
                 }
             }
-            .navigationDestination(for: TopicEntity.self) {
+            .navigationDestination(for: TopicEntity.self) { topic in
                 SwiftDataTopicView(
-                    topic: $0,
-                    viewModel: SwiftDataTopicViewModel()
+                    topic: topic,
+                    viewModel: SwiftDataTopicViewModel(),
+                    settingsView: { SettingsView(name: topic.name, palette: Palette.palette(named: topic.palette), rename: { topic.name = $0 }, changePalette: { topic.palette = $0.name }) }
                 )
             }
         }
