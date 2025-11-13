@@ -47,6 +47,37 @@ class DecimalInputViewModelTests {
         #expect(sut.value == "0")
     }
 
+    @Test func submitNumber_whenThereIsATimeStampSet_usesThisTimestamp() {
+        var submittedValues = [(Double, Date)]()
+        let sut = makeSUT(submit: { submittedValues.append(($0, $1)) })
+        let newValue = "-32.6"
+        let newTimestamp = Date(timeIntervalSinceReferenceDate: 123)
+
+        sut.value = newValue
+        sut.timestamp = newTimestamp
+
+        sut.submitNumber()
+
+        #expect(submittedValues.map(\.0) == [-32.6])
+        #expect(submittedValues.map(\.1) == [newTimestamp])
+        #expect(sut.value == "0")
+    }
+
+    @Test func submitNumber_whenThereIsNoTimeStampSet_usesNow() {
+        var submittedValues = [(Double, Date)]()
+        let now = { Date(timeIntervalSinceReferenceDate: 456) }
+        let sut = makeSUT(submit: { submittedValues.append(($0, $1)) }, now: now)
+        let newValue = "-32.6"
+
+        sut.value = newValue
+
+        sut.submitNumber()
+
+        #expect(submittedValues.map(\.0) == [-32.6])
+        #expect(submittedValues.map(\.1) == [now()])
+        #expect(sut.value == "0")
+    }
+
     @Test func toggleSign() {
         let sut = makeSUT(submit: { _, _ in })
 
@@ -332,8 +363,8 @@ class DecimalInputViewModelTests {
 
     // MARK: - Helpers
 
-    private func makeSUT(initialValue: Double = 0, initialTimestamp: Date? = nil, submit: @escaping (Double, Date) -> Void = { _, _ in }) -> DecimalInputViewModel {
-        let sut = DecimalInputViewModel(initialValue: initialValue, initialTimestamp: initialTimestamp, submit: submit)
+    private func makeSUT(initialValue: Double = 0, initialTimestamp: Date? = nil, submit: @escaping (Double, Date) -> Void = { _, _ in }, now: @escaping () -> Date = Date.init) -> DecimalInputViewModel {
+        let sut = DecimalInputViewModel(initialValue: initialValue, initialTimestamp: initialTimestamp, submit: submit, now: now)
         weakSUT = sut
         return sut
     }

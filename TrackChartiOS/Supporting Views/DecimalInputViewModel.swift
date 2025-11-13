@@ -18,11 +18,13 @@ class DecimalInputViewModel {
         [".", "0", "⌫"]
     ]
     private let submit: (Double, Date) -> Void
+    private let now: () -> Date
 
-    init(initialValue: Double, initialTimestamp: Date?, submit: @escaping (Double, Date) -> Void) {
+    init(initialValue: Double, initialTimestamp: Date?, submit: @escaping (Double, Date) -> Void, now: @escaping () -> Date = Date.init) {
         self.value = initialValue.formatted()
         self.timestamp = initialTimestamp
         self.submit = submit
+        self.now = now
     }
 
     func handleInput(_ key: String) {
@@ -58,7 +60,7 @@ class DecimalInputViewModel {
 
     func submitNumber() {
         if let value = Double(value) {
-            submit(value, timestamp ?? .now)
+            submit(value, timestamp ?? now())
         }
         resetValue()
     }
