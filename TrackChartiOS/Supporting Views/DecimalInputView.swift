@@ -10,18 +10,21 @@ import SwiftUI
 struct DecimalInputView: View {
     @State private var model: DecimalInputViewModel
     private let dismiss: () -> Void
+    private let dismissesOnSubmit: Bool
 
-    // Controls whether the compact picker is shown
+    // Controls whether the date picker is shown
     @State private var isEditingTimestamp = false
 
-    init(initialValue: Double = 0,
-         initialTimestamp: Date? = nil,
-         submit: @escaping (Double, Date) -> Void,
-         dismiss: @escaping () -> Void) {
-        self.model = DecimalInputViewModel(initialValue: initialValue,
-                                           initialTimestamp: initialTimestamp,
-                                           submit: submit)
+    init(
+        initialValue: Double = 0,
+        initialTimestamp: Date? = nil,
+        submit: @escaping (Double, Date) -> Void,
+        dismiss: @escaping () -> Void,
+        dismissesOnSubmit: Bool = false
+    ) {
+        self.model = DecimalInputViewModel(initialValue: initialValue, initialTimestamp: initialTimestamp, submit: submit)
         self.dismiss = dismiss
+        self.dismissesOnSubmit = dismissesOnSubmit
     }
 
     var body: some View {
@@ -151,6 +154,7 @@ struct DecimalInputView: View {
 
             Button("Submit", action: {
                 model.submitNumber()
+                if dismissesOnSubmit { dismiss() }
                 // Collapse picker after submit
                 withAnimation(.easeInOut) {
                     isEditingTimestamp = false

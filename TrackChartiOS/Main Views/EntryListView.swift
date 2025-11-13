@@ -32,8 +32,14 @@ struct EntryListView: View {
             .contentShape(Rectangle())
         }
         .sheet(isPresented: $isShowingInput) {
-            DecimalInputView(initialValue: selectedEntry?.value ?? 0, initialTimestamp: selectedEntry?.timestamp, submit: { _, _ in }, dismiss: { isShowingInput = false })
-                .presentationDetents([.fraction(0.45)])
+            DecimalInputView(
+                initialValue: selectedEntry?.value ?? 0,
+                initialTimestamp: selectedEntry?.timestamp,
+                submit: { _, _ in },
+                dismiss: { isShowingInput = false },
+                dismissesOnSubmit: true
+            )
+            .presentationDetents([.fraction(0.45)])
         }
     }
 
