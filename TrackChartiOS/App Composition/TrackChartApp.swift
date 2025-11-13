@@ -46,9 +46,15 @@ struct TrackChartApp: App {
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     HStack {
-                        Image(systemName: "chart.xyaxis.line")
-                            .font(.title2)
-                            .foregroundStyle(.red)
+                        if let icon = Bundle.main.appIcon {
+                            Image(uiImage: icon)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 30, height: 30)
+                                .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
+                                .shadow(color: .black.opacity(0.15), radius: 2, x: 0, y: 1)
+                        }
+
                         Text("TrackChart")
                             .font(.largeTitle)
                             .fontWeight(.semibold)
