@@ -54,7 +54,7 @@ class DecimalInputViewModelTests {
         let newTimestamp = Date(timeIntervalSinceReferenceDate: 123)
 
         sut.value = newValue
-        sut.timestamp = newTimestamp
+        sut.selectedTimestamp = newTimestamp
 
         sut.submitNumber()
 
