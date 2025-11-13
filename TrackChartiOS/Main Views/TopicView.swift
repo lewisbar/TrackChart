@@ -48,6 +48,7 @@ struct TopicView<Settings: View>: View {
     private var chartList: some View {
         List {
             overviewChart
+            entriesCell
             pagedCard(span: .week,       default: .dailySum())
             pagedCard(span: .month,      default: .dailySum())
             pagedCard(span: .oneYear,    default: .monthlySum())
@@ -60,6 +61,17 @@ struct TopicView<Settings: View>: View {
             .frame(height: 150)
             .padding(.top)
             .padding(.horizontal)
+    }
+
+    private var entriesCell: some View {
+        HStack {
+            Text("\(entries.count) entries")
+            Spacer()
+            Image(systemName: "chevron.right")
+                .tint(.secondary)
+        }
+        .padding()
+        .card()
     }
 
     private func pagedCard(span: TimeSpan, default aggregator: ChartDataProvider) -> some View {
