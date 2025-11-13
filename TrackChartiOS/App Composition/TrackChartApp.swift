@@ -44,7 +44,7 @@ struct TrackChartApp: App {
                 )
             )
             .toolbar {
-                ToolbarItem(placement: .principal) {
+                ToolbarItem(placement: .topBarLeading) {
                     HStack {
                         if let icon = Bundle.main.appIcon {
                             Image(uiImage: icon)
@@ -56,10 +56,10 @@ struct TrackChartApp: App {
                         }
 
                         Text("TrackChart")
-                            .font(.title)
-                            .fontWeight(.semibold)
+                            .font(.title3)
                             .fontDesign(.monospaced)
                     }
+                    .padding(.leading)
                     .accessibilityHidden(true)
                 }
             }
