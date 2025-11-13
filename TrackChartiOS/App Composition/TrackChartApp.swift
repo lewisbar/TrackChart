@@ -70,6 +70,7 @@ struct TrackChartApp: App {
                 .font(.title3)
                 .fontDesign(.monospaced)
         }
+        .padding(.leading)
     }
 
     private func makeSettingsView(for topic: TopicEntity) -> some View {
