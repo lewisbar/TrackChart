@@ -45,6 +45,7 @@ struct DecimalInputView: View {
                 .padding(.bottom, 15)
         }
         .background(Color(uiColor: .systemBackground))
+        .presentationDetents([.fraction(0.52)])
     }
 
     private var displayLabel: some View {

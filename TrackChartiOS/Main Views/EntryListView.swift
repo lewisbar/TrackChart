@@ -39,7 +39,6 @@ struct EntryListView: View {
                 dismiss: { isShowingInput = false },
                 dismissesOnSubmit: true
             )
-            .presentationDetents([.fraction(0.45)])
         }
     }
 

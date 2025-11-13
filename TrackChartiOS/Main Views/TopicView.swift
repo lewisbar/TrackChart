@@ -34,7 +34,6 @@ struct TopicView<Settings: View>: View {
         }
         .sheet(isPresented: $isShowingInput) {
             DecimalInputView(submit: submitNewValue, dismiss: { isShowingInput = false })
-                .presentationDetents([.fraction(0.45)])
         }
         .sheet(isPresented: $isShowingSettings) {
             settingsView()
