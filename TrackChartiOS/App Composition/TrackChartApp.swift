@@ -56,7 +56,7 @@ struct TrackChartApp: App {
                         }
 
                         Text("TrackChart")
-                            .font(.largeTitle)
+                            .font(.title)
                             .fontWeight(.semibold)
                             .fontDesign(.monospaced)
                     }
