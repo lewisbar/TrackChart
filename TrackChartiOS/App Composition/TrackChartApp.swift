@@ -43,20 +43,7 @@ struct TrackChartApp: App {
                     randomPalette: { Palette.random.name }
                 )
             )
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    HStack {
-                        Image(systemName: "chart.xyaxis.line")
-                            .font(.title2)
-                            .foregroundStyle(.red)
-                        Text("TrackChart")
-                            .font(.largeTitle)
-                            .fontWeight(.semibold)
-                            .fontDesign(.monospaced)
-                    }
-                    .accessibilityHidden(true)
-                }
-            }
+            .toolbar { ToolbarItem(placement: .topBarLeading) { branding } }
             .navigationDestination(for: TopicEntity.self) { topic in
                 SwiftDataTopicView(
                     topic: topic,
@@ -66,6 +53,23 @@ struct TrackChartApp: App {
             }
         }
         .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+    }
+
+    private var branding: some View {
+        HStack {
+            if let icon = Bundle.main.appIcon {
+                Image(uiImage: icon)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 30, height: 30)
+                    .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
+                    .shadow(color: .black.opacity(0.15), radius: 2, x: 0, y: 1)
+            }
+
+            Text("TrackChart")
+                .font(.title3)
+                .fontDesign(.monospaced)
+        }
     }
 
     private func makeSettingsView(for topic: TopicEntity) -> some View {
