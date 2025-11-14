@@ -34,7 +34,7 @@ struct TopicCell: View {
                         .tint(.secondary)
                         .font(.caption)
                 }
-                .padding(.horizontal)
+                .padding(.leading)
 
                 ChartView(
                     rawEntries: topic.entries,
@@ -42,11 +42,12 @@ struct TopicCell: View {
                     mode: .preview,
                     placeholder: { ChartPlaceholderView().font(.footnote).padding(.bottom, 20) }
                 )
-                .padding(.horizontal)
+                .padding(.leading)
                 .padding(.bottom)
             }
             Image(systemName: "chevron.right")
                 .tint(.secondary)
+                .padding(.trailing, 4)
         }
         .padding(.top)
         .padding(.horizontal, 4)
