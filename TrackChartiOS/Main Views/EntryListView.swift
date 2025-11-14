@@ -8,11 +8,13 @@
 import SwiftUI
 
 struct EntryListView: View {
+    let topicName: String
     let entries: [ListEntry]
     let updateEntry: (ListEntry) -> Void
     let deleteEntries: (IndexSet) -> Void
     @State private var isShowingInput = false
     @State private var selectedEntry: ListEntry?
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         List {
@@ -25,6 +27,11 @@ struct EntryListView: View {
             }
             .onDelete(perform: deleteEntries)
             .contentShape(Rectangle())
+        }
+        .navigationBarBackButtonHidden(true)
+        .navigationTitle(topicName)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading, content: chevronOnlyBackButton)
         }
         .sheet(isPresented: $isShowingInput) {
             DecimalInputView(
@@ -47,6 +54,13 @@ struct EntryListView: View {
         }
         .contentShape(Rectangle())
     }
+
+    private func chevronOnlyBackButton() -> some View {
+        Button(action: { dismiss() }) {
+            Image(systemName: "chevron.left")
+        }
+        .tint(.secondary)
+    }
 }
 
 #Preview {
@@ -62,6 +76,7 @@ struct EntryListView: View {
     ]
 
     EntryListView(
+        topicName: "Topic 1",
         entries: entries,
         updateEntry: { updatedEntry in
             guard let index = entries.firstIndex(where: { $0.id == updatedEntry.id }) else { return }
