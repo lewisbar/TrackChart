@@ -68,6 +68,7 @@ struct TopicView<Settings: View>: View {
         Button(action: showEntryList) {
             HStack {
                 Text("\(entries.count) entries")
+                    .tint(.primary)
                 Spacer()
                 Image(systemName: "chevron.right")
                     .tint(.secondary)
