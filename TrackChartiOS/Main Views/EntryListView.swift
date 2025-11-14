@@ -7,14 +7,9 @@
 
 import SwiftUI
 
-struct ListEntry: Identifiable {
-    let id = UUID()
-    let value: Double
-    let timestamp: Date
-}
-
 struct EntryListView: View {
-    @Binding var entries: [ListEntry]
+    let entries: [ListEntry]
+    let updateEntry: (ListEntry) -> Void
     let deleteEntries: (IndexSet) -> Void
     @State private var isShowingInput = false
     @State private var selectedEntry: ListEntry?
@@ -35,7 +30,7 @@ struct EntryListView: View {
             DecimalInputView(
                 initialValue: selectedEntry?.value ?? 0,
                 initialTimestamp: selectedEntry?.timestamp,
-                submit: { _, _ in },
+                submit: { value, timestamp in selectedEntry.map { entry in updateEntry(ListEntry(id: entry.id, value: value, timestamp: timestamp)) } },
                 dismiss: { isShowingInput = false },
                 dismissesOnSubmit: true
             )
@@ -55,15 +50,21 @@ struct EntryListView: View {
 
 #Preview {
     @Previewable @State var entries: [ListEntry] = [
-        .init(value: 2.1, timestamp: .now.advanced(by: -800)),
-        .init(value: 1, timestamp: .now.advanced(by: -700)),
-        .init(value: -1, timestamp: .now.advanced(by: -600)),
-        .init(value: -2.2, timestamp: .now.advanced(by: -500)),
-        .init(value: -3.4, timestamp: .now.advanced(by: -400)),
-        .init(value: 0, timestamp: .now.advanced(by: -300)),
-        .init(value: 2, timestamp: .now.advanced(by: -200)),
-        .init(value: 4, timestamp: .now.advanced(by: -100))
+        .init(id: UUID(), value: 2.1, timestamp: .now.advanced(by: -800)),
+        .init(id: UUID(), value: 1, timestamp: .now.advanced(by: -700)),
+        .init(id: UUID(), value: -1, timestamp: .now.advanced(by: -600)),
+        .init(id: UUID(), value: -2.2, timestamp: .now.advanced(by: -500)),
+        .init(id: UUID(), value: -3.4, timestamp: .now.advanced(by: -400)),
+        .init(id: UUID(), value: 0, timestamp: .now.advanced(by: -300)),
+        .init(id: UUID(), value: 2, timestamp: .now.advanced(by: -200)),
+        .init(id: UUID(), value: 4, timestamp: .now.advanced(by: -100))
     ]
 
-    EntryListView(entries: $entries, deleteEntries: { entries.remove(atOffsets: $0) })
+    EntryListView(
+        entries: entries,
+        updateEntry: { updatedEntry in
+            guard let index = entries.firstIndex(where: { $0.id == updatedEntry.id }) else { return }
+            entries[index] = updatedEntry
+        },
+        deleteEntries: { entries.remove(atOffsets: $0) })
 }
