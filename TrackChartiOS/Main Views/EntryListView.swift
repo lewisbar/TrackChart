@@ -20,10 +20,6 @@ struct EntryListView: View {
         List {
             ForEach(entries.reversed()) { entry in
                 entryCell(for: entry)
-                    .onTapGesture {
-                        selectedEntry = entry
-                        isShowingInput = true
-                    }
             }
             .onDelete(perform: deleteEntries)
             .contentShape(Rectangle())
@@ -45,14 +41,20 @@ struct EntryListView: View {
     }
 
     private func entryCell(for entry: ListEntry) -> some View {
-        HStack {
-            Text(entry.timestamp.formatted(date: .abbreviated, time: .shortened))
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-            Spacer()
-            Text(entry.value.formatted(.number))
+        Button {
+            selectedEntry = entry
+            isShowingInput = true
+        } label: {
+            HStack {
+                Text(entry.timestamp.formatted(date: .abbreviated, time: .shortened))
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Text(entry.value.formatted(.number))
+            }
+            .contentShape(Rectangle())
         }
-        .contentShape(Rectangle())
+        .tint(.primary)
     }
 
     private func chevronOnlyBackButton() -> some View {
