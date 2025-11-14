@@ -45,6 +45,7 @@ struct EntryListView: View {
             Spacer()
             Text(entry.value.formatted(.number))
         }
+        .contentShape(Rectangle())
     }
 }
 
