@@ -9,11 +9,16 @@ import SwiftUI
 import SwiftData
 import Persistence
 
+private enum Destination: Hashable {
+    case topicView(TopicEntity)
+    case entryListView(TopicEntity)
+}
+
 @main
 struct TrackChartApp: App {
     private let modelContainer: ModelContainer
     private var modelContext: ModelContext { modelContainer.mainContext }
-    @State private var path = [TopicEntity]()
+    @State private var path = [Destination]()
 
     init() {
         do {
@@ -44,12 +49,18 @@ struct TrackChartApp: App {
                 )
             )
             .toolbar { ToolbarItem(placement: .topBarLeading) { branding } }
-            .navigationDestination(for: TopicEntity.self) { topic in
-                SwiftDataTopicView(
-                    topic: topic,
-                    viewModel: SwiftDataTopicViewModel(),
-                    settingsView: { makeSettingsView(for: topic) }
-                )
+            .navigationDestination(for: Destination.self) { destination in
+                switch destination {
+                case let .topicView(topic):
+                    SwiftDataTopicView(
+                        topic: topic,
+                        viewModel: SwiftDataTopicViewModel(),
+                        settingsView: { makeSettingsView(for: topic) },
+                        showEntryList: { showEntryList(for: topic) }
+                    )
+                case let .entryListView(topic):
+                    SwiftDataEntryListView(topic: topic, viewModel: SwiftDataEntryListViewModel())
+                }
             }
         }
         .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
@@ -85,6 +96,10 @@ struct TrackChartApp: App {
 
     private func showTopic(_ topic: TopicEntity?) {
         guard let topic else { return }
-        path = [topic]
+        path = [.topicView(topic)]
+    }
+
+    private func showEntryList(for topic: TopicEntity) {
+        path = [.entryListView(topic)]
     }
 }

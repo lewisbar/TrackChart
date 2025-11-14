@@ -14,6 +14,7 @@ struct TopicView<Settings: View>: View {
     let submitNewValue: (Double, Date) -> Void
     let deleteLastValue: () -> Void
     let settingsView: () -> Settings
+    let showEntryList: () -> Void
     @State private var isShowingSettings = false
     @State private var isShowingInput = false
     @State private var enteredValue: Double? = nil
@@ -64,14 +65,16 @@ struct TopicView<Settings: View>: View {
     }
 
     private var entriesCell: some View {
-        HStack {
-            Text("\(entries.count) entries")
-            Spacer()
-            Image(systemName: "chevron.right")
-                .tint(.secondary)
+        Button(action: showEntryList) {
+            HStack {
+                Text("\(entries.count) entries")
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .tint(.secondary)
+            }
+            .padding()
+            .card()
         }
-        .padding()
-        .card()
     }
 
     private func pagedCard(span: TimeSpan, default aggregator: ChartDataProvider) -> some View {
@@ -130,6 +133,7 @@ struct TopicView<Settings: View>: View {
         },
         submitNewValue: { _, _ in },
         deleteLastValue: {},
-        settingsView: EmptyView.init
+        settingsView: EmptyView.init,
+        showEntryList: {}
     )
 }
