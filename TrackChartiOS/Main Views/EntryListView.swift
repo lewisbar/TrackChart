@@ -89,7 +89,7 @@ struct EntryListView: View {
             initialTimestamp: entry?.timestamp,
             submit: { value, timestamp in submitEntry(withID: entry?.id ?? UUID(), value: value, timestamp: timestamp) },
             dismiss: dismissNumpad,
-            dismissesOnSubmit: true
+            dismissesOnSubmit: entry != nil
         )
     }
 
