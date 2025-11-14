@@ -9,6 +9,7 @@ import Testing
 import SwiftData
 import Persistence
 @testable import TrackChartiOS
+import SwiftUI
 
 class SwiftDataEntryListViewModel {
     func listEntries(for topic: TopicEntity) -> [ListEntry] {
@@ -19,6 +20,14 @@ class SwiftDataEntryListViewModel {
         let entryEntity = topic.entries?.first(where: { $0.id == listEntry.id })
         entryEntity?.value = listEntry.value
         entryEntity?.timestamp = listEntry.timestamp
+    }
+
+    func deleteEntries(atOffsets offsets: IndexSet, from topic: TopicEntity) {
+        let ids = topic.sortedEntries.map(\.id)
+        let idsToDelete = offsets.map { ids[$0] }
+        for id in idsToDelete {
+            topic.entries?.removeAll(where: { $0.id == id })
+        }
     }
 }
 
@@ -60,6 +69,23 @@ class SwiftDataEntryListViewModelTests {
 
         #expect(topic.sortedEntries[1].value == newValue)
         #expect(topic.sortedEntries[1].timestamp == newTimestamp)
+    }
+
+    @Test func deleteEntries() throws {
+        let entries = [
+            EntryEntity(value: 2.4, timestamp: Date(timeIntervalSinceReferenceDate: 100)),
+            EntryEntity(value: -2.4, timestamp: Date(timeIntervalSinceReferenceDate: 200)),
+            EntryEntity(value: -4, timestamp: Date(timeIntervalSinceReferenceDate: 300)),
+            EntryEntity(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 400))
+        ]
+        let (sut, topic) = try makeSUT(entries: entries)
+
+        let offsets: IndexSet = [1, 3]
+        sut.deleteEntries(atOffsets: offsets, from: topic)
+
+        var newEntryEntities = entries
+        newEntryEntities.remove(atOffsets: offsets)
+        #expect(topic.sortedEntries == newEntryEntities)
     }
 
     // MARK: - Helpers
