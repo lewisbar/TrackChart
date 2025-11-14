@@ -162,7 +162,7 @@ struct SettingsView: View {
                 )
                 .contentShape(Circle())
         }
-        .buttonStyle(.plain)
+        .tint(.primary)
         .padding()
     }
 }

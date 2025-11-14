@@ -81,7 +81,7 @@ struct DecimalInputView: View {
                     Image(systemName: "xmark.circle.fill")
                         .foregroundStyle(.secondary)
                 }
-                .buttonStyle(.plain)
+                .tint(.primary)
             } else {
                 // Collapsed label
                 Button {
@@ -96,7 +96,7 @@ struct DecimalInputView: View {
                     .foregroundStyle(.primary)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .buttonStyle(.plain)
+                .tint(.primary)
 
                 // Clear only when a date is set
                 if model.selectedTimestamp != nil {
@@ -106,7 +106,7 @@ struct DecimalInputView: View {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundStyle(.secondary)
                     }
-                    .buttonStyle(.plain)
+                    .tint(.primary)
                 }
             }
         }
