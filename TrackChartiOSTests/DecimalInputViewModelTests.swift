@@ -11,8 +11,14 @@ import SwiftUI
 
 class DecimalInputViewModelTests {
     @Test func startsWithZero() {
-        let sut = makeSUT(submit: { _, _ in })
+        let sut = makeSUT()
         #expect(sut.value == "0")
+    }
+
+    @Test func startsWithProvidedNumber_ifProvided() {
+        let number = 42.1
+        let sut = makeSUT(initialValue: number)
+        #expect(sut.value == number.formatted())
     }
 
     @Test func hasCorrectKeys() {
@@ -224,7 +230,7 @@ class DecimalInputViewModelTests {
     }
 
     @Test func handleInput_decimalPoint() {
-        let sut = makeSUT(submit: { _, _ in })
+        let sut = makeSUT()
         let decimalPoint = "."
 
         sut.value = "0"
@@ -293,7 +299,7 @@ class DecimalInputViewModelTests {
     }
 
     @Test func handleInput_number() {
-        let sut = makeSUT(submit: { _, _ in })
+        let sut = makeSUT()
 
         sut.value = "0"
         sut.handleInput("5")
@@ -344,8 +350,59 @@ class DecimalInputViewModelTests {
         #expect(sut.value == "-12.055")
     }
 
+    @Test func startsWithoutTimestamp() {
+        let sut = makeSUT()
+
+        #expect(sut.selectedTimestamp == nil)
+        #expect(sut.timestampDisplay == "Now")
+    }
+
+    @Test func startsWithTimestamp_ifProvided() {
+        let timestamp = Date(timeIntervalSinceReferenceDate: 1000)
+        let sut = makeSUT(initialTimestamp: timestamp)
+
+        #expect(sut.selectedTimestamp == timestamp)
+        #expect(sut.timestampDisplay == timestamp
+            .formatted(
+                .dateTime
+                    .day(.defaultDigits)
+                    .month(.abbreviated)
+                    .year(.defaultDigits)
+                    .hour(.defaultDigits(amPM: .abbreviated))
+                    .minute()
+            ))
+    }
+
+    @Test func setTimestamp() {
+        let sut = makeSUT()
+        let timestamp = Date(timeIntervalSinceReferenceDate: 1000)
+
+        sut.setTimestamp(timestamp)
+
+        #expect(sut.selectedTimestamp == timestamp)
+        #expect(sut.timestampDisplay == timestamp
+            .formatted(
+                .dateTime
+                    .day(.defaultDigits)
+                    .month(.abbreviated)
+                    .year(.defaultDigits)
+                    .hour(.defaultDigits(amPM: .abbreviated))
+                    .minute()
+            ))
+    }
+
+    @Test func clearTimestamp() {
+        let sut = makeSUT()
+        sut.setTimestamp(Date(timeIntervalSinceReferenceDate: 1000))
+
+        sut.clearTimestamp()
+
+        #expect(sut.selectedTimestamp == nil)
+        #expect(sut.timestampDisplay == "Now")
+    }
+
     @Test func isObservable() async throws {
-        let sut = makeSUT(submit: { _, _ in })
+        let sut = makeSUT()
         let tracker = ObservationTracker()
 
         withObservationTracking {
@@ -363,7 +420,12 @@ class DecimalInputViewModelTests {
 
     // MARK: - Helpers
 
-    private func makeSUT(initialValue: Double = 0, initialTimestamp: Date? = nil, submit: @escaping (Double, Date) -> Void = { _, _ in }, now: @escaping () -> Date = Date.init) -> DecimalInputViewModel {
+    private func makeSUT(
+        initialValue: Double = 0,
+        initialTimestamp: Date? = nil,
+        submit: @escaping (Double, Date) -> Void = { _, _ in },
+        now: @escaping () -> Date = Date.init
+    ) -> DecimalInputViewModel {
         let sut = DecimalInputViewModel(initialValue: initialValue, initialTimestamp: initialTimestamp, submit: submit, now: now)
         weakSUT = sut
         return sut
