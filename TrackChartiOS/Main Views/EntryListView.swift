@@ -9,12 +9,19 @@ import SwiftUI
 
 struct EntryListView: View {
     let topicName: String
-    let entries: [ListEntry]
     let updateEntry: (ListEntry) -> Void
     let deleteEntries: (IndexSet) -> Void
+    @State private var entries: [ListEntry]
     @State private var isShowingInput = false
     @State private var selectedEntry: ListEntry?
     @Environment(\.dismiss) private var dismiss
+
+    init(topicName: String, entries: [ListEntry], updateEntry: @escaping (ListEntry) -> Void, deleteEntries: @escaping (IndexSet) -> Void) {
+        self.topicName = topicName
+        self.entries = entries
+        self.updateEntry = updateEntry
+        self.deleteEntries = deleteEntries
+    }
 
     var body: some View {
         List {
@@ -34,13 +41,9 @@ struct EntryListView: View {
             isShowingInput = true
         }
         .sheet(isPresented: $isShowingInput) {
-            DecimalInputView(
-                initialValue: selectedEntry?.value ?? 0,
-                initialTimestamp: selectedEntry?.timestamp,
-                submit: { value, timestamp in selectedEntry.map { entry in updateEntry(ListEntry(id: entry.id, value: value, timestamp: timestamp)) } },
-                dismiss: { isShowingInput = false },
-                dismissesOnSubmit: true
-            )
+            if let entry = selectedEntry {
+                inputView(for: entry)
+            }
         }
     }
 
@@ -65,6 +68,26 @@ struct EntryListView: View {
             Image(systemName: "chevron.left")
         }
         .tint(.secondary)
+    }
+
+    private func inputView(for entry: ListEntry) -> some View {
+        DecimalInputView(
+            initialValue: selectedEntry?.value ?? 0,
+            initialTimestamp: selectedEntry?.timestamp,
+            submit: { value, timestamp in updateEntry(withID: entry.id, value: value, timestamp: timestamp) },
+            dismiss: { isShowingInput = false },
+            dismissesOnSubmit: true
+        )
+    }
+
+    private func updateEntry(withID id: UUID, value: Double, timestamp: Date) {
+        guard let index = entries.firstIndex(where: { $0.id == id }) else { return }
+        let updatedEntry = ListEntry(id: id, value: value, timestamp: timestamp)
+        withAnimation {
+            entries[index] = updatedEntry
+            entries.sort { $0.timestamp > $1.timestamp }
+        }
+        updateEntry(updatedEntry)
     }
 }
 
