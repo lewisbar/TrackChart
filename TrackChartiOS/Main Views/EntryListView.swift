@@ -29,6 +29,10 @@ struct EntryListView: View {
         .toolbar {
             ToolbarItem(placement: .topBarLeading, content: chevronOnlyBackButton)
         }
+        .onChange(of: selectedEntry) { _, newValue in
+            guard newValue != nil else { return }
+            isShowingInput = true
+        }
         .sheet(isPresented: $isShowingInput) {
             DecimalInputView(
                 initialValue: selectedEntry?.value ?? 0,
@@ -43,7 +47,6 @@ struct EntryListView: View {
     private func entryCell(for entry: ListEntry) -> some View {
         Button {
             selectedEntry = entry
-            isShowingInput = true
         } label: {
             HStack {
                 Text(entry.timestamp.formatted(date: .abbreviated, time: .shortened))
