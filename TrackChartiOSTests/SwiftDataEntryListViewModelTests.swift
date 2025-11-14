@@ -14,6 +14,12 @@ class SwiftDataEntryListViewModel {
     func listEntries(for topic: TopicEntity) -> [ListEntry] {
         topic.sortedEntries.map(ListEntry.init)
     }
+
+    func updateEntry(_ listEntry: ListEntry, of topic: TopicEntity) {
+        let entryEntity = topic.entries?.first(where: { $0.id == listEntry.id })
+        entryEntity?.value = listEntry.value
+        entryEntity?.timestamp = listEntry.timestamp
+    }
 }
 
 private extension ListEntry {
@@ -35,6 +41,25 @@ class SwiftDataEntryListViewModelTests {
         let result = sut.listEntries(for: topic)
 
         #expect(result == entries.sorted(by: { $0.timestamp < $1.timestamp }).map { ListEntry(id: $0.id, value: $0.value, timestamp: $0.timestamp) })
+    }
+
+    @Test func updateEntry() throws {
+        let entries = [
+            EntryEntity(value: 2.4, timestamp: Date(timeIntervalSinceReferenceDate: 100)),
+            EntryEntity(value: -2.4, timestamp: Date(timeIntervalSinceReferenceDate: 200)),
+            EntryEntity(value: -4, timestamp: Date(timeIntervalSinceReferenceDate: 300)),
+            EntryEntity(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 400))
+        ]
+        let (sut, topic) = try makeSUT(entries: entries)
+
+        let newValue = -3.5
+        let newTimestamp = Date(timeIntervalSinceReferenceDate: 201)
+        let updatedEntry = ListEntry(id: entries[1].id, value: newValue, timestamp: newTimestamp)
+
+        sut.updateEntry(updatedEntry, of: topic)
+
+        #expect(topic.sortedEntries[1].value == newValue)
+        #expect(topic.sortedEntries[1].timestamp == newTimestamp)
     }
 
     // MARK: - Helpers
