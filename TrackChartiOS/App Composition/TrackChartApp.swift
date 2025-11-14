@@ -82,6 +82,8 @@ struct TrackChartApp: App {
                 .fontDesign(.monospaced)
         }
         .padding(.leading)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("TrackChart Logo")
     }
 
     private func makeSettingsView(for topic: TopicEntity) -> some View {
