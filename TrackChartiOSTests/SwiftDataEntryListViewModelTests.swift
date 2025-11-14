@@ -40,7 +40,7 @@ class SwiftDataEntryListViewModelTests {
 
         let result = sut.listEntries(for: topic)
 
-        #expect(result == entries.sorted(by: { $0.timestamp < $1.timestamp }).map { ListEntry(id: $0.id, value: $0.value, timestamp: $0.timestamp) })
+        #expect(result == entries.map { ListEntry(id: $0.id, value: $0.value, timestamp: $0.timestamp) })
     }
 
     @Test func updateEntry() throws {
