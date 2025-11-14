@@ -100,6 +100,6 @@ struct TrackChartApp: App {
     }
 
     private func showEntryList(for topic: TopicEntity) {
-        path = [.entryListView(topic)]
+        path.append(.entryListView(topic))
     }
 }
