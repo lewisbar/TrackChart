@@ -12,6 +12,11 @@ class SwiftDataEntryListViewModel {
         topic.sortedEntries.reversed().map(ListEntry.init)
     }
 
+    func addEntry(_ listEntry: ListEntry, to topic: TopicEntity) {
+        let entryEntity = EntryEntity(id: listEntry.id, value: listEntry.value, timestamp: listEntry.timestamp)
+        topic.entries?.append(entryEntity)
+    }
+
     func updateEntry(_ listEntry: ListEntry, of topic: TopicEntity) {
         let entryEntity = topic.entries?.first(where: { $0.id == listEntry.id })
         entryEntity?.value = listEntry.value

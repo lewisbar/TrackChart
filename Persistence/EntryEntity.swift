@@ -14,7 +14,8 @@ public final class EntryEntity {
     public var timestamp: Date = Date.now
     public var topic: TopicEntity?
 
-    public init(value: Double, timestamp: Date) {
+    public init(id: UUID = UUID(), value: Double, timestamp: Date) {
+        self.id = id
         self.value = value
         self.timestamp = timestamp
     }

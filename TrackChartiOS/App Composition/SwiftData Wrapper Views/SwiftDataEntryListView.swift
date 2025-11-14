@@ -15,6 +15,7 @@ struct SwiftDataEntryListView: View {
     var body: some View {
         EntryListView(
             topicName: topic.name,
+            addEntry: { viewModel.addEntry($0, to: topic) },
             entries: viewModel.listEntries(for: topic),
             updateEntry: { viewModel.updateEntry($0, of: topic) },
             deleteEntries: { viewModel.deleteEntries(atOffsets: $0, from: topic) }

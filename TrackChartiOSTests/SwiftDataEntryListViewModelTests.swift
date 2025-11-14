@@ -14,10 +14,10 @@ import SwiftUI
 class SwiftDataEntryListViewModelTests {
     @Test func listEntriesForTopic() throws {
         let entries = [
-            EntryEntity(value: 2.4, timestamp: Date(timeIntervalSinceReferenceDate: 100)),
-            EntryEntity(value: -2.4, timestamp: Date(timeIntervalSinceReferenceDate: 200)),
-            EntryEntity(value: -4, timestamp: Date(timeIntervalSinceReferenceDate: 300)),
-            EntryEntity(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 400))
+            EntryEntity(value: 2.4, timestamp: Date(timeIntervalSinceReferenceDate: 400)),
+            EntryEntity(value: -2.4, timestamp: Date(timeIntervalSinceReferenceDate: 300)),
+            EntryEntity(value: -4, timestamp: Date(timeIntervalSinceReferenceDate: 200)),
+            EntryEntity(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 100))
         ]
         let (sut, topic) = try makeSUT(entries: entries)
 
@@ -26,31 +26,52 @@ class SwiftDataEntryListViewModelTests {
         #expect(result == entries.map { ListEntry(id: $0.id, value: $0.value, timestamp: $0.timestamp) })
     }
 
-    @Test func updateEntry() throws {
+    @Test func addEntry() throws {
         let entries = [
-            EntryEntity(value: 2.4, timestamp: Date(timeIntervalSinceReferenceDate: 100)),
-            EntryEntity(value: -2.4, timestamp: Date(timeIntervalSinceReferenceDate: 200)),
-            EntryEntity(value: -4, timestamp: Date(timeIntervalSinceReferenceDate: 300)),
-            EntryEntity(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 400))
+            EntryEntity(value: 2.4, timestamp: Date(timeIntervalSinceReferenceDate: 400)),
+            EntryEntity(value: -2.4, timestamp: Date(timeIntervalSinceReferenceDate: 300)),
+            EntryEntity(value: -4, timestamp: Date(timeIntervalSinceReferenceDate: 200)),
+            EntryEntity(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 100))
         ]
         let (sut, topic) = try makeSUT(entries: entries)
 
         let newValue = -3.5
         let newTimestamp = Date(timeIntervalSinceReferenceDate: 201)
+        let newEntry = ListEntry(id: entries[1].id, value: newValue, timestamp: newTimestamp)
+
+        sut.addEntry(newEntry, to: topic)
+
+        #expect(topic.sortedEntries.count == 5)
+        #expect(topic.sortedEntries[2].id == newEntry.id)
+        #expect(topic.sortedEntries[2].value == newEntry.value)
+        #expect(topic.sortedEntries[2].timestamp == newEntry.timestamp)
+    }
+
+    @Test func updateEntry() throws {
+        let entries = [
+            EntryEntity(value: 2.4, timestamp: Date(timeIntervalSinceReferenceDate: 400)),
+            EntryEntity(value: -2.4, timestamp: Date(timeIntervalSinceReferenceDate: 300)),
+            EntryEntity(value: -4, timestamp: Date(timeIntervalSinceReferenceDate: 200)),
+            EntryEntity(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 100))
+        ]
+        let (sut, topic) = try makeSUT(entries: entries)
+
+        let newValue = -3.5
+        let newTimestamp = Date(timeIntervalSinceReferenceDate: 301)
         let updatedEntry = ListEntry(id: entries[1].id, value: newValue, timestamp: newTimestamp)
 
         sut.updateEntry(updatedEntry, of: topic)
 
-        #expect(topic.sortedEntries[1].value == newValue)
-        #expect(topic.sortedEntries[1].timestamp == newTimestamp)
+        #expect(topic.sortedEntries.reversed()[1].value == newValue)
+        #expect(topic.sortedEntries.reversed()[1].timestamp == newTimestamp)
     }
 
     @Test func deleteEntries() throws {
         let entries = [
-            EntryEntity(value: 2.4, timestamp: Date(timeIntervalSinceReferenceDate: 100)),
-            EntryEntity(value: -2.4, timestamp: Date(timeIntervalSinceReferenceDate: 200)),
-            EntryEntity(value: -4, timestamp: Date(timeIntervalSinceReferenceDate: 300)),
-            EntryEntity(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 400))
+            EntryEntity(value: 2.4, timestamp: Date(timeIntervalSinceReferenceDate: 400)),
+            EntryEntity(value: -2.4, timestamp: Date(timeIntervalSinceReferenceDate: 300)),
+            EntryEntity(value: -4, timestamp: Date(timeIntervalSinceReferenceDate: 200)),
+            EntryEntity(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 100))
         ]
         let (sut, topic) = try makeSUT(entries: entries)
 
@@ -59,7 +80,7 @@ class SwiftDataEntryListViewModelTests {
 
         var newEntryEntities = entries
         newEntryEntities.remove(atOffsets: offsets)
-        #expect(topic.sortedEntries == newEntryEntities)
+        #expect(topic.sortedEntries.reversed() == newEntryEntities)
     }
 
     // MARK: - Helpers
