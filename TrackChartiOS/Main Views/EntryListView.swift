@@ -18,7 +18,7 @@ struct EntryListView: View {
 
     var body: some View {
         List {
-            ForEach(entries.reversed()) { entry in
+            ForEach(entries) { entry in
                 entryCell(for: entry)
             }
             .onDelete(perform: deleteEntries)

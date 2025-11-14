@@ -9,7 +9,7 @@ import Persistence
 
 class SwiftDataEntryListViewModel {
     func listEntries(for topic: TopicEntity) -> [ListEntry] {
-        topic.sortedEntries.map(ListEntry.init)
+        topic.sortedEntries.reversed().map(ListEntry.init)
     }
 
     func updateEntry(_ listEntry: ListEntry, of topic: TopicEntity) {
