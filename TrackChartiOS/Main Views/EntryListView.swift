@@ -74,6 +74,7 @@ struct EntryListView: View {
             .contentShape(Rectangle())
         }
         .tint(.primary)
+        .accessibilityHint("Tap to edit entry")
     }
 
     private func chevronOnlyBackButton() -> some View {
