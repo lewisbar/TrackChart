@@ -18,7 +18,7 @@ struct EntryListView: View {
 
     var body: some View {
         List {
-            ForEach(entries) { entry in
+            ForEach(entries.reversed()) { entry in
                 entryCell(for: entry)
                     .onTapGesture {
                         selectedEntry = entry

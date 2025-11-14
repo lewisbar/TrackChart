@@ -19,7 +19,7 @@ class SwiftDataEntryListViewModel {
     }
 
     func deleteEntries(atOffsets offsets: IndexSet, from topic: TopicEntity) {
-        let ids = topic.sortedEntries.map(\.id)
+        let ids = topic.sortedEntries.reversed().map(\.id)
         let idsToDelete = offsets.map { ids[$0] }
         for id in idsToDelete {
             topic.entries?.removeAll(where: { $0.id == id })
