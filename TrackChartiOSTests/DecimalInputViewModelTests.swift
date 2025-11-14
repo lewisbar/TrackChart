@@ -9,14 +9,20 @@ import Testing
 import SwiftUI
 @testable import TrackChartiOS
 
-struct DecimalInputViewModelTests {
+class DecimalInputViewModelTests {
     @Test func startsWithZero() {
-        let sut = DecimalInputViewModel(submitValue: { _ in })
+        let sut = makeSUT()
         #expect(sut.value == "0")
     }
 
+    @Test func startsWithProvidedNumber_ifProvided() {
+        let number = 42.1
+        let sut = makeSUT(initialValue: number)
+        #expect(sut.value == number.formatted())
+    }
+
     @Test func hasCorrectKeys() {
-        let sut = DecimalInputViewModel(submitValue: { _ in })
+        let sut = makeSUT(submit: { _, _ in })
         #expect(sut.keys == [
             ["1", "2", "3"],
             ["4", "5", "6"],
@@ -26,19 +32,19 @@ struct DecimalInputViewModelTests {
     }
 
     @Test func submitNumber() {
-        var submittedValues = [Double]()
-        let sut = DecimalInputViewModel(submitValue: { submittedValues.append($0) })
+        var submittedValues = [(Double, Date)]()
+        let sut = makeSUT(submit: { submittedValues.append(($0, $1)) })
         sut.value = "-32.6"
 
         sut.submitNumber()
 
-        #expect(submittedValues == [-32.6])
+        #expect(submittedValues.map(\.0) == [-32.6])
         #expect(sut.value == "0")
     }
 
     @Test func submitNumber_withInvalidValue_resetsValueToZeroAndDoesNotSubmit() {
-        var submittedValues = [Double]()
-        let sut = DecimalInputViewModel(submitValue: { submittedValues.append($0) })
+        var submittedValues = [(Double, Date)]()
+        let sut = makeSUT(submit: { submittedValues.append(($0, $1)) })
         sut.value = "not a number"
 
         sut.submitNumber()
@@ -47,8 +53,39 @@ struct DecimalInputViewModelTests {
         #expect(sut.value == "0")
     }
 
+    @Test func submitNumber_whenThereIsATimeStampSet_usesThisTimestamp() {
+        var submittedValues = [(Double, Date)]()
+        let sut = makeSUT(submit: { submittedValues.append(($0, $1)) })
+        let newValue = "-32.6"
+        let newTimestamp = Date(timeIntervalSinceReferenceDate: 123)
+
+        sut.value = newValue
+        sut.selectedTimestamp = newTimestamp
+
+        sut.submitNumber()
+
+        #expect(submittedValues.map(\.0) == [-32.6])
+        #expect(submittedValues.map(\.1) == [newTimestamp])
+        #expect(sut.value == "0")
+    }
+
+    @Test func submitNumber_whenThereIsNoTimeStampSet_usesNow() {
+        var submittedValues = [(Double, Date)]()
+        let now = { Date(timeIntervalSinceReferenceDate: 456) }
+        let sut = makeSUT(submit: { submittedValues.append(($0, $1)) }, now: now)
+        let newValue = "-32.6"
+
+        sut.value = newValue
+
+        sut.submitNumber()
+
+        #expect(submittedValues.map(\.0) == [-32.6])
+        #expect(submittedValues.map(\.1) == [now()])
+        #expect(sut.value == "0")
+    }
+
     @Test func toggleSign() {
-        let sut = DecimalInputViewModel(submitValue: { _ in })
+        let sut = makeSUT(submit: { _, _ in })
 
         sut.value = "0"
         sut.toggleSign()
@@ -108,7 +145,7 @@ struct DecimalInputViewModelTests {
     }
 
     @Test func handleInput_backspace() {
-        let sut = DecimalInputViewModel(submitValue: { _ in })
+        let sut = makeSUT(submit: { _, _ in })
         let backspace = "⌫"
 
         sut.value = "0"
@@ -193,7 +230,7 @@ struct DecimalInputViewModelTests {
     }
 
     @Test func handleInput_decimalPoint() {
-        let sut = DecimalInputViewModel(submitValue: { _ in })
+        let sut = makeSUT()
         let decimalPoint = "."
 
         sut.value = "0"
@@ -262,7 +299,7 @@ struct DecimalInputViewModelTests {
     }
 
     @Test func handleInput_number() {
-        let sut = DecimalInputViewModel(submitValue: { _ in })
+        let sut = makeSUT()
 
         sut.value = "0"
         sut.handleInput("5")
@@ -313,8 +350,59 @@ struct DecimalInputViewModelTests {
         #expect(sut.value == "-12.055")
     }
 
+    @Test func startsWithoutTimestamp() {
+        let sut = makeSUT()
+
+        #expect(sut.selectedTimestamp == nil)
+        #expect(sut.timestampDisplay == "Now")
+    }
+
+    @Test func startsWithTimestamp_ifProvided() {
+        let timestamp = Date(timeIntervalSinceReferenceDate: 1000)
+        let sut = makeSUT(initialTimestamp: timestamp)
+
+        #expect(sut.selectedTimestamp == timestamp)
+        #expect(sut.timestampDisplay == timestamp
+            .formatted(
+                .dateTime
+                    .day(.defaultDigits)
+                    .month(.abbreviated)
+                    .year(.defaultDigits)
+                    .hour(.defaultDigits(amPM: .abbreviated))
+                    .minute()
+            ))
+    }
+
+    @Test func setTimestamp() {
+        let sut = makeSUT()
+        let timestamp = Date(timeIntervalSinceReferenceDate: 1000)
+
+        sut.setTimestamp(timestamp)
+
+        #expect(sut.selectedTimestamp == timestamp)
+        #expect(sut.timestampDisplay == timestamp
+            .formatted(
+                .dateTime
+                    .day(.defaultDigits)
+                    .month(.abbreviated)
+                    .year(.defaultDigits)
+                    .hour(.defaultDigits(amPM: .abbreviated))
+                    .minute()
+            ))
+    }
+
+    @Test func clearTimestamp() {
+        let sut = makeSUT()
+        sut.setTimestamp(Date(timeIntervalSinceReferenceDate: 1000))
+
+        sut.clearTimestamp()
+
+        #expect(sut.selectedTimestamp == nil)
+        #expect(sut.timestampDisplay == "Now")
+    }
+
     @Test func isObservable() async throws {
-        let sut = DecimalInputViewModel(submitValue: { _ in })
+        let sut = makeSUT()
         let tracker = ObservationTracker()
 
         withObservationTracking {
@@ -329,9 +417,27 @@ struct DecimalInputViewModelTests {
         let triggered = await tracker.getTriggered()
         #expect(triggered, "Expected observation to be triggered after changing value")
     }
+
+    // MARK: - Helpers
+
+    private func makeSUT(
+        initialValue: Double = 0,
+        initialTimestamp: Date? = nil,
+        submit: @escaping (Double, Date) -> Void = { _, _ in },
+        now: @escaping () -> Date = Date.init
+    ) -> DecimalInputViewModel {
+        let sut = DecimalInputViewModel(initialValue: initialValue, initialTimestamp: initialTimestamp, submit: submit, now: now)
+        weakSUT = sut
+        return sut
+    }
+
+    private weak var weakSUT: DecimalInputViewModel?
+
+    deinit {
+        #expect(weakSUT == nil, "Instance should have been deallocated. Potential memory leak.")
+    }
 }
 
-// MARK: - Helpers
 
 private actor ObservationTracker {
     var triggered = false

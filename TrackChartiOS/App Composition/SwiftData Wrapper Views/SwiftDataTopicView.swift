@@ -13,15 +13,17 @@ struct SwiftDataTopicView<Settings: View>: View {
     @Bindable var topic: TopicEntity
     let viewModel: SwiftDataTopicViewModel
     let settingsView: () -> Settings
+    let showEntryList: () -> Void
 
     var body: some View {
         TopicView(
             name: $topic.name,
             palette: paletteBinding,
             entries: viewModel.entries(for: topic),
-            submitNewValue: { viewModel.submit(newValue: $0, to: topic) },
+            submitNewValue: { viewModel.submit(newValue: $0, timestamp: $1, to: topic) },
             deleteLastValue: { viewModel.deleteLastValue(from: topic)},
-            settingsView: settingsView
+            settingsView: settingsView,
+            showEntryList: showEntryList
         )
     }
 

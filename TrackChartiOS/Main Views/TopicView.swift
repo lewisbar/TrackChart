@@ -11,9 +11,10 @@ struct TopicView<Settings: View>: View {
     @Binding var name: String
     @Binding var palette: Palette
     let entries: [ChartEntry]
-    let submitNewValue: (Double) -> Void
+    let submitNewValue: (Double, Date) -> Void
     let deleteLastValue: () -> Void
     let settingsView: () -> Settings
+    let showEntryList: () -> Void
     @State private var isShowingSettings = false
     @State private var isShowingInput = false
     @State private var enteredValue: Double? = nil
@@ -33,8 +34,7 @@ struct TopicView<Settings: View>: View {
             ToolbarItem(placement: .topBarTrailing, content: settingsButton)
         }
         .sheet(isPresented: $isShowingInput) {
-            DecimalInputView(submitValue: submitNewValue, dismiss: { isShowingInput = false })
-                .presentationDetents([.fraction(0.45)])
+            DecimalInputView(submit: submitNewValue, dismiss: { isShowingInput = false })
         }
         .sheet(isPresented: $isShowingSettings) {
             settingsView()
@@ -49,6 +49,7 @@ struct TopicView<Settings: View>: View {
     private var chartList: some View {
         List {
             overviewChart
+            entriesCell
             pagedCard(span: .week,       default: .dailySum())
             pagedCard(span: .month,      default: .dailySum())
             pagedCard(span: .oneYear,    default: .monthlySum())
@@ -61,6 +62,20 @@ struct TopicView<Settings: View>: View {
             .frame(height: 150)
             .padding(.top)
             .padding(.horizontal)
+    }
+
+    private var entriesCell: some View {
+        Button(action: showEntryList) {
+            HStack {
+                Text("\(entries.count) entries")
+                    .tint(.primary)
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .tint(.secondary)
+            }
+            .padding()
+            .card()
+        }
     }
 
     private func pagedCard(span: TimeSpan, default aggregator: ChartDataProvider) -> some View {
@@ -117,8 +132,9 @@ struct TopicView<Settings: View>: View {
                 timestamp: .now.advanced(by: 86_400 * Double(index) - 40 * 86_400)
             )
         },
-        submitNewValue: { _ in },
+        submitNewValue: { _, _ in },
         deleteLastValue: {},
-        settingsView: EmptyView.init
+        settingsView: EmptyView.init,
+        showEntryList: {}
     )
 }

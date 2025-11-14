@@ -31,7 +31,7 @@ class SwiftDataTopicViewModelTests {
         let selectedTopic = topics[1]
         let selectedEntries = selectedTopic.sortedEntries
 
-        sut.submit(newValue: 2.5, to: selectedTopic)
+        sut.submit(newValue: 2.5, timestamp: .now, to: selectedTopic)
 
         let updatedTopics = try fetchTopics(from: context)
 
