@@ -48,7 +48,13 @@ struct TrackChartApp: App {
                     randomPalette: { Palette.random.name }
                 )
             )
-            .toolbar { ToolbarItem(placement: .topBarLeading) { branding } }
+            .toolbar {
+                if #available(iOS 26.0, *) {
+                    ToolbarItem(placement: .topBarLeading) { branding }.sharedBackgroundVisibility(.hidden)
+                } else {
+                    ToolbarItem(placement: .topBarLeading) { branding }
+                }
+            }
             .navigationDestination(for: Destination.self) { destination in
                 switch destination {
                 case let .topicView(topic):
@@ -82,6 +88,7 @@ struct TrackChartApp: App {
                 .fontDesign(.monospaced)
         }
         .padding(.leading)
+        .fixedSize(horizontal: true, vertical: false)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("TrackChart Logo")
     }
