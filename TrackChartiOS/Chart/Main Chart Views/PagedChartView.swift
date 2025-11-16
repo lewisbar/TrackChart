@@ -59,7 +59,7 @@ struct PagedChartView<Placeholder: View>: View {
                 }
             }
         }
-        .onChange(of: rawEntries.count) { _, _ in  // might have to be changed to rawEntries once entries can be edited
+        .onChange(of: rawEntries) { _, _ in
             updatePages()
             selectedPage = pages.last?.id ?? ""
         }
