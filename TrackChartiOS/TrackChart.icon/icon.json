@@ -17,9 +17,11 @@
   },
   "groups" : [
     {
+      "blur-material" : 0.16,
+      "hidden" : false,
       "layers" : [
         {
-          "glass" : false,
+          "glass" : true,
           "hidden-specializations" : [
             {
               "appearance" : "light",
@@ -45,7 +47,7 @@
           }
         },
         {
-          "glass" : false,
+          "glass" : true,
           "hidden-specializations" : [
             {
               "appearance" : "light",
@@ -77,7 +79,7 @@
               "value" : "none"
             }
           ],
-          "glass" : false,
+          "glass" : true,
           "hidden-specializations" : [
             {
               "appearance" : "light",
@@ -176,13 +178,15 @@
           }
         }
       ],
+      "lighting" : "combined",
       "shadow" : {
-        "kind" : "neutral",
+        "kind" : "layer-color",
         "opacity" : 0.5
       },
+      "specular" : false,
       "translucency" : {
         "enabled" : true,
-        "value" : 0.5
+        "value" : 0.04
       }
     }
   ],
