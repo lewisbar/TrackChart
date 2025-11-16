@@ -12,7 +12,6 @@ struct TopicView<Settings: View>: View {
     @Binding var palette: Palette
     let entries: [ChartEntry]
     let submitNewValue: (Double, Date) -> Void
-    let deleteLastValue: () -> Void
     let settingsView: () -> Settings
     let showEntryList: () -> Void
     @State private var isShowingSettings = false
@@ -133,7 +132,6 @@ struct TopicView<Settings: View>: View {
             )
         },
         submitNewValue: { _, _ in },
-        deleteLastValue: {},
         settingsView: EmptyView.init,
         showEntryList: {}
     )

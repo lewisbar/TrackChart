@@ -19,12 +19,6 @@ public class SwiftDataTopicViewModel {
         topic.entries?.append(newEntry)
     }
 
-    public func deleteLastValue(from topic: TopicEntity) {
-        if !(topic.entries?.isEmpty ?? false) {
-            topic.entries = topic.sortedEntries.dropLast()
-        }
-    }
-
     public func changePalette(to palette: Palette, for topic: TopicEntity) {
         topic.palette = palette.name
     }

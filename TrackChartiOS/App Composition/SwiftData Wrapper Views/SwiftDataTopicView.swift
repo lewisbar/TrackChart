@@ -21,7 +21,6 @@ struct SwiftDataTopicView<Settings: View>: View {
             palette: paletteBinding,
             entries: viewModel.entries(for: topic),
             submitNewValue: { viewModel.submit(newValue: $0, timestamp: $1, to: topic) },
-            deleteLastValue: { viewModel.deleteLastValue(from: topic)},
             settingsView: settingsView,
             showEntryList: showEntryList
         )

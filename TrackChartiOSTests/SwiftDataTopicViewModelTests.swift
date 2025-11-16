@@ -41,36 +41,6 @@ class SwiftDataTopicViewModelTests {
         #expect(updatedEntryValues == selectedEntries.map(\.value) + [2.5])
     }
 
-    @Test func deleteLastValue() throws {
-        let topics = makeTopicEntities(names: ["0", "1", "2"])
-
-        let (sut, context) = try makeSUT(topics: topics)
-        let selectedTopic = topics[1]
-        let selectedEntries = selectedTopic.sortedEntries
-
-        sut.deleteLastValue(from: selectedTopic)
-
-        let updatedTopics = try fetchTopics(from: context)
-
-        #expect(updatedTopics[1].entries?.count == selectedEntries.count - 1)
-        let lastEntry = updatedTopics[1].sortedEntries.last
-        #expect(lastEntry?.value == selectedEntries.dropLast().last?.value)
-    }
-
-    @Test func deleteLastValue_whenValuesAreEmpty_doesNotCauseProblems() throws {
-        let topics = makeTopicEntities(names: ["0", "1", "2"], palette: .ocean)
-
-        let (sut, context) = try makeSUT(topics: topics)
-            let selectedTopic = topics[1]
-            selectedTopic.entries?.removeAll()
-
-            sut.deleteLastValue(from: selectedTopic)
-
-            let updatedTopics = try fetchTopics(from: context)
-
-            #expect(updatedTopics[1].entries == [])
-    }
-
     @Test func changePalette() throws {
         let topics = makeTopicEntities(names: ["0", "1", "2"], palette: .ocean)
         let (sut, context) = try makeSUT(topics: topics)
