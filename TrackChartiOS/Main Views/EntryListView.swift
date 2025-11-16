@@ -12,7 +12,7 @@ struct EntryListView: View {
     let addEntry: (ListEntry) -> Void
     let updateEntry: (ListEntry) -> Void
     let deleteEntries: (IndexSet) -> Void
-    @State private var entries: [ListEntry]
+    let entries: [ListEntry]
     @State private var isShowingInput = false
     @State private var selectedEntry: ListEntry?
     @Environment(\.dismiss) private var dismiss
@@ -105,19 +105,15 @@ struct EntryListView: View {
     private func updateEntry(atIndex index: Int, id: UUID, value: Double, timestamp: Date) {
         let updatedEntry = ListEntry(id: id, value: value, timestamp: timestamp)
         withAnimation {
-            entries[index] = updatedEntry
-            entries.sort { $0.timestamp > $1.timestamp }
+            updateEntry(updatedEntry)
         }
-        updateEntry(updatedEntry)
     }
 
     private func addEntry(withID id: UUID, value: Double, timestamp: Date) {
         let newEntry = ListEntry(id: id, value: value, timestamp: timestamp)
         withAnimation {
-            entries.append(newEntry)
-            entries.sort { $0.timestamp > $1.timestamp }
+            addEntry(newEntry)
         }
-        addEntry(newEntry)
     }
 
     private var plusButton: some View {
