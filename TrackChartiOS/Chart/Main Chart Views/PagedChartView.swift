@@ -82,17 +82,19 @@ struct PagedChartView<Placeholder: View>: View {
     @ViewBuilder
     private func chart(for page: ChartPage) -> some View {
         VStack {
-            ZStack {
+            HStack(alignment: .center) {
                 Text(span.title)
                     .font(.caption2)
                     .foregroundStyle(Color.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                Spacer()
 
                 Text(page.title)
                     .font(.caption).bold()
 
+                Spacer()
+
                 aggregatorMenu
-                    .frame(maxWidth: .infinity, alignment: .trailing)
             }
             .padding(.bottom, 8)
 
@@ -118,6 +120,8 @@ struct PagedChartView<Placeholder: View>: View {
         } label: {
             Image(systemName: "ellipsis")
                 .font(.title3)
+                .frame(minWidth: 32, minHeight: 32)
+                .contentShape(Rectangle())
         }
     }
 
