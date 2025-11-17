@@ -85,7 +85,7 @@ struct PagedChartView<Placeholder: View>: View {
             HStack(alignment: .center) {
                 Text(span.title)
                     .font(.caption2)
-                    .foregroundStyle(Color.secondary)
+                    .foregroundStyle(.secondary)
 
                 Spacer()
 
@@ -120,7 +120,7 @@ struct PagedChartView<Placeholder: View>: View {
         } label: {
             Image(systemName: "ellipsis")
                 .font(.title3)
-                .frame(minWidth: 32, minHeight: 32)
+                .frame(minWidth: 32, minHeight: 32, alignment: .trailing)
                 .contentShape(Rectangle())
         }
     }
