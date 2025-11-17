@@ -33,7 +33,10 @@ struct EntryListView: View {
 
     var body: some View {
         ZStack {
-            list
+            VStack {
+                explanationView
+                list
+            }
             plusButton
         }
         .navigationBarBackButtonHidden(true)
@@ -50,6 +53,13 @@ struct EntryListView: View {
         }
     }
 
+    private var explanationView: some View {
+        Text("Tap to edit, swipe left to delete.")
+            .font(.caption)
+            .foregroundColor(.secondary)
+            .frame(maxWidth: .infinity, alignment: .center)
+    }
+
     private var list: some View {
         List {
             ForEach(entries) { entry in
@@ -57,6 +67,10 @@ struct EntryListView: View {
             }
             .onDelete(perform: deleteEntries)
             .contentShape(Rectangle())
+        }
+        .safeAreaInset(edge: .bottom) {
+            // Make room for the plus button
+            Color.clear.frame(height: 36)
         }
     }
 

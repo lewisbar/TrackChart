@@ -48,12 +48,15 @@ struct TopicView<Settings: View>: View {
 
     private var chartList: some View {
         List {
-            overviewChart
+            if entries.isEmpty { tutorialView } else { overviewChart }
             entriesCell
             pagedCard(span: .week,       dataProvider: aggregator == .sum ? .dailySum() : .dailyAverage())
             pagedCard(span: .month,      dataProvider: aggregator == .sum ? .dailySum() : .dailyAverage())
             pagedCard(span: .oneYear,    dataProvider: aggregator == .sum ? .monthlySum() : .monthlyAverage())
-            Spacer()
+        }
+        .safeAreaInset(edge: .bottom) {
+            // Make room for the plus button
+            Color.clear.frame(height: 36)
         }
     }
 
@@ -62,6 +65,12 @@ struct TopicView<Settings: View>: View {
             .frame(height: 150)
             .padding(.top)
             .padding(.horizontal)
+    }
+
+    private var tutorialView: some View {
+        Text("No entries yet. Tap the plus button to add your first entry.")
+            .foregroundColor(.secondary)
+            .padding()
     }
 
     private var entriesCell: some View {
@@ -124,16 +133,18 @@ struct TopicView<Settings: View>: View {
 }
 
 #Preview {
+    let entries = [1, 2, 4, 8, 17, 3, 0, -2, -8, -3, 1].enumerated().map { index, value in
+        ChartEntry(
+            value: Double(value),
+            timestamp: .now.advanced(by: 86_400 * Double(index) - 40 * 86_400)
+        )
+    }
+
     TopicView(
         name: .constant("Topic 1"),
         palette: .constant(.ocean),
         aggregator: .constant(.sum),
-        entries: [1, 2, 4, 8, 17, 3, 0, -2, -8, -3, 1].enumerated().map { index, value in
-            ChartEntry(
-                value: Double(value),
-                timestamp: .now.advanced(by: 86_400 * Double(index) - 40 * 86_400)
-            )
-        },
+        entries: entries,
         submitNewValue: { _, _ in },
         settingsView: EmptyView.init,
         showEntryList: {}
