@@ -26,4 +26,8 @@ public enum Aggregator: Sendable {
         case .average: return "Average"
         }
     }
+
+    public static func aggregator(named name: String) -> Aggregator {
+        name == average.name ? .average : .sum
+    }
 }

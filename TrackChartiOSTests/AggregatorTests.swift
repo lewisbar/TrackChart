@@ -29,4 +29,15 @@ struct AggregatorTests {
         #expect(Aggregator.sum.name == "Sum")
         #expect(Aggregator.average.name == "Average")
     }
+
+    @Test func aggregatorNamed() {
+        #expect(Aggregator.aggregator(named: "Sum") == .sum)
+        #expect(Aggregator.aggregator(named: "Average") == .average)
+    }
+
+    @Test func aggregatorNamed_nonExistentName_defaultsToSum() {
+        #expect(Aggregator.aggregator(named: "sum") == .sum)
+        #expect(Aggregator.aggregator(named: "average") == .sum)
+        #expect(Aggregator.aggregator(named: "another invalid name") == .sum)
+    }
 }

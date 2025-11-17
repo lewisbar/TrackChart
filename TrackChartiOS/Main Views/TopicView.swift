@@ -10,6 +10,7 @@ import SwiftUI
 struct TopicView<Settings: View>: View {
     @Binding var name: String
     @Binding var palette: Palette
+    @Binding var aggregator: Aggregator
     let entries: [ChartEntry]
     let submitNewValue: (Double, Date) -> Void
     let settingsView: () -> Settings
@@ -49,9 +50,9 @@ struct TopicView<Settings: View>: View {
         List {
             overviewChart
             entriesCell
-            pagedCard(span: .week,       default: .dailySum())
-            pagedCard(span: .month,      default: .dailySum())
-            pagedCard(span: .oneYear,    default: .monthlySum())
+            pagedCard(span: .week,       default: aggregator == .sum ? .dailySum() : .dailyAverage())
+            pagedCard(span: .month,      default: aggregator == .sum ? .dailySum() : .dailyAverage())
+            pagedCard(span: .oneYear,    default: aggregator == .sum ? .monthlySum() : .monthlyAverage())
             Spacer()
         }
     }
@@ -125,6 +126,7 @@ struct TopicView<Settings: View>: View {
     TopicView(
         name: .constant("Topic 1"),
         palette: .constant(.ocean),
+        aggregator: .constant(.sum),
         entries: [1, 2, 4, 8, 17, 3, 0, -2, -8, -3, 1].enumerated().map { index, value in
             ChartEntry(
                 value: Double(value),
