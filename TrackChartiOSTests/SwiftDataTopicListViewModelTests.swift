@@ -53,7 +53,7 @@ class SwiftDataTopicListViewModelTests {
     }
 
     @Test func cellModelsFromTopics() throws {
-        let topics = makeTopicEntities(names: ["0", "1", "2", "3", "4"])
+        let topics = makeTopicEntities(names: ["0", "1", "2", "3", "4"], aggregator: .sum)
         let (sut, _) = try makeSUT(topics: topics, palette: "Ocean")
         let result = sut.cellModels(from: topics)
 
@@ -62,7 +62,7 @@ class SwiftDataTopicListViewModelTests {
                 ChartEntry(value: entry.value, timestamp: entry.timestamp)
             }
 
-            return CellTopic(id: topic.id, name: topic.name, entries: entries, palette: .ocean)
+            return CellTopic(id: topic.id, name: topic.name, entries: entries, aggregator: .sum, palette: .ocean)
         }
 
         #expect(result.map(\.id) == expectedCellModels.map(\.id))
@@ -70,6 +70,7 @@ class SwiftDataTopicListViewModelTests {
         #expect(result.map(\.palette.name) == expectedCellModels.map(\.palette.name))
         #expect(result.map { $0.entries.map(\.value) } == expectedCellModels.map { $0.entries.map(\.value) })
         #expect(result.map { $0.entries.map(\.timestamp) } == expectedCellModels.map { $0.entries.map(\.timestamp) })
+        #expect(result.map(\.aggregator) == [.sum, .sum, .sum, .sum, .sum])
     }
 
     @Test func showTopicForCellModel() throws {
@@ -79,7 +80,7 @@ class SwiftDataTopicListViewModelTests {
         let selectedTopic = topics[3]
         let cellModel = CellTopic(id: selectedTopic.id, name: selectedTopic.name, entries: selectedTopic.entries?.map {
             ChartEntry(value: $0.value, timestamp: $0.timestamp)
-        } ?? [], palette: .ocean)
+        } ?? [], aggregator: .average, palette: .ocean)
 
         sut.showTopic(for: cellModel, in: topics)
 
@@ -127,13 +128,14 @@ class SwiftDataTopicListViewModelTests {
         return try context.fetch(fetchDescriptor)
     }
 
-    private func makeTopicEntities(names: [String]) -> [TopicEntity] {
+    private func makeTopicEntities(names: [String], aggregator: Aggregator = .sum) -> [TopicEntity] {
         names.enumerated().map { index, name in
             TopicEntity(
                 id: UUID(),
                 name: name,
                 entries: makeEntryEntities(from: Array(-1...Int.random(in: 3...10))),
                 palette: "Ocean",
+                aggregator: aggregator.name,
                 sortIndex: index
             )
         }

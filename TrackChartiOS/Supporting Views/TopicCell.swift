@@ -38,6 +38,7 @@ struct TopicCell: View {
 
                 ChartView(
                     rawEntries: topic.entries,
+                    aggregator: topic.aggregator,
                     palette: topic.palette,
                     mode: .preview,
                     placeholder: { ChartPlaceholderView().font(.footnote).padding(.bottom, 20) }
@@ -71,6 +72,7 @@ struct TopicCell: View {
                 ChartEntry(value: 9, timestamp: .now.advanced(by: -300)),
                 ChartEntry(value: 10, timestamp: .now.advanced(by: -200))
             ],
+            aggregator: .sum,
             palette: .sunset
         ),
         showTopic: {}
@@ -82,6 +84,7 @@ struct TopicCell: View {
             id: UUID(),
             name: "Topic 2",
             entries: [],
+            aggregator: .sum,
             palette: .coralReef
         ),
         showTopic: {}

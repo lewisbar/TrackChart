@@ -9,10 +9,12 @@ import Foundation
 
 public struct ChartDataProvider: Sendable {
     public let name: String
+    public let aggregator: Aggregator
     private let process: @Sendable ([ChartEntry]) -> [ProcessedEntry]
 
-    private init(name: String, process: @escaping @Sendable ([ChartEntry]) -> [ProcessedEntry]) {
+    private init(name: String, aggregator: Aggregator, process: @escaping @Sendable ([ChartEntry]) -> [ProcessedEntry]) {
         self.name = name
+        self.aggregator = aggregator
         self.process = process
     }
 
@@ -20,7 +22,7 @@ public struct ChartDataProvider: Sendable {
         process(rawEntries)
     }
 
-    public static let raw = ChartDataProvider(name: "Raw Data") { $0.map { ProcessedEntry(value: $0.value, timestamp: $0.timestamp) } }
+    public static let raw = ChartDataProvider(name: "Raw Data", aggregator: .sum) { $0.map { ProcessedEntry(value: $0.value, timestamp: $0.timestamp) } }
 
     public static func dailySum(calendar: Calendar = .current) -> ChartDataProvider {
         aggregating(.day, .sum, name: "Daily Sum", calendar: calendar)
@@ -50,8 +52,12 @@ public struct ChartDataProvider: Sendable {
         aggregating(.year, .sum, name: "Yearly Sum", calendar: calendar)
     }
 
-    public static func automaticPreview(calendar: Calendar = .current) -> ChartDataProvider {
-        ChartDataProvider(name: "Automatic Preview") { raw in
+    public static func yearlyAverage(calendar: Calendar = .current) -> ChartDataProvider {
+        aggregating(.year, .average, name: "Yearly Sum", calendar: calendar)
+    }
+
+    public static func automaticPreview(aggregator: Aggregator, calendar: Calendar = .current) -> ChartDataProvider {
+        ChartDataProvider(name: "Automatic Preview", aggregator: aggregator) { raw in
             guard !raw.isEmpty else { return [] }
 
             let sorted = raw.sorted { $0.timestamp < $1.timestamp }
@@ -68,19 +74,27 @@ public struct ChartDataProvider: Sendable {
             }
             if weeksBetween <= 10 {
                 // Up to 10 weeks: aggregate by day
-                return dailySum(calendar: calendar).processedEntries(from: raw)
+                return aggregator == .sum
+                ? dailySum(calendar: calendar).processedEntries(from: raw)
+                : dailyAverage(calendar: calendar).processedEntries(from: raw)
             }
             if yearsBetween < 1 {
                 // Up to 1 year: aggregate by week
-                return weeklySum(calendar: calendar).processedEntries(from: raw)
+                return aggregator == .sum
+                ? weeklySum(calendar: calendar).processedEntries(from: raw)
+                : weeklyAverage(calendar: calendar).processedEntries(from: raw)
             }
             if yearsBetween <= 5 {
                 // Up to 5 years: aggregate by month
-                return monthlySum(calendar: calendar).processedEntries(from: raw)
+                return aggregator == .sum
+                ? monthlySum(calendar: calendar).processedEntries(from: raw)
+                : monthlyAverage(calendar: calendar).processedEntries(from: raw)
             }
 
             // More than 5 years: aggregate by year
-            return yearlySum(calendar: calendar).processedEntries(from: raw)
+            return aggregator == .sum
+            ? yearlySum(calendar: calendar).processedEntries(from: raw)
+            : yearlyAverage(calendar: calendar).processedEntries(from: raw)
         }
     }
 
@@ -90,7 +104,7 @@ public struct ChartDataProvider: Sendable {
         name: String,
         calendar: Calendar
     ) -> ChartDataProvider {
-        ChartDataProvider(name: name) { entries in
+        ChartDataProvider(name: name, aggregator: aggregator) { entries in
             let grouped = Dictionary(grouping: entries) {
                 calendar.startOfUnit(unit, for: $0.timestamp)
             }

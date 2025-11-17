@@ -49,17 +49,17 @@ struct TopicListView: View {
             .init(value: 2.1, timestamp: .now),
             .init(value: 4, timestamp: .now),
             .init(value: 3, timestamp: .now)
-        ], palette: .fire),
+        ], aggregator: .sum, palette: .fire),
         CellTopic(id: UUID(), name: "Topic 2", entries: [
             .init(value: 1, timestamp: .now),
             .init(value: -4, timestamp: .now),
             .init(value: 30, timestamp: .now)
-        ], palette: .forest),
+        ], aggregator: .sum, palette: .forest),
         CellTopic(id: UUID(), name: "Topic 3", entries: [
             .init(value: 2, timestamp: .now),
             .init(value: 40, timestamp: .now),
             .init(value: -13, timestamp: .now)
-        ], palette: .sunset),
+        ], aggregator: .sum, palette: .sunset),
     ]
     
     TopicListView(topics: topics, deleteTopics: { _ in }, moveTopics: { _, _ in }, showTopic: { _ in }, createNewTopic: {})

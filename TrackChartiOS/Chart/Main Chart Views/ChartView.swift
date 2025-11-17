@@ -9,19 +9,21 @@ import SwiftUI
 import Charts
 
 enum ChartMode {
-    case paged(TimeSpan, defaultAggregator: ChartDataProvider)
+    case paged(TimeSpan, dataProvider: ChartDataProvider)
     case preview
     case overview
 }
 
 struct ChartView<Placeholder: View>: View {
     let rawEntries: [ChartEntry]
+    let aggregator: Aggregator
     let palette: Palette
     let mode: ChartMode
     private let placeholder: () -> Placeholder
 
-    init(rawEntries: [ChartEntry], palette: Palette, mode: ChartMode, placeholder: @escaping () -> Placeholder = ChartPlaceholderView.init) {
+    init(rawEntries: [ChartEntry], aggregator: Aggregator, palette: Palette, mode: ChartMode, placeholder: @escaping () -> Placeholder = ChartPlaceholderView.init) {
         self.rawEntries = rawEntries
+        self.aggregator = aggregator
         self.palette = palette
         self.mode = mode
         self.placeholder = placeholder
@@ -29,12 +31,12 @@ struct ChartView<Placeholder: View>: View {
 
     var body: some View {
         switch mode {
-        case .paged(let span, let aggregator):
-            PagedChartView(rawEntries: rawEntries, span: span, defaultAggregator: aggregator, palette: palette, placeholder: placeholder)
+        case .paged(let span, let dataProvider):
+            PagedChartView(rawEntries: rawEntries, span: span, dataProvider: dataProvider, palette: palette, placeholder: placeholder)
         case .preview:
-            PreviewChartView(rawEntries: rawEntries, palette: palette, placeholder: placeholder)
+            PreviewChartView(rawEntries: rawEntries, aggregator: aggregator, palette: palette, placeholder: placeholder)
         case .overview:
-            OverviewChartView(rawEntries: rawEntries, palette: palette, placeholder: placeholder)
+            OverviewChartView(rawEntries: rawEntries, aggregator: aggregator, palette: palette, placeholder: placeholder)
         }
     }
 }
@@ -65,10 +67,10 @@ struct ChartView<Placeholder: View>: View {
 
     ScrollView {
         VStack {
-            ChartView(rawEntries: entries, palette: .fire, mode: .preview).frame(height: 260).card(padding: nil)
-            ChartView(rawEntries: entries, palette: .fire, mode: .overview).frame(height: 260).card(padding: nil)
-            ChartView(rawEntries: entries, palette: .fire, mode: .paged(.week, defaultAggregator: .dailySum())).frame(height: 260).card()
-            ChartView(rawEntries: [], palette: .arcticIce, mode: .preview).frame(height: 260).card(padding: nil)
+            ChartView(rawEntries: entries, aggregator: .sum, palette: .fire, mode: .preview).frame(height: 260).card(padding: nil)
+            ChartView(rawEntries: entries, aggregator: .sum, palette: .fire, mode: .overview).frame(height: 260).card(padding: nil)
+            ChartView(rawEntries: entries, aggregator: .sum, palette: .fire, mode: .paged(.week, dataProvider: .dailySum())).frame(height: 260).card()
+            ChartView(rawEntries: [], aggregator: .sum, palette: .arcticIce, mode: .preview).frame(height: 260).card(padding: nil)
         }
         .padding()
     }

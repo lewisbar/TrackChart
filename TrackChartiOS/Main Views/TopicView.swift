@@ -10,6 +10,7 @@ import SwiftUI
 struct TopicView<Settings: View>: View {
     @Binding var name: String
     @Binding var palette: Palette
+    @Binding var aggregator: Aggregator
     let entries: [ChartEntry]
     let submitNewValue: (Double, Date) -> Void
     let settingsView: () -> Settings
@@ -49,15 +50,15 @@ struct TopicView<Settings: View>: View {
         List {
             overviewChart
             entriesCell
-            pagedCard(span: .week,       default: .dailySum())
-            pagedCard(span: .month,      default: .dailySum())
-            pagedCard(span: .oneYear,    default: .monthlySum())
+            pagedCard(span: .week,       dataProvider: aggregator == .sum ? .dailySum() : .dailyAverage())
+            pagedCard(span: .month,      dataProvider: aggregator == .sum ? .dailySum() : .dailyAverage())
+            pagedCard(span: .oneYear,    dataProvider: aggregator == .sum ? .monthlySum() : .monthlyAverage())
             Spacer()
         }
     }
 
     private var overviewChart: some View {
-        ChartView(rawEntries: entries, palette: palette, mode: .overview)
+        ChartView(rawEntries: entries, aggregator: aggregator, palette: palette, mode: .overview)
             .frame(height: 150)
             .padding(.top)
             .padding(.horizontal)
@@ -77,11 +78,12 @@ struct TopicView<Settings: View>: View {
         }
     }
 
-    private func pagedCard(span: TimeSpan, default aggregator: ChartDataProvider) -> some View {
+    private func pagedCard(span: TimeSpan, dataProvider: ChartDataProvider) -> some View {
         ChartView(
             rawEntries: entries,
+            aggregator: aggregator,
             palette: palette,
-            mode: .paged(span, defaultAggregator: aggregator)
+            mode: .paged(span, dataProvider: dataProvider)
         )
         .card()
         .frame(height: 260)
@@ -125,6 +127,7 @@ struct TopicView<Settings: View>: View {
     TopicView(
         name: .constant("Topic 1"),
         palette: .constant(.ocean),
+        aggregator: .constant(.sum),
         entries: [1, 2, 4, 8, 17, 3, 0, -2, -8, -3, 1].enumerated().map { index, value in
             ChartEntry(
                 value: Double(value),

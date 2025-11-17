@@ -12,7 +12,7 @@ public final class ChartPageProvider {
     public static func pages(
         for raw: [ChartEntry],
         span: TimeSpan,
-        aggregator: ChartDataProvider,
+        dataProvider: ChartDataProvider,
         calendar: Calendar = .current
     ) -> [ChartPage] {
         let sorted = raw.sorted { $0.timestamp < $1.timestamp }
@@ -24,7 +24,7 @@ public final class ChartPageProvider {
             let pageEntries = sorted.filter { range.contains($0.timestamp) }
             guard !pageEntries.isEmpty else { return nil }
 
-            let aggregated = aggregator.processedEntries(from: pageEntries)
+            let aggregated = dataProvider.processedEntries(from: pageEntries)
             let title = formatPageTitle(start: range.lowerBound, end: range.upperBound, span: span, calendar: calendar)
 
             return ChartPage(

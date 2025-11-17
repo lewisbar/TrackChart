@@ -53,6 +53,18 @@ class SwiftDataTopicViewModelTests {
         #expect(updatedTopics[1].palette == "Forest")
     }
 
+    @Test func changeAggregator() throws {
+        let topics = makeTopicEntities(names: ["0", "1", "2"], aggregator: .sum)
+        let (sut, context) = try makeSUT(topics: topics)
+        let selectedTopic = topics[1]
+
+        sut.changeAggregator(to: .average, for: selectedTopic)
+
+        let updatedTopics = try fetchTopics(from: context)
+
+        #expect(updatedTopics[1].aggregator == "Average")
+    }
+
     // MARK: - Helpers
 
     private func makeSUT(
@@ -88,13 +100,14 @@ class SwiftDataTopicViewModelTests {
         return try context.fetch(fetchDescriptor)
     }
 
-    private func makeTopicEntities(names: [String], palette: Palette = .ocean) -> [TopicEntity] {
+    private func makeTopicEntities(names: [String], palette: Palette = .ocean, aggregator: Aggregator = .sum) -> [TopicEntity] {
         names.enumerated().map { index, name in
             TopicEntity(
                 id: UUID(),
                 name: name,
                 entries: makeEntryEntities(from: Array(-1...Int.random(in: 3...10)).shuffled()),
                 palette: palette.name,
+                aggregator: aggregator.name,
                 sortIndex: index
             )
         }

@@ -14,6 +14,7 @@ public final class TopicEntity {
     public var name: String = ""
     @Relationship(deleteRule: .cascade) public var entries: [EntryEntity]?
     public var palette: String
+    public var aggregator: String = "Sum"
     public var sortIndex: Int = 0
 
     public var entryCount: Int {
@@ -24,11 +25,19 @@ public final class TopicEntity {
         entries?.sorted(by: { $0.timestamp < $1.timestamp }) ?? []
     }
 
-    public init(id: UUID = UUID(), name: String, entries: [EntryEntity]? = [], palette: String, sortIndex: Int) {
+    public init(
+        id: UUID = UUID(),
+        name: String,
+        entries: [EntryEntity]? = [],
+        palette: String,
+        aggregator: String = "Sum",
+        sortIndex: Int
+    ) {
         self.id = id
         self.name = name
         self.entries = entries
         self.palette = palette
+        self.aggregator = aggregator
         self.sortIndex = sortIndex
     }
 }
