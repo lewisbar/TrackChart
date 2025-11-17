@@ -33,7 +33,10 @@ struct EntryListView: View {
 
     var body: some View {
         ZStack {
-            list
+            VStack {
+                explanationView
+                list
+            }
             plusButton
         }
         .navigationBarBackButtonHidden(true)
@@ -48,6 +51,13 @@ struct EntryListView: View {
         .sheet(isPresented: $isShowingInput) {
             inputView(for: selectedEntry)
         }
+    }
+
+    private var explanationView: some View {
+        Text("Tap to edit, swipe left to delete.")
+            .font(.caption)
+            .foregroundColor(.secondary)
+            .frame(maxWidth: .infinity, alignment: .center)
     }
 
     private var list: some View {
