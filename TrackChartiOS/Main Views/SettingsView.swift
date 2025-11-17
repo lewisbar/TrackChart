@@ -42,11 +42,11 @@ struct SettingsView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 16) {
             title
             nameSetting
             colorSetting
-            aggregatorSetting
+            aggregatorSetting.padding(.top)
             Spacer()
         }
         .padding(.vertical)
@@ -109,9 +109,13 @@ struct SettingsView: View {
     }
 
     private var aggregatorSetting: some View {
-        Picker("Aggregator", selection: $aggregator) {
-            ForEach(Aggregator.allCases, id: \.self) { aggregator in
-                Text(aggregator.name)
+        HStack {
+            Text("Aggregation method:")
+            Spacer()
+            Picker("Aggregator", selection: $aggregator) {
+                ForEach(Aggregator.allCases, id: \.self) { aggregator in
+                    Text(aggregator.name)
+                }
             }
         }
     }
