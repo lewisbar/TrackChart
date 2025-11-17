@@ -10,27 +10,35 @@ import SwiftUI
 struct SettingsView: View {
     @State private var name: String
     @State private var palette: Palette
+    @State private var aggregator: Aggregator
     let rename: (String) -> Void
     let changePalette: (Palette) -> Void
+    let changeAggregator: (Aggregator) -> Void
     @FocusState private var isTextFieldFocused: Bool
     @Environment(\.dismiss) var dismiss
 
     private let originalName: String
     private let originalPalette: Palette
+    private let originalAggregator: Aggregator
 
     init(
         name: String,
         palette: Palette,
+        aggregator: Aggregator,
         rename: @escaping (String) -> Void,
-        changePalette: @escaping (Palette) -> Void
+        changePalette: @escaping (Palette) -> Void,
+        changeAggregator: @escaping (Aggregator) -> Void,
     ) {
         self.name = name
         self.palette = palette
+        self.aggregator = aggregator
         self.rename = rename
         self.changePalette = changePalette
+        self.changeAggregator = changeAggregator
 
         self.originalName = name
         self.originalPalette = palette
+        self.originalAggregator = aggregator
     }
 
     var body: some View {
@@ -38,6 +46,7 @@ struct SettingsView: View {
             title
             nameSetting
             colorSetting
+            aggregatorSetting
             Spacer()
         }
         .padding(.vertical)
@@ -57,6 +66,10 @@ struct SettingsView: View {
         .onDisappear {
             guard palette != originalPalette else { return }
             changePalette(palette)
+        }
+        .onDisappear {
+            guard aggregator != originalAggregator else { return }
+            changeAggregator(aggregator)
         }
     }
 
@@ -92,6 +105,14 @@ struct SettingsView: View {
             .accessibilityLabel("Selected color palette: \(palette.name)")
 
             palettePicker
+        }
+    }
+
+    private var aggregatorSetting: some View {
+        Picker("Aggregator", selection: $aggregator) {
+            ForEach(Aggregator.allCases, id: \.self) { aggregator in
+                Text(aggregator.name)
+            }
         }
     }
 
@@ -172,7 +193,7 @@ struct SettingsView: View {
     @Previewable @State var palette: Palette = Palette.palette(named: "Lavender Field")
 
     VStack {
-        SettingsView(name: name, palette: palette, rename: { _ in }, changePalette: { _ in })
+        SettingsView(name: name, palette: palette, aggregator: .sum, rename: { _ in }, changePalette: { _ in }, changeAggregator: { _ in })
         Text(palette.name)
             .font(.largeTitle)
             .foregroundStyle(palette.linearGradient())

@@ -50,15 +50,15 @@ struct TopicView<Settings: View>: View {
         List {
             overviewChart
             entriesCell
-            pagedCard(span: .week,       default: aggregator == .sum ? .dailySum() : .dailyAverage())
-            pagedCard(span: .month,      default: aggregator == .sum ? .dailySum() : .dailyAverage())
-            pagedCard(span: .oneYear,    default: aggregator == .sum ? .monthlySum() : .monthlyAverage())
+            pagedCard(span: .week,       dataProvider: aggregator == .sum ? .dailySum() : .dailyAverage())
+            pagedCard(span: .month,      dataProvider: aggregator == .sum ? .dailySum() : .dailyAverage())
+            pagedCard(span: .oneYear,    dataProvider: aggregator == .sum ? .monthlySum() : .monthlyAverage())
             Spacer()
         }
     }
 
     private var overviewChart: some View {
-        ChartView(rawEntries: entries, palette: palette, mode: .overview)
+        ChartView(rawEntries: entries, aggregator: aggregator, palette: palette, mode: .overview)
             .frame(height: 150)
             .padding(.top)
             .padding(.horizontal)
@@ -78,11 +78,12 @@ struct TopicView<Settings: View>: View {
         }
     }
 
-    private func pagedCard(span: TimeSpan, default aggregator: ChartDataProvider) -> some View {
+    private func pagedCard(span: TimeSpan, dataProvider: ChartDataProvider) -> some View {
         ChartView(
             rawEntries: entries,
+            aggregator: aggregator,
             palette: palette,
-            mode: .paged(span, defaultAggregator: aggregator)
+            mode: .paged(span, dataProvider: dataProvider)
         )
         .card()
         .frame(height: 260)

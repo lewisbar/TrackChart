@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum Aggregator: Sendable {
+public enum Aggregator: Sendable, CaseIterable {
     case sum
     case average
 

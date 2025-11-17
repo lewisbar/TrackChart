@@ -10,11 +10,11 @@ import Charts
 
 struct PagedChartView<Placeholder: View>: View {
     @State private var pages: [ChartPage]
-    @State private var selectedAggregator: ChartDataProvider
     @State private var selectedPage: String = ""
 
     private let rawEntries: [ChartEntry]
     private let span: TimeSpan
+    private let dataProvider: ChartDataProvider
     private let palette: Palette
     private let placeholder: () -> Placeholder
 
@@ -24,19 +24,19 @@ struct PagedChartView<Placeholder: View>: View {
     init(
         rawEntries: [ChartEntry],
         span: TimeSpan,
-        defaultAggregator: ChartDataProvider,
+        dataProvider: ChartDataProvider,
         palette: Palette,
         placeholder: @escaping () -> Placeholder = ChartPlaceholderView.init
     ) {
         self.rawEntries = rawEntries
         self.span = span
+        self.dataProvider = dataProvider
         self.palette = palette
         self.placeholder = placeholder
-        self._selectedAggregator = State(initialValue: defaultAggregator)
         self._pages = State(initialValue: ChartPageProvider.pages(
             for: rawEntries,
             span: span,
-            aggregator: defaultAggregator
+            dataProvider: dataProvider
         ))
     }
 
@@ -63,7 +63,7 @@ struct PagedChartView<Placeholder: View>: View {
             updatePages()
             selectedPage = pages.last?.id ?? ""
         }
-        .onChange(of: selectedAggregator) { _, _ in
+        .onChange(of: dataProvider) { _, _ in
             updatePages()
             selectedPage = pages.last?.id ?? ""
         }
@@ -73,7 +73,7 @@ struct PagedChartView<Placeholder: View>: View {
         pages = ChartPageProvider.pages(
             for: rawEntries,
             span: span,
-            aggregator: selectedAggregator
+            dataProvider: dataProvider
         )
     }
 
@@ -93,8 +93,6 @@ struct PagedChartView<Placeholder: View>: View {
                     .font(.caption).bold()
 
                 Spacer()
-
-                aggregatorMenu
             }
             .padding(.bottom, 8)
 
@@ -108,21 +106,6 @@ struct PagedChartView<Placeholder: View>: View {
             .chartXAxis(content: xAxisContent)
         }
         .padding()
-    }
-
-    private var aggregatorMenu: some View {
-        Menu {
-            Picker("Select an aggregator type", selection: $selectedAggregator) {
-                ForEach(span.availableDataProviders(), id: \.self) {
-                    Text($0.name)
-                }
-            }
-        } label: {
-            Image(systemName: "ellipsis")
-                .font(.title3)
-                .frame(minWidth: 32, minHeight: 32, alignment: .trailing)
-                .contentShape(Rectangle())
-        }
     }
 
     private func areaMark(for entry: ProcessedEntry) -> some ChartContent {
@@ -204,12 +187,12 @@ struct PagedChartView<Placeholder: View>: View {
 
     ScrollView {
         VStack {
-            PagedChartView(rawEntries: entries, span: .week, defaultAggregator: .dailySum(), palette: .arcticIce).card().frame(height: 250)
-            PagedChartView(rawEntries: entries, span: .month, defaultAggregator: .dailySum(), palette: .aurora).card().frame(height: 250)
-            PagedChartView(rawEntries: entries, span: .oneYear, defaultAggregator: .monthlySum(), palette: .desertDune).card().frame(height: 250)
-            PagedChartView(rawEntries: entries, span: .week, defaultAggregator: .dailyAverage(), palette: .fire).card().frame(height: 250)
-            PagedChartView(rawEntries: entries, span: .month, defaultAggregator: .dailyAverage(), palette: .fire).card().frame(height: 250)
-            PagedChartView(rawEntries: entries, span: .oneYear, defaultAggregator: .monthlyAverage(), palette: .meadow).card().frame(height: 250)
+            PagedChartView(rawEntries: entries, span: .week, dataProvider: .dailySum(), palette: .arcticIce).card().frame(height: 250)
+            PagedChartView(rawEntries: entries, span: .month, dataProvider: .dailySum(), palette: .aurora).card().frame(height: 250)
+            PagedChartView(rawEntries: entries, span: .oneYear, dataProvider: .monthlySum(), palette: .desertDune).card().frame(height: 250)
+            PagedChartView(rawEntries: entries, span: .week, dataProvider: .dailyAverage(), palette: .fire).card().frame(height: 250)
+            PagedChartView(rawEntries: entries, span: .month, dataProvider: .dailyAverage(), palette: .fire).card().frame(height: 250)
+            PagedChartView(rawEntries: entries, span: .oneYear, dataProvider: .monthlyAverage(), palette: .meadow).card().frame(height: 250)
         }
         .padding()
     }

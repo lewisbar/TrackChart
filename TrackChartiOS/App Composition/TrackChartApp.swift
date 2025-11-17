@@ -97,8 +97,10 @@ struct TrackChartApp: App {
         SettingsView(
             name: topic.name,
             palette: Palette.palette(named: topic.palette),
+            aggregator: Aggregator.aggregator(named: topic.aggregator),
             rename: { topic.name = $0 },
-            changePalette: { topic.palette = $0.name }
+            changePalette: { topic.palette = $0.name },
+            changeAggregator: { topic.aggregator = $0.name }
         )
         .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
     }
