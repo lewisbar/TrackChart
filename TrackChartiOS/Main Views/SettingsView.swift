@@ -96,7 +96,7 @@ struct SettingsView: View {
     private var colorSetting: some View {
         VStack(alignment: .leading) {
             HStack {
-                Text("Color Palette:")
+                Text("Color Palette")
                 Spacer()
                 Text(palette.name)
                     .foregroundStyle(.secondary)
@@ -109,14 +109,14 @@ struct SettingsView: View {
     }
 
     private var aggregatorSetting: some View {
-        HStack {
-            Text("Aggregation method:")
-            Spacer()
+        VStack(alignment: .leading) {
+            Text("Aggregation method")
             Picker("Aggregator", selection: $aggregator) {
                 ForEach(Aggregator.allCases, id: \.self) { aggregator in
                     Text(aggregator.name)
                 }
             }
+            .pickerStyle(.segmented)
         }
     }
 
