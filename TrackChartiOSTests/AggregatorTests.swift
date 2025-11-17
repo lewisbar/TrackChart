@@ -24,4 +24,9 @@ struct AggregatorTests {
     @Test func average_whenEmpty_returnsZero() {
         #expect(Aggregator.average.aggregate([]) == 0)
     }
+
+    @Test func name() {
+        #expect(Aggregator.sum.name == "Sum")
+        #expect(Aggregator.average.name == "Average")
+    }
 }

@@ -19,4 +19,11 @@ public enum Aggregator: Sendable {
             return values.isEmpty ? 0 : values.reduce(0, +) / Double(values.count)
         }
     }
+
+    public var name: String {
+        switch self {
+        case .sum: return "Sum"
+        case .average: return "Average"
+        }
+    }
 }
