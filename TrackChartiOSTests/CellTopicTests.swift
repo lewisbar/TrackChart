@@ -18,6 +18,7 @@ struct CellTopicTests {
                 .init(value: 1, timestamp: .now.advanced(by: -1)),
                 .init(value: 2, timestamp: .now)
             ],
+            aggregator: .sum,
             palette: .ocean
         )
 
@@ -31,6 +32,7 @@ struct CellTopicTests {
             entries: [
                 .init(value: 1, timestamp: .now)
             ],
+            aggregator: .average,
             palette: .ocean
         )
 
@@ -42,6 +44,7 @@ struct CellTopicTests {
             id: UUID(),
             name: "a topic",
             entries: [],
+            aggregator: .sum,
             palette: .ocean
         )
 
