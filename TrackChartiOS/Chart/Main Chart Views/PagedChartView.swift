@@ -82,17 +82,16 @@ struct PagedChartView<Placeholder: View>: View {
     @ViewBuilder
     private func chart(for page: ChartPage) -> some View {
         VStack {
-            HStack(alignment: .center) {
-                Text(span.title)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-
-                Spacer()
+            ZStack {
+                HStack {
+                    Text(span.title)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                }
 
                 Text(page.title)
                     .font(.caption).bold()
-
-                Spacer()
             }
             .padding(.bottom, 8)
 
