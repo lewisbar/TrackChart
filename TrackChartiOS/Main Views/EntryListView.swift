@@ -58,6 +58,10 @@ struct EntryListView: View {
             .onDelete(perform: deleteEntries)
             .contentShape(Rectangle())
         }
+        .safeAreaInset(edge: .bottom) {
+            // Make room for the plus button
+            Color.clear.frame(height: 36)
+        }
     }
 
     private func entryCell(for entry: ListEntry) -> some View {
