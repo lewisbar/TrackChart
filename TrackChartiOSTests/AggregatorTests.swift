@@ -6,7 +6,7 @@
 //
 
 import Testing
-import TrackChartiOS
+@testable import TrackChartiOS
 
 struct AggregatorTests {
     @Test func sum() {
@@ -39,5 +39,10 @@ struct AggregatorTests {
         #expect(Aggregator.aggregator(named: "sum") == .sum)
         #expect(Aggregator.aggregator(named: "average") == .sum)
         #expect(Aggregator.aggregator(named: "another invalid name") == .sum)
+    }
+
+    @Test func localizedName() {
+        #expect(Aggregator.sum.localizedName == String(localized: .sum))
+        #expect(Aggregator.average.localizedName == String(localized: .average))
     }
 }

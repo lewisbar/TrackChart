@@ -43,15 +43,17 @@ struct SettingsView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            title
-            nameSetting
-            colorSetting
-            aggregatorSetting.padding(.top)
-            Spacer()
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                title
+                nameSetting
+                colorSetting
+                aggregatorSetting.padding(.top)
+                Spacer()
+            }
+            .padding(.vertical)
+            .padding(.horizontal, 24)
         }
-        .padding(.vertical)
-        .padding(.horizontal, 24)
         .overlay(alignment: .topTrailing) {
             dismissButton
         }
@@ -78,9 +80,11 @@ struct SettingsView: View {
         Text(.topicSettings)
             .font(.largeTitle)
             .fontWeight(.medium)
-            .minimumScaleFactor(0.5)
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
             .frame(maxWidth: .infinity, alignment: .center)
             .padding(.bottom)
+            .safeAreaPadding(.horizontal, dismissButtonSize)
     }
 
     private var nameSetting: some View {
@@ -215,7 +219,7 @@ struct SettingsView: View {
             Image(systemName: "xmark")
                 .font(.title3)
                 .foregroundStyle(.secondary)
-                .frame(width: 36, height: 36)
+                .frame(width: dismissButtonSize, height: dismissButtonSize)
                 .background(
                     Circle()
                         .fill(.ultraThinMaterial)
@@ -226,6 +230,8 @@ struct SettingsView: View {
         .tint(.primary)
         .padding()
     }
+
+    private let dismissButtonSize: CGFloat = 36
 }
 
 #Preview {
