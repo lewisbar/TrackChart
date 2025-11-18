@@ -44,7 +44,7 @@ struct TopicListView: View {
             CircleButton(action: createNewTopic, image: Image(systemName: "plus"), color: .blue)
                 .padding(.bottom)
         }
-        .accessibilityHint("Add a new topic")
+        .accessibilityHint(.addANewTopic)
     }
 
     private var addTopicHint: some View {

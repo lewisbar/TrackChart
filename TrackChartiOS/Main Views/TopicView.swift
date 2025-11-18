@@ -68,7 +68,7 @@ struct TopicView<Settings: View>: View {
     }
 
     private var tutorialView: some View {
-        Text("No entries yet. Tap the plus button to add your first entry.")
+        Text(.noEntriesYet)
             .foregroundColor(.secondary)
             .padding()
     }
@@ -76,7 +76,7 @@ struct TopicView<Settings: View>: View {
     private var entriesCell: some View {
         Button(action: showEntryList) {
             HStack {
-                Text("\(entries.count) entries")
+                Text(.entries(entries.count))
                     .tint(.primary)
                 Spacer()
                 Image(systemName: "chevron.right")
@@ -105,7 +105,7 @@ struct TopicView<Settings: View>: View {
             CircleButton(action: showNumpad, image: Image(systemName: "plus"), color: .blue)
                 .padding(.bottom)
         }
-        .accessibilityHint("Add a new entry")
+        .accessibilityHint(.addANewEntry)
     }
 
     private func showNumpad() {
@@ -124,7 +124,7 @@ struct TopicView<Settings: View>: View {
             Image(systemName: "gearshape.fill")
         }
         .tint(.secondary)
-        .accessibilityLabel("Settings button")
+        .accessibilityLabel(.settingsButton)
     }
 
     private func showSettings() {

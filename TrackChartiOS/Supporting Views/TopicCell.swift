@@ -30,7 +30,7 @@ struct TopicCell: View {
 
                     Spacer()
 
-                    Text(topic.info)
+                    Text(.entries(topic.entries.count))
                         .tint(.secondary)
                         .font(.caption)
                 }

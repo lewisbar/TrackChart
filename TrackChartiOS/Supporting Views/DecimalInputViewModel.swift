@@ -23,7 +23,7 @@ class DecimalInputViewModel {
                     .minute()
             )
         } else {
-            return "Now"
+            return String(localized: .now)
         }
     }
 

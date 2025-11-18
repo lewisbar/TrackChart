@@ -354,7 +354,7 @@ class DecimalInputViewModelTests {
         let sut = makeSUT()
 
         #expect(sut.selectedTimestamp == nil)
-        #expect(sut.timestampDisplay == "Now")
+        #expect(sut.timestampDisplay == String(localized: .now))
     }
 
     @Test func startsWithTimestamp_ifProvided() {
@@ -398,7 +398,7 @@ class DecimalInputViewModelTests {
         sut.clearTimestamp()
 
         #expect(sut.selectedTimestamp == nil)
-        #expect(sut.timestampDisplay == "Now")
+        #expect(sut.timestampDisplay == String(localized: .now))
     }
 
     @Test func isObservable() async throws {
