@@ -588,6 +588,24 @@
         }
       }
     },
+    "Tap plus button to add topic" : {
+      "comment" : "A hint that appears when there are no topics to show. It instructs the user to add a topic.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tippe auf den Plus-Button, um ein Thema hinzuzufügen. Ein Thema kann alles sein, was du tracken möchtest, wie z.B. pro Tag gelesene Seiten, Liegestütze, Körpergewicht oder wissenschaftliche Daten."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap the plus button to add a topic. A topic can be anything you want to track, like daily pages read, push-ups, your weight loss progress, or scientific data."
+          }
+        }
+      }
+    },
     "Tap to edit entry" : {
       "comment" : "An accessibility hint explaining the user can tap an entry cell to edit the entry.",
       "extractionState" : "manual",

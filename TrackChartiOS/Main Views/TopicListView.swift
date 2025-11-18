@@ -54,9 +54,7 @@ struct TopicListView: View {
             .listRowSeparator(.hidden)
     }
 
-    private let tutorial = """
-        Tap the plus button to add a topic. A topic can be anything you want to track, like daily pages read, pushups, your weight loss progress, or scientific data.
-        """
+    private let tutorial = String(localized: .tapPlusButtonToAddTopic)
 }
 
 #Preview {
