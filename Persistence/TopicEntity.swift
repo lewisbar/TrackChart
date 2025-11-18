@@ -10,10 +10,10 @@ import SwiftData
 
 @Model
 public final class TopicEntity {
-    @Attribute(.unique) public var id: UUID = UUID()
+    public var id: UUID = UUID()
     public var name: String = ""
     @Relationship(deleteRule: .cascade) public var entries: [EntryEntity]?
-    public var palette: String
+    public var palette: String = "Ocean"
     public var aggregator: String = "Sum"
     public var sortIndex: Int = 0
 
