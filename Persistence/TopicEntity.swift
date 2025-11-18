@@ -12,7 +12,7 @@ import SwiftData
 public final class TopicEntity {
     public var id: UUID = UUID()
     public var name: String = ""
-    @Relationship(deleteRule: .cascade) public var entries: [EntryEntity]?
+    @Relationship(deleteRule: .cascade, inverse: \EntryEntity.topic) public var entries: [EntryEntity]?
     public var palette: String = "Ocean"
     public var aggregator: String = "Sum"
     public var sortIndex: Int = 0
