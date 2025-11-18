@@ -18,8 +18,8 @@ struct PagedChartView<Placeholder: View>: View {
     private let palette: Palette
     private let placeholder: () -> Placeholder
 
-    private let xLabel = "Date"
-    private let yLabel = "Value"
+    private let xLabel = String(localized: .date)
+    private let yLabel = String(localized: .value)
 
     init(
         rawEntries: [ChartEntry],

@@ -83,14 +83,14 @@ struct TrackChartApp: App {
                     .shadow(color: .black.opacity(0.15), radius: 2, x: 0, y: 1)
             }
 
-            Text("TrackChart")
+            Text(.trackChart)
                 .font(.title3)
                 .fontDesign(.monospaced)
         }
         .padding(.leading)
         .fixedSize(horizontal: true, vertical: false)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("TrackChart Logo")
+        .accessibilityLabel(.trackChartLogo)
     }
 
     private func makeSettingsView(for topic: TopicEntity) -> some View {

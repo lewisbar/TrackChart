@@ -75,7 +75,7 @@ struct SettingsView: View {
     }
 
     private var title: some View {
-        Text("Topic Settings")
+        Text(.topicSettings)
             .font(.largeTitle)
             .fontWeight(.medium)
             .minimumScaleFactor(0.5)
@@ -85,9 +85,9 @@ struct SettingsView: View {
 
     private var nameSetting: some View {
         VStack(alignment: .leading) {
-            Text("Name")
+            Text(.name)
 
-            TextField("Name", text: $name)
+            TextField(String(localized: .name), text: $name)
                 .textFieldStyle(.roundedBorder)
                 .focused($isTextFieldFocused)
         }
@@ -97,13 +97,13 @@ struct SettingsView: View {
     private var colorSetting: some View {
         VStack(alignment: .leading) {
             HStack {
-                Text("Color Palette")
+                Text(.colorPalette)
                 Spacer()
                 Text(palette.name)
                     .foregroundStyle(.secondary)
             }
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel("Selected color palette: \(palette.name)")
+            .accessibilityLabel(.selectedColorPalette(palette.name))
 
             palettePicker
         }
@@ -157,22 +157,26 @@ struct SettingsView: View {
                 .id(availablePalette) // Required for scrollTo
         }
         .tint(nil)
-        .accessibilityLabel("\(availablePalette.name)\(palette == availablePalette ? " , selected" : "")")
-        .accessibilityHint("Selects this color palette for chart rendering", isEnabled: palette != availablePalette)
+        .accessibilityLabel(availablePalette.name + selectedPaletteSuffix(for: availablePalette))
+        .accessibilityHint(.selectsThisColorPaletteForChartRendering, isEnabled: palette != availablePalette)
+    }
+
+    private func selectedPaletteSuffix(for availablePalette: Palette) -> String {
+        palette == availablePalette ? String(localized: .isSelectedPalette) : ""
     }
 
     private var aggregatorSetting: some View {
         VStack(alignment: .leading) {
-            Text("Aggregation method")
+            Text(.aggregationMethod)
 
-            Picker("Aggregator", selection: $aggregator) {
+            Picker(.aggregator, selection: $aggregator) {
                 ForEach(Aggregator.allCases, id: \.self) { aggregator in
-                    Text(aggregator.name)
+                    Text(aggregator.localizedName)
                 }
             }
             .pickerStyle(.segmented)
 
-            Text(aggregationExplanationShort)
+            Text(.aggregationExplanationShort)
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .padding(.horizontal, 8)
@@ -181,17 +185,17 @@ struct SettingsView: View {
             Button {
                 isShowingLongAggregationExplanation = true
             } label: {
-                Text("Learn more")
+                Text(.learnMore)
                     .font(.caption)
                     .padding(.horizontal, 8)
             }
             .sheet(isPresented: $isShowingLongAggregationExplanation) {
                 ScrollView {
                     VStack(spacing: 0) {
-                        Text("Aggregation Explained")
+                        Text(.aggregationExplained)
                             .font(.title)
 
-                        Text(aggregationExplanationLong)
+                        Text(.aggregationExplanationLong)
                             .font(.body)
                             .minimumScaleFactor(0.7)
                             .padding()
@@ -203,24 +207,6 @@ struct SettingsView: View {
             }
         }
     }
-
-    private let aggregationExplanationShort =
-        """
-        Entries are aggregated using the selected method.
-        - Sum makes more sense for data that accumulates, like pushups or pages read.
-        - Average makes more sense for data that doesn't accumulate, like your weight.
-        """
-
-    private let aggregationExplanationLong =
-        """
-        Entries are aggregated using the selected method to reduce the number of visible data points, making the chart easier to analyze and improving rendering performance. Week view and month view both aggregate all entries of a day into a single data point. Year view aggregates all entries of a month into a single data point.
-        
-        For example, in week view, if you have entered the values 1, 2, and 3 all in the same day, if you choose the sum method, this day will have a value of 1+2+3=6. But if you choose the average method, it's (1+2+3)/3=2, which is that day's average.
-        
-        Sum makes more sense for data that accumulates, like pushups or pages read. For example, if you track how many pages you read, and you read 5 pages in the morning, 10 in the afternoon, and 15 in the evening, it's probably more interesting to know you read 30 pages total that day (sum) than the fact that the average entry that day was 10.
-        
-        Average makes more sense for data that doesn't accumulate, like your weight. If you weigh 75 kg in week 1, 80 in week 2, and 85 in week 3, you probably don't want to know that you weighed 240 kg that month (sum), but that you weighed 80 kg on average.
-        """
 
     private var dismissButton: some View {
         Button {

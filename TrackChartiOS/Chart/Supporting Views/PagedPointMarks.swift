@@ -48,7 +48,7 @@ struct PagedPointMarks {
     private func annotation(for value: Double) -> some View {
         let formattedValue = value.formatted(.number.precision(.fractionLength(0...2)))
 
-        return Text("\(formattedValue)")
+        return Text(formattedValue)
             .font(.caption)
             .foregroundColor(palette.primary)
     }

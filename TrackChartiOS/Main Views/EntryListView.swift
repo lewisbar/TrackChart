@@ -54,7 +54,7 @@ struct EntryListView: View {
     }
 
     private var explanationView: some View {
-        Text("Tap to edit, swipe left to delete.")
+        Text(.tapToEditSwipeLeftToDelete)
             .font(.caption)
             .foregroundColor(.secondary)
             .frame(maxWidth: .infinity, alignment: .center)
@@ -88,7 +88,7 @@ struct EntryListView: View {
             .contentShape(Rectangle())
         }
         .tint(.primary)
-        .accessibilityHint("Tap to edit entry")
+        .accessibilityHint(.tapToEditEntry)
     }
 
     private func chevronOnlyBackButton() -> some View {
@@ -136,7 +136,7 @@ struct EntryListView: View {
             CircleButton(action: showNumpad, image: Image(systemName: "plus"), color: .blue)
                 .padding(.bottom)
         }
-        .accessibilityHint("Add a new entry")
+        .accessibilityHint(.addANewEntry)
     }
 
     private func showNumpad() {

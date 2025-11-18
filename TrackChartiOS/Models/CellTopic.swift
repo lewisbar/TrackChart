@@ -13,11 +13,6 @@ public struct CellTopic: Identifiable, Hashable {
     public let aggregator: Aggregator
     public let palette: Palette
 
-    public var info: String {
-        let infoPostfix = entries.count == 1 ? "entry" : "entries"
-        return "\(entries.count) \(infoPostfix)"
-    }
-
     public init(id: UUID, name: String, entries: [ChartEntry], aggregator: Aggregator, palette: Palette) {
         self.id = id
         self.name = name

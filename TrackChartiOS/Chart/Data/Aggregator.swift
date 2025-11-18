@@ -27,6 +27,13 @@ public enum Aggregator: Sendable, CaseIterable {
         }
     }
 
+    public var localizedName: String {
+        switch self {
+        case .sum: return String(localized: .sum)
+        case .average: return String(localized: .average)
+        }
+    }
+
     public static func aggregator(named name: String) -> Aggregator {
         name == average.name ? .average : .sum
     }

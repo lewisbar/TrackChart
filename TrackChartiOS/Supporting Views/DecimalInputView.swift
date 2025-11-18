@@ -151,9 +151,9 @@ struct DecimalInputView: View {
         HStack(spacing: 20) {
             Button("+/-", action: model.toggleSign)
                 .buttonStyle(.bordered)
-                .accessibilityLabel("Change sign")
+                .accessibilityLabel(.changeSign)
 
-            Button("Submit", action: {
+            Button(.submit, action: {
                 model.submitNumber()
                 if dismissesOnSubmit { dismiss() }
                 // Collapse picker after submit
@@ -163,7 +163,7 @@ struct DecimalInputView: View {
             })
             .buttonStyle(.borderedProminent)
 
-            Button("Hide", action: dismiss)
+            Button(.hide, action: dismiss)
                 .buttonStyle(.bordered)
         }
     }
