@@ -30,22 +30,20 @@ struct DecimalInputView: View {
     var body: some View {
         VStack {
             displayLabel
-                .padding(.top, 10)
+                .padding(.top, 16)
 
             timestampEditor
                 .padding(.horizontal)
-                .padding(.vertical, 4)
+                .padding(.bottom, 4)
 
             Divider()
 
             numberPad
                 .padding(.horizontal)
-
-            controlButtons
-                .padding(.bottom, 15)
+                .padding(.bottom, 16)
         }
         .background(Color(uiColor: .systemBackground))
-        .presentationDetents([.fraction(0.52)])
+        .presentationDetents([.fraction(0.54)])
     }
 
     private var displayLabel: some View {
@@ -134,6 +132,8 @@ struct DecimalInputView: View {
                     }
                 }
             }
+            Divider()
+            controlButtons
         }
     }
 
@@ -148,23 +148,32 @@ struct DecimalInputView: View {
     }
 
     private var controlButtons: some View {
-        HStack(spacing: 20) {
-            Button("+/-", action: model.toggleSign)
-                .buttonStyle(.bordered)
-                .accessibilityLabel(.changeSign)
+        HStack(spacing: 10) {
+            Button(action: model.toggleSign) {
+                Text("+/-")
+                    .frame(maxWidth: .infinity, maxHeight: 80)
+            }
+            .buttonStyle(.bordered)
+            .accessibilityLabel(.changeSign)
 
-            Button(.submit, action: {
+            Button {
                 model.submitNumber()
                 if dismissesOnSubmit { dismiss() }
                 // Collapse picker after submit
                 withAnimation(.easeInOut) {
                     isEditingTimestamp = false
                 }
-            })
+            } label: {
+                Text(.submit)
+                    .frame(maxWidth: .infinity, maxHeight: 80)
+            }
             .buttonStyle(.borderedProminent)
 
-            Button(.hide, action: dismiss)
-                .buttonStyle(.bordered)
+            Button(action: dismiss) {
+                Text(.hide)
+                    .frame(maxWidth: .infinity, maxHeight: 80)
+            }
+            .buttonStyle(.bordered)
         }
     }
 }
