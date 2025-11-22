@@ -16,7 +16,6 @@ extension Bundle {
             return nil
         }
 
-        let imageName = lastIcon
-        return UIImage(named: imageName)
+        return UIImage(named: lastIcon)
     }
 }
