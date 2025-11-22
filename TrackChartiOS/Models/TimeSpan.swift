@@ -14,9 +14,9 @@ public enum TimeSpan: CaseIterable {
 
     public var title: String {
         switch self {
-        case .week:       return "Week"
-        case .month:      return "Month"
-        case .oneYear:    return "Year"
+        case .week:       return String(localized: "Week")
+        case .month:      return String(localized: "Month")
+        case .oneYear:    return String(localized: "Year")
         }
     }
 
