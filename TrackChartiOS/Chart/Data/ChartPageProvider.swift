@@ -86,7 +86,6 @@ private extension Calendar {
     func startOfPeriod(_ span: TimeSpan, for date: Date) -> Date {
         switch span {
         case .week:
-            // Use yearForWeekOfYear and weekOfYear for proper week calculation
             let components = self.dateComponents([.yearForWeekOfYear, .weekOfYear], from: date)
             return self.date(from: components) ?? date
         case .month:

@@ -17,7 +17,7 @@ public struct ChartPage: Identifiable, Equatable {
     public let span: TimeSpan
     public let title: String
     public let dateRange: ClosedRange<Date>
-    public let periodStart: Date // The start of this time period
+    public let periodStart: Date
 
     public init(entries: [ProcessedEntry], span: TimeSpan, title: String, periodStart: Date) {
         self.entries = entries
