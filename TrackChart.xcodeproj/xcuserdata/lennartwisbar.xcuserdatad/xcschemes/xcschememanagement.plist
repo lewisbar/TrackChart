@@ -7,17 +7,22 @@
 		<key>CI_iOS.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>5</integer>
+			<integer>3</integer>
 		</dict>
 		<key>CI_macOS.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>3</integer>
+			<integer>1</integer>
+		</dict>
+		<key>DataProcessing.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>4</integer>
 		</dict>
 		<key>Persistence.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>4</integer>
+			<integer>2</integer>
 		</dict>
 		<key>TrackChart.xcscheme_^#shared#^_</key>
 		<dict>
@@ -38,6 +43,11 @@
 			<true/>
 		</dict>
 		<key>301C95AE2E818653008E3F16</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>3038FDDA2ED28F470092427C</key>
 		<dict>
 			<key>primary</key>
 			<true/>

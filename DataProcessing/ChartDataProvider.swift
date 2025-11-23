@@ -22,42 +22,42 @@ public struct ChartDataProvider: Sendable {
         process(rawEntries)
     }
 
-    public static let raw = ChartDataProvider(name: String(localized: .rawData), aggregator: .sum) { $0.map { ProcessedEntry(value: $0.value, timestamp: $0.timestamp) } }
+    public static let raw = ChartDataProvider(name: "raw", aggregator: .sum) { $0.map { ProcessedEntry(value: $0.value, timestamp: $0.timestamp) } }
 
     public static func dailySum(calendar: Calendar = .current) -> ChartDataProvider {
-        aggregating(.day, .sum, name: String(localized: .dailySum), calendar: calendar)
+        aggregating(.day, .sum, name: "daily sum", calendar: calendar)
     }
 
     public static func dailyAverage(calendar: Calendar = .current) -> ChartDataProvider {
-        aggregating(.day, .average, name: String(localized: .dailyAverage), calendar: calendar)
+        aggregating(.day, .average, name: "daily average", calendar: calendar)
     }
 
     public static func weeklySum(calendar: Calendar = .current) -> ChartDataProvider {
-        aggregating(.weekOfYear, .sum, name: String(localized: .weeklySum), calendar: calendar)
+        aggregating(.weekOfYear, .sum, name: "weekly sum", calendar: calendar)
     }
 
     public static func weeklyAverage(calendar: Calendar = .current) -> ChartDataProvider {
-        aggregating(.weekOfYear, .average, name: String(localized: .weeklyAverage), calendar: calendar)
+        aggregating(.weekOfYear, .average, name: "weekly average", calendar: calendar)
     }
 
     public static func monthlySum(calendar: Calendar = .current) -> ChartDataProvider {
-        aggregating(.month, .sum, name: String(localized: .monthlySum), calendar: calendar)
+        aggregating(.month, .sum, name: "monthly sum", calendar: calendar)
     }
 
     public static func monthlyAverage(calendar: Calendar = .current) -> ChartDataProvider {
-        aggregating(.month, .average, name: String(localized: .monthlyAverage), calendar: calendar)
+        aggregating(.month, .average, name: "monthly average", calendar: calendar)
     }
 
     public static func yearlySum(calendar: Calendar = .current) -> ChartDataProvider {
-        aggregating(.year, .sum, name: String(localized: .yearlySum), calendar: calendar)
+        aggregating(.year, .sum, name: "yearly sum", calendar: calendar)
     }
 
     public static func yearlyAverage(calendar: Calendar = .current) -> ChartDataProvider {
-        aggregating(.year, .average, name: String(localized: .yearlyAverage), calendar: calendar)
+        aggregating(.year, .average, name: "yearly average", calendar: calendar)
     }
 
     public static func automaticPreview(aggregator: Aggregator, calendar: Calendar = .current) -> ChartDataProvider {
-        ChartDataProvider(name: String(localized: .automaticPreview), aggregator: aggregator) { raw in
+        ChartDataProvider(name: "automatic preview", aggregator: aggregator) { raw in
             guard !raw.isEmpty else { return [] }
 
             let sorted = raw.sorted { $0.timestamp < $1.timestamp }

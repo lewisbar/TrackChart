@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import DataProcessing
 
 struct SettingsView: View {
     @State private var name: String

@@ -7,7 +7,7 @@
 
 import Testing
 import Foundation
-@testable import TrackChartiOS
+import DataProcessing
 
 struct ChartDataProviderTests {
     @Test func raw() {

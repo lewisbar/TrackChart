@@ -22,39 +22,52 @@ struct TopicCell: View {
     private func label() -> some View {
         HStack {
             VStack {
-                HStack(alignment: .center) {
-                    Text(topic.name)
-                        .tint(.primary)
-                        .font(.title3)
-                        .minimumScaleFactor(0.5)
+                titleRow
+                    .padding(.leading)
 
-                    Spacer()
-
-                    Text(.entries(topic.entries.count))
-                        .tint(.secondary)
-                        .font(.caption)
-                }
-                .padding(.leading)
-
-                ChartView(
-                    rawEntries: topic.entries,
-                    aggregator: topic.aggregator,
-                    palette: topic.palette,
-                    mode: .preview,
-                    placeholder: { ChartPlaceholderView().font(.footnote).padding(.bottom, 20) }
-                )
-                .padding(.leading)
-                .padding(.bottom)
+                chart
+                    .padding(.leading)
+                    .padding(.bottom)
             }
-            Image(systemName: "chevron.right")
-                .tint(.secondary)
+            .padding(.top)
+            .padding(.bottom, 4)
+
+            chevron
                 .padding(.trailing, 4)
         }
-        .padding(.top)
         .padding(.horizontal, 4)
-        .padding(.bottom, 4)
         .card()
         .frame(height: 150)
+    }
+
+    private var titleRow: some View {
+        HStack(alignment: .center) {
+            Text(topic.name)
+                .tint(.primary)
+                .font(.title3)
+                .minimumScaleFactor(0.5)
+
+            Spacer()
+
+            Text(.entries(topic.entries.count))
+                .tint(.secondary)
+                .font(.caption)
+        }
+    }
+
+    private var chart: some View {
+        ChartView(
+            rawEntries: topic.entries,
+            aggregator: topic.aggregator,
+            palette: topic.palette,
+            mode: .preview,
+            placeholder: { ChartPlaceholderView().font(.footnote).padding(.bottom, 20) }
+        )
+    }
+
+    private var chevron: some View {
+        Image(systemName: "chevron.right")
+            .tint(.secondary)
     }
 }
 
@@ -64,13 +77,13 @@ struct TopicCell: View {
             id: UUID(),
             name: "Topic 1",
             entries: [
-                ChartEntry(value: 0, timestamp: .now.advanced(by: -800)),
-                ChartEntry(value: -3, timestamp: .now.advanced(by: -700)),
-                ChartEntry(value: -2, timestamp: .now.advanced(by: -600)),
-                ChartEntry(value: 1, timestamp: .now.advanced(by: -500)),
-                ChartEntry(value: 5, timestamp: .now.advanced(by: -400)),
-                ChartEntry(value: 9, timestamp: .now.advanced(by: -300)),
-                ChartEntry(value: 10, timestamp: .now.advanced(by: -200))
+                .init(value: 0, timestamp: .now.advanced(by: -800)),
+                .init(value: -3, timestamp: .now.advanced(by: -700)),
+                .init(value: -2, timestamp: .now.advanced(by: -600)),
+                .init(value: 1, timestamp: .now.advanced(by: -500)),
+                .init(value: 5, timestamp: .now.advanced(by: -400)),
+                .init(value: 9, timestamp: .now.advanced(by: -300)),
+                .init(value: 10, timestamp: .now.advanced(by: -200))
             ],
             aggregator: .sum,
             palette: .sunset

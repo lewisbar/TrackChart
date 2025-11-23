@@ -7,6 +7,7 @@
 
 import Foundation
 
+@frozen
 public enum Aggregator: Sendable, CaseIterable {
     case sum
     case average
@@ -24,13 +25,6 @@ public enum Aggregator: Sendable, CaseIterable {
         switch self {
         case .sum: return "Sum"
         case .average: return "Average"
-        }
-    }
-
-    public var localizedName: String {
-        switch self {
-        case .sum: return String(localized: .sum)
-        case .average: return String(localized: .average)
         }
     }
 

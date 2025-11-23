@@ -7,18 +7,11 @@
 
 import Foundation
 
-public enum TimeSpan: CaseIterable {
+@frozen
+public enum TimeSpan: String, CaseIterable {
     case week
     case month
     case oneYear
-
-    public var title: String {
-        switch self {
-        case .week:       return "Week"
-        case .month:      return "Month"
-        case .oneYear:    return "Year"
-        }
-    }
 
     public var calendarComponent: Calendar.Component {
         switch self {

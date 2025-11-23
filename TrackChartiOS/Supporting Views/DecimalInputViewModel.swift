@@ -8,11 +8,11 @@
 import Foundation
 
 @Observable
-class DecimalInputViewModel {
-    var value: String
-    var selectedTimestamp: Date?
+public class DecimalInputViewModel {
+    public var value: String
+    public var selectedTimestamp: Date?
 
-    var timestampDisplay: String {
+    public var timestampDisplay: String {
         if let timestamp = selectedTimestamp {
             return timestamp.formatted(
                 .dateTime
@@ -27,7 +27,7 @@ class DecimalInputViewModel {
         }
     }
 
-    let keys = [
+    public let keys = [
         ["1", "2", "3"],
         ["4", "5", "6"],
         ["7", "8", "9"],
@@ -37,7 +37,7 @@ class DecimalInputViewModel {
     private let submit: (Double, Date) -> Void
     private let now: () -> Date
 
-    init(initialValue: Double,
+    public init(initialValue: Double,
          initialTimestamp: Date?,
          submit: @escaping (Double, Date) -> Void,
          now: @escaping () -> Date = Date.init) {
@@ -48,7 +48,7 @@ class DecimalInputViewModel {
     }
 
     // MARK: Input
-    func handleInput(_ key: String) {
+    public func handleInput(_ key: String) {
         switch key {
         case "⌫":
             if value.trimmingPrefix("-").count > 1 {
@@ -65,21 +65,21 @@ class DecimalInputViewModel {
         }
     }
 
-    func toggleSign() {
+    public func toggleSign() {
         value = value.hasPrefix("-") ? String(value.dropFirst()) : "-" + value
     }
 
     // MARK: Timestamp
-    func setTimestamp(_ date: Date) {
+    public func setTimestamp(_ date: Date) {
         selectedTimestamp = date
     }
 
-    func clearTimestamp() {
+    public func clearTimestamp() {
         selectedTimestamp = nil
     }
 
     // MARK: Submit – reset everything
-    func submitNumber() {
+    public func submitNumber() {
         if let doubleValue = Double(value) {
             let finalDate = selectedTimestamp ?? now()
             submit(doubleValue, finalDate)
