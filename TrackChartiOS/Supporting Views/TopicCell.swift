@@ -22,32 +22,14 @@ struct TopicCell: View {
     private func label() -> some View {
         HStack {
             VStack {
-                HStack(alignment: .center) {
-                    Text(topic.name)
-                        .tint(.primary)
-                        .font(.title3)
-                        .minimumScaleFactor(0.5)
+                titleRow
+                    .padding(.leading)
 
-                    Spacer()
-
-                    Text(.entries(topic.entries.count))
-                        .tint(.secondary)
-                        .font(.caption)
-                }
-                .padding(.leading)
-
-                ChartView(
-                    rawEntries: topic.entries,
-                    aggregator: topic.aggregator,
-                    palette: topic.palette,
-                    mode: .preview,
-                    placeholder: { ChartPlaceholderView().font(.footnote).padding(.bottom, 20) }
-                )
-                .padding(.leading)
-                .padding(.bottom)
+                chart
+                    .padding(.leading)
+                    .padding(.bottom)
             }
-            Image(systemName: "chevron.right")
-                .tint(.secondary)
+            chevron
                 .padding(.trailing, 4)
         }
         .padding(.top)
@@ -55,6 +37,36 @@ struct TopicCell: View {
         .padding(.bottom, 4)
         .card()
         .frame(height: 150)
+    }
+
+    private var titleRow: some View {
+        HStack(alignment: .center) {
+            Text(topic.name)
+                .tint(.primary)
+                .font(.title3)
+                .minimumScaleFactor(0.5)
+
+            Spacer()
+
+            Text(.entries(topic.entries.count))
+                .tint(.secondary)
+                .font(.caption)
+        }
+    }
+
+    private var chart: some View {
+        ChartView(
+            rawEntries: topic.entries,
+            aggregator: topic.aggregator,
+            palette: topic.palette,
+            mode: .preview,
+            placeholder: { ChartPlaceholderView().font(.footnote).padding(.bottom, 20) }
+        )
+    }
+
+    private var chevron: some View {
+        Image(systemName: "chevron.right")
+            .tint(.secondary)
     }
 }
 
