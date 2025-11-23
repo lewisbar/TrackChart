@@ -45,18 +45,7 @@ struct PagedChartView<Placeholder: View>: View {
             if pages.isEmpty {
                 placeholder()
             } else {
-                TabView(selection: $selectedPage) {
-                    ForEach(pages) { page in
-                        chart(for: page)
-                            .padding(.bottom, 24)
-                            .padding(.horizontal, 4)
-                            .tag(page.id)
-                    }
-                }
-                .tabViewStyle(.page)
-                .onAppear {
-                    selectedPage = pages.last?.id ?? ""
-                }
+                pagedTabView
             }
         }
         .onChange(of: rawEntries) { _, _ in
@@ -65,6 +54,21 @@ struct PagedChartView<Placeholder: View>: View {
         }
         .onChange(of: dataProvider) { _, _ in
             updatePages()
+            selectedPage = pages.last?.id ?? ""
+        }
+    }
+
+    private var pagedTabView: some View {
+        TabView(selection: $selectedPage) {
+            ForEach(pages) { page in
+                chart(for: page)
+                    .padding(.bottom, 24)
+                    .padding(.horizontal, 4)
+                    .tag(page.id)
+            }
+        }
+        .tabViewStyle(.page)
+        .onAppear {
             selectedPage = pages.last?.id ?? ""
         }
     }
