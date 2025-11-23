@@ -5,6 +5,7 @@
 //
 
 import Foundation
+import DataProcessing
 
 public struct CellTopic: Identifiable, Hashable {
     public let id: UUID

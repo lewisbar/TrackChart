@@ -77,13 +77,13 @@ struct TopicCell: View {
             id: UUID(),
             name: "Topic 1",
             entries: [
-                ChartEntry(value: 0, timestamp: .now.advanced(by: -800)),
-                ChartEntry(value: -3, timestamp: .now.advanced(by: -700)),
-                ChartEntry(value: -2, timestamp: .now.advanced(by: -600)),
-                ChartEntry(value: 1, timestamp: .now.advanced(by: -500)),
-                ChartEntry(value: 5, timestamp: .now.advanced(by: -400)),
-                ChartEntry(value: 9, timestamp: .now.advanced(by: -300)),
-                ChartEntry(value: 10, timestamp: .now.advanced(by: -200))
+                .init(value: 0, timestamp: .now.advanced(by: -800)),
+                .init(value: -3, timestamp: .now.advanced(by: -700)),
+                .init(value: -2, timestamp: .now.advanced(by: -600)),
+                .init(value: 1, timestamp: .now.advanced(by: -500)),
+                .init(value: 5, timestamp: .now.advanced(by: -400)),
+                .init(value: 9, timestamp: .now.advanced(by: -300)),
+                .init(value: 10, timestamp: .now.advanced(by: -200))
             ],
             aggregator: .sum,
             palette: .sunset

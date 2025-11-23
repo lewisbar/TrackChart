@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Charts
+import DataProcessing
 
 struct UnpagedPointMarks {
     let palette: Palette

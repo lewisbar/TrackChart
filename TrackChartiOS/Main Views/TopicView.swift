@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import DataProcessing
 
 struct TopicView<Settings: View>: View {
     @Binding var name: String

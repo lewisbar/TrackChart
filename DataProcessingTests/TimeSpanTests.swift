@@ -5,16 +5,11 @@
 //  Created by Lennart Wisbar on 06.11.25.
 //
 
+import Foundation
 import Testing
-import TrackChartiOS
+import DataProcessing
 
 struct TimeSpanTests {
-    @Test func title() {
-        #expect(TimeSpan.week.title == String(localized: "Week"))
-        #expect(TimeSpan.month.title == String(localized: "Month"))
-        #expect(TimeSpan.oneYear.title == String(localized: "Year"))
-    }
-
     @Test func calendarComponent() {
         #expect(TimeSpan.week.calendarComponent == .weekOfYear)
         #expect(TimeSpan.month.calendarComponent == .month)

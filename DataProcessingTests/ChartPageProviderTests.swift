@@ -7,7 +7,7 @@
 
 import Testing
 import Foundation
-import TrackChartiOS
+import DataProcessing
 
 @MainActor
 struct ChartPageProviderTests {
