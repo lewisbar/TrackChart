@@ -6,13 +6,13 @@
 //
 
 import Testing
-import TrackChartiOS
+@testable import TrackChartiOS
 import DataProcessing
 
 struct TimeSpanTitleTests {
     @Test func title() {
-        #expect(TimeSpan.week.title == String(localized: "Week"))
-        #expect(TimeSpan.month.title == String(localized: "Month"))
-        #expect(TimeSpan.oneYear.title == String(localized: "Year"))
+        #expect(TimeSpan.week.title == String(localized: .week))
+        #expect(TimeSpan.month.title == String(localized: .month))
+        #expect(TimeSpan.oneYear.title == String(localized: .year))
     }
 }
