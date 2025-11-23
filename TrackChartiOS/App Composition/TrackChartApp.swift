@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 import Persistence
+import DataProcessing
 
 private enum Destination: Hashable {
     case topicView(TopicEntity)

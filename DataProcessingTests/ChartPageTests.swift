@@ -7,7 +7,7 @@
 
 import Testing
 import Foundation
-import TrackChartiOS
+import DataProcessing
 
 struct ChartPageTests {
     @Test func init_setsDateRangeCorrectly() {

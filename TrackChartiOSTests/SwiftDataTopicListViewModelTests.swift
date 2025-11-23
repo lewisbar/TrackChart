@@ -9,6 +9,7 @@ import Testing
 import TrackChartiOS
 import SwiftData
 import Persistence
+import DataProcessing
 
 @MainActor
 class SwiftDataTopicListViewModelTests {

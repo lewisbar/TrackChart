@@ -5,8 +5,7 @@
 //  Created by Lennart Wisbar on 13.11.25.
 //
 
-import Foundation
-import UIKit
+import SwiftUI
 
 extension Bundle {
     var appIcon: UIImage? {
@@ -17,7 +16,6 @@ extension Bundle {
             return nil
         }
 
-        let imageName = lastIcon
-        return UIImage(named: imageName)
+        return UIImage(named: lastIcon)
     }
 }

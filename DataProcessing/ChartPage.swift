@@ -10,14 +10,14 @@ import Foundation
 public struct ChartPage: Identifiable, Equatable {
     public var id: String {
         // ID based on the start of the time period this page represents
-        "\(span.title)-\(periodStart.timeIntervalSince1970)"
+        "\(span.rawValue)-\(periodStart.timeIntervalSince1970)"
     }
 
     public let entries: [ProcessedEntry]
     public let span: TimeSpan
     public let title: String
     public let dateRange: ClosedRange<Date>
-    public let periodStart: Date // The start of this time period
+    public let periodStart: Date
 
     public init(entries: [ProcessedEntry], span: TimeSpan, title: String, periodStart: Date) {
         self.entries = entries

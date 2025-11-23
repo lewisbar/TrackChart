@@ -53,59 +53,11 @@ struct DecimalInputView: View {
     }
 
     private var timestampEditor: some View {
-        HStack {
+        Group {
             if isEditingTimestamp {
-                // Compact picker
-                DatePicker(
-                    "",
-                    selection: Binding(
-                        get: { model.selectedTimestamp ?? Date() },
-                        set: { model.setTimestamp($0) }
-                    ),
-                    displayedComponents: [.date, .hourAndMinute]
-                )
-                .datePickerStyle(.compact)
-                .labelsHidden()
-                .clipped()
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-                // Cancel editing → back to "Now"
-                Button {
-                    model.clearTimestamp()
-                    withAnimation(.easeInOut) {
-                        isEditingTimestamp = false
-                    }
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(.secondary)
-                }
-                .tint(.primary)
+                datePicker
             } else {
-                // Collapsed label
-                Button {
-                    withAnimation(.easeInOut) {
-                        isEditingTimestamp = true
-                    }
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: "calendar")
-                        Text(model.timestampDisplay)
-                    }
-                    .foregroundStyle(.primary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .tint(.primary)
-
-                // Clear only when a date is set
-                if model.selectedTimestamp != nil {
-                    Button {
-                        model.clearTimestamp()
-                    } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundStyle(.secondary)
-                    }
-                    .tint(.primary)
-                }
+                nowButton
             }
         }
         .font(.title3)
@@ -119,6 +71,64 @@ struct DecimalInputView: View {
                 withAnimation(.easeInOut) {
                     isEditingTimestamp = false
                 }
+            }
+        }
+    }
+
+    private var datePicker: some View {
+        HStack {
+            DatePicker(
+                "",
+                selection: Binding(
+                    get: { model.selectedTimestamp ?? Date() },
+                    set: { model.setTimestamp($0) }
+                ),
+                displayedComponents: [.date, .hourAndMinute]
+            )
+            .datePickerStyle(.compact)
+            .labelsHidden()
+            .clipped()
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            // Cancel editing → back to "Now"
+            Button {
+                model.clearTimestamp()
+                withAnimation(.easeInOut) {
+                    isEditingTimestamp = false
+                }
+            } label: {
+                Image(systemName: "xmark.circle.fill")
+                    .foregroundStyle(.secondary)
+            }
+            .tint(.primary)
+        }
+    }
+
+    private var nowButton: some View {
+        HStack {
+            Button {
+                withAnimation(.easeInOut) {
+                    isEditingTimestamp = true
+                }
+            } label: {
+                HStack(spacing: 4) {
+                    Image(systemName: "calendar")
+                    Text(model.timestampDisplay)
+                }
+                .foregroundStyle(.primary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .tint(.primary)
+
+            // Clear only when a date is set
+            if model.selectedTimestamp != nil {
+                Button {
+                    model.clearTimestamp()
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(.secondary)
+                }
+                .tint(.primary)
             }
         }
     }

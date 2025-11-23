@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Charts
+import DataProcessing
 
 struct PagedChartView<Placeholder: View>: View {
     @State private var pages: [ChartPage]
@@ -45,18 +46,7 @@ struct PagedChartView<Placeholder: View>: View {
             if pages.isEmpty {
                 placeholder()
             } else {
-                TabView(selection: $selectedPage) {
-                    ForEach(pages) { page in
-                        chart(for: page)
-                            .padding(.bottom, 24)
-                            .padding(.horizontal, 4)
-                            .tag(page.id)
-                    }
-                }
-                .tabViewStyle(.page)
-                .onAppear {
-                    selectedPage = pages.last?.id ?? ""
-                }
+                pagedTabView
             }
         }
         .onChange(of: rawEntries) { _, _ in
@@ -65,6 +55,19 @@ struct PagedChartView<Placeholder: View>: View {
         }
         .onChange(of: dataProvider) { _, _ in
             updatePages()
+            selectedPage = pages.last?.id ?? ""
+        }
+    }
+
+    private var pagedTabView: some View {
+        TabView(selection: $selectedPage) {
+            ForEach(pages) { page in
+                chart(for: page)
+                    .tag(page.id)
+            }
+        }
+        .tabViewStyle(.page)
+        .onAppear {
             selectedPage = pages.last?.id ?? ""
         }
     }
@@ -82,18 +85,8 @@ struct PagedChartView<Placeholder: View>: View {
     @ViewBuilder
     private func chart(for page: ChartPage) -> some View {
         VStack {
-            ZStack {
-                HStack {
-                    Text(span.title)
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                    Spacer()
-                }
-
-                Text(page.title)
-                    .font(.caption).bold()
-            }
-            .padding(.bottom, 8)
+            titleRow(for: page)
+                .padding(.bottom, 8)
 
             Chart(page.entries) { entry in
                 areaMark(for: entry)
@@ -105,6 +98,22 @@ struct PagedChartView<Placeholder: View>: View {
             .chartXAxis(content: xAxisContent)
         }
         .padding()
+        .padding(.bottom, 24)
+        .padding(.horizontal, 4)
+    }
+
+    private func titleRow(for page: ChartPage) -> some View {
+        ZStack {
+            HStack {
+                Text(span.title)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                Spacer()
+            }
+
+            Text(page.title)
+                .font(.caption).bold()
+        }
     }
 
     private func areaMark(for entry: ProcessedEntry) -> some ChartContent {
