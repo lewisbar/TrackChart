@@ -29,12 +29,13 @@ struct TopicCell: View {
                     .padding(.leading)
                     .padding(.bottom)
             }
+            .padding(.top)
+            .padding(.bottom, 4)
+
             chevron
                 .padding(.trailing, 4)
         }
-        .padding(.top)
         .padding(.horizontal, 4)
-        .padding(.bottom, 4)
         .card()
         .frame(height: 150)
     }
