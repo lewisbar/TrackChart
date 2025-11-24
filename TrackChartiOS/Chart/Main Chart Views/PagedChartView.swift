@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Foundation
 import Charts
 import DataProcessing
 
@@ -86,7 +87,7 @@ struct PagedChartView<Placeholder: View>: View {
     private func chart(for page: ChartPage) -> some View {
         VStack {
             titleRow(for: page)
-                .padding(.bottom, 8)
+                .padding(.bottom)
 
             Chart(page.entries) { entry in
                 areaMark(for: entry)
@@ -103,16 +104,15 @@ struct PagedChartView<Placeholder: View>: View {
     }
 
     private func titleRow(for page: ChartPage) -> some View {
-        ZStack {
-            HStack {
-                Text(span.title)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                Spacer()
-            }
-
+        HStack {
             Text(page.title)
                 .font(.caption).bold()
+
+            Spacer()
+
+            Text(page.aggregator == .sum ? .total(page.aggregate.twoDecimals) : .avg(page.aggregate.twoDecimals))
+                .font(.caption2)
+                .foregroundStyle(.secondary)
         }
     }
 
@@ -166,6 +166,12 @@ struct PagedChartView<Placeholder: View>: View {
                     }
                 }
         }
+    }
+}
+
+private extension Double {
+    var twoDecimals: String {
+        formatted(.number.precision(.fractionLength(0...2)))
     }
 }
 
