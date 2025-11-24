@@ -87,7 +87,7 @@ struct PagedChartView<Placeholder: View>: View {
     private func chart(for page: ChartPage) -> some View {
         VStack {
             titleRow(for: page)
-                .padding(.bottom, 8)
+                .padding(.bottom)
 
             Chart(page.entries) { entry in
                 areaMark(for: entry)
