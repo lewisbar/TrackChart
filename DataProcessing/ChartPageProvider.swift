@@ -24,15 +24,28 @@ public final class ChartPageProvider {
             let pageEntries = sorted.filter { range.contains($0.timestamp) }
             guard !pageEntries.isEmpty else { return nil }
 
-            let aggregated = dataProvider.processedEntries(from: pageEntries)
+            let aggregatedEntries = dataProvider.processedEntries(from: pageEntries)
             let title = formatPageTitle(start: range.lowerBound, end: range.upperBound, span: span, calendar: calendar)
 
+            let pageAggregate = aggregated(values: pageEntries.map(\.value), using: dataProvider.aggregator)
+
             return ChartPage(
-                entries: aggregated,
+                entries: aggregatedEntries,
                 span: span,
                 title: title,
-                periodStart: range.lowerBound
+                periodStart: range.lowerBound,
+                aggregator: dataProvider.aggregator,
+                aggregate: pageAggregate
             )
+        }
+    }
+
+    private static func aggregated(values: [Double], using aggregator: Aggregator) -> Double {
+        switch aggregator {
+            case .sum:
+            return values.reduce(0, +)
+        case .average:
+            return values.isEmpty ? 0 : values.reduce(0, +) / Double(values.count)
         }
     }
 
