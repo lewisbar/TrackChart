@@ -105,12 +105,6 @@ struct PagedChartView<Placeholder: View>: View {
 
     private func titleRow(for page: ChartPage) -> some View {
         HStack {
-            Text(span.title)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-
-            Spacer()
-
             Text(page.title)
                 .font(.caption).bold()
 
