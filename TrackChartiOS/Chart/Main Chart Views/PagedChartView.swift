@@ -104,23 +104,21 @@ struct PagedChartView<Placeholder: View>: View {
     }
 
     private func titleRow(for page: ChartPage) -> some View {
-        ZStack {
-            HStack {
-                Text(span.title)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                Spacer()
-            }
+        HStack {
+            Text(span.title)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+
+            Spacer()
 
             Text(page.title)
                 .font(.caption).bold()
 
-            HStack {
-                Spacer()
-                Text(page.aggregator == .sum ? .total(page.aggregate.twoDecimals) : .avg(page.aggregate.twoDecimals))
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-            }
+            Spacer()
+
+            Text(page.aggregator == .sum ? .total(page.aggregate.twoDecimals) : .avg(page.aggregate.twoDecimals))
+                .font(.caption2)
+                .foregroundStyle(.secondary)
         }
     }
 
