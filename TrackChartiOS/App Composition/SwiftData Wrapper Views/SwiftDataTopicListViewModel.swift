@@ -70,6 +70,7 @@ public class SwiftDataTopicListViewModel {
                 name: topic.name,
                 entries: entries,
                 aggregator: Aggregator.aggregator(named: topic.aggregator),
+                treatsMissingAsZero: topic.treatsMissingAsZero,
                 palette: .palette(named: topic.palette)
             )
         }

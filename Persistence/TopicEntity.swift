@@ -15,6 +15,7 @@ public final class TopicEntity {
     @Relationship(deleteRule: .cascade, inverse: \EntryEntity.topic) public var entries: [EntryEntity]?
     public var palette: String = "Ocean"
     public var aggregator: String = "Sum"
+    public var treatsMissingAsZero: Bool = false
     public var sortIndex: Int = 0
 
     public var entryCount: Int {
@@ -31,6 +32,7 @@ public final class TopicEntity {
         entries: [EntryEntity]? = [],
         palette: String,
         aggregator: String = "Sum",
+        treatsMissingAsZero: Bool = false,
         sortIndex: Int
     ) {
         self.id = id
@@ -38,6 +40,7 @@ public final class TopicEntity {
         self.entries = entries
         self.palette = palette
         self.aggregator = aggregator
+        self.treatsMissingAsZero = treatsMissingAsZero
         self.sortIndex = sortIndex
     }
 }

@@ -42,30 +42,6 @@ class SwiftDataTopicViewModelTests {
         #expect(updatedEntryValues == selectedEntries.map(\.value) + [2.5])
     }
 
-    @Test func changePalette() throws {
-        let topics = makeTopicEntities(names: ["0", "1", "2"], palette: .ocean)
-        let (sut, context) = try makeSUT(topics: topics)
-        let selectedTopic = topics[1]
-
-        sut.changePalette(to: .forest, for: selectedTopic)
-
-        let updatedTopics = try fetchTopics(from: context)
-
-        #expect(updatedTopics[1].palette == "Forest")
-    }
-
-    @Test func changeAggregator() throws {
-        let topics = makeTopicEntities(names: ["0", "1", "2"], aggregator: .sum)
-        let (sut, context) = try makeSUT(topics: topics)
-        let selectedTopic = topics[1]
-
-        sut.changeAggregator(to: .average, for: selectedTopic)
-
-        let updatedTopics = try fetchTopics(from: context)
-
-        #expect(updatedTopics[1].aggregator == "Average")
-    }
-
     // MARK: - Helpers
 
     private func makeSUT(

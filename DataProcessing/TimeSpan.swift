@@ -37,10 +37,10 @@ public enum TimeSpan: String, CaseIterable {
         }
     }
 
-    public func availableDataProviders(calendar: Calendar = .current) -> [ChartDataProvider] {
+    public func availableDataProviders(treatsMissingAsZero: Bool, calendar: Calendar = .current) -> [ChartDataProvider] {
         switch self {
-        case .week, .month: [.dailySum(calendar: calendar), .dailyAverage(calendar: calendar)]
-        case .oneYear: [.monthlySum(calendar: calendar), .monthlyAverage(calendar: calendar)]
+        case .week, .month: [.dailySum(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar), .dailyAverage(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar)]
+        case .oneYear: [.monthlySum(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar), .monthlyAverage(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar)]
         }
     }
 }
