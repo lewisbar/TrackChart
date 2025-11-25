@@ -15,17 +15,20 @@ public class SwiftDataTopicListViewModel {
     private let insert: (TopicEntity) -> Void
     private let delete: (TopicEntity) -> Void
     private let showTopic: (TopicEntity?) -> Void
+    private let newTopic: (_ sortIndex: Int) -> Void
     private let randomPalette: () -> String
 
     public init(
         insert: @escaping (TopicEntity) -> Void,
         delete: @escaping (TopicEntity) -> Void,
         showTopic: @escaping (TopicEntity?) -> Void,
+        newTopic: @escaping (_ sortIndex: Int) -> Void,
         randomPalette: @escaping () -> String
     ) {
         self.insert = insert
         self.delete = delete
         self.showTopic = showTopic
+        self.newTopic = newTopic
         self.randomPalette = randomPalette
     }
 
@@ -56,12 +59,6 @@ public class SwiftDataTopicListViewModel {
         }
     }
 
-    public func addAndShowNewTopic(existingTopics topics: [TopicEntity]) {
-        let topic = TopicEntity(name: "", palette: randomPalette(), sortIndex: topics.count)
-        insert(topic)
-        showTopic(topic)
-    }
-
     public func cellModels(from topics: [TopicEntity]) -> [CellTopic] {
         topics.map { topic in
             let entries = topic.sortedEntries.map {
@@ -80,5 +77,9 @@ public class SwiftDataTopicListViewModel {
 
     public func showTopic(for cellModel: CellTopic, in topics: [TopicEntity]) {
         showTopic(topics.first(where: { $0.id == cellModel.id }))
+    }
+
+    public func createTopic(existingTopics topics: [TopicEntity]) {
+        newTopic(topics.count)
     }
 }

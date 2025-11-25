@@ -35,22 +35,20 @@ class SwiftDataTopicListViewModelTests {
         #expect(updatedTopics.map(\.sortIndex) == [0, 1, 2, 3, 4])
     }
 
-    @Test func addAndShowNewTopic() throws {
+    @Test func createTopic() throws {
         var shownTopics = [TopicEntity?]()
-        let topics = makeTopicEntities(names: ["0", "1", "2", "3", "4"])
-        let (sut, context) = try makeSUT(topics: topics, showTopic: { shownTopics.append($0) })
+        let originalTopics = makeTopicEntities(names: ["0", "1", "2", "3", "4"])
+        var newTopicSortIndex: Int?
+        let (sut, context) = try makeSUT(topics: originalTopics, showTopic: { shownTopics.append($0) }, newTopic: { newTopicSortIndex = $0 })
 
-        sut.addAndShowNewTopic(existingTopics: topics)
+        sut.createTopic(existingTopics: originalTopics)
         try context.save()
 
         let updatedTopics = try fetchTopics(from: context)
 
-        #expect(updatedTopics.map(\.name) == ["0", "1", "2", "3", "4", ""])
-        #expect(updatedTopics.map(\.sortIndex) == [0, 1, 2, 3, 4, 5])
-        #expect(shownTopics.count == 1)
-        #expect(shownTopics.first??.name == "")
-        #expect(shownTopics.first??.sortIndex == 5)
-        #expect(shownTopics.first??.entries == [])
+        #expect(updatedTopics == originalTopics)
+        #expect(shownTopics.count == 0)
+        #expect(newTopicSortIndex == 5)
     }
 
     @Test func cellModelsFromTopics() throws {
@@ -93,7 +91,8 @@ class SwiftDataTopicListViewModelTests {
     private func makeSUT(
         topics: [TopicEntity],
         palette: String = "Ocean",
-        showTopic: @escaping (TopicEntity?) -> Void = { _ in }
+        showTopic: @escaping (TopicEntity?) -> Void = { _ in },
+        newTopic: @escaping (Int) -> Void = { _ in }
     ) throws -> (SwiftDataTopicListViewModel, ModelContext) {
         let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
         let context = try makeContext(with: configuration)
@@ -104,6 +103,7 @@ class SwiftDataTopicListViewModelTests {
             insert: context.insert,
             delete: context.delete,
             showTopic: showTopic,
+            newTopic: newTopic,
             randomPalette: { palette }
         )
 

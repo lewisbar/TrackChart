@@ -8,91 +8,58 @@
 import SwiftUI
 import DataProcessing
 
+struct SettingsTopic {
+    var name: String
+    var palette: Palette
+    var aggregator: Aggregator
+}
+
 struct SettingsView: View {
-    @State private var name: String
-    @State private var palette: Palette
-    @State private var aggregator: Aggregator
-    let rename: (String) -> Void
-    let changePalette: (Palette) -> Void
-    let changeAggregator: (Aggregator) -> Void
+    @State private var topic: SettingsTopic
+    let save: (SettingsTopic) -> Void
+
     @FocusState private var isTextFieldFocused: Bool
     @Environment(\.dismiss) var dismiss
     @State private var isShowingLongAggregationExplanation = false
 
-    private let originalName: String
-    private let originalPalette: Palette
-    private let originalAggregator: Aggregator
-
     init(
-        name: String,
-        palette: Palette,
-        aggregator: Aggregator,
-        rename: @escaping (String) -> Void,
-        changePalette: @escaping (Palette) -> Void,
-        changeAggregator: @escaping (Aggregator) -> Void,
+        topic: SettingsTopic,
+        save: @escaping (SettingsTopic) -> Void
     ) {
-        self.name = name
-        self.palette = palette
-        self.aggregator = aggregator
-        self.rename = rename
-        self.changePalette = changePalette
-        self.changeAggregator = changeAggregator
-
-        self.originalName = name
-        self.originalPalette = palette
-        self.originalAggregator = aggregator
+        self.topic = topic
+        self.save = save
     }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                title
-                nameSetting
-                colorSetting
-                aggregatorSetting.padding(.top)
-                Spacer()
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    nameSetting
+                    colorSetting
+                    aggregatorSetting.padding(.top)
+                    Spacer()
+                }
+                .padding(.vertical)
+                .padding(.horizontal, 24)
             }
-            .padding(.vertical)
-            .padding(.horizontal, 24)
-        }
-        .overlay(alignment: .topTrailing) {
-            dismissButton
-        }
-        .onAppear {
-            if name.isEmpty {
-                isTextFieldFocused = true
+            .navigationTitle(.topicSettings)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) { cancelButton }
+                ToolbarItem(placement: .confirmationAction) { doneButton }
+            }
+            .onAppear {
+                if topic.name.isEmpty {
+                    isTextFieldFocused = true
+                }
             }
         }
-        .onDisappear {
-            guard name != originalName else { return }
-            rename(name)
-        }
-        .onDisappear {
-            guard palette != originalPalette else { return }
-            changePalette(palette)
-        }
-        .onDisappear {
-            guard aggregator != originalAggregator else { return }
-            changeAggregator(aggregator)
-        }
-    }
-
-    private var title: some View {
-        Text(.topicSettings)
-            .font(.largeTitle)
-            .fontWeight(.medium)
-            .lineLimit(1)
-            .minimumScaleFactor(0.7)
-            .frame(maxWidth: .infinity, alignment: .center)
-            .padding(.bottom)
-            .safeAreaPadding(.horizontal, dismissButtonSize)
     }
 
     private var nameSetting: some View {
         VStack(alignment: .leading) {
             Text(.name)
 
-            TextField(String(localized: .name), text: $name)
+            TextField(String(localized: .name), text: $topic.name)
                 .textFieldStyle(.roundedBorder)
                 .focused($isTextFieldFocused)
         }
@@ -104,11 +71,11 @@ struct SettingsView: View {
             HStack {
                 Text(.colorPalette)
                 Spacer()
-                Text(palette.name)
+                Text(topic.palette.name)
                     .foregroundStyle(.secondary)
             }
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel(.selectedColorPalette(palette.name))
+            .accessibilityLabel(.selectedColorPalette(topic.palette.name))
 
             palettePicker
         }
@@ -126,12 +93,12 @@ struct SettingsView: View {
             .scrollIndicators(.hidden)
             .onAppear {
                 withAnimation {
-                    proxy.scrollTo(palette, anchor: .center)
+                    proxy.scrollTo(topic.palette, anchor: .center)
                 }
             }
-            .onChange(of: palette) { oldPalette, newPalette in
+            .onChange(of: topic.palette) { oldPalette, newPalette in
                 guard newPalette != oldPalette else { return }
-                palette = newPalette
+                topic.palette = newPalette
 
                 withAnimation {
                     proxy.scrollTo(newPalette, anchor: .center)
@@ -143,7 +110,7 @@ struct SettingsView: View {
 
     private func paletteButton(for availablePalette: Palette, proxy: ScrollViewProxy) -> some View {
         Button {
-            palette = availablePalette
+            topic.palette = availablePalette
 
             withAnimation {
                 proxy.scrollTo(availablePalette, anchor: .center)
@@ -153,7 +120,7 @@ struct SettingsView: View {
                 .fill(availablePalette.radialGradient())
                 .frame(width: 24, height: 24)
                 .overlay {
-                    if palette == availablePalette {
+                    if topic.palette == availablePalette {
                         Circle()
                             .stroke(Color.primary, lineWidth: 2)
                     }
@@ -163,18 +130,18 @@ struct SettingsView: View {
         }
         .tint(nil)
         .accessibilityLabel(availablePalette.name + selectedPaletteSuffix(for: availablePalette))
-        .accessibilityHint(.selectsThisColorPaletteForChartRendering, isEnabled: palette != availablePalette)
+        .accessibilityHint(.selectsThisColorPaletteForChartRendering, isEnabled: topic.palette != availablePalette)
     }
 
     private func selectedPaletteSuffix(for availablePalette: Palette) -> String {
-        palette == availablePalette ? String(localized: .isSelectedPalette) : ""
+        topic.palette == availablePalette ? String(localized: .isSelectedPalette) : ""
     }
 
     private var aggregatorSetting: some View {
         VStack(alignment: .leading) {
             Text(.aggregationMethod)
 
-            Picker(.aggregator, selection: $aggregator) {
+            Picker(.aggregator, selection: $topic.aggregator) {
                 ForEach(Aggregator.allCases, id: \.self) { aggregator in
                     Text(aggregator.localizedName)
                 }
@@ -213,36 +180,27 @@ struct SettingsView: View {
         }
     }
 
-    private var dismissButton: some View {
-        Button {
-            dismiss()
-        } label: {
-            Image(systemName: "xmark")
-                .font(.title3)
-                .foregroundStyle(.secondary)
-                .frame(width: dismissButtonSize, height: dismissButtonSize)
-                .background(
-                    Circle()
-                        .fill(.ultraThinMaterial)
-                        .overlay(Circle().stroke(Color(.systemGray4), lineWidth: 0.5))
-                )
-                .contentShape(Circle())
-        }
-        .tint(.primary)
-        .padding()
+    private var cancelButton: some View {
+        Button(.cancel, role: .cancel) { dismiss() }
     }
 
-    private let dismissButtonSize: CGFloat = 36
+    private var doneButton: some View {
+        Button(.done, role: .none) {
+            save(topic)
+            dismiss()
+        }
+        .bold()
+        .disabled(topic.name.isEmpty)
+    }
 }
 
 #Preview {
-    @Previewable @State var name: String = "Topic 1"
-    @Previewable @State var palette: Palette = Palette.palette(named: "Lavender Field")
+    let topic = SettingsTopic(name: "Topic 1", palette: .arcticIce, aggregator: .average)
 
     VStack {
-        SettingsView(name: name, palette: palette, aggregator: .sum, rename: { _ in }, changePalette: { _ in }, changeAggregator: { _ in })
-        Text(palette.name)
+        SettingsView(topic: topic, save: { _ in })
+        Text(topic.palette.name)
             .font(.largeTitle)
-            .foregroundStyle(palette.linearGradient())
+            .foregroundStyle(topic.palette.linearGradient())
     }
 }
