@@ -10,11 +10,13 @@ import Foundation
 public struct ChartDataProvider: Sendable {
     public let name: String
     public let aggregator: Aggregator
+    public let treatsMissingAsZero: Bool
     private let process: @Sendable ([ChartEntry]) -> [ProcessedEntry]
 
-    private init(name: String, aggregator: Aggregator, process: @escaping @Sendable ([ChartEntry]) -> [ProcessedEntry]) {
+    private init(name: String, aggregator: Aggregator, treatsMissingAsZero: Bool, process: @escaping @Sendable ([ChartEntry]) -> [ProcessedEntry]) {
         self.name = name
         self.aggregator = aggregator
+        self.treatsMissingAsZero = treatsMissingAsZero
         self.process = process
     }
 
@@ -22,7 +24,7 @@ public struct ChartDataProvider: Sendable {
         process(rawEntries)
     }
 
-    public static let raw = ChartDataProvider(name: "raw", aggregator: .sum) { $0.map { ProcessedEntry(value: $0.value, timestamp: $0.timestamp) } }
+    public static let raw = ChartDataProvider(name: "raw", aggregator: .sum, treatsMissingAsZero: false) { $0.map { ProcessedEntry(value: $0.value, timestamp: $0.timestamp) } }
 
     public static func dailySum(treatsMissingAsZero: Bool, calendar: Calendar = .current) -> ChartDataProvider {
         aggregating(.day, .sum, name: "daily sum", calendar: calendar, treatsMissingAsZero: treatsMissingAsZero)
@@ -57,7 +59,7 @@ public struct ChartDataProvider: Sendable {
     }
 
     public static func automaticPreview(treatsMissingAsZero: Bool, aggregator: Aggregator, calendar: Calendar = .current) -> ChartDataProvider {
-        ChartDataProvider(name: "automatic preview", aggregator: aggregator) { raw in
+        ChartDataProvider(name: "automatic preview", aggregator: aggregator, treatsMissingAsZero: treatsMissingAsZero) { raw in
             guard !raw.isEmpty else { return [] }
 
             let sorted = raw.sorted { $0.timestamp < $1.timestamp }
@@ -105,7 +107,7 @@ public struct ChartDataProvider: Sendable {
         calendar: Calendar,
         treatsMissingAsZero: Bool
     ) -> ChartDataProvider {
-        ChartDataProvider(name: name, aggregator: aggregator) { entries in
+        ChartDataProvider(name: name, aggregator: aggregator, treatsMissingAsZero: treatsMissingAsZero) { entries in
             guard !entries.isEmpty else { return [] }
 
             let grouped = Dictionary(grouping: entries) {
@@ -166,11 +168,15 @@ public struct ChartDataProvider: Sendable {
 
 extension ChartDataProvider: Hashable {
     public static func == (lhs: ChartDataProvider, rhs: ChartDataProvider) -> Bool {
-        lhs.name == rhs.name
+        lhs.name == rhs.name &&
+        lhs.aggregator == rhs.aggregator &&
+        lhs.treatsMissingAsZero == rhs.treatsMissingAsZero
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(name)
+        hasher.combine(aggregator)
+        hasher.combine(treatsMissingAsZero)
     }
 }
 

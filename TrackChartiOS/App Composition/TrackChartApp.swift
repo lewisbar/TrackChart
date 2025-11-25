@@ -88,12 +88,14 @@ struct TrackChartApp: App {
             topic: SettingsTopic(
                 name: topic.name,
                 palette: .palette(named: topic.palette),
-                aggregator: .aggregator(named: topic.aggregator)
+                aggregator: .aggregator(named: topic.aggregator),
+                treatsMissingAsZero: topic.treatsMissingAsZero
             ),
             save: {
                 topic.name = $0.name
                 topic.palette = $0.palette.name
                 topic.aggregator = $0.aggregator.name
+                topic.treatsMissingAsZero = $0.treatsMissingAsZero
             }
         )
         .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
@@ -104,7 +106,8 @@ struct TrackChartApp: App {
             topic: SettingsTopic(
                 name: "",
                 palette: .random,
-                aggregator: .sum
+                aggregator: .sum,
+                treatsMissingAsZero: false
             ),
             save: {
                 let newTopic = TopicEntity(name: $0.name, palette: $0.palette.name, aggregator: $0.aggregator.name, sortIndex: sortIndex)

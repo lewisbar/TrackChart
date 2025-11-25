@@ -12,6 +12,7 @@ struct SettingsTopic {
     var name: String
     var palette: Palette
     var aggregator: Aggregator
+    var treatsMissingAsZero: Bool
 }
 
 struct SettingsView: View {
@@ -37,6 +38,7 @@ struct SettingsView: View {
                     nameSetting
                     colorSetting
                     aggregatorSetting.padding(.top)
+                    zeroFillingSetting.padding(.top)
                     Spacer()
                 }
                 .padding(.vertical)
@@ -151,16 +153,17 @@ struct SettingsView: View {
             Text(.aggregationExplanationShort)
                 .font(.caption)
                 .foregroundStyle(.secondary)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 2)
+                .padding(.horizontal, 12)
+                .padding(.top, 8)
 
             Button {
                 isShowingLongAggregationExplanation = true
             } label: {
                 Text(.learnMore)
                     .font(.caption)
-                    .padding(.horizontal, 8)
             }
+            .padding(.horizontal, 12)
+            .padding(.top, 1)
             .sheet(isPresented: $isShowingLongAggregationExplanation) {
                 ScrollView {
                     VStack(spacing: 0) {
@@ -180,6 +183,21 @@ struct SettingsView: View {
         }
     }
 
+    private var zeroFillingSetting: some View {
+        VStack(alignment: .leading) {
+            Toggle(.displayEmptyPeriodsAsZero, isOn: $topic.treatsMissingAsZero)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(.zeroFillingExplanationShort)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(nil)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 8)
+        }
+    }
+
     private var cancelButton: some View {
         Button(.cancel, role: .cancel) { dismiss() }
     }
@@ -195,7 +213,7 @@ struct SettingsView: View {
 }
 
 #Preview {
-    let topic = SettingsTopic(name: "Topic 1", palette: .arcticIce, aggregator: .average)
+    let topic = SettingsTopic(name: "Topic 1", palette: .arcticIce, aggregator: .average, treatsMissingAsZero: false)
 
     VStack {
         SettingsView(topic: topic, save: { _ in })
