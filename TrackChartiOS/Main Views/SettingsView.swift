@@ -44,37 +44,61 @@ struct SettingsView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                title
-                nameSetting
-                colorSetting
-                aggregatorSetting.padding(.top)
-                Spacer()
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    title
+                    nameSetting
+                    colorSetting
+                    aggregatorSetting.padding(.top)
+                    Spacer()
+                }
+                .padding(.vertical)
+                .padding(.horizontal, 24)
             }
-            .padding(.vertical)
-            .padding(.horizontal, 24)
-        }
-        .overlay(alignment: .topTrailing) {
-            dismissButton
-        }
-        .onAppear {
-            if name.isEmpty {
-                isTextFieldFocused = true
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(.cancel, role: .cancel) {
+                        dismiss()
+                    }
+                }
+
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(.done, role: .none) {
+                        save()
+                        dismiss()
+                    }
+                    .bold()
+                    .disabled(name.isEmpty)
+                }
+            }
+            .onAppear {
+                if name.isEmpty {
+                    isTextFieldFocused = true
+                }
             }
         }
-        .onDisappear {
-            guard name != originalName else { return }
-            rename(name)
-        }
-        .onDisappear {
-            guard palette != originalPalette else { return }
-            changePalette(palette)
-        }
-        .onDisappear {
-            guard aggregator != originalAggregator else { return }
-            changeAggregator(aggregator)
-        }
+    }
+
+    private func save() {
+        saveName()
+        savePalette()
+        saveAggregator()
+    }
+
+    private func saveName() {
+        guard name != originalName else { return }
+        rename(name)
+    }
+
+    private func savePalette() {
+        guard palette != originalPalette else { return }
+        changePalette(palette)
+    }
+
+    private func saveAggregator() {
+        guard aggregator != originalAggregator else { return }
+        changeAggregator(aggregator)
     }
 
     private var title: some View {
