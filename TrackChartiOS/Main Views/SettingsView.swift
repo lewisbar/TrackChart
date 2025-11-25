@@ -57,20 +57,8 @@ struct SettingsView: View {
             }
             .navigationTitle(.topicSettings)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button(.cancel, role: .cancel) {
-                        dismiss()
-                    }
-                }
-
-                ToolbarItem(placement: .confirmationAction) {
-                    Button(.done, role: .none) {
-                        save()
-                        dismiss()
-                    }
-                    .bold()
-                    .disabled(name.isEmpty)
-                }
+                ToolbarItem(placement: .cancellationAction) { cancelButton }
+                ToolbarItem(placement: .confirmationAction) { doneButton }
             }
             .onAppear {
                 if name.isEmpty {
@@ -226,26 +214,18 @@ struct SettingsView: View {
         }
     }
 
-    private var dismissButton: some View {
-        Button {
-            dismiss()
-        } label: {
-            Image(systemName: "xmark")
-                .font(.title3)
-                .foregroundStyle(.secondary)
-                .frame(width: dismissButtonSize, height: dismissButtonSize)
-                .background(
-                    Circle()
-                        .fill(.ultraThinMaterial)
-                        .overlay(Circle().stroke(Color(.systemGray4), lineWidth: 0.5))
-                )
-                .contentShape(Circle())
-        }
-        .tint(.primary)
-        .padding()
+    private var cancelButton: some View {
+        Button(.cancel, role: .cancel) { dismiss() }
     }
 
-    private let dismissButtonSize: CGFloat = 36
+    private var doneButton: some View {
+        Button(.done, role: .none) {
+            save()
+            dismiss()
+        }
+        .bold()
+        .disabled(name.isEmpty)
+    }
 }
 
 #Preview {
