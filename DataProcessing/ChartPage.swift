@@ -18,14 +18,18 @@ public struct ChartPage: Identifiable, Equatable {
     public let title: String
     public let dateRange: ClosedRange<Date>
     public let periodStart: Date
+    public let aggregator: Aggregator
+    public let aggregate: Double
 
-    public init(entries: [ProcessedEntry], span: TimeSpan, title: String, periodStart: Date) {
+    public init(entries: [ProcessedEntry], span: TimeSpan, title: String, periodStart: Date, aggregator: Aggregator, aggregate: Double) {
         self.entries = entries
         self.span = span
         self.title = title
         self.periodStart = periodStart
         let dates = entries.map(\.timestamp)
         self.dateRange = (dates.min() ?? Date()) ... (dates.max() ?? Date())
+        self.aggregator = aggregator
+        self.aggregate = aggregate
     }
 
     public func isExtremum(_ entry: ProcessedEntry) -> Bool {

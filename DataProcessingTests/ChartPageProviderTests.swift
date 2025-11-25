@@ -269,6 +269,48 @@ struct ChartPageProviderTests {
         #expect(janEntry?.value == 15)
     }
 
+    @Test("Correct page aggregation (page total)")
+    func pageAggregate_sum() {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2  // Monday
+
+        // Dec 30, 2024 to Jan 5, 2025 should be in the same week
+        let entries = [
+            ChartEntry(value: 1, timestamp: date(2024, 12, 30, calendar: calendar)),
+            ChartEntry(value: 2, timestamp: date(2025, 1, 2, calendar: calendar)),
+            ChartEntry(value: 3, timestamp: date(2025, 1, 5, calendar: calendar))
+        ]
+
+        let pages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(calendar: calendar), calendar: calendar)
+
+        // All entries should be in the same week page
+        #expect(pages.count == 1)
+        #expect(pages.first?.entries.count == 3)
+        #expect(pages.first?.aggregator == .sum)
+        #expect(pages.first?.aggregate == 6)
+    }
+
+    @Test("Correct page aggregation (page average)")
+    func pageAggregate_average() {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2  // Monday
+
+        // Dec 30, 2024 to Jan 5, 2025 should be in the same week
+        let entries = [
+            ChartEntry(value: 1, timestamp: date(2024, 12, 30, calendar: calendar)),
+            ChartEntry(value: 2, timestamp: date(2025, 1, 2, calendar: calendar)),
+            ChartEntry(value: 3, timestamp: date(2025, 1, 5, calendar: calendar))
+        ]
+
+        let pages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailyAverage(calendar: calendar), calendar: calendar)
+
+        // All entries should be in the same week page
+        #expect(pages.count == 1)
+        #expect(pages.first?.entries.count == 3)
+        #expect(pages.first?.aggregator == .average)
+        #expect(pages.first?.aggregate == 2)
+    }
+
     // MARK: - Automatic Preview Tests
 
     @Test("AutomaticPreview: Less than a week shows raw data")
