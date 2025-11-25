@@ -47,7 +47,6 @@ struct SettingsView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    title
                     nameSetting
                     colorSetting
                     aggregatorSetting.padding(.top)
@@ -56,6 +55,7 @@ struct SettingsView: View {
                 .padding(.vertical)
                 .padding(.horizontal, 24)
             }
+            .navigationTitle(.topicSettings)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(.cancel, role: .cancel) {
@@ -99,17 +99,6 @@ struct SettingsView: View {
     private func saveAggregator() {
         guard aggregator != originalAggregator else { return }
         changeAggregator(aggregator)
-    }
-
-    private var title: some View {
-        Text(.topicSettings)
-            .font(.largeTitle)
-            .fontWeight(.medium)
-            .lineLimit(1)
-            .minimumScaleFactor(0.7)
-            .frame(maxWidth: .infinity, alignment: .center)
-            .padding(.bottom)
-            .safeAreaPadding(.horizontal, dismissButtonSize)
     }
 
     private var nameSetting: some View {
