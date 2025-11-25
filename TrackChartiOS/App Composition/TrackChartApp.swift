@@ -96,12 +96,16 @@ struct TrackChartApp: App {
 
     private func makeSettingsView(for topic: TopicEntity) -> some View {
         SettingsView(
-            name: topic.name,
-            palette: Palette.palette(named: topic.palette),
-            aggregator: Aggregator.aggregator(named: topic.aggregator),
-            rename: { topic.name = $0 },
-            changePalette: { topic.palette = $0.name },
-            changeAggregator: { topic.aggregator = $0.name }
+            topic: SettingsTopic(
+                name: topic.name,
+                palette: .palette(named: topic.palette),
+                aggregator: .aggregator(named: topic.aggregator)
+            ),
+            save: {
+                topic.name = $0.name
+                topic.palette = $0.palette.name
+                topic.aggregator = $0.aggregator.name
+            }
         )
         .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
     }
