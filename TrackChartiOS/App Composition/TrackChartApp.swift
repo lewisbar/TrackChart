@@ -15,11 +15,17 @@ private enum Destination: Hashable {
     case entryListView(TopicEntity)
 }
 
+private struct IdentifiableSortIndex: Identifiable {
+    let id = UUID()
+    let value: Int
+}
+
 @main
 struct TrackChartApp: App {
     private let modelContainer: ModelContainer
     private var modelContext: ModelContext { modelContainer.mainContext }
     @State private var path = [Destination]()
+    @State private var newTopicSortIndex: IdentifiableSortIndex?
 
     init() {
         do {
@@ -46,6 +52,7 @@ struct TrackChartApp: App {
                     insert: modelContext.insert,
                     delete: modelContext.delete,
                     showTopic: showTopic,
+                    newTopic: showNewTopicCreation,
                     randomPalette: { Palette.random.name }
                 )
             )
@@ -68,6 +75,9 @@ struct TrackChartApp: App {
                 case let .entryListView(topic):
                     SwiftDataEntryListView(topic: topic, viewModel: SwiftDataEntryListViewModel())
                 }
+            }
+            .sheet(item: $newTopicSortIndex) {
+                makeSettingsViewForNewTopic(withSortIndex: $0.value)
             }
         }
         .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
@@ -110,9 +120,29 @@ struct TrackChartApp: App {
         .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
     }
 
+    private func makeSettingsViewForNewTopic(withSortIndex sortIndex: Int) -> some View {
+        SettingsView(
+            topic: SettingsTopic(
+                name: "",
+                palette: .random,
+                aggregator: .sum
+            ),
+            save: {
+                let newTopic = TopicEntity(name: $0.name, palette: $0.palette.name, aggregator: $0.aggregator.name, sortIndex: sortIndex)
+                modelContext.insert(newTopic)
+                showTopic(newTopic)
+            }
+        )
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+    }
+
     private func showTopic(_ topic: TopicEntity?) {
         guard let topic else { return }
         path = [.topicView(topic)]
+    }
+
+    private func showNewTopicCreation(sortIndex: Int) {
+        newTopicSortIndex = IdentifiableSortIndex(value: sortIndex)
     }
 
     private func showEntryList(for topic: TopicEntity) {

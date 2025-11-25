@@ -21,7 +21,7 @@ struct SwiftDataTopicListView: View {
             deleteTopics: { viewModel.deleteTopics(at: $0, from: topics) },
             moveTopics: { viewModel.moveTopics(from: $0, to: $1, inTopicList: topics) },
             showTopic: { viewModel.showTopic(for: $0, in: topics) },
-            createNewTopic: { viewModel.addAndShowNewTopic(existingTopics: topics) }
+            createNewTopic: { viewModel.createTopic(existingTopics: topics) }
         )
     }
 }
