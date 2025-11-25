@@ -8,11 +8,16 @@
 import SwiftUI
 import DataProcessing
 
-struct TopicView<Settings: View>: View {
-    @Binding var name: String
-    @Binding var palette: Palette
-    @Binding var aggregator: Aggregator
+struct TopicViewTopic {
+    let name: String
+    let palette: Palette
     let entries: [ChartEntry]
+    let aggregator: Aggregator
+    let treatsMissingAsZero: Bool
+}
+
+struct TopicView<Settings: View>: View {
+    let topic: TopicViewTopic
     let submitNewValue: (Double, Date) -> Void
     let settingsView: () -> Settings
     let showEntryList: () -> Void
@@ -29,7 +34,7 @@ struct TopicView<Settings: View>: View {
             plusButton
         }
         .navigationBarBackButtonHidden(true)
-        .navigationTitle(name)
+        .navigationTitle(topic.name)
         .toolbar {
             ToolbarItem(placement: .topBarLeading, content: chevronOnlyBackButton)
             ToolbarItem(placement: .topBarTrailing, content: settingsButton)
@@ -41,7 +46,7 @@ struct TopicView<Settings: View>: View {
             settingsView()
         }
         .onAppear {
-            if name.isEmpty {
+            if topic.name.isEmpty {
                 isShowingSettings = true
             }
         }
@@ -49,11 +54,11 @@ struct TopicView<Settings: View>: View {
 
     private var chartList: some View {
         List {
-            if entries.isEmpty { tutorialView } else { overviewChart }
+            if topic.entries.isEmpty { tutorialView } else { overviewChart }
             entriesCell
-            pagedCard(span: .week,       dataProvider: aggregator == .sum ? .dailySum() : .dailyAverage())
-            pagedCard(span: .month,      dataProvider: aggregator == .sum ? .dailySum() : .dailyAverage())
-            pagedCard(span: .oneYear,    dataProvider: aggregator == .sum ? .monthlySum() : .monthlyAverage())
+            pagedCard(span: .week,       dataProvider: topic.aggregator == .sum ? .dailySum(treatsMissingAsZero: topic.treatsMissingAsZero) : .dailyAverage(treatsMissingAsZero: topic.treatsMissingAsZero))
+            pagedCard(span: .month,      dataProvider: topic.aggregator == .sum ? .dailySum(treatsMissingAsZero: topic.treatsMissingAsZero) : .dailyAverage(treatsMissingAsZero: topic.treatsMissingAsZero))
+            pagedCard(span: .oneYear,    dataProvider: topic.aggregator == .sum ? .monthlySum(treatsMissingAsZero: topic.treatsMissingAsZero) : .monthlyAverage(treatsMissingAsZero: topic.treatsMissingAsZero))
         }
         .safeAreaInset(edge: .bottom) {
             // Make room for the plus button
@@ -62,7 +67,7 @@ struct TopicView<Settings: View>: View {
     }
 
     private var overviewChart: some View {
-        ChartView(rawEntries: entries, aggregator: aggregator, palette: palette, mode: .overview)
+        ChartView(rawEntries: topic.entries, aggregator: topic.aggregator, treatsMissingAsZero: topic.treatsMissingAsZero, palette: topic.palette, mode: .overview)
             .frame(height: 150)
             .padding(.top)
             .padding(.horizontal)
@@ -77,7 +82,7 @@ struct TopicView<Settings: View>: View {
     private var entriesCell: some View {
         Button(action: showEntryList) {
             HStack {
-                Text(.entries(entries.count))
+                Text(.entries(topic.entries.count))
                     .tint(.primary)
                 Spacer()
                 Image(systemName: "chevron.right")
@@ -90,9 +95,10 @@ struct TopicView<Settings: View>: View {
 
     private func pagedCard(span: TimeSpan, dataProvider: ChartDataProvider) -> some View {
         ChartView(
-            rawEntries: entries,
-            aggregator: aggregator,
-            palette: palette,
+            rawEntries: topic.entries,
+            aggregator: topic.aggregator,
+            treatsMissingAsZero: topic.treatsMissingAsZero,
+            palette: topic.palette,
             mode: .paged(span, dataProvider: dataProvider)
         )
         .card()
@@ -142,10 +148,7 @@ struct TopicView<Settings: View>: View {
     }
 
     TopicView(
-        name: .constant("Topic 1"),
-        palette: .constant(.ocean),
-        aggregator: .constant(.sum),
-        entries: entries,
+        topic: TopicViewTopic(name: "Topic 1", palette: .arcticIce, entries: entries, aggregator: .average, treatsMissingAsZero: true),
         submitNewValue: { _, _ in },
         settingsView: EmptyView.init,
         showEntryList: {}

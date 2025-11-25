@@ -19,12 +19,4 @@ public class SwiftDataTopicViewModel {
         let newEntry = EntryEntity(value: newValue, timestamp: timestamp)
         topic.entries?.append(newEntry)
     }
-
-    public func changePalette(to palette: Palette, for topic: TopicEntity) {
-        topic.palette = palette.name
-    }
-
-    public func changeAggregator(to aggregator: Aggregator, for topic: TopicEntity) {
-        topic.aggregator = aggregator.name
-    }
 }

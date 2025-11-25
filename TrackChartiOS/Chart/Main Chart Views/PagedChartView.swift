@@ -201,12 +201,12 @@ private extension Double {
 
     ScrollView {
         VStack {
-            PagedChartView(rawEntries: entries, span: .week, dataProvider: .dailySum(), palette: .arcticIce).card().frame(height: 250)
-            PagedChartView(rawEntries: entries, span: .month, dataProvider: .dailySum(), palette: .aurora).card().frame(height: 250)
-            PagedChartView(rawEntries: entries, span: .oneYear, dataProvider: .monthlySum(), palette: .desertDune).card().frame(height: 250)
-            PagedChartView(rawEntries: entries, span: .week, dataProvider: .dailyAverage(), palette: .fire).card().frame(height: 250)
-            PagedChartView(rawEntries: entries, span: .month, dataProvider: .dailyAverage(), palette: .fire).card().frame(height: 250)
-            PagedChartView(rawEntries: entries, span: .oneYear, dataProvider: .monthlyAverage(), palette: .meadow).card().frame(height: 250)
+            PagedChartView(rawEntries: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false), palette: .arcticIce).card().frame(height: 250)
+            PagedChartView(rawEntries: entries, span: .month, dataProvider: .dailySum(treatsMissingAsZero: false), palette: .aurora).card().frame(height: 250)
+            PagedChartView(rawEntries: entries, span: .oneYear, dataProvider: .monthlySum(treatsMissingAsZero: false), palette: .desertDune).card().frame(height: 250)
+            PagedChartView(rawEntries: entries, span: .week, dataProvider: .dailyAverage(treatsMissingAsZero: false), palette: .fire).card().frame(height: 250)
+            PagedChartView(rawEntries: entries, span: .month, dataProvider: .dailyAverage(treatsMissingAsZero: false), palette: .fire).card().frame(height: 250)
+            PagedChartView(rawEntries: entries, span: .oneYear, dataProvider: .monthlyAverage(treatsMissingAsZero: false), palette: .meadow).card().frame(height: 250)
         }
         .padding()
     }

@@ -63,17 +63,17 @@ struct TopicListView: View {
             .init(value: 2.1, timestamp: .now.advanced(by: -300)),
             .init(value: 4, timestamp: .now.advanced(by: -200)),
             .init(value: 3, timestamp: .now.advanced(by: -100))
-        ], aggregator: .sum, palette: .fire),
+        ], aggregator: .sum, treatsMissingAsZero: true, palette: .fire),
         CellTopic(id: UUID(), name: "Topic 2", entries: [
             .init(value: 1, timestamp: .now.advanced(by: -300)),
             .init(value: -4, timestamp: .now.advanced(by: -200)),
             .init(value: 30, timestamp: .now.advanced(by: -100))
-        ], aggregator: .sum, palette: .forest),
+        ], aggregator: .sum, treatsMissingAsZero: false, palette: .forest),
         CellTopic(id: UUID(), name: "Topic 3", entries: [
             .init(value: 2, timestamp: .now.advanced(by: -300)),
             .init(value: 40, timestamp: .now.advanced(by: -200)),
             .init(value: -13, timestamp: .now.advanced(by: -100))
-        ], aggregator: .sum, palette: .sunset),
+        ], aggregator: .sum, treatsMissingAsZero: false, palette: .sunset),
     ]
     
     TopicListView(topics: topics + topics, deleteTopics: { _ in }, moveTopics: { _, _ in }, showTopic: { _ in }, createNewTopic: {})

@@ -17,7 +17,7 @@ struct ChartPageProviderTests {
     @Test("Gregorian: Empty array returns empty pages")
     func gregorianEmptyArray() {
         let calendar = Calendar(identifier: .gregorian)
-        let pages = ChartPageProvider.pages(for: [], span: .week, dataProvider: .dailySum(calendar: calendar), calendar: calendar)
+        let pages = ChartPageProvider.pages(for: [], span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
         #expect(pages.isEmpty)
     }
 
@@ -33,7 +33,7 @@ struct ChartPageProviderTests {
             ChartEntry(value: 3, timestamp: date(2025, 1, 5, calendar: calendar))
         ]
 
-        let pages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(calendar: calendar), calendar: calendar)
+        let pages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
 
         // All entries should be in the same week page
         #expect(pages.count == 1)
@@ -48,7 +48,7 @@ struct ChartPageProviderTests {
             ChartEntry(value: 2, timestamp: date(2024, 11, 1, calendar: calendar))   // First day of November
         ]
 
-        let pages = ChartPageProvider.pages(for: entries, span: .month, dataProvider: .dailySum(calendar: calendar), calendar: calendar)
+        let pages = ChartPageProvider.pages(for: entries, span: .month, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
 
         #expect(pages.count == 2)
         #expect(pages[0].entries.count == 1)  // October
@@ -70,7 +70,7 @@ struct ChartPageProviderTests {
             ChartEntry(value: 3, timestamp: calendar.date(byAdding: .day, value: 4, to: baseDate)!)
         ]
 
-        let pages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(calendar: calendar), calendar: calendar)
+        let pages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
 
         #expect(!pages.isEmpty)
         // Verify entries are properly aggregated
@@ -92,7 +92,7 @@ struct ChartPageProviderTests {
             ChartEntry(value: 2, timestamp: secondMonth)
         ]
 
-        let pages = ChartPageProvider.pages(for: entries, span: .month, dataProvider: .dailySum(calendar: calendar), calendar: calendar)
+        let pages = ChartPageProvider.pages(for: entries, span: .month, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
 
         #expect(pages.count >= 1) // Should create at least one page
         // Verify all values are accounted for
@@ -113,7 +113,7 @@ struct ChartPageProviderTests {
             ChartEntry(value: 20, timestamp: year2)
         ]
 
-        let pages = ChartPageProvider.pages(for: entries, span: .oneYear, dataProvider: .monthlySum(calendar: calendar), calendar: calendar)
+        let pages = ChartPageProvider.pages(for: entries, span: .oneYear, dataProvider: .monthlySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
 
         #expect(pages.count == 2)
     }
@@ -131,7 +131,7 @@ struct ChartPageProviderTests {
             ChartEntry(value: 10, timestamp: calendar.date(byAdding: .day, value: 3, to: baseDate)!)
         ]
 
-        let pages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(calendar: calendar), calendar: calendar)
+        let pages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
 
         #expect(!pages.isEmpty)
         let totalValue = pages.flatMap { $0.entries }.map(\.value).reduce(0, +)
@@ -151,7 +151,7 @@ struct ChartPageProviderTests {
             ChartEntry(value: 200, timestamp: month2)
         ]
 
-        let pages = ChartPageProvider.pages(for: entries, span: .month, dataProvider: .dailySum(calendar: calendar), calendar: calendar)
+        let pages = ChartPageProvider.pages(for: entries, span: .month, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
 
         #expect(pages.count == 2)
     }
@@ -167,8 +167,8 @@ struct ChartPageProviderTests {
         let timestamp = Date(timeIntervalSince1970: 1700000000)  // Fixed point in time
         let entries = [ChartEntry(value: 42, timestamp: timestamp)]
 
-        let gregorianPages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(calendar: gregorian), calendar: gregorian)
-        let hebrewPages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(calendar: hebrew), calendar: hebrew)
+        let gregorianPages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: gregorian), calendar: gregorian)
+        let hebrewPages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: hebrew), calendar: hebrew)
 
         // Both should create pages, but periods may differ
         #expect(!gregorianPages.isEmpty)
@@ -190,8 +190,8 @@ struct ChartPageProviderTests {
         // Entry on a Monday
         let entries = [ChartEntry(value: 10, timestamp: date(2024, 11, 11, calendar: sundayCalendar))]
 
-        let sundayPages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(calendar: sundayCalendar), calendar: sundayCalendar)
-        let mondayPages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(calendar: mondayCalendar), calendar: mondayCalendar)
+        let sundayPages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: sundayCalendar), calendar: sundayCalendar)
+        let mondayPages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: mondayCalendar), calendar: mondayCalendar)
 
         // Both should create pages
         #expect(!sundayPages.isEmpty)
@@ -212,7 +212,7 @@ struct ChartPageProviderTests {
             ChartEntry(value: 3, timestamp: date(2024, 3, 1, calendar: gregorian))
         ]
 
-        let pages = ChartPageProvider.pages(for: febEntries, span: .month, dataProvider: .dailySum(calendar: gregorian), calendar: gregorian)
+        let pages = ChartPageProvider.pages(for: febEntries, span: .month, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: gregorian), calendar: gregorian)
 
         // Feb and March should be separate pages
         #expect(pages.count == 2)
@@ -234,7 +234,7 @@ struct ChartPageProviderTests {
             ChartEntry(value: 30, timestamp: calendar.date(byAdding: .day, value: 1, to: baseDate)!)
         ]
 
-        let pages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(calendar: calendar), calendar: calendar)
+        let pages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
 
         #expect(pages.count == 1)
         #expect(pages[0].entries.count == 2)  // Two days
@@ -257,7 +257,7 @@ struct ChartPageProviderTests {
             ChartEntry(value: 30, timestamp: feb)
         ]
 
-        let pages = ChartPageProvider.pages(for: entries, span: .oneYear, dataProvider: .monthlyAverage(calendar: calendar), calendar: calendar)
+        let pages = ChartPageProvider.pages(for: entries, span: .oneYear, dataProvider: .monthlyAverage(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
 
         #expect(pages.count == 1)
 
@@ -281,7 +281,7 @@ struct ChartPageProviderTests {
             ChartEntry(value: 3, timestamp: date(2025, 1, 5, calendar: calendar))
         ]
 
-        let pages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(calendar: calendar), calendar: calendar)
+        let pages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
 
         // All entries should be in the same week page
         #expect(pages.count == 1)
@@ -302,7 +302,7 @@ struct ChartPageProviderTests {
             ChartEntry(value: 3, timestamp: date(2025, 1, 5, calendar: calendar))
         ]
 
-        let pages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailyAverage(calendar: calendar), calendar: calendar)
+        let pages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailyAverage(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
 
         // All entries should be in the same week page
         #expect(pages.count == 1)
@@ -311,217 +311,7 @@ struct ChartPageProviderTests {
         #expect(pages.first?.aggregate == 2)
     }
 
-    // MARK: - Automatic Preview Tests
-
-    @Test("AutomaticPreview: Less than a week shows raw data")
-    func automaticPreviewLessThanWeek() {
-        let calendar = Calendar(identifier: .gregorian)
-        let baseDate = date(2024, 11, 10, calendar: calendar)
-
-        // 5 days of data with multiple entries per day
-        let entries = [
-            ChartEntry(value: 1, timestamp: baseDate),
-            ChartEntry(value: 2, timestamp: calendar.date(byAdding: .hour, value: 6, to: baseDate)!),
-            ChartEntry(value: 3, timestamp: calendar.date(byAdding: .day, value: 1, to: baseDate)!),
-            ChartEntry(value: 4, timestamp: calendar.date(byAdding: .day, value: 4, to: baseDate)!)
-        ]
-
-        let processed = ChartDataProvider.automaticPreview(aggregator: .sum, calendar: calendar).processedEntries(from: entries)
-
-        // Should return all raw entries without aggregation
-        #expect(processed.count == 4)
-        #expect(processed.map(\.value) == [1, 2, 3, 4])
-    }
-
-    @Test("AutomaticPreview: 10 weeks or less uses daily sum")
-    func automaticPreview10Weeks_sum() {
-        let calendar = Calendar(identifier: .gregorian)
-        let baseDate = date(2024, 9, 1, calendar: calendar)
-
-        // 8 weeks of data (56 days)
-        let endDate = calendar.date(byAdding: .weekOfYear, value: 8, to: baseDate)!
-
-        let entries = [
-            ChartEntry(value: 10, timestamp: baseDate),
-            ChartEntry(value: 20, timestamp: calendar.date(byAdding: .hour, value: 6, to: baseDate)!),  // Same day
-            ChartEntry(value: 30, timestamp: calendar.date(byAdding: .day, value: 10, to: baseDate)!),
-            ChartEntry(value: 40, timestamp: endDate)
-        ]
-
-        let processed = ChartDataProvider.automaticPreview(aggregator: .sum, calendar: calendar).processedEntries(from: entries)
-
-        // Should aggregate by day, so multiple entries on same day are summed
-        #expect(processed.count == 3) // 3 different days
-
-        // First day should sum to 30
-        #expect(processed[0].value == 30)
-    }
-
-    @Test("AutomaticPreview: 10 weeks or less uses daily average")
-    func automaticPreview10Weeks_average() {
-        let calendar = Calendar(identifier: .gregorian)
-        let baseDate = date(2024, 9, 1, calendar: calendar)
-
-        // 8 weeks of data (56 days)
-        let endDate = calendar.date(byAdding: .weekOfYear, value: 8, to: baseDate)!
-
-        let entries = [
-            ChartEntry(value: 10, timestamp: baseDate),
-            ChartEntry(value: 20, timestamp: calendar.date(byAdding: .hour, value: 6, to: baseDate)!),  // Same day
-            ChartEntry(value: 30, timestamp: calendar.date(byAdding: .day, value: 10, to: baseDate)!),
-            ChartEntry(value: 40, timestamp: endDate)
-        ]
-
-        let processed = ChartDataProvider.automaticPreview(aggregator: .average, calendar: calendar).processedEntries(from: entries)
-
-        // Should aggregate by day, so multiple entries on same day are summed
-        #expect(processed.count == 3) // 3 different days
-
-        // First day should average to 15
-        #expect(processed[0].value == 15)
-    }
-
-    @Test("AutomaticPreview: Up to 1 year uses weekly aggregation")
-    func automaticPreviewOneYear() {
-        let calendar = Calendar(identifier: .gregorian)
-        let baseDate = date(2024, 1, 1, calendar: calendar)
-
-        // 6 months of weekly data
-        let entries = (0..<26).map { weekOffset in
-            let date = calendar.date(byAdding: .weekOfYear, value: weekOffset, to: baseDate)!
-            return ChartEntry(value: Double(weekOffset + 1), timestamp: date)
-        }
-
-        let processed = ChartDataProvider.automaticPreview(aggregator: .sum, calendar: calendar).processedEntries(from: entries)
-
-        // Should use weekly aggregation
-        // Since each entry is in a different week, count should match
-        #expect(processed.count == 26)
-    }
-
-    @Test("AutomaticPreview: Up to 5 years uses monthly aggregation")
-    func automaticPreview5Years_sum() {
-        let calendar = Calendar(identifier: .gregorian)
-        let baseDate = date(2020, 1, 1, calendar: calendar)
-
-        // 3 years of monthly data
-        let entries = (0..<36).map { monthOffset in
-            let date = calendar.date(byAdding: .month, value: monthOffset, to: baseDate)!
-            return ChartEntry(value: 100, timestamp: date)
-        }
-
-        let processed = ChartDataProvider.automaticPreview(aggregator: .average, calendar: calendar).processedEntries(from: entries)
-
-        // Should use monthly aggregation
-        #expect(processed.count == 36)
-    }
-
-    @Test("AutomaticPreview: More than 5 years uses yearly aggregation")
-    func automaticPreviewMoreThan5Years_sum() {
-        let calendar = Calendar(identifier: .gregorian)
-        let baseDate = date(2015, 1, 1, calendar: calendar)
-
-        // 8 years of data
-        let entries = (0..<8).map { yearOffset in
-            let date = calendar.date(byAdding: .year, value: yearOffset, to: baseDate)!
-            return ChartEntry(value: 1000, timestamp: date)
-        }
-
-        let processed = ChartDataProvider.automaticPreview(aggregator: .sum, calendar: calendar).processedEntries(from: entries)
-
-        // Should use yearly aggregation
-        #expect(processed.count == 8)
-    }
-
-    @Test("AutomaticPreview: Hebrew calendar respects week boundaries")
-    func automaticPreviewHebrewWeeks() {
-        var calendar = Calendar(identifier: .hebrew)
-        calendar.timeZone = TimeZone(identifier: "UTC")!
-
-        let baseDate = date(2024, 11, 1, calendar: calendar)
-
-        // Create entries spanning multiple Hebrew weeks but less than 10
-        let entries = (0..<6).map { weekOffset in
-            let date = calendar.date(byAdding: .weekOfYear, value: weekOffset, to: baseDate)!
-            return ChartEntry(value: 5, timestamp: date)
-        }
-
-        let processed = ChartDataProvider.automaticPreview(aggregator: .sum, calendar: calendar).processedEntries(from: entries)
-
-        // Should use daily aggregation (6 weeks < 10 weeks)
-        #expect(processed.count == 6)
-    }
-
-    @Test("AutomaticPreview: Islamic calendar year boundaries")
-    func automaticPreviewIslamicYears() {
-        var calendar = Calendar(identifier: .islamic)
-        calendar.timeZone = TimeZone(identifier: "UTC")!
-
-        let baseDate = date(2020, 1, 1, calendar: calendar)
-
-        // 3 Islamic years of data
-        let entries = (0..<3).map { yearOffset in
-            let date = calendar.date(byAdding: .year, value: yearOffset, to: baseDate)!
-            return ChartEntry(value: 500, timestamp: date)
-        }
-
-        let processed = ChartDataProvider.automaticPreview(aggregator: .sum, calendar: calendar).processedEntries(from: entries)
-
-        // Should use monthly aggregation (3 years < 5 years)
-        // Each year creates one month entry
-        #expect(processed.count == 3)
-    }
-
-    @Test("AutomaticPreview: Empty entries returns empty")
-    func automaticPreviewEmpty() {
-        let calendar = Calendar(identifier: .gregorian)
-        let processed = ChartDataProvider.automaticPreview(aggregator: .sum, calendar: calendar).processedEntries(from: [])
-
-        #expect(processed.isEmpty)
-    }
-
-    @Test("AutomaticPreview: Single entry returns raw")
-    func automaticPreviewSingleEntry() {
-        let calendar = Calendar(identifier: .gregorian)
-        let entry = ChartEntry(value: 42, timestamp: date(2024, 11, 10, calendar: calendar))
-
-        let processed = ChartDataProvider.automaticPreview(aggregator: .sum, calendar: calendar).processedEntries(from: [entry])
-
-        #expect(processed.count == 1)
-        #expect(processed[0].value == 42)
-    }
-
-    @Test("AutomaticPreview: Exactly at boundaries")
-    func automaticPreviewBoundaries() {
-        let calendar = Calendar(identifier: .gregorian)
-        let baseDate = date(2024, 1, 1, calendar: calendar)
-
-        // Exactly 10 weeks apart
-        let endDate = calendar.date(byAdding: .weekOfYear, value: 10, to: baseDate)!
-        let entries = [
-            ChartEntry(value: 10, timestamp: baseDate),
-            ChartEntry(value: 20, timestamp: endDate)
-        ]
-
-        let processed = ChartDataProvider.automaticPreview(aggregator: .sum, calendar: calendar).processedEntries(from: entries)
-
-        // At exactly 10 weeks, should use daily aggregation
-        #expect(processed.count == 2)
-
-        // Exactly 1 year apart
-        let yearEndDate = calendar.date(byAdding: .year, value: 1, to: baseDate)!
-        let yearEntries = [
-            ChartEntry(value: 100, timestamp: baseDate),
-            ChartEntry(value: 200, timestamp: yearEndDate)
-        ]
-
-        let yearProcessed = ChartDataProvider.automaticPreview(aggregator: .sum, calendar: calendar).processedEntries(from: yearEntries)
-
-        // At exactly 1 year, should use weekly aggregation
-        #expect(!yearProcessed.isEmpty)
-    }
-
-    // MARK: - Helper Methods
+    // MARK: - Helpers
 
     private func date(_ year: Int, _ month: Int, _ day: Int, hour: Int = 12, calendar: Calendar) -> Date {
         var components = DateComponents()
