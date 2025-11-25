@@ -15,11 +15,17 @@ private enum Destination: Hashable {
     case entryListView(TopicEntity)
 }
 
+private struct IdentifiableSortIndex: Identifiable {
+    let id = UUID()
+    let value: Int
+}
+
 @main
 struct TrackChartApp: App {
     private let modelContainer: ModelContainer
     private var modelContext: ModelContext { modelContainer.mainContext }
     @State private var path = [Destination]()
+    @State private var newTopicSortIndex: IdentifiableSortIndex?
 
     init() {
         do {
@@ -46,14 +52,15 @@ struct TrackChartApp: App {
                     insert: modelContext.insert,
                     delete: modelContext.delete,
                     showTopic: showTopic,
+                    newTopic: showNewTopicCreation,
                     randomPalette: { Palette.random.name }
                 )
             )
             .toolbar {
                 if #available(iOS 26.0, *) {
-                    ToolbarItem(placement: .topBarLeading) { branding }.sharedBackgroundVisibility(.hidden)
+                    ToolbarItem(placement: .topBarLeading) { BrandingView() }.sharedBackgroundVisibility(.hidden)
                 } else {
-                    ToolbarItem(placement: .topBarLeading) { branding }
+                    ToolbarItem(placement: .topBarLeading) { BrandingView() }
                 }
             }
             .navigationDestination(for: Destination.self) { destination in
@@ -69,39 +76,44 @@ struct TrackChartApp: App {
                     SwiftDataEntryListView(topic: topic, viewModel: SwiftDataEntryListViewModel())
                 }
             }
+            .sheet(item: $newTopicSortIndex) {
+                makeSettingsViewForNewTopic(withSortIndex: $0.value)
+            }
         }
         .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
     }
 
-    private var branding: some View {
-        HStack {
-            if let icon = Bundle.main.appIcon {
-                Image(uiImage: icon)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 30, height: 30)
-                    .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
-                    .shadow(color: .black.opacity(0.15), radius: 2, x: 0, y: 1)
-            }
-
-            Text(.trackChart)
-                .font(.title3)
-                .fontDesign(.monospaced)
-        }
-        .padding(.leading)
-        .fixedSize(horizontal: true, vertical: false)
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(.trackChartLogo)
-    }
-
     private func makeSettingsView(for topic: TopicEntity) -> some View {
         SettingsView(
-            name: topic.name,
-            palette: Palette.palette(named: topic.palette),
-            aggregator: Aggregator.aggregator(named: topic.aggregator),
-            rename: { topic.name = $0 },
-            changePalette: { topic.palette = $0.name },
-            changeAggregator: { topic.aggregator = $0.name }
+            topic: SettingsTopic(
+                name: topic.name,
+                palette: .palette(named: topic.palette),
+                aggregator: .aggregator(named: topic.aggregator),
+                treatsMissingAsZero: topic.treatsMissingAsZero
+            ),
+            save: {
+                topic.name = $0.name
+                topic.palette = $0.palette.name
+                topic.aggregator = $0.aggregator.name
+                topic.treatsMissingAsZero = $0.treatsMissingAsZero
+            }
+        )
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+    }
+
+    private func makeSettingsViewForNewTopic(withSortIndex sortIndex: Int) -> some View {
+        SettingsView(
+            topic: SettingsTopic(
+                name: "",
+                palette: .random,
+                aggregator: .sum,
+                treatsMissingAsZero: false
+            ),
+            save: {
+                let newTopic = TopicEntity(name: $0.name, palette: $0.palette.name, aggregator: $0.aggregator.name, sortIndex: sortIndex)
+                modelContext.insert(newTopic)
+                showTopic(newTopic)
+            }
         )
         .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
     }
@@ -109,6 +121,10 @@ struct TrackChartApp: App {
     private func showTopic(_ topic: TopicEntity?) {
         guard let topic else { return }
         path = [.topicView(topic)]
+    }
+
+    private func showNewTopicCreation(sortIndex: Int) {
+        newTopicSortIndex = IdentifiableSortIndex(value: sortIndex)
     }
 
     private func showEntryList(for topic: TopicEntity) {

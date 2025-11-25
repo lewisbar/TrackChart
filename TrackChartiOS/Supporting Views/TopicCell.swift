@@ -59,6 +59,7 @@ struct TopicCell: View {
         ChartView(
             rawEntries: topic.entries,
             aggregator: topic.aggregator,
+            treatsMissingAsZero: topic.treatsMissingAsZero,
             palette: topic.palette,
             mode: .preview,
             placeholder: { ChartPlaceholderView().font(.footnote).padding(.bottom, 20) }
@@ -86,6 +87,7 @@ struct TopicCell: View {
                 .init(value: 10, timestamp: .now.advanced(by: -200))
             ],
             aggregator: .sum,
+            treatsMissingAsZero: true,
             palette: .sunset
         ),
         showTopic: {}
@@ -98,6 +100,7 @@ struct TopicCell: View {
             name: "Topic 2",
             entries: [],
             aggregator: .sum,
+            treatsMissingAsZero: false,
             palette: .coralReef
         ),
         showTopic: {}

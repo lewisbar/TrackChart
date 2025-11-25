@@ -18,27 +18,16 @@ struct SwiftDataTopicView<Settings: View>: View {
 
     var body: some View {
         TopicView(
-            name: $topic.name,
-            palette: paletteBinding,
-            aggregator: aggregatorBinding,
-            entries: viewModel.entries(for: topic),
+            topic: TopicViewTopic(
+                name: topic.name,
+                palette: .palette(named: topic.palette),
+                entries: viewModel.entries(for: topic),
+                aggregator: .aggregator(named: topic.aggregator),
+                treatsMissingAsZero: topic.treatsMissingAsZero
+            ),
             submitNewValue: { viewModel.submit(newValue: $0, timestamp: $1, to: topic) },
             settingsView: settingsView,
             showEntryList: showEntryList
-        )
-    }
-
-    private var paletteBinding: Binding<Palette> {
-        Binding<Palette>(
-            get: { .palette(named: topic.palette) },
-            set: { viewModel.changePalette(to: $0, for: topic) }
-        )
-    }
-
-    private var aggregatorBinding: Binding<Aggregator> {
-        Binding<Aggregator>(
-            get: { .aggregator(named: topic.aggregator) },
-            set: { viewModel.changeAggregator(to: $0, for: topic) }
         )
     }
 }

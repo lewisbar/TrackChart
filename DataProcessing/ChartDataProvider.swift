@@ -10,11 +10,13 @@ import Foundation
 public struct ChartDataProvider: Sendable {
     public let name: String
     public let aggregator: Aggregator
+    public let treatsMissingAsZero: Bool
     private let process: @Sendable ([ChartEntry]) -> [ProcessedEntry]
 
-    private init(name: String, aggregator: Aggregator, process: @escaping @Sendable ([ChartEntry]) -> [ProcessedEntry]) {
+    private init(name: String, aggregator: Aggregator, treatsMissingAsZero: Bool, process: @escaping @Sendable ([ChartEntry]) -> [ProcessedEntry]) {
         self.name = name
         self.aggregator = aggregator
+        self.treatsMissingAsZero = treatsMissingAsZero
         self.process = process
     }
 
@@ -22,42 +24,42 @@ public struct ChartDataProvider: Sendable {
         process(rawEntries)
     }
 
-    public static let raw = ChartDataProvider(name: "raw", aggregator: .sum) { $0.map { ProcessedEntry(value: $0.value, timestamp: $0.timestamp) } }
+    public static let raw = ChartDataProvider(name: "raw", aggregator: .sum, treatsMissingAsZero: false) { $0.map { ProcessedEntry(value: $0.value, timestamp: $0.timestamp) } }
 
-    public static func dailySum(calendar: Calendar = .current) -> ChartDataProvider {
-        aggregating(.day, .sum, name: "daily sum", calendar: calendar)
+    public static func dailySum(treatsMissingAsZero: Bool, calendar: Calendar = .current) -> ChartDataProvider {
+        aggregating(.day, .sum, name: "daily sum", calendar: calendar, treatsMissingAsZero: treatsMissingAsZero)
     }
 
-    public static func dailyAverage(calendar: Calendar = .current) -> ChartDataProvider {
-        aggregating(.day, .average, name: "daily average", calendar: calendar)
+    public static func dailyAverage(treatsMissingAsZero: Bool, calendar: Calendar = .current) -> ChartDataProvider {
+        aggregating(.day, .average, name: "daily average", calendar: calendar, treatsMissingAsZero: treatsMissingAsZero)
     }
 
-    public static func weeklySum(calendar: Calendar = .current) -> ChartDataProvider {
-        aggregating(.weekOfYear, .sum, name: "weekly sum", calendar: calendar)
+    public static func weeklySum(treatsMissingAsZero: Bool, calendar: Calendar = .current) -> ChartDataProvider {
+        aggregating(.weekOfYear, .sum, name: "weekly sum", calendar: calendar, treatsMissingAsZero: treatsMissingAsZero)
     }
 
-    public static func weeklyAverage(calendar: Calendar = .current) -> ChartDataProvider {
-        aggregating(.weekOfYear, .average, name: "weekly average", calendar: calendar)
+    public static func weeklyAverage(treatsMissingAsZero: Bool, calendar: Calendar = .current) -> ChartDataProvider {
+        aggregating(.weekOfYear, .average, name: "weekly average", calendar: calendar, treatsMissingAsZero: treatsMissingAsZero)
     }
 
-    public static func monthlySum(calendar: Calendar = .current) -> ChartDataProvider {
-        aggregating(.month, .sum, name: "monthly sum", calendar: calendar)
+    public static func monthlySum(treatsMissingAsZero: Bool, calendar: Calendar = .current) -> ChartDataProvider {
+        aggregating(.month, .sum, name: "monthly sum", calendar: calendar, treatsMissingAsZero: treatsMissingAsZero)
     }
 
-    public static func monthlyAverage(calendar: Calendar = .current) -> ChartDataProvider {
-        aggregating(.month, .average, name: "monthly average", calendar: calendar)
+    public static func monthlyAverage(treatsMissingAsZero: Bool, calendar: Calendar = .current) -> ChartDataProvider {
+        aggregating(.month, .average, name: "monthly average", calendar: calendar, treatsMissingAsZero: treatsMissingAsZero)
     }
 
-    public static func yearlySum(calendar: Calendar = .current) -> ChartDataProvider {
-        aggregating(.year, .sum, name: "yearly sum", calendar: calendar)
+    public static func yearlySum(treatsMissingAsZero: Bool, calendar: Calendar = .current) -> ChartDataProvider {
+        aggregating(.year, .sum, name: "yearly sum", calendar: calendar, treatsMissingAsZero: treatsMissingAsZero)
     }
 
-    public static func yearlyAverage(calendar: Calendar = .current) -> ChartDataProvider {
-        aggregating(.year, .average, name: "yearly average", calendar: calendar)
+    public static func yearlyAverage(treatsMissingAsZero: Bool, calendar: Calendar = .current) -> ChartDataProvider {
+        aggregating(.year, .average, name: "yearly average", calendar: calendar, treatsMissingAsZero: treatsMissingAsZero)
     }
 
-    public static func automaticPreview(aggregator: Aggregator, calendar: Calendar = .current) -> ChartDataProvider {
-        ChartDataProvider(name: "automatic preview", aggregator: aggregator) { raw in
+    public static func automaticPreview(treatsMissingAsZero: Bool, aggregator: Aggregator, calendar: Calendar = .current) -> ChartDataProvider {
+        ChartDataProvider(name: "automatic preview", aggregator: aggregator, treatsMissingAsZero: treatsMissingAsZero) { raw in
             guard !raw.isEmpty else { return [] }
 
             let sorted = raw.sorted { $0.timestamp < $1.timestamp }
@@ -75,26 +77,26 @@ public struct ChartDataProvider: Sendable {
             if weeksBetween <= 10 {
                 // Up to 10 weeks: aggregate by day
                 return aggregator == .sum
-                ? dailySum(calendar: calendar).processedEntries(from: raw)
-                : dailyAverage(calendar: calendar).processedEntries(from: raw)
+                ? dailySum(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar).processedEntries(from: raw)
+                : dailyAverage(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar).processedEntries(from: raw)
             }
             if yearsBetween < 1 {
                 // Up to 1 year: aggregate by week
                 return aggregator == .sum
-                ? weeklySum(calendar: calendar).processedEntries(from: raw)
-                : weeklyAverage(calendar: calendar).processedEntries(from: raw)
+                ? weeklySum(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar).processedEntries(from: raw)
+                : weeklyAverage(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar).processedEntries(from: raw)
             }
             if yearsBetween <= 5 {
                 // Up to 5 years: aggregate by month
                 return aggregator == .sum
-                ? monthlySum(calendar: calendar).processedEntries(from: raw)
-                : monthlyAverage(calendar: calendar).processedEntries(from: raw)
+                ? monthlySum(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar).processedEntries(from: raw)
+                : monthlyAverage(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar).processedEntries(from: raw)
             }
 
             // More than 5 years: aggregate by year
             return aggregator == .sum
-            ? yearlySum(calendar: calendar).processedEntries(from: raw)
-            : yearlyAverage(calendar: calendar).processedEntries(from: raw)
+            ? yearlySum(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar).processedEntries(from: raw)
+            : yearlyAverage(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar).processedEntries(from: raw)
         }
     }
 
@@ -102,26 +104,79 @@ public struct ChartDataProvider: Sendable {
         _ unit: Calendar.Component,
         _ aggregator: Aggregator,
         name: String,
-        calendar: Calendar
+        calendar: Calendar,
+        treatsMissingAsZero: Bool
     ) -> ChartDataProvider {
-        ChartDataProvider(name: name, aggregator: aggregator) { entries in
+        ChartDataProvider(name: name, aggregator: aggregator, treatsMissingAsZero: treatsMissingAsZero) { entries in
+            guard !entries.isEmpty else { return [] }
+
             let grouped = Dictionary(grouping: entries) {
                 calendar.startOfUnit(unit, for: $0.timestamp)
             }
-            return grouped.map { date, entries in
-                ProcessedEntry(value: aggregator.aggregate(entries.map(\.value)), timestamp: date)
-            }.sorted { $0.timestamp < $1.timestamp }
+
+            let bucketDates = grouped.keys.sorted()
+
+            // Fast path: no zero-filling
+            guard treatsMissingAsZero else {
+                return bucketDates.map { date in
+                    let value = aggregator.aggregate(grouped[date]!.map(\.value))
+                    return ProcessedEntry(value: value, timestamp: date)
+                }
+            }
+
+            // Slow path: fill missing periods with zero
+            return filledBuckets(
+                from: bucketDates,
+                unit: unit,
+                calendar: calendar,
+                grouped: grouped,
+                aggregator: aggregator
+            )
+        }
+    }
+
+    private static func filledBuckets(
+        from bucketDates: [Date],
+        unit: Calendar.Component,
+        calendar: Calendar,
+        grouped: [Date: [ChartEntry]],
+        aggregator: Aggregator
+    ) -> [ProcessedEntry] {
+        guard
+            let first = bucketDates.first,
+            let last = bucketDates.last
+        else { return [] }
+
+        let start = calendar.startOfUnit(unit, for: first)
+        let end   = calendar.startOfUnit(unit, for: last)
+
+        return sequence(first: start) { current in
+            calendar.date(byAdding: unit, value: 1, to: current)
+        }
+        .prefix(while: { $0 <= end })
+        .map { date in
+            let entriesInBucket = grouped[date] ?? []
+
+            let value = entriesInBucket.isEmpty
+            ? 0.0
+            : aggregator.aggregate(entriesInBucket.map(\.value))
+
+            return ProcessedEntry(value: value, timestamp: date)
         }
     }
 }
 
 extension ChartDataProvider: Hashable {
     public static func == (lhs: ChartDataProvider, rhs: ChartDataProvider) -> Bool {
-        lhs.name == rhs.name
+        lhs.name == rhs.name &&
+        lhs.aggregator == rhs.aggregator &&
+        lhs.treatsMissingAsZero == rhs.treatsMissingAsZero
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(name)
+        hasher.combine(aggregator)
+        hasher.combine(treatsMissingAsZero)
     }
 }
 

@@ -12,13 +12,15 @@ public struct CellTopic: Identifiable, Hashable {
     public let name: String
     public let entries: [ChartEntry]
     public let aggregator: Aggregator
+    public let treatsMissingAsZero: Bool
     public let palette: Palette
 
-    public init(id: UUID, name: String, entries: [ChartEntry], aggregator: Aggregator, palette: Palette) {
+    public init(id: UUID, name: String, entries: [ChartEntry], aggregator: Aggregator, treatsMissingAsZero: Bool, palette: Palette) {
         self.id = id
         self.name = name
         self.entries = entries
         self.aggregator = aggregator
+        self.treatsMissingAsZero = treatsMissingAsZero
         self.palette = palette
     }
 }

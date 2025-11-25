@@ -23,8 +23,11 @@ struct TimeSpanTests {
     }
 
     @Test func availableDataProviders() {
-        #expect(TimeSpan.week.availableDataProviders() == [.dailySum(), .dailyAverage()])
-        #expect(TimeSpan.month.availableDataProviders() == [.dailySum(), .dailyAverage()])
-        #expect(TimeSpan.oneYear.availableDataProviders() == [.monthlySum(), .monthlyAverage()])
+        #expect(TimeSpan.week.availableDataProviders(treatsMissingAsZero: false) == [.dailySum(treatsMissingAsZero: false), .dailyAverage(treatsMissingAsZero: false)])
+        #expect(TimeSpan.week.availableDataProviders(treatsMissingAsZero: true) == [.dailySum(treatsMissingAsZero: true), .dailyAverage(treatsMissingAsZero: true)])
+        #expect(TimeSpan.month.availableDataProviders(treatsMissingAsZero: false) == [.dailySum(treatsMissingAsZero: false), .dailyAverage(treatsMissingAsZero: false)])
+        #expect(TimeSpan.month.availableDataProviders(treatsMissingAsZero: true) == [.dailySum(treatsMissingAsZero: true), .dailyAverage(treatsMissingAsZero: true)])
+        #expect(TimeSpan.oneYear.availableDataProviders(treatsMissingAsZero: false) == [.monthlySum(treatsMissingAsZero: false), .monthlyAverage(treatsMissingAsZero: false)])
+        #expect(TimeSpan.oneYear.availableDataProviders(treatsMissingAsZero: true) == [.monthlySum(treatsMissingAsZero: true), .monthlyAverage(treatsMissingAsZero: true)])
     }
 }
