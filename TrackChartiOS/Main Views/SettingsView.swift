@@ -33,18 +33,32 @@ struct SettingsView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
+            Form {
+                Section {
                     nameSetting
                     colorSetting
-                    aggregatorSetting.padding(.top)
-                    zeroFillingSetting.padding(.top)
-                    Spacer()
                 }
-                .padding(.vertical)
-                .padding(.horizontal, 24)
+
+                Section {
+                    aggregatorSetting
+                } header: {
+                    Text(.aggregationMethod)
+                } footer: {
+                    aggregatorSettingExplanation
+                }
+
+                Section {
+                    zeroFillingSetting
+                } footer: {
+                    Text(.zeroFillingExplanationShort)
+                }
             }
-            .navigationTitle(.topicSettings)
+            .formStyle(.grouped)
+            .padding(.top, -24)
+            .scrollDismissesKeyboard(.interactively)
+            .onTapGesture {
+                isTextFieldFocused = false
+            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { cancelButton }
                 ToolbarItem(placement: .confirmationAction) { doneButton }
@@ -58,14 +72,17 @@ struct SettingsView: View {
     }
 
     private var nameSetting: some View {
-        VStack(alignment: .leading) {
-            Text(.name)
-
-            TextField(String(localized: .name), text: $topic.name)
-                .textFieldStyle(.roundedBorder)
+        LabeledContent {
+            TextField(.topicName, text: $topic.name, prompt: Text(.topicName).foregroundColor(.secondary))
+                .multilineTextAlignment(.trailing)
                 .focused($isTextFieldFocused)
+                .submitLabel(.done)
+                .onSubmit {
+                    isTextFieldFocused = false
+                }
+        } label: {
+            Text(.name)
         }
-        .padding(.bottom)
     }
 
     private var colorSetting: some View {
@@ -140,30 +157,24 @@ struct SettingsView: View {
     }
 
     private var aggregatorSetting: some View {
-        VStack(alignment: .leading) {
-            Text(.aggregationMethod)
-
-            Picker(.aggregator, selection: $topic.aggregator) {
-                ForEach(Aggregator.allCases, id: \.self) { aggregator in
-                    Text(aggregator.localizedName)
-                }
+        Picker(.aggregator, selection: $topic.aggregator) {
+            ForEach(Aggregator.allCases, id: \.self) { aggregator in
+                Text(aggregator.localizedName)
             }
-            .pickerStyle(.segmented)
+        }
+        .pickerStyle(.segmented)
+    }
 
+    private var aggregatorSettingExplanation: some View {
+        VStack(alignment: .leading) {
             Text(.aggregationExplanationShort)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, 12)
-                .padding(.top, 8)
 
             Button {
                 isShowingLongAggregationExplanation = true
             } label: {
                 Text(.learnMore)
-                    .font(.caption)
+                    .font(.footnote)
             }
-            .padding(.horizontal, 12)
-            .padding(.top, 1)
             .sheet(isPresented: $isShowingLongAggregationExplanation) {
                 ScrollView {
                     VStack(spacing: 0) {
@@ -186,15 +197,6 @@ struct SettingsView: View {
     private var zeroFillingSetting: some View {
         VStack(alignment: .leading) {
             Toggle(.displayEmptyPeriodsAsZero, isOn: $topic.treatsMissingAsZero)
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(.zeroFillingExplanationShort)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(nil)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, 8)
         }
     }
 
@@ -215,10 +217,5 @@ struct SettingsView: View {
 #Preview {
     let topic = SettingsTopic(name: "Topic 1", palette: .arcticIce, aggregator: .average, treatsMissingAsZero: false)
 
-    VStack {
-        SettingsView(topic: topic, save: { _ in })
-        Text(topic.palette.name)
-            .font(.largeTitle)
-            .foregroundStyle(topic.palette.linearGradient())
-    }
+    SettingsView(topic: topic, save: { _ in })
 }
