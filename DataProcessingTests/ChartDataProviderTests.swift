@@ -271,17 +271,17 @@ struct ChartDataProviderTests {
 
     // MARK: - Automatic Preview Tests
 
-    @Test("AutomaticPreview: Less than a week shows raw data")
+    @Test("AutomaticPreview: Less than three days shows raw data")
     func automaticPreviewLessThanWeek() {
         let calendar = Calendar(identifier: .gregorian)
         let baseDate = date(2024, 11, 10, calendar: calendar)
 
-        // 5 days of data with multiple entries per day
+        // 2 days of data with multiple entries per day
         let entries = [
             ChartEntry(value: 1, timestamp: baseDate),
             ChartEntry(value: 2, timestamp: calendar.date(byAdding: .hour, value: 6, to: baseDate)!),
             ChartEntry(value: 3, timestamp: calendar.date(byAdding: .day, value: 1, to: baseDate)!),
-            ChartEntry(value: 4, timestamp: calendar.date(byAdding: .day, value: 4, to: baseDate)!)
+            ChartEntry(value: 4, timestamp: calendar.date(byAdding: .hour, value: 4, to: baseDate)!)
         ]
 
         let processed = ChartDataProvider.automaticPreview(treatsMissingAsZero: false, aggregator: .sum, calendar: calendar).processedEntries(from: entries)
@@ -291,17 +291,17 @@ struct ChartDataProviderTests {
         #expect(processed.map(\.value) == [1, 2, 3, 4])
     }
 
-    @Test("AutomaticPreview with zero filling: Less than a week still only shows raw data")
+    @Test("AutomaticPreview with zero filling: Less than three days still only shows raw data")
     func automaticPreviewLessThanWeek_withZeroFilling() {
         let calendar = Calendar(identifier: .gregorian)
         let baseDate = date(2024, 11, 10, calendar: calendar)
 
-        // 5 days of data with multiple entries per day
+        // 2 days of data with multiple entries per day
         let entries = [
             ChartEntry(value: 1, timestamp: baseDate),
             ChartEntry(value: 2, timestamp: calendar.date(byAdding: .hour, value: 6, to: baseDate)!),
             ChartEntry(value: 3, timestamp: calendar.date(byAdding: .day, value: 1, to: baseDate)!),
-            ChartEntry(value: 4, timestamp: calendar.date(byAdding: .day, value: 4, to: baseDate)!)
+            ChartEntry(value: 4, timestamp: calendar.date(byAdding: .hour, value: 4, to: baseDate)!)
         ]
 
         let processed = ChartDataProvider.automaticPreview(treatsMissingAsZero: true, aggregator: .sum, calendar: calendar).processedEntries(from: entries)
@@ -309,6 +309,50 @@ struct ChartDataProviderTests {
         // Should return all raw entries without aggregation
         #expect(processed.count == 4)
         #expect(processed.map(\.value) == [1, 2, 3, 4])
+    }
+
+    @Test("AutomaticPreview: Three days uses day aggregation")
+    func automaticPreviewThreeDays() {
+        let calendar = Calendar(identifier: .gregorian)
+        let firstDay1 = date(2024, 11, 10, hour: 6, calendar: calendar)
+        let firstDay2 = date(2024, 11, 10, hour: 12, calendar: calendar)
+        let secondDay = date(2024, 11, 11, hour: 12, calendar: calendar)
+        let thirdDay = date(2024, 11, 12, hour: 12, calendar: calendar)
+
+        // 2 days of data with multiple entries per day
+        let entries = [
+            ChartEntry(value: 1, timestamp: firstDay1),
+            ChartEntry(value: 2, timestamp: firstDay2),
+            ChartEntry(value: 3, timestamp: secondDay),
+            ChartEntry(value: 4, timestamp: thirdDay)
+        ]
+
+        let processed = ChartDataProvider.automaticPreview(treatsMissingAsZero: false, aggregator: .sum, calendar: calendar).processedEntries(from: entries)
+
+        // Should return entries for each day
+        #expect(processed.count == 3)
+        #expect(processed.map(\.value) == [3, 3, 4])
+    }
+
+    @Test("AutomaticPreview with zero filling: Three days uses day aggregation, with gaps filled with zero")
+    func automaticPreviewThreeDays_withZeroFilling() {
+        let calendar = Calendar(identifier: .gregorian)
+        let firstDay1 = date(2024, 11, 10, hour: 6, calendar: calendar)
+        let firstDay2 = date(2024, 11, 10, hour: 12, calendar: calendar)
+        let thirdDay = date(2024, 11, 12, hour: 12, calendar: calendar)
+
+        // 2 days of data with multiple entries per day
+        let entries = [
+            ChartEntry(value: 1, timestamp: firstDay1),
+            ChartEntry(value: 2, timestamp: firstDay2),
+            ChartEntry(value: 4, timestamp: thirdDay)
+        ]
+
+        let processed = ChartDataProvider.automaticPreview(treatsMissingAsZero: true, aggregator: .sum, calendar: calendar).processedEntries(from: entries)
+
+        // Should return entries for each day
+        #expect(processed.count == 3)
+        #expect(processed.map(\.value) == [3, 0, 4])
     }
 
     @Test("AutomaticPreview: 10 weeks or less uses daily sum")

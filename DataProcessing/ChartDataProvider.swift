@@ -59,44 +59,45 @@ public struct ChartDataProvider: Sendable {
     }
 
     public static func automaticPreview(treatsMissingAsZero: Bool, aggregator: Aggregator, calendar: Calendar = .current) -> ChartDataProvider {
-        ChartDataProvider(name: "automatic preview", aggregator: aggregator, treatsMissingAsZero: treatsMissingAsZero) { raw in
-            guard !raw.isEmpty else { return [] }
+        ChartDataProvider(name: "automatic preview", aggregator: aggregator, treatsMissingAsZero: treatsMissingAsZero) { rawEntries in
+            guard !rawEntries.isEmpty else { return [] }
 
-            let sorted = raw.sorted { $0.timestamp < $1.timestamp }
+            let sorted = rawEntries.sorted { $0.timestamp < $1.timestamp }
             guard let first = sorted.first, let last = sorted.last else { return [] }
 
             // Calculate time span between first and last entries
+            let daysBetween = calendar.dateComponents([.day], from: first.timestamp, to: last.timestamp).day ?? 0
             let weeksBetween = calendar.dateComponents([.weekOfYear], from: first.timestamp, to: last.timestamp).weekOfYear ?? 0
             let yearsBetween = calendar.dateComponents([.year], from: first.timestamp, to: last.timestamp).year ?? 0
 
             // Choose aggregation level based on data span
-            if weeksBetween == 0 {
-                // Less than a week: show raw data without aggregation
-                return raw.map { ProcessedEntry(value: $0.value, timestamp: $0.timestamp) }
+            if daysBetween < 2 {
+                // Less than three days: show raw data without aggregation
+                return raw.processedEntries(from: rawEntries) // raw.map { ProcessedEntry(value: $0.value, timestamp: $0.timestamp) }
             }
             if weeksBetween <= 10 {
                 // Up to 10 weeks: aggregate by day
                 return aggregator == .sum
-                ? dailySum(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar).processedEntries(from: raw)
-                : dailyAverage(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar).processedEntries(from: raw)
+                ? dailySum(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar).processedEntries(from: rawEntries)
+                : dailyAverage(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar).processedEntries(from: rawEntries)
             }
             if yearsBetween < 1 {
                 // Up to 1 year: aggregate by week
                 return aggregator == .sum
-                ? weeklySum(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar).processedEntries(from: raw)
-                : weeklyAverage(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar).processedEntries(from: raw)
+                ? weeklySum(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar).processedEntries(from: rawEntries)
+                : weeklyAverage(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar).processedEntries(from: rawEntries)
             }
             if yearsBetween <= 5 {
                 // Up to 5 years: aggregate by month
                 return aggregator == .sum
-                ? monthlySum(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar).processedEntries(from: raw)
-                : monthlyAverage(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar).processedEntries(from: raw)
+                ? monthlySum(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar).processedEntries(from: rawEntries)
+                : monthlyAverage(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar).processedEntries(from: rawEntries)
             }
 
             // More than 5 years: aggregate by year
             return aggregator == .sum
-            ? yearlySum(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar).processedEntries(from: raw)
-            : yearlyAverage(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar).processedEntries(from: raw)
+            ? yearlySum(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar).processedEntries(from: rawEntries)
+            : yearlyAverage(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar).processedEntries(from: rawEntries)
         }
     }
 
