@@ -15,36 +15,30 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Cache DerivedData (only this project)
+    - name: Disable hardened runtime (required for test-without-building on macOS)
+      run: |
+        perl -i -pe 's/ENABLE_HARDENED_RUNTIME\s*=\s*YES.*/ENABLE_HARDENED_RUNTIME = NO;/g' \
+          TrackChart.xcodeproj/project.pbxproj
+
+    - name: Cache DerivedData
       uses: actions/cache@v4
       with:
         path: ~/Library/Developer/Xcode/DerivedData/TrackChart-*
         key: deriveddata-macos26-${{ hashFiles('TrackChart.xcodeproj/project.pbxproj') }}-${{ hashFiles('**/*.swift') }}
-        restore-keys: |
-          deriveddata-macos26-
 
-    - name: Select Xcode
-      run: sudo xcode-select -switch /Applications/Xcode_26.0.1.app
-
-    - name: Xcode version
-      run: /usr/bin/xcodebuild -version
-
-    - name: Build macOS target
+    - name: Build macOS
       run: |
         xcodebuild build \
           -project TrackChart.xcodeproj \
           -scheme CI_macOS \
-          -sdk macosx \
           -destination 'platform=macOS,arch=arm64' \
-          CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
-          ONLY_ACTIVE_ARCH=YES | xcbeautify --quiet --is-ci
+          CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=YES
 
-    - name: Test macOS target
+    - name: Test macOS
       run: |
         xcodebuild test-without-building \
           -project TrackChart.xcodeproj \
           -scheme CI_macOS \
           -testPlan CI_macOS \
           -destination 'platform=macOS,arch=arm64' \
-          CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
-          ONLY_ACTIVE_ARCH=YES | xcbeautify --quiet --is-ci
+          CODE_SIGNING_REQUIRED=NO | xcbeautify --quiet --is-ci
