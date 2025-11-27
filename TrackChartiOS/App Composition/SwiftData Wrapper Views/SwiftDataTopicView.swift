@@ -8,11 +8,11 @@
 import SwiftUI
 import Persistence
 import DataProcessing
+import Presentation
 
 /// Wrapper to decouple the actual View from SwiftData
 struct SwiftDataTopicView<Settings: View>: View {
     @Bindable var topic: TopicEntity
-    let viewModel: SwiftDataTopicViewModel
     let settingsView: () -> Settings
     let showEntryList: () -> Void
 
@@ -21,11 +21,11 @@ struct SwiftDataTopicView<Settings: View>: View {
             topic: TopicViewTopic(
                 name: topic.name,
                 palette: .palette(named: topic.palette),
-                entries: viewModel.entries(for: topic),
+                entries: SwiftDataTopicViewModel.entries(for: topic),
                 aggregator: .aggregator(named: topic.aggregator),
                 treatsMissingAsZero: topic.treatsMissingAsZero
             ),
-            submitNewValue: { viewModel.submit(newValue: $0, timestamp: $1, to: topic) },
+            submitNewValue: { SwiftDataTopicViewModel.submit(newValue: $0, timestamp: $1, to: topic) },
             settingsView: settingsView,
             showEntryList: showEntryList
         )

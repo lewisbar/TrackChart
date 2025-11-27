@@ -6,20 +6,21 @@
 //
 
 import Testing
-@testable import TrackChartiOS
+import Foundation
 import SwiftData
 import Persistence
 import DataProcessing
+import Presentation
 
 @MainActor
 class SwiftDataTopicViewModelTests {
     @Test func entriesForTopic() throws {
         let topics = makeTopicEntities(names: ["0", "1", "2"])
 
-        let (sut, _) = try makeSUT(topics: topics)
+        let context = try setupContext(withTopics: topics)
         let selectedTopic = topics[2]
 
-        let result = sut.entries(for: selectedTopic)
+        let result = SwiftDataTopicViewModel.entries(for: selectedTopic)
 
         #expect(result.map(\.value) == selectedTopic.sortedEntries.map(\.value))
         #expect(result.map(\.timestamp) == selectedTopic.sortedEntries.map(\.timestamp))
@@ -28,11 +29,11 @@ class SwiftDataTopicViewModelTests {
     @Test func submitNewValue()  throws {
         let topics = makeTopicEntities(names: ["0", "1", "2"])
 
-        let (sut, context) = try makeSUT(topics: topics)
+        let context = try setupContext(withTopics: topics)
         let selectedTopic = topics[1]
         let selectedEntries = selectedTopic.sortedEntries
 
-        sut.submit(newValue: 2.5, timestamp: .now, to: selectedTopic)
+        SwiftDataTopicViewModel.submit(newValue: 2.5, timestamp: .now, to: selectedTopic)
 
         let updatedTopics = try fetchTopics(from: context)
 
@@ -44,26 +45,16 @@ class SwiftDataTopicViewModelTests {
 
     // MARK: - Helpers
 
-    private func makeSUT(
-        topics: [TopicEntity],
+    private func setupContext(
+        withTopics topics: [TopicEntity],
         showTopic: @escaping (TopicEntity?) -> Void = { _ in }
-    ) throws -> (SwiftDataTopicViewModel, ModelContext) {
+    ) throws -> ModelContext {
         let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
         let context = try makeContext(with: configuration)
 
         try setUp(context: context, with: topics)
 
-        let sut = SwiftDataTopicViewModel()
-
-        weakSUT = sut
-
-        return (sut, context)
-    }
-
-    private weak var weakSUT: SwiftDataTopicViewModel?
-
-    deinit {
-        #expect(weakSUT == nil, "Instance should have been deallocated. Potential memory leak.")
+        return context
     }
 
     private func makeContext(with configuration: ModelConfiguration) throws -> ModelContext {

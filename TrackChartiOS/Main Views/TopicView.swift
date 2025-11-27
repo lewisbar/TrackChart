@@ -7,6 +7,7 @@
 
 import SwiftUI
 import DataProcessing
+import Presentation
 
 struct TopicViewTopic {
     let name: String

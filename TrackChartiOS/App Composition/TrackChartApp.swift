@@ -9,6 +9,7 @@ import SwiftUI
 import SwiftData
 import Persistence
 import DataProcessing
+import Presentation
 
 private enum Destination: Hashable {
     case topicView(TopicEntity)
@@ -68,12 +69,11 @@ struct TrackChartApp: App {
                 case let .topicView(topic):
                     SwiftDataTopicView(
                         topic: topic,
-                        viewModel: SwiftDataTopicViewModel(),
                         settingsView: { makeSettingsView(for: topic) },
                         showEntryList: { showEntryList(for: topic) }
                     )
                 case let .entryListView(topic):
-                    SwiftDataEntryListView(topic: topic, viewModel: SwiftDataEntryListViewModel())
+                    SwiftDataEntryListView(topic: topic)
                 }
             }
             .sheet(item: $newTopicSortIndex) {

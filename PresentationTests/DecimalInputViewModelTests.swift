@@ -7,7 +7,7 @@
 
 import Testing
 import SwiftUI
-@testable import TrackChartiOS
+import Presentation
 
 class DecimalInputViewModelTests {
     @Test func startsWithZero() {
@@ -354,7 +354,7 @@ class DecimalInputViewModelTests {
         let sut = makeSUT()
 
         #expect(sut.selectedTimestamp == nil)
-        #expect(sut.timestampDisplay == String(localized: .now))
+        #expect(sut.timestampDisplay == nowTestDescription)
     }
 
     @Test func startsWithTimestamp_ifProvided() {
@@ -398,7 +398,7 @@ class DecimalInputViewModelTests {
         sut.clearTimestamp()
 
         #expect(sut.selectedTimestamp == nil)
-        #expect(sut.timestampDisplay == String(localized: .now))
+        #expect(sut.timestampDisplay == nowTestDescription)
     }
 
     @Test func isObservable() async throws {
@@ -426,10 +426,12 @@ class DecimalInputViewModelTests {
         submit: @escaping (Double, Date) -> Void = { _, _ in },
         now: @escaping () -> Date = Date.init
     ) -> DecimalInputViewModel {
-        let sut = DecimalInputViewModel(initialValue: initialValue, initialTimestamp: initialTimestamp, submit: submit, now: now)
+        let sut = DecimalInputViewModel(initialValue: initialValue, initialTimestamp: initialTimestamp, submit: submit, now: now, nowDescription: nowTestDescription)
         weakSUT = sut
         return sut
     }
+
+    private let nowTestDescription = "Now Test"
 
     private weak var weakSUT: DecimalInputViewModel?
 

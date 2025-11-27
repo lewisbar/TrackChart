@@ -8,6 +8,7 @@
 import SwiftUI
 import Charts
 import DataProcessing
+import Presentation
 
 struct OverviewChartView<Placeholder: View>: View {
     let entries: [ProcessedEntry]

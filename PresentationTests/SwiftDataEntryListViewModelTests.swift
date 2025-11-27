@@ -8,10 +8,10 @@
 import Testing
 import SwiftData
 import Persistence
-@testable import TrackChartiOS
 import SwiftUI
+import Presentation
 
-class SwiftDataEntryListViewModelTests {
+struct SwiftDataEntryListViewModelTests {
     @Test func listEntriesForTopic() throws {
         let entries = [
             EntryEntity(value: 2.4, timestamp: Date(timeIntervalSinceReferenceDate: 400)),
@@ -19,9 +19,9 @@ class SwiftDataEntryListViewModelTests {
             EntryEntity(value: -4, timestamp: Date(timeIntervalSinceReferenceDate: 200)),
             EntryEntity(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 100))
         ]
-        let (sut, topic) = try makeSUT(entries: entries)
+        let topic = try makeStoredTopicEntity(withEntries: entries)
 
-        let result = sut.listEntries(for: topic)
+        let result = SwiftDataEntryListViewModel.listEntries(for: topic)
 
         #expect(result == entries.map { ListEntry(id: $0.id, value: $0.value, timestamp: $0.timestamp) })
     }
@@ -33,13 +33,13 @@ class SwiftDataEntryListViewModelTests {
             EntryEntity(value: -4, timestamp: Date(timeIntervalSinceReferenceDate: 200)),
             EntryEntity(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 100))
         ]
-        let (sut, topic) = try makeSUT(entries: entries)
+        let topic = try makeStoredTopicEntity(withEntries: entries)
 
         let newValue = -3.5
         let newTimestamp = Date(timeIntervalSinceReferenceDate: 201)
         let newEntry = ListEntry(id: entries[1].id, value: newValue, timestamp: newTimestamp)
 
-        sut.addEntry(newEntry, to: topic)
+        SwiftDataEntryListViewModel.addEntry(newEntry, to: topic)
 
         #expect(topic.sortedEntries.count == 5)
         #expect(topic.sortedEntries[2].id == newEntry.id)
@@ -54,13 +54,13 @@ class SwiftDataEntryListViewModelTests {
             EntryEntity(value: -4, timestamp: Date(timeIntervalSinceReferenceDate: 200)),
             EntryEntity(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 100))
         ]
-        let (sut, topic) = try makeSUT(entries: entries)
+        let topic = try makeStoredTopicEntity(withEntries: entries)
 
         let newValue = -3.5
         let newTimestamp = Date(timeIntervalSinceReferenceDate: 301)
         let updatedEntry = ListEntry(id: entries[1].id, value: newValue, timestamp: newTimestamp)
 
-        sut.updateEntry(updatedEntry, of: topic)
+        SwiftDataEntryListViewModel.updateEntry(updatedEntry, of: topic)
 
         #expect(topic.sortedEntries.reversed()[1].value == newValue)
         #expect(topic.sortedEntries.reversed()[1].timestamp == newTimestamp)
@@ -73,10 +73,10 @@ class SwiftDataEntryListViewModelTests {
             EntryEntity(value: -4, timestamp: Date(timeIntervalSinceReferenceDate: 200)),
             EntryEntity(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 100))
         ]
-        let (sut, topic) = try makeSUT(entries: entries)
+        let topic = try makeStoredTopicEntity(withEntries: entries)
 
         let offsets: IndexSet = [1, 3]
-        sut.deleteEntries(atOffsets: offsets, from: topic)
+        SwiftDataEntryListViewModel.deleteEntries(atOffsets: offsets, from: topic)
 
         var newEntryEntities = entries
         newEntryEntities.remove(atOffsets: offsets)
@@ -85,22 +85,13 @@ class SwiftDataEntryListViewModelTests {
 
     // MARK: - Helpers
 
-    private func makeSUT(entries: [EntryEntity]) throws -> (SwiftDataEntryListViewModel, TopicEntity) {
-        let sut = SwiftDataEntryListViewModel()
+    private func makeStoredTopicEntity(withEntries entries: [EntryEntity]) throws -> TopicEntity {
         let topic = TopicEntity(name: "Topic 1", entries: entries, palette: Palette.ocean.name, sortIndex: 0)
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
         let context = try makeContext(with: config)
         try setUp(context: context, with: [topic])
 
-        weakSUT = sut
-
-        return (sut, topic)
-    }
-
-    private weak var weakSUT: SwiftDataEntryListViewModel?
-
-    deinit {
-        #expect(weakSUT == nil, "Instance should have been deallocated. Potential memory leak.")
+        return topic
     }
 
     private func makeContext(with configuration: ModelConfiguration) throws -> ModelContext {

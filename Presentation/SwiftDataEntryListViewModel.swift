@@ -7,23 +7,23 @@
 
 import Persistence
 
-class SwiftDataEntryListViewModel {
-    func listEntries(for topic: TopicEntity) -> [ListEntry] {
+public enum SwiftDataEntryListViewModel {
+    public static func listEntries(for topic: TopicEntity) -> [ListEntry] {
         topic.sortedEntries.reversed().map(ListEntry.init)
     }
 
-    func addEntry(_ listEntry: ListEntry, to topic: TopicEntity) {
+    public static func addEntry(_ listEntry: ListEntry, to topic: TopicEntity) {
         let entryEntity = EntryEntity(id: listEntry.id, value: listEntry.value, timestamp: listEntry.timestamp)
         topic.entries?.append(entryEntity)
     }
 
-    func updateEntry(_ listEntry: ListEntry, of topic: TopicEntity) {
+    public static func updateEntry(_ listEntry: ListEntry, of topic: TopicEntity) {
         let entryEntity = topic.entries?.first(where: { $0.id == listEntry.id })
         entryEntity?.value = listEntry.value
         entryEntity?.timestamp = listEntry.timestamp
     }
 
-    func deleteEntries(atOffsets offsets: IndexSet, from topic: TopicEntity) {
+    public static func deleteEntries(atOffsets offsets: IndexSet, from topic: TopicEntity) {
         let ids = topic.sortedEntries.reversed().map(\.id)
         let idsToDelete = offsets.map { ids[$0] }
         for id in idsToDelete {
