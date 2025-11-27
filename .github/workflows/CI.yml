@@ -10,35 +10,35 @@ on:
 jobs:
   build-and-test:
     runs-on: macos-26
-    timeout-minutes: 20
+    timeout-minutes: 15
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Disable hardened runtime (required for test-without-building on macOS)
-      run: |
-        perl -i -pe 's/ENABLE_HARDENED_RUNTIME\s*=\s*YES.*/ENABLE_HARDENED_RUNTIME = NO;/g' \
-          TrackChart.xcodeproj/project.pbxproj
+      - name: Cache DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData/TrackChart-*
+          key: deriveddata-macos26-${{ hashFiles('TrackChart.xcodeproj/project.pbxproj') }}-${{ hashFiles('**/*.swift') }}
+          restore-keys: |
+            deriveddata-macos26-
 
-    - name: Cache DerivedData
-      uses: actions/cache@v4
-      with:
-        path: ~/Library/Developer/Xcode/DerivedData/TrackChart-*
-        key: deriveddata-macos26-${{ hashFiles('TrackChart.xcodeproj/project.pbxproj') }}-${{ hashFiles('**/*.swift') }}
+      - name: Select Xcode 26.0.1
+        run: sudo xcode-select -switch /Applications/Xcode_26.0.1.app
 
-    - name: Build macOS
-      run: |
-        xcodebuild build \
-          -project TrackChart.xcodeproj \
-          -scheme CI_macOS \
-          -destination 'platform=macOS,arch=arm64' \
-          CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=YES
+      - name: Build & test macOS
+        run: |
+          set -o pipefail   # makes | fail if xcodebuild fails
 
-    - name: Test macOS
-      run: |
-        xcodebuild test-without-building \
-          -project TrackChart.xcodeproj \
-          -scheme CI_macOS \
-          -testPlan CI_macOS \
-          -destination 'platform=macOS,arch=arm64' \
-          CODE_SIGNING_REQUIRED=NO | xcbeautify --quiet --is-ci
+          xcodebuild test \
+            -project TrackChart.xcodeproj \
+            -scheme CI_macOS \
+            -testPlan CI_macOS \
+            -destination 'platform=macOS,arch=arm64' \
+            -quiet \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=YES \
+            | xcbeautify --quiet --is-ci \
+            || exit 1   # forces job to fail if tests or build fail
