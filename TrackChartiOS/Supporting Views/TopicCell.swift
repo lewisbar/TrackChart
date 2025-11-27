@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Presentation
 
 struct TopicCell: View {
     let topic: CellTopic

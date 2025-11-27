@@ -2,12 +2,13 @@
 //  PreviewChartView.swift
 //  TrackChartiOS
 //
-//  Created by Lennar tWisbar on 31.10.25.
+//  Created by Lennart Wisbar on 31.10.25.
 //
 
 import SwiftUI
 import Charts
 import DataProcessing
+import Presentation
 
 struct PreviewChartView<Placeholder: View>: View {
     let entries: [ProcessedEntry]

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import DataProcessing
+import Presentation
 
 struct SettingsTopic {
     var name: String
@@ -56,8 +57,13 @@ struct SettingsView: View {
             .formStyle(.grouped)
             .padding(.top, -24)
             .scrollDismissesKeyboard(.interactively)
-            .onTapGesture {
-                isTextFieldFocused = false
+            .overlay(alignment: .top) {
+                if isTextFieldFocused {
+                    Color.clear
+                        .contentShape(Rectangle())
+                        .onTapGesture { isTextFieldFocused = false }
+                        .allowsHitTesting(true)
+                }
             }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { cancelButton }
