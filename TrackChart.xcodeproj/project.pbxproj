@@ -8,13 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		3038FDE42ED28F470092427C /* DataProcessing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3038FDDB2ED28F470092427C /* DataProcessing.framework */; };
-		3038FE042ED290230092427C /* DataProcessing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3038FDDB2ED28F470092427C /* DataProcessing.framework */; };
 		30A31C772EA6D27C00DEB9EB /* Persistence.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A31C6F2EA6D27C00DEB9EB /* Persistence.framework */; };
-		30A31C932EA6DF3500DEB9EB /* Persistence.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A31C6F2EA6D27C00DEB9EB /* Persistence.framework */; };
 		30F7B3EA2ED89720000200F4 /* Presentation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30F7B3E12ED89720000200F4 /* Presentation.framework */; };
-		30F7B40A2ED898AF000200F4 /* Presentation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30F7B3E12ED89720000200F4 /* Presentation.framework */; };
 		30F7B4142ED8B200000200F4 /* DataProcessing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3038FDDB2ED28F470092427C /* DataProcessing.framework */; };
 		30F7B4192ED8B211000200F4 /* Persistence.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A31C6F2EA6D27C00DEB9EB /* Persistence.framework */; };
+		30F7B4212ED8F2CD000200F4 /* DataProcessing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3038FDDB2ED28F470092427C /* DataProcessing.framework */; };
+		30F7B4222ED8F2CD000200F4 /* DataProcessing.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3038FDDB2ED28F470092427C /* DataProcessing.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		30F7B4242ED8F2D0000200F4 /* Persistence.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A31C6F2EA6D27C00DEB9EB /* Persistence.framework */; };
+		30F7B4252ED8F2D0000200F4 /* Persistence.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 30A31C6F2EA6D27C00DEB9EB /* Persistence.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		30F7B4262ED8F2D2000200F4 /* Presentation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30F7B3E12ED89720000200F4 /* Presentation.framework */; };
+		30F7B4272ED8F2D2000200F4 /* Presentation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 30F7B3E12ED89720000200F4 /* Presentation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,6 +78,22 @@
 			remoteInfo = Persistence;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		30F7B4232ED8F2CD000200F4 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				30F7B4252ED8F2D0000200F4 /* Persistence.framework in Embed Frameworks */,
+				30F7B4222ED8F2CD000200F4 /* DataProcessing.framework in Embed Frameworks */,
+				30F7B4272ED8F2D2000200F4 /* Presentation.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		3038FDDB2ED28F470092427C /* DataProcessing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DataProcessing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -191,9 +210,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				30A31C932EA6DF3500DEB9EB /* Persistence.framework in Frameworks */,
-				3038FE042ED290230092427C /* DataProcessing.framework in Frameworks */,
-				30F7B40A2ED898AF000200F4 /* Presentation.framework in Frameworks */,
+				30F7B4212ED8F2CD000200F4 /* DataProcessing.framework in Frameworks */,
+				30F7B4242ED8F2D0000200F4 /* Persistence.framework in Frameworks */,
+				30F7B4262ED8F2D2000200F4 /* Presentation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -384,6 +403,7 @@
 				30BDE0702E7854E000199C93 /* Sources */,
 				30BDE0712E7854E000199C93 /* Frameworks */,
 				30BDE0722E7854E000199C93 /* Resources */,
+				30F7B4232ED8F2CD000200F4 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1045,7 +1065,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3.1;
+				MARKETING_VERSION = 1.3.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.lewisbar.TrackChart;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1077,7 +1097,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3.1;
+				MARKETING_VERSION = 1.3.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.lewisbar.TrackChart;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
