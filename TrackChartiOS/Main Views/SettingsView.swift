@@ -7,6 +7,7 @@
 
 import SwiftUI
 import DataProcessing
+import Presentation
 
 struct SettingsTopic {
     var name: String

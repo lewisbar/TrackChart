@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Presentation
 
 struct DecimalInputView: View {
     @State private var model: DecimalInputViewModel
@@ -22,7 +23,7 @@ struct DecimalInputView: View {
         dismiss: @escaping () -> Void,
         dismissesOnSubmit: Bool = false
     ) {
-        self.model = DecimalInputViewModel(initialValue: initialValue, initialTimestamp: initialTimestamp, submit: submit)
+        self.model = DecimalInputViewModel(initialValue: initialValue, initialTimestamp: initialTimestamp, submit: submit, nowDescription: String(localized: .now))
         self.dismiss = dismiss
         self.dismissesOnSubmit = dismissesOnSubmit
     }

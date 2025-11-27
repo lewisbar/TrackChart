@@ -6,33 +6,33 @@
 //
 
 import Testing
-import TrackChartiOS
 import SwiftData
 import Persistence
 import DataProcessing
+import Presentation
 
 @MainActor
 class SwiftDataTopicListViewModelTests {
     @Test func delete() throws {
         let topics = makeTopicEntities(names: ["0", "1", "2", "3", "4"])
         let (sut, context) = try makeSUT(topics: topics)
-        sut.deleteTopics(at: .init([1,4]), from: topics)
+        sut.deleteTopics(at: IndexSet([1,4]), from: topics)
 
         let remainingTopics = try fetchTopics(from: context)
 
-        #expect(remainingTopics.map(\.name) == ["0", "2", "3"])
-        #expect(remainingTopics.map(\.sortIndex) == [0, 1, 2])
+        #expect(remainingTopics.map(\TopicEntity.name) == ["0", "2", "3"])
+        #expect(remainingTopics.map(\TopicEntity.sortIndex) == [0, 1, 2])
     }
 
     @Test func move() throws {
         let topics = makeTopicEntities(names: ["0", "1", "2", "3", "4"])
         let (sut, context) = try makeSUT(topics: topics)
-        sut.moveTopics(from: .init([2, 3]), to: 1, inTopicList: topics)
+        sut.moveTopics(from: IndexSet([2, 3]), to: 1, inTopicList: topics)
 
         let updatedTopics = try fetchTopics(from: context)
 
-        #expect(updatedTopics.map(\.name) == ["0", "2", "3", "1", "4"])
-        #expect(updatedTopics.map(\.sortIndex) == [0, 1, 2, 3, 4])
+        #expect(updatedTopics.map(\TopicEntity.name) == ["0", "2", "3", "1", "4"])
+        #expect(updatedTopics.map(\TopicEntity.sortIndex) == [0, 1, 2, 3, 4])
     }
 
     @Test func createTopic() throws {

@@ -15,15 +15,22 @@
     {
       "target" : {
         "containerPath" : "container:TrackChart.xcodeproj",
-        "identifier" : "3038FDE22ED28F470092427C",
-        "name" : "DataProcessingTests"
+        "identifier" : "30A31C752EA6D27C00DEB9EB",
+        "name" : "PersistenceTests"
       }
     },
     {
       "target" : {
         "containerPath" : "container:TrackChart.xcodeproj",
-        "identifier" : "30A31C752EA6D27C00DEB9EB",
-        "name" : "PersistenceTests"
+        "identifier" : "30F7B3E82ED89720000200F4",
+        "name" : "PresentationTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:TrackChart.xcodeproj",
+        "identifier" : "3038FDE22ED28F470092427C",
+        "name" : "DataProcessingTests"
       }
     }
   ],

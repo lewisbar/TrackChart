@@ -15,21 +15,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "30BDE0732E7854E000199C93"
-               BuildableName = "TrackChartiOS.app"
-               BlueprintName = "TrackChartiOS"
-               ReferencedContainer = "container:TrackChart.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3049D7CF2E957FB000BEECA3"
+               BlueprintIdentifier = "30F7B3E02ED89720000200F4"
                BuildableName = "Presentation.framework"
                BlueprintName = "Presentation"
                ReferencedContainer = "container:TrackChart.xcodeproj">
@@ -44,10 +30,23 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <TestPlans>
          <TestPlanReference
-            reference = "container:TestPlans/CI_iOS.xctestplan"
+            reference = "container:TestPlans/Presentation.xctestplan"
             default = "YES">
          </TestPlanReference>
       </TestPlans>
+      <Testables>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "30F7B3E82ED89720000200F4"
+               BuildableName = "PresentationTests.xctest"
+               BlueprintName = "PresentationTests"
+               ReferencedContainer = "container:TrackChart.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+      </Testables>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -59,16 +58,6 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "30BDE0732E7854E000199C93"
-            BuildableName = "TrackChartiOS.app"
-            BlueprintName = "TrackChartiOS"
-            ReferencedContainer = "container:TrackChart.xcodeproj">
-         </BuildableReference>
-      </BuildableProductRunnable>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -76,16 +65,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "30BDE0732E7854E000199C93"
-            BuildableName = "TrackChartiOS.app"
-            BlueprintName = "TrackChartiOS"
+            BlueprintIdentifier = "30F7B3E02ED89720000200F4"
+            BuildableName = "Presentation.framework"
+            BlueprintName = "Presentation"
             ReferencedContainer = "container:TrackChart.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

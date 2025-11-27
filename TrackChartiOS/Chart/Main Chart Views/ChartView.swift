@@ -8,6 +8,7 @@
 import SwiftUI
 import Charts
 import DataProcessing
+import Presentation
 
 enum ChartMode {
     case paged(TimeSpan, dataProvider: ChartDataProvider)

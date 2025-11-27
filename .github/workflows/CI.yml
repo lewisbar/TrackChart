@@ -10,7 +10,7 @@ on:
 jobs:
   build-and-test:
     runs-on: macos-26
-    timeout-minutes: 45
+    timeout-minutes: 20
 
     steps:
     - uses: actions/checkout@v4
@@ -46,52 +46,5 @@ jobs:
           -scheme CI_macOS \
           -testPlan CI_macOS \
           -destination 'platform=macOS,arch=arm64' \
-          CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
-          ONLY_ACTIVE_ARCH=YES | xcbeautify --quiet --is-ci
-
-    - name: Pre-boot iPhone 17 Pro simulator
-      run: |
-        # Boot the exact device name (handles if already booted)
-        xcrun simctl boot "iPhone 17 Pro" || true
-        
-        # Wait for it to fully boot (poll status, max 2 minutes)
-        for i in {1..60}; do
-          STATUS=$(xcrun simctl bootstatus "iPhone 17 Pro")
-          if [[ "$STATUS" == *"Booted"* ]]; then
-            echo "Simulator booted successfully"
-            break
-          fi
-          echo "Waiting for boot... ($i/60)"
-          sleep 2
-        done
-        
-        # Launch Simulator app to ensure it's ready (find UDID of booted iPhone 17 Pro)
-        UDID=$(xcrun simctl list devices 'iPhone 17 Pro' | grep -m1 'Booted' | grep -E -o '[0-9A-F\-]{36}')
-        if [[ -n "$UDID" ]]; then
-          open -a Simulator --args -CurrentDeviceUDID "$UDID"
-          echo "Simulator launched with UDID: $UDID"
-        else
-          echo "No booted iPhone 17 Pro found — proceeding anyway"
-        fi
-
-    - name: Build iOS for testing
-      run: |
-        xcodebuild build-for-testing \
-          -project TrackChart.xcodeproj \
-          -scheme CI_iOS \
-          -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.0.1' \
-          CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
-          ONLY_ACTIVE_ARCH=YES
-
-    - name: Run iOS tests without building
-      run: |
-        xcodebuild test-without-building \
-          -project TrackChart.xcodeproj \
-          -scheme CI_iOS \
-          -testPlan CI_iOS \
-          -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.0.1' \
-          -parallel-testing-enabled YES \
-          -parallel-testing-worker-count 3 \
-          -maximum-concurrent-test-simulator-destinations 3 \
           CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
           ONLY_ACTIVE_ARCH=YES | xcbeautify --quiet --is-ci

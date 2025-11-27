@@ -23,7 +23,7 @@ public class DecimalInputViewModel {
                     .minute()
             )
         } else {
-            return String(localized: .now)
+            return nowDescription
         }
     }
 
@@ -36,15 +36,20 @@ public class DecimalInputViewModel {
 
     private let submit: (Double, Date) -> Void
     private let now: () -> Date
+    private let nowDescription: String
 
-    public init(initialValue: Double,
-         initialTimestamp: Date?,
-         submit: @escaping (Double, Date) -> Void,
-         now: @escaping () -> Date = Date.init) {
+    public init(
+        initialValue: Double,
+        initialTimestamp: Date?,
+        submit: @escaping (Double, Date) -> Void,
+        now: @escaping () -> Date = Date.init,
+        nowDescription: String
+    ) {
         self.value = initialValue.formatted()
         self.selectedTimestamp = initialTimestamp
         self.submit = submit
         self.now = now
+        self.nowDescription = nowDescription
     }
 
     // MARK: Input
