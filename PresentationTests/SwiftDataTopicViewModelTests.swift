@@ -17,7 +17,7 @@ class SwiftDataTopicViewModelTests {
     @Test func entriesForTopic() throws {
         let topics = makeTopicEntities(names: ["0", "1", "2"])
 
-        let context = try setupContext(withTopics: topics)
+        let _ = try setupContext(withTopics: topics)
         let selectedTopic = topics[2]
 
         let result = SwiftDataTopicViewModel.entries(for: selectedTopic)

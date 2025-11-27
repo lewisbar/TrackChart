@@ -10,41 +10,32 @@ on:
 jobs:
   build-and-test:
     runs-on: macos-26
-    timeout-minutes: 20
+    timeout-minutes: 15
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Cache DerivedData (only this project)
-      uses: actions/cache@v4
-      with:
-        path: ~/Library/Developer/Xcode/DerivedData/TrackChart-*
-        key: deriveddata-macos26-${{ hashFiles('TrackChart.xcodeproj/project.pbxproj') }}-${{ hashFiles('**/*.swift') }}
-        restore-keys: |
-          deriveddata-macos26-
+      - name: Cache DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData/TrackChart-*
+          key: deriveddata-macos26-${{ hashFiles('TrackChart.xcodeproj/project.pbxproj') }}-${{ hashFiles('**/*.swift') }}
+          restore-keys: |
+            deriveddata-macos26-
 
-    - name: Select Xcode
-      run: sudo xcode-select -switch /Applications/Xcode_26.0.1.app
+      - name: Select Xcode 26.0.1
+        run: sudo xcode-select -switch /Applications/Xcode_26.0.1.app
 
-    - name: Xcode version
-      run: /usr/bin/xcodebuild -version
-
-    - name: Build macOS target
-      run: |
-        xcodebuild build \
-          -project TrackChart.xcodeproj \
-          -scheme CI_macOS \
-          -sdk macosx \
-          -destination 'platform=macOS,arch=arm64' \
-          CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
-          ONLY_ACTIVE_ARCH=YES | xcbeautify --quiet --is-ci
-
-    - name: Test macOS target
-      run: |
-        xcodebuild test-without-building \
-          -project TrackChart.xcodeproj \
-          -scheme CI_macOS \
-          -testPlan CI_macOS \
-          -destination 'platform=macOS,arch=arm64' \
-          CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
-          ONLY_ACTIVE_ARCH=YES | xcbeautify --quiet --is-ci
+      - name: Build & test macOS
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project TrackChart.xcodeproj \
+            -scheme CI_macOS \
+            -testPlan CI_macOS \
+            -destination 'platform=macOS,arch=arm64' \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=YES \
+            | xcbeautify --is-ci
