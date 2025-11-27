@@ -16,6 +16,10 @@
 		30F7B3EA2ED89720000200F4 /* Presentation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30F7B3E12ED89720000200F4 /* Presentation.framework */; };
 		30F7B40A2ED898AF000200F4 /* Presentation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30F7B3E12ED89720000200F4 /* Presentation.framework */; };
 		30F7B40B2ED898AF000200F4 /* Presentation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 30F7B3E12ED89720000200F4 /* Presentation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		30F7B4142ED8B200000200F4 /* DataProcessing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3038FDDB2ED28F470092427C /* DataProcessing.framework */; };
+		30F7B4152ED8B200000200F4 /* DataProcessing.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3038FDDB2ED28F470092427C /* DataProcessing.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		30F7B4192ED8B211000200F4 /* Persistence.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A31C6F2EA6D27C00DEB9EB /* Persistence.framework */; };
+		30F7B41A2ED8B211000200F4 /* Persistence.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 30A31C6F2EA6D27C00DEB9EB /* Persistence.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,6 +65,20 @@
 			remoteGlobalIDString = 30F7B3E02ED89720000200F4;
 			remoteInfo = Presentation;
 		};
+		30F7B4162ED8B200000200F4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 30BDE06C2E7854DF00199C93 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3038FDDA2ED28F470092427C;
+			remoteInfo = DataProcessing;
+		};
+		30F7B41B2ED8B211000200F4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 30BDE06C2E7854DF00199C93 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 30A31C6E2EA6D27C00DEB9EB;
+			remoteInfo = Persistence;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -73,6 +91,18 @@
 				30A31C942EA6DF3500DEB9EB /* Persistence.framework in Embed Frameworks */,
 				3038FE052ED290230092427C /* DataProcessing.framework in Embed Frameworks */,
 				30F7B40B2ED898AF000200F4 /* Presentation.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		30F7B4182ED8B200000200F4 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				30F7B41A2ED8B211000200F4 /* Persistence.framework in Embed Frameworks */,
+				30F7B4152ED8B200000200F4 /* DataProcessing.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -204,6 +234,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				30F7B4192ED8B211000200F4 /* Persistence.framework in Frameworks */,
+				30F7B4142ED8B200000200F4 /* DataProcessing.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -412,10 +444,13 @@
 				30F7B3DD2ED89720000200F4 /* Sources */,
 				30F7B3DE2ED89720000200F4 /* Frameworks */,
 				30F7B3DF2ED89720000200F4 /* Resources */,
+				30F7B4182ED8B200000200F4 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				30F7B4172ED8B200000200F4 /* PBXTargetDependency */,
+				30F7B41C2ED8B211000200F4 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				30F7B3E22ED89720000200F4 /* Presentation */,
@@ -644,6 +679,16 @@
 			isa = PBXTargetDependency;
 			target = 30F7B3E02ED89720000200F4 /* Presentation */;
 			targetProxy = 30F7B40C2ED898AF000200F4 /* PBXContainerItemProxy */;
+		};
+		30F7B4172ED8B200000200F4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3038FDDA2ED28F470092427C /* DataProcessing */;
+			targetProxy = 30F7B4162ED8B200000200F4 /* PBXContainerItemProxy */;
+		};
+		30F7B41C2ED8B211000200F4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 30A31C6E2EA6D27C00DEB9EB /* Persistence */;
+			targetProxy = 30F7B41B2ED8B211000200F4 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
