@@ -11,17 +11,29 @@ public struct ChartDataProvider: Sendable {
     public let name: String
     public let aggregator: Aggregator
     public let treatsMissingAsZero: Bool
-    private let process: @Sendable ([ChartEntry]) -> [ProcessedEntry]
+    private let process: @Sendable ([RawEntry]) -> [ProcessedEntry]
 
-    private init(name: String, aggregator: Aggregator, treatsMissingAsZero: Bool, process: @escaping @Sendable ([ChartEntry]) -> [ProcessedEntry]) {
+    private init(name: String, aggregator: Aggregator, treatsMissingAsZero: Bool, process: @escaping @Sendable ([RawEntry]) -> [ProcessedEntry]) {
         self.name = name
         self.aggregator = aggregator
         self.treatsMissingAsZero = treatsMissingAsZero
         self.process = process
     }
 
-    public func processedEntries(from rawEntries: [ChartEntry]) -> [ProcessedEntry] {
+    public func processedEntries(from rawEntries: [RawEntry]) -> [ProcessedEntry] {
         process(rawEntries)
+    }
+
+    /// When looking at a week, aggregates by day. When looking at a month, aggregates by week. When looking at a year, aggregates by month.
+    public static func preset(for span: TimeSpan, aggregator: Aggregator, treatsMissingAsZero: Bool, calendar: Calendar) -> ChartDataProvider {
+        switch (span, aggregator) {
+        case (.week, .sum): ChartDataProvider.dailySum(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar)
+        case (.week, .average): ChartDataProvider.dailyAverage(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar)
+        case (.month, .sum): ChartDataProvider.dailySum(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar)
+        case (.month, .average): ChartDataProvider.dailyAverage(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar)
+        case (.year, .sum): ChartDataProvider.monthlySum(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar)
+        case (.year, .average): ChartDataProvider.monthlyAverage(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar)
+        }
     }
 
     public static let raw = ChartDataProvider(name: "raw", aggregator: .sum, treatsMissingAsZero: false) { $0.map { ProcessedEntry(value: $0.value, timestamp: $0.timestamp) } }
@@ -140,7 +152,7 @@ public struct ChartDataProvider: Sendable {
         from bucketDates: [Date],
         unit: Calendar.Component,
         calendar: Calendar,
-        grouped: [Date: [ChartEntry]],
+        grouped: [Date: [RawEntry]],
         aggregator: Aggregator
     ) -> [ProcessedEntry] {
         guard

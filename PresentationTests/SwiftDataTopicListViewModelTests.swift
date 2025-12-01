@@ -16,10 +16,10 @@ class SwiftDataTopicListViewModelTests {
     @Test func delete() throws {
         let topics = makeTopicEntities(names: ["0", "1", "2", "3", "4"])
         let (sut, context) = try makeSUT(topics: topics)
+
         sut.deleteTopics(at: IndexSet([1,4]), from: topics)
 
         let remainingTopics = try fetchTopics(from: context)
-
         #expect(remainingTopics.map(\TopicEntity.name) == ["0", "2", "3"])
         #expect(remainingTopics.map(\TopicEntity.sortIndex) == [0, 1, 2])
     }
@@ -27,10 +27,10 @@ class SwiftDataTopicListViewModelTests {
     @Test func move() throws {
         let topics = makeTopicEntities(names: ["0", "1", "2", "3", "4"])
         let (sut, context) = try makeSUT(topics: topics)
+
         sut.moveTopics(from: IndexSet([2, 3]), to: 1, inTopicList: topics)
 
         let updatedTopics = try fetchTopics(from: context)
-
         #expect(updatedTopics.map(\TopicEntity.name) == ["0", "2", "3", "1", "4"])
         #expect(updatedTopics.map(\TopicEntity.sortIndex) == [0, 1, 2, 3, 4])
     }
@@ -45,7 +45,6 @@ class SwiftDataTopicListViewModelTests {
         try context.save()
 
         let updatedTopics = try fetchTopics(from: context)
-
         #expect(updatedTopics == originalTopics)
         #expect(shownTopics.count == 0)
         #expect(newTopicSortIndex == 5)
@@ -54,14 +53,15 @@ class SwiftDataTopicListViewModelTests {
     @Test func cellModelsFromTopics() throws {
         let topics = makeTopicEntities(names: ["0", "1", "2", "3", "4"], aggregator: .sum, treatsMissingAsZero: true)
         let (sut, _) = try makeSUT(topics: topics, palette: "Ocean")
+        
         let result = sut.cellModels(from: topics)
 
         let expectedCellModels = topics.map { topic in
             let entries = topic.sortedEntries.map { entry in
-                ChartEntry(value: entry.value, timestamp: entry.timestamp)
+                ViewEntry(id: entry.id, value: entry.value, timestamp: entry.timestamp)
             }
 
-            return CellTopic(id: topic.id, name: topic.name, entries: entries, aggregator: .sum, treatsMissingAsZero: true, palette: .ocean)
+            return ViewTopic(id: topic.id, name: topic.name, entries: entries, aggregator: .sum, treatsMissingAsZero: true, palette: .ocean)
         }
 
         #expect(result.map(\.id) == expectedCellModels.map(\.id))
@@ -78,8 +78,8 @@ class SwiftDataTopicListViewModelTests {
         let topics = makeTopicEntities(names: ["0", "1", "2", "3", "4"])
         let (sut, _) = try makeSUT(topics: topics, showTopic: { shownTopics.append($0) })
         let selectedTopic = topics[3]
-        let cellModel = CellTopic(id: selectedTopic.id, name: selectedTopic.name, entries: selectedTopic.entries?.map {
-            ChartEntry(value: $0.value, timestamp: $0.timestamp)
+        let cellModel = ViewTopic(id: selectedTopic.id, name: selectedTopic.name, entries: selectedTopic.entries?.map {
+            ViewEntry(id: $0.id, value: $0.value, timestamp: $0.timestamp)
         } ?? [], aggregator: .average, treatsMissingAsZero: false, palette: .ocean)
 
         sut.showTopic(for: cellModel, in: topics)

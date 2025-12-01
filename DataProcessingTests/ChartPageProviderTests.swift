@@ -28,9 +28,9 @@ struct ChartPageProviderTests {
 
         // Dec 30, 2024 to Jan 5, 2025 should be in the same week
         let entries = [
-            ChartEntry(value: 1, timestamp: date(2024, 12, 30, calendar: calendar)),
-            ChartEntry(value: 2, timestamp: date(2025, 1, 2, calendar: calendar)),
-            ChartEntry(value: 3, timestamp: date(2025, 1, 5, calendar: calendar))
+            RawEntry(value: 1, timestamp: date(2024, 12, 30, calendar: calendar)),
+            RawEntry(value: 2, timestamp: date(2025, 1, 2, calendar: calendar)),
+            RawEntry(value: 3, timestamp: date(2025, 1, 5, calendar: calendar))
         ]
 
         let pages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
@@ -44,8 +44,8 @@ struct ChartPageProviderTests {
     func gregorianMonthBoundaries() {
         let calendar = Calendar(identifier: .gregorian)
         let entries = [
-            ChartEntry(value: 1, timestamp: date(2024, 10, 31, calendar: calendar)), // Last day of October
-            ChartEntry(value: 2, timestamp: date(2024, 11, 1, calendar: calendar))   // First day of November
+            RawEntry(value: 1, timestamp: date(2024, 10, 31, calendar: calendar)), // Last day of October
+            RawEntry(value: 2, timestamp: date(2024, 11, 1, calendar: calendar))   // First day of November
         ]
 
         let pages = ChartPageProvider.pages(for: entries, span: .month, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
@@ -65,9 +65,9 @@ struct ChartPageProviderTests {
         // Create entries within the same Hebrew week
         let baseDate = date(2024, 11, 10, calendar: calendar)
         let entries = [
-            ChartEntry(value: 1, timestamp: baseDate),
-            ChartEntry(value: 2, timestamp: calendar.date(byAdding: .day, value: 2, to: baseDate)!),
-            ChartEntry(value: 3, timestamp: calendar.date(byAdding: .day, value: 4, to: baseDate)!)
+            RawEntry(value: 1, timestamp: baseDate),
+            RawEntry(value: 2, timestamp: calendar.date(byAdding: .day, value: 2, to: baseDate)!),
+            RawEntry(value: 3, timestamp: calendar.date(byAdding: .day, value: 4, to: baseDate)!)
         ]
 
         let pages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
@@ -88,8 +88,8 @@ struct ChartPageProviderTests {
         let secondMonth = calendar.date(byAdding: .month, value: 1, to: firstMonth)!
 
         let entries = [
-            ChartEntry(value: 1, timestamp: firstMonth),
-            ChartEntry(value: 2, timestamp: secondMonth)
+            RawEntry(value: 1, timestamp: firstMonth),
+            RawEntry(value: 2, timestamp: secondMonth)
         ]
 
         let pages = ChartPageProvider.pages(for: entries, span: .month, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
@@ -109,11 +109,11 @@ struct ChartPageProviderTests {
         let year2 = calendar.date(byAdding: .year, value: 1, to: year1)!
 
         let entries = [
-            ChartEntry(value: 10, timestamp: year1),
-            ChartEntry(value: 20, timestamp: year2)
+            RawEntry(value: 10, timestamp: year1),
+            RawEntry(value: 20, timestamp: year2)
         ]
 
-        let pages = ChartPageProvider.pages(for: entries, span: .oneYear, dataProvider: .monthlySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
+        let pages = ChartPageProvider.pages(for: entries, span: .year, dataProvider: .monthlySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
 
         #expect(pages.count == 2)
     }
@@ -127,8 +127,8 @@ struct ChartPageProviderTests {
 
         let baseDate = date(2024, 11, 10, calendar: calendar)
         let entries = [
-            ChartEntry(value: 5, timestamp: baseDate),
-            ChartEntry(value: 10, timestamp: calendar.date(byAdding: .day, value: 3, to: baseDate)!)
+            RawEntry(value: 5, timestamp: baseDate),
+            RawEntry(value: 10, timestamp: calendar.date(byAdding: .day, value: 3, to: baseDate)!)
         ]
 
         let pages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
@@ -147,8 +147,8 @@ struct ChartPageProviderTests {
         let month2 = calendar.date(byAdding: .month, value: 1, to: month1)!
 
         let entries = [
-            ChartEntry(value: 100, timestamp: month1),
-            ChartEntry(value: 200, timestamp: month2)
+            RawEntry(value: 100, timestamp: month1),
+            RawEntry(value: 200, timestamp: month2)
         ]
 
         let pages = ChartPageProvider.pages(for: entries, span: .month, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
@@ -165,7 +165,7 @@ struct ChartPageProviderTests {
         hebrew.timeZone = TimeZone(identifier: "UTC")!
 
         let timestamp = Date(timeIntervalSince1970: 1700000000)  // Fixed point in time
-        let entries = [ChartEntry(value: 42, timestamp: timestamp)]
+        let entries = [RawEntry(value: 42, timestamp: timestamp)]
 
         let gregorianPages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: gregorian), calendar: gregorian)
         let hebrewPages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: hebrew), calendar: hebrew)
@@ -188,7 +188,7 @@ struct ChartPageProviderTests {
         mondayCalendar.firstWeekday = 2  // Monday
 
         // Entry on a Monday
-        let entries = [ChartEntry(value: 10, timestamp: date(2024, 11, 11, calendar: sundayCalendar))]
+        let entries = [RawEntry(value: 10, timestamp: date(2024, 11, 11, calendar: sundayCalendar))]
 
         let sundayPages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: sundayCalendar), calendar: sundayCalendar)
         let mondayPages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: mondayCalendar), calendar: mondayCalendar)
@@ -197,8 +197,14 @@ struct ChartPageProviderTests {
         #expect(!sundayPages.isEmpty)
         #expect(!mondayPages.isEmpty)
 
-        // Period starts might differ
-        #expect(sundayPages[0].periodStart != mondayPages[0].periodStart)
+        // Period starts differ
+        let sundayComponents = sundayCalendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: sundayPages[0].entries[0].timestamp)
+        let sundayWeekStart = sundayCalendar.date(from: sundayComponents)
+
+        let mondayComponents = mondayCalendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: mondayPages[0].entries[0].timestamp)
+        let mondayWeekStart = mondayCalendar.date(from: mondayComponents)
+
+        #expect(sundayWeekStart != mondayWeekStart)
     }
 
     @Test("Leap year handling across calendars")
@@ -207,9 +213,9 @@ struct ChartPageProviderTests {
 
         // 2024 is a leap year
         let febEntries = [
-            ChartEntry(value: 1, timestamp: date(2024, 2, 28, calendar: gregorian)),
-            ChartEntry(value: 2, timestamp: date(2024, 2, 29, calendar: gregorian)),
-            ChartEntry(value: 3, timestamp: date(2024, 3, 1, calendar: gregorian))
+            RawEntry(value: 1, timestamp: date(2024, 2, 28, calendar: gregorian)),
+            RawEntry(value: 2, timestamp: date(2024, 2, 29, calendar: gregorian)),
+            RawEntry(value: 3, timestamp: date(2024, 3, 1, calendar: gregorian))
         ]
 
         let pages = ChartPageProvider.pages(for: febEntries, span: .month, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: gregorian), calendar: gregorian)
@@ -229,9 +235,9 @@ struct ChartPageProviderTests {
 
         // Multiple entries on same day, plus another day
         let entries = [
-            ChartEntry(value: 10, timestamp: baseDate),
-            ChartEntry(value: 20, timestamp: calendar.date(byAdding: .hour, value: 2, to: baseDate)!),
-            ChartEntry(value: 30, timestamp: calendar.date(byAdding: .day, value: 1, to: baseDate)!)
+            RawEntry(value: 10, timestamp: baseDate),
+            RawEntry(value: 20, timestamp: calendar.date(byAdding: .hour, value: 2, to: baseDate)!),
+            RawEntry(value: 30, timestamp: calendar.date(byAdding: .day, value: 1, to: baseDate)!)
         ]
 
         let pages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
@@ -252,12 +258,12 @@ struct ChartPageProviderTests {
         let feb = date(2024, 2, 15, calendar: calendar)
 
         let entries = [
-            ChartEntry(value: 10, timestamp: jan),
-            ChartEntry(value: 20, timestamp: calendar.date(byAdding: .day, value: 1, to: jan)!),
-            ChartEntry(value: 30, timestamp: feb)
+            RawEntry(value: 10, timestamp: jan),
+            RawEntry(value: 20, timestamp: calendar.date(byAdding: .day, value: 1, to: jan)!),
+            RawEntry(value: 30, timestamp: feb)
         ]
 
-        let pages = ChartPageProvider.pages(for: entries, span: .oneYear, dataProvider: .monthlyAverage(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
+        let pages = ChartPageProvider.pages(for: entries, span: .year, dataProvider: .monthlyAverage(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
 
         #expect(pages.count == 1)
 
@@ -276,9 +282,9 @@ struct ChartPageProviderTests {
 
         // Dec 30, 2024 to Jan 5, 2025 should be in the same week
         let entries = [
-            ChartEntry(value: 1, timestamp: date(2024, 12, 30, calendar: calendar)),
-            ChartEntry(value: 2, timestamp: date(2025, 1, 2, calendar: calendar)),
-            ChartEntry(value: 3, timestamp: date(2025, 1, 5, calendar: calendar))
+            RawEntry(value: 1, timestamp: date(2024, 12, 30, calendar: calendar)),
+            RawEntry(value: 2, timestamp: date(2025, 1, 2, calendar: calendar)),
+            RawEntry(value: 3, timestamp: date(2025, 1, 5, calendar: calendar))
         ]
 
         let pages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
@@ -297,9 +303,9 @@ struct ChartPageProviderTests {
 
         // Dec 30, 2024 to Jan 5, 2025 should be in the same week
         let entries = [
-            ChartEntry(value: 1, timestamp: date(2024, 12, 30, calendar: calendar)),
-            ChartEntry(value: 2, timestamp: date(2025, 1, 2, calendar: calendar)),
-            ChartEntry(value: 3, timestamp: date(2025, 1, 5, calendar: calendar))
+            RawEntry(value: 1, timestamp: date(2024, 12, 30, calendar: calendar)),
+            RawEntry(value: 2, timestamp: date(2025, 1, 2, calendar: calendar)),
+            RawEntry(value: 3, timestamp: date(2025, 1, 5, calendar: calendar))
         ]
 
         let pages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailyAverage(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)

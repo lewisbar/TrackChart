@@ -5,9 +5,9 @@
 //  Created by Lennart Wisbar on 23.11.25.
 //
 
-import DataProcessing
+import Presentation
 
-extension Aggregator {
+extension ViewAggregator {
     var localizedName: String {
         switch self {
         case .sum: return String(localized: .sum)

@@ -6,15 +6,7 @@
 //
 
 import SwiftUI
-import DataProcessing
 import Presentation
-
-struct SettingsTopic {
-    var name: String
-    var palette: Palette
-    var aggregator: Aggregator
-    var treatsMissingAsZero: Bool
-}
 
 struct SettingsView: View {
     @State private var topic: SettingsTopic
@@ -164,7 +156,7 @@ struct SettingsView: View {
 
     private var aggregatorSetting: some View {
         Picker(.aggregator, selection: $topic.aggregator) {
-            ForEach(Aggregator.allCases, id: \.self) { aggregator in
+            ForEach(ViewAggregator.allCases, id: \.self) { aggregator in
                 Text(aggregator.localizedName)
             }
         }

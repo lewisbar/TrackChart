@@ -1,21 +1,20 @@
 //
-//  CellTopic.swift
+//  ViewTopic.swift
 //
 //  Created by Lennart Wisbar on 18.09.25.
 //
 
 import Foundation
-import DataProcessing
 
-public struct CellTopic: Identifiable, Hashable {
+public struct ViewTopic: Identifiable, Hashable {
     public let id: UUID
     public let name: String
-    public let entries: [ChartEntry]
-    public let aggregator: Aggregator
+    public let entries: [ViewEntry]
+    public let aggregator: ViewAggregator
     public let treatsMissingAsZero: Bool
     public let palette: Palette
 
-    public init(id: UUID, name: String, entries: [ChartEntry], aggregator: Aggregator, treatsMissingAsZero: Bool, palette: Palette) {
+    public init(id: UUID, name: String, entries: [ViewEntry], aggregator: ViewAggregator, treatsMissingAsZero: Bool, palette: Palette) {
         self.id = id
         self.name = name
         self.entries = entries

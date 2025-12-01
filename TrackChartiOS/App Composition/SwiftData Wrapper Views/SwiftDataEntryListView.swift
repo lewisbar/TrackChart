@@ -15,10 +15,10 @@ struct SwiftDataEntryListView: View {
     var body: some View {
         EntryListView(
             topicName: topic.name,
-            addEntry: { SwiftDataEntryListViewModel.addEntry($0, to: topic) },
-            entries: SwiftDataEntryListViewModel.listEntries(for: topic),
-            updateEntry: { SwiftDataEntryListViewModel.updateEntry($0, of: topic) },
-            deleteEntries: { SwiftDataEntryListViewModel.deleteEntries(atOffsets: $0, from: topic) }
+            addEntry: { topic.submit(newValue: $0.value, timestamp: $0.timestamp) },
+            entries: topic.viewEntries.reversed(),
+            updateEntry: { topic.updateEntry(withID: $0.id, value: $0.value, timestamp: $0.timestamp) },
+            deleteEntries: { topic.deleteEntries(atOffsets: $0, order: .reverse) }
         )
     }
 }
