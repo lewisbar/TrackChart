@@ -8,7 +8,6 @@
 import SwiftUI
 import SwiftData
 import Persistence
-import DataProcessing
 
 @MainActor
 public class SwiftDataTopicListViewModel {
@@ -59,24 +58,11 @@ public class SwiftDataTopicListViewModel {
         }
     }
 
-    public func cellModels(from topics: [TopicEntity]) -> [CellTopic] {
-        topics.map { topic in
-            let entries = topic.sortedEntries.map {
-                ChartEntry(value: $0.value, timestamp: $0.timestamp)
-            }
-
-            return CellTopic(
-                id: topic.id,
-                name: topic.name,
-                entries: entries,
-                aggregator: Aggregator.aggregator(named: topic.aggregator),
-                treatsMissingAsZero: topic.treatsMissingAsZero,
-                palette: .palette(named: topic.palette)
-            )
-        }
+    public func cellModels(from topics: [TopicEntity]) -> [ViewTopic] {
+        topics.map(\.viewTopic)
     }
 
-    public func showTopic(for cellModel: CellTopic, in topics: [TopicEntity]) {
+    public func showTopic(for cellModel: ViewTopic, in topics: [TopicEntity]) {
         showTopic(topics.first(where: { $0.id == cellModel.id }))
     }
 

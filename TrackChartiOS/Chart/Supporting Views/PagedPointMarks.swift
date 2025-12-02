@@ -16,7 +16,7 @@ struct PagedPointMarks {
     let yLabel: String
 
     @ChartContentBuilder
-    func pointMark(for entry: ProcessedEntry, on page: ChartPage) -> some ChartContent {
+    func pointMark(for entry: ViewEntry, on page: ChartViewPage) -> some ChartContent {
         if page.isExtremum(entry) {
             PointMark(x: .value(xLabel, entry.timestamp), y: .value(yLabel, entry.value))
                 .symbol(symbol: pointSymbol)
@@ -34,15 +34,15 @@ struct PagedPointMarks {
     }
 
     @ViewBuilder
-    private func maxPositiveValueAnnotation(for entry: ProcessedEntry, on page: ChartPage) -> some View {
-        if page.isMaxPositiveEntry(entry) {
+    private func maxPositiveValueAnnotation(for entry: ViewEntry, on page: ChartViewPage) -> some View {
+        if page.isMaxEntry(entry) {
             annotation(for: entry.value)
         }
     }
 
     @ViewBuilder
-    private func minNegativeValueAnnotation(for entry: ProcessedEntry, on page: ChartPage) -> some View {
-        if page.isMinNegativeEntry(entry) {
+    private func minNegativeValueAnnotation(for entry: ViewEntry, on page: ChartViewPage) -> some View {
+        if page.isMinEntry(entry) {
             annotation(for: entry.value)
         }
     }

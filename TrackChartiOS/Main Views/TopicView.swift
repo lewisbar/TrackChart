@@ -6,19 +6,10 @@
 //
 
 import SwiftUI
-import DataProcessing
 import Presentation
 
-struct TopicViewTopic {
-    let name: String
-    let palette: Palette
-    let entries: [ChartEntry]
-    let aggregator: Aggregator
-    let treatsMissingAsZero: Bool
-}
-
 struct TopicView<Settings: View>: View {
-    let topic: TopicViewTopic
+    let topic: ViewTopic
     let submitNewValue: (Double, Date) -> Void
     let settingsView: () -> Settings
     let showEntryList: () -> Void
@@ -57,9 +48,9 @@ struct TopicView<Settings: View>: View {
         List {
             if topic.entries.isEmpty { tutorialView } else { overviewChart }
             entriesCell
-            pagedCard(span: .week,       dataProvider: topic.aggregator == .sum ? .dailySum(treatsMissingAsZero: topic.treatsMissingAsZero) : .dailyAverage(treatsMissingAsZero: topic.treatsMissingAsZero))
-            pagedCard(span: .month,      dataProvider: topic.aggregator == .sum ? .dailySum(treatsMissingAsZero: topic.treatsMissingAsZero) : .dailyAverage(treatsMissingAsZero: topic.treatsMissingAsZero))
-            pagedCard(span: .oneYear,    dataProvider: topic.aggregator == .sum ? .monthlySum(treatsMissingAsZero: topic.treatsMissingAsZero) : .monthlyAverage(treatsMissingAsZero: topic.treatsMissingAsZero))
+            pagedCard(.week)
+            pagedCard(.month)
+            pagedCard(.year)
         }
         .safeAreaInset(edge: .bottom) {
             // Make room for the plus button
@@ -68,7 +59,7 @@ struct TopicView<Settings: View>: View {
     }
 
     private var overviewChart: some View {
-        ChartView(rawEntries: topic.entries, aggregator: topic.aggregator, treatsMissingAsZero: topic.treatsMissingAsZero, palette: topic.palette, mode: .overview)
+        ChartView(topic: topic, mode: .overview)
             .frame(height: 150)
             .padding(.top)
             .padding(.horizontal)
@@ -94,13 +85,10 @@ struct TopicView<Settings: View>: View {
         }
     }
 
-    private func pagedCard(span: TimeSpan, dataProvider: ChartDataProvider) -> some View {
+    private func pagedCard(_ span: ViewTimeSpan) -> some View {
         ChartView(
-            rawEntries: topic.entries,
-            aggregator: topic.aggregator,
-            treatsMissingAsZero: topic.treatsMissingAsZero,
-            palette: topic.palette,
-            mode: .paged(span, dataProvider: dataProvider)
+            topic: topic,
+            mode: .paged(span)
         )
         .card()
         .frame(height: 260)
@@ -142,14 +130,15 @@ struct TopicView<Settings: View>: View {
 
 #Preview {
     let entries = [1, 2, 4, 8, 17, 3, 0, -2, -8, -3, 1].enumerated().map { index, value in
-        ChartEntry(
+        ViewEntry(
+            id: UUID(),
             value: Double(value),
             timestamp: .now.advanced(by: 86_400 * Double(index) - 40 * 86_400)
         )
     }
 
     TopicView(
-        topic: TopicViewTopic(name: "Topic 1", palette: .arcticIce, entries: entries, aggregator: .average, treatsMissingAsZero: true),
+        topic: ViewTopic(id: UUID(), name: "Topic 1", entries: entries, aggregator: .average, treatsMissingAsZero: true, palette: .arcticIce),
         submitNewValue: { _, _ in },
         settingsView: EmptyView.init,
         showEntryList: {}

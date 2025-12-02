@@ -7,19 +7,17 @@
 
 import SwiftUI
 import Charts
-import DataProcessing
 import Presentation
 
 struct PreviewChartView<Placeholder: View>: View {
-    let entries: [ProcessedEntry]
+    let entries: [ViewEntry]
     let palette: Palette
     private let placeholder: () -> Placeholder
     private let xLabel = String(localized: .date)
     private let yLabel = String(localized: .value)
 
-    init(rawEntries: [ChartEntry], aggregator: Aggregator, treatsMissingAsZero: Bool, palette: Palette, placeholder: @escaping () -> Placeholder = ChartPlaceholderView.init) {
-        let provider = ChartDataProvider.automaticPreview(treatsMissingAsZero: treatsMissingAsZero, aggregator: aggregator)
-        self.entries = provider.processedEntries(from: rawEntries)
+    init(entries: [ViewEntry], palette: Palette, placeholder: @escaping () -> Placeholder = ChartPlaceholderView.init) {
+        self.entries = entries
         self.palette = palette
         self.placeholder = placeholder
     }

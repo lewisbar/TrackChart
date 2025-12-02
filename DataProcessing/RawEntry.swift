@@ -1,5 +1,5 @@
 //
-//  ChartEntry.swift
+//  RawEntry.swift
 //  TrackChartiOS
 //
 //  Created by Lennart Wisbar on 07.11.25.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct ChartEntry: Hashable, Codable {
+public struct RawEntry: Hashable, Codable {
     public let value: Double
     public let timestamp: Date
 

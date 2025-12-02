@@ -43,4 +43,23 @@ public final class TopicEntity {
         self.treatsMissingAsZero = treatsMissingAsZero
         self.sortIndex = sortIndex
     }
+
+    public func submit(newValue: Double, timestamp: Date) {
+        let newEntry = EntryEntity(value: newValue, timestamp: timestamp)
+        entries?.append(newEntry)
+    }
+
+    public func updateEntry(withID id: UUID, value: Double, timestamp: Date) {
+        let entry = entries?.first(where: { $0.id == id })
+        entry?.value = value
+        entry?.timestamp = timestamp
+    }
+
+    public func deleteEntries(atOffsets offsets: IndexSet, order: SortOrder) {
+        let ids = (order == .forward ? sortedEntries : sortedEntries.reversed()).map(\.id)
+        let idsToDelete = offsets.filter { $0 < ids.count }.map { ids[$0] }
+        for id in idsToDelete {
+            entries?.removeAll(where: { $0.id == id })
+        }
+    }
 }

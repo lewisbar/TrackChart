@@ -7,10 +7,14 @@
 
 import Foundation
 
-@MainActor
+//@MainActor
 public final class ChartPageProvider {
+    public static func pages(for raw: [RawEntry], span: TimeSpan, aggregator: Aggregator, treatsMissingAsZero: Bool, calendar: Calendar = .current) -> [ChartPage] {
+        let provider = ChartDataProvider.preset(for: span, aggregator: aggregator, treatsMissingAsZero: treatsMissingAsZero, calendar: calendar)
+        return pages(for: raw, span: span, dataProvider: provider, calendar: calendar)
+    }
     public static func pages(
-        for raw: [ChartEntry],
+        for raw: [RawEntry],
         span: TimeSpan,
         dataProvider: ChartDataProvider,
         calendar: Calendar = .current
@@ -20,7 +24,7 @@ public final class ChartPageProvider {
 
         let ranges = pageRanges(from: sorted, span: span, calendar: calendar)
 
-        return ranges.compactMap { range in
+        return ranges.compactMap { range -> ChartPage? in
             let pageEntries = sorted.filter { range.contains($0.timestamp) }
             guard !pageEntries.isEmpty else { return nil }
 
@@ -33,7 +37,6 @@ public final class ChartPageProvider {
                 entries: aggregatedEntries,
                 span: span,
                 title: title,
-                periodStart: range.lowerBound,
                 aggregator: dataProvider.aggregator,
                 aggregate: pageAggregate
             )
@@ -60,13 +63,13 @@ public final class ChartPageProvider {
             return "\(first) – \(last)"
         case .month:
             return start.formatted(formatStyle.month(.wide).year())
-        case .oneYear:
+        case .year:
             return start.formatted(formatStyle.year())
         }
     }
 
     private static func pageRanges(
-        from entries: [ChartEntry],
+        from entries: [RawEntry],
         span: TimeSpan,
         calendar: Calendar
     ) -> [Range<Date>] {
@@ -104,7 +107,7 @@ private extension Calendar {
         case .month:
             let components = self.dateComponents([.year, .month], from: date)
             return self.date(from: components) ?? date
-        case .oneYear:
+        case .year:
             let components = self.dateComponents([.year], from: date)
             return self.date(from: components) ?? date
         }
