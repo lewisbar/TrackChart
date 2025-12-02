@@ -58,24 +58,24 @@ struct TopicListView: View {
     private let tutorial = String(localized: .tapPlusButtonToAddTopic)
 }
 
-//#Preview {
-//    let topics = [
-//        ViewTopic(id: UUID(), name: "Topic 1", entries: [
-//            ViewEntry(id: UUID(), value: 2.1, timestamp: .now.advanced(by: -300)),
-//            ViewEntry(id: UUID(), value: 4, timestamp: .now.advanced(by: -200)),
-//            ViewEntry(id: UUID(), value: 3, timestamp: .now.advanced(by: -100))
-//        ], aggregator: .sum, treatsMissingAsZero: true, palette: .fire),
-//        ViewTopic(id: UUID(), name: "Topic 2", entries: [
-//            ViewEntry(id: UUID(), value: 1, timestamp: .now.advanced(by: -300)),
-//            ViewEntry(id: UUID(), value: -4, timestamp: .now.advanced(by: -200)),
-//            ViewEntry(id: UUID(), value: 30, timestamp: .now.advanced(by: -100))
-//        ], aggregator: .sum, treatsMissingAsZero: false, palette: .forest),
-//        ViewTopic(id: UUID(), name: "Topic 3", entries: [
-//            ViewEntry(id: UUID(), value: 2, timestamp: .now.advanced(by: -300)),
-//            ViewEntry(id: UUID(), value: 40, timestamp: .now.advanced(by: -200)),
-//            ViewEntry(id: UUID(), value: -13, timestamp: .now.advanced(by: -100))
-//        ], aggregator: .sum, treatsMissingAsZero: false, palette: .sunset),
-//    ]
-//    
-//    TopicListView(topics: topics + topics, deleteTopics: { _ in }, moveTopics: { _, _ in }, showTopic: { _ in }, createNewTopic: {})
-//}
+#Preview {
+    let topics = [
+        ViewTopic(id: UUID(), name: "Topic 1", entries: [
+            ViewEntry(id: UUID(), value: 2.1, timestamp: .now.advanced(by: -300)),
+            ViewEntry(id: UUID(), value: 4, timestamp: .now.advanced(by: -200)),
+            ViewEntry(id: UUID(), value: 3, timestamp: .now.advanced(by: -100))
+        ], aggregator: .sum, treatsMissingAsZero: true, palette: .fire),
+        ViewTopic(id: UUID(), name: "Topic 2", entries: [
+            ViewEntry(id: UUID(), value: 1, timestamp: .now.advanced(by: -300)),
+            ViewEntry(id: UUID(), value: -4, timestamp: .now.advanced(by: -200)),
+            ViewEntry(id: UUID(), value: 30, timestamp: .now.advanced(by: -100))
+        ], aggregator: .sum, treatsMissingAsZero: false, palette: .forest),
+        ViewTopic(id: UUID(), name: "Topic 3", entries: [
+            ViewEntry(id: UUID(), value: 2, timestamp: .now.advanced(by: -300)),
+            ViewEntry(id: UUID(), value: 40, timestamp: .now.advanced(by: -200)),
+            ViewEntry(id: UUID(), value: -13, timestamp: .now.advanced(by: -100))
+        ], aggregator: .sum, treatsMissingAsZero: false, palette: .sunset),
+    ]
+    
+    TopicListView(topics: topics + topics, deleteTopics: { _ in }, moveTopics: { _, _ in }, showTopic: { _ in }, createNewTopic: {})
+}

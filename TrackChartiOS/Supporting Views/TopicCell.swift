@@ -70,38 +70,38 @@ struct TopicCell: View {
     }
 }
 
-//#Preview {
-//    TopicCell(
-//        topic: ViewTopic(
-//            id: UUID(),
-//            name: "Topic 1",
-//            entries: [
-//                .init(id: UUID(), value: 0, timestamp: .now.advanced(by: -800)),
-//                .init(id: UUID(), value: -3, timestamp: .now.advanced(by: -700)),
-//                .init(id: UUID(), value: -2, timestamp: .now.advanced(by: -600)),
-//                .init(id: UUID(), value: 1, timestamp: .now.advanced(by: -500)),
-//                .init(id: UUID(), value: 5, timestamp: .now.advanced(by: -400)),
-//                .init(id: UUID(), value: 9, timestamp: .now.advanced(by: -300)),
-//                .init(id: UUID(), value: 10, timestamp: .now.advanced(by: -200))
-//            ],
-//            aggregator: .sum,
-//            treatsMissingAsZero: true,
-//            palette: .sunset
-//        ),
-//        showTopic: {}
-//    )
-//    .padding()
-//
-//    TopicCell(
-//        topic: ViewTopic(
-//            id: UUID(),
-//            name: "Topic 2",
-//            entries: [],
-//            aggregator: .sum,
-//            treatsMissingAsZero: false,
-//            palette: .coralReef
-//        ),
-//        showTopic: {}
-//    )
-//    .padding()
-//}
+#Preview {
+    TopicCell(
+        topic: ViewTopic(
+            id: UUID(),
+            name: "Topic 1",
+            entries: [
+                .init(id: UUID(), value: 0, timestamp: .now.advanced(by: -800)),
+                .init(id: UUID(), value: -3, timestamp: .now.advanced(by: -700)),
+                .init(id: UUID(), value: -2, timestamp: .now.advanced(by: -600)),
+                .init(id: UUID(), value: 1, timestamp: .now.advanced(by: -500)),
+                .init(id: UUID(), value: 5, timestamp: .now.advanced(by: -400)),
+                .init(id: UUID(), value: 9, timestamp: .now.advanced(by: -300)),
+                .init(id: UUID(), value: 10, timestamp: .now.advanced(by: -200))
+            ],
+            aggregator: .sum,
+            treatsMissingAsZero: true,
+            palette: .sunset
+        ),
+        showTopic: {}
+    )
+    .padding()
+
+    TopicCell(
+        topic: ViewTopic(
+            id: UUID(),
+            name: "Topic 2",
+            entries: [],
+            aggregator: .sum,
+            treatsMissingAsZero: false,
+            palette: .coralReef
+        ),
+        showTopic: {}
+    )
+    .padding()
+}
