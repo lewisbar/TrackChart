@@ -2,7 +2,7 @@
 //  SwiftDataEntryListView.swift
 //  TrackChartiOS
 //
-//  Created by LennartWisbar on 14.11.25.
+//  Created by Lennart Wisbar on 14.11.25.
 //
 
 import SwiftUI
@@ -11,14 +11,32 @@ import Presentation
 
 struct SwiftDataEntryListView: View {
     @Bindable var topic: TopicEntity
+    @State private var viewEntries: [ViewEntry] = []
 
     var body: some View {
         EntryListView(
             topicName: topic.name,
-            addEntry: { topic.submit(newValue: $0.value, timestamp: $0.timestamp) },
-            entries: topic.viewEntries.reversed(),
-            updateEntry: { topic.updateEntry(withID: $0.id, value: $0.value, timestamp: $0.timestamp) },
-            deleteEntries: { topic.deleteEntries(atOffsets: $0, order: .reverse) }
+            addEntry: { new in
+                topic.submit(newValue: new.value, timestamp: new.timestamp)
+                syncFromModel()
+            },
+            entries: viewEntries,
+            updateEntry: { updated in
+                topic.updateEntry(withID: updated.id, value: updated.value, timestamp: updated.timestamp)
+                syncFromModel()
+            },
+            deleteEntries: { offsets in
+                topic.deleteEntries(atOffsets: offsets, order: .reverse)
+                syncFromModel()
+            }
         )
+        .onAppear(perform: syncFromModel)
+        .onChange(of: topic.entryCount) { _, _ in
+            syncFromModel()
+        }
+    }
+
+    private func syncFromModel() {
+        viewEntries = topic.viewEntries.reversed()
     }
 }
