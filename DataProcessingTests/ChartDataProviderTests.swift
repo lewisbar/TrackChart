@@ -29,7 +29,7 @@ struct ChartDataProviderTests {
         let entry2b = RawEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 100_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
-        let calendar = Calendar(identifier: .gregorian)
+        let calendar = defaultCalendar()
         let sut = ChartDataProvider.dailySum(treatsMissingAsZero: false, calendar: calendar)
         let processedEntries = sut.processedEntries(from: originalEntries)
 
@@ -48,7 +48,7 @@ struct ChartDataProviderTests {
         let entry2b = RawEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 200_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
-        let calendar = Calendar(identifier: .gregorian)
+        let calendar = defaultCalendar()
         let sut = ChartDataProvider.dailySum(treatsMissingAsZero: true, calendar: calendar)
         let processedEntries = sut.processedEntries(from: originalEntries)
 
@@ -69,7 +69,7 @@ struct ChartDataProviderTests {
         let entry2b = RawEntry(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 100_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
-        let calendar = Calendar(identifier: .gregorian)
+        let calendar = defaultCalendar()
         let sut = ChartDataProvider.dailyAverage(treatsMissingAsZero: false, calendar: calendar)
         let processedEntries = sut.processedEntries(from: originalEntries)
 
@@ -88,7 +88,7 @@ struct ChartDataProviderTests {
         let entry2b = RawEntry(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 200_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
-        let calendar = Calendar(identifier: .gregorian)
+        let calendar = defaultCalendar()
         let sut = ChartDataProvider.dailyAverage(treatsMissingAsZero: true, calendar: calendar)
         let processedEntries = sut.processedEntries(from: originalEntries)
 
@@ -109,8 +109,7 @@ struct ChartDataProviderTests {
         let entry2b = RawEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 800_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.firstWeekday = 2  // Monday
+        let calendar = defaultCalendar()
         let sut = ChartDataProvider.weeklySum(treatsMissingAsZero: false, calendar: calendar)
 
         let processedEntries = sut.processedEntries(from: originalEntries)
@@ -131,8 +130,8 @@ struct ChartDataProviderTests {
 
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.firstWeekday = 2  // Monday
+        let calendar = defaultCalendar()
+
         let sut = ChartDataProvider.weeklySum(treatsMissingAsZero: true, calendar: calendar)
 
         let processedEntries = sut.processedEntries(from: originalEntries)
@@ -154,8 +153,7 @@ struct ChartDataProviderTests {
         let entry2b = RawEntry(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 800_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.firstWeekday = 2  // Monday
+        let calendar = defaultCalendar()
         let sut = ChartDataProvider.weeklyAverage(treatsMissingAsZero: false, calendar: calendar)
         let processedEntries = sut.processedEntries(from: originalEntries)
 
@@ -174,8 +172,7 @@ struct ChartDataProviderTests {
         let entry2b = RawEntry(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 1_600_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.firstWeekday = 2  // Monday
+        let calendar = defaultCalendar()
         let sut = ChartDataProvider.weeklyAverage(treatsMissingAsZero: true, calendar: calendar)
         let processedEntries = sut.processedEntries(from: originalEntries)
 
@@ -196,7 +193,7 @@ struct ChartDataProviderTests {
         let entry2b = RawEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 4_000_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
-        let calendar = Calendar(identifier: .gregorian)
+        let calendar = defaultCalendar()
         let sut = ChartDataProvider.monthlySum(treatsMissingAsZero: false, calendar: calendar)
         let processedEntries = sut.processedEntries(from: originalEntries)
 
@@ -215,7 +212,7 @@ struct ChartDataProviderTests {
         let entry2b = RawEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 6_000_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
-        let calendar = Calendar(identifier: .gregorian)
+        let calendar = defaultCalendar()
         let sut = ChartDataProvider.monthlySum(treatsMissingAsZero: true, calendar: calendar)
         let processedEntries = sut.processedEntries(from: originalEntries)
 
@@ -236,7 +233,7 @@ struct ChartDataProviderTests {
         let entry2b = RawEntry(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 4_000_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
-        let calendar = Calendar(identifier: .gregorian)
+        let calendar = defaultCalendar()
         let sut = ChartDataProvider.monthlyAverage(treatsMissingAsZero: false, calendar: calendar)
         let processedEntries = sut.processedEntries(from: originalEntries)
 
@@ -255,7 +252,7 @@ struct ChartDataProviderTests {
         let entry2b = RawEntry(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 6_000_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
-        let calendar = Calendar(identifier: .gregorian)
+        let calendar = defaultCalendar()
         let sut = ChartDataProvider.monthlyAverage(treatsMissingAsZero: true, calendar: calendar)
         let processedEntries = sut.processedEntries(from: originalEntries)
 
@@ -273,7 +270,7 @@ struct ChartDataProviderTests {
 
     @Test("AutomaticPreview: Less than three days shows raw data")
     func automaticPreviewLessThanWeek() {
-        let calendar = Calendar(identifier: .gregorian)
+        let calendar = defaultCalendar()
         let baseDate = date(2024, 11, 10, calendar: calendar)
 
         // 2 days of data with multiple entries per day
@@ -293,7 +290,7 @@ struct ChartDataProviderTests {
 
     @Test("AutomaticPreview with zero filling: Less than three days still only shows raw data")
     func automaticPreviewLessThanWeek_withZeroFilling() {
-        let calendar = Calendar(identifier: .gregorian)
+        let calendar = defaultCalendar()
         let baseDate = date(2024, 11, 10, calendar: calendar)
 
         // 2 days of data with multiple entries per day
@@ -313,7 +310,7 @@ struct ChartDataProviderTests {
 
     @Test("AutomaticPreview: Three days uses day aggregation")
     func automaticPreviewThreeDays() {
-        let calendar = Calendar(identifier: .gregorian)
+        let calendar = defaultCalendar()
         let firstDay1 = date(2024, 11, 10, hour: 6, calendar: calendar)
         let firstDay2 = date(2024, 11, 10, hour: 12, calendar: calendar)
         let secondDay = date(2024, 11, 11, hour: 12, calendar: calendar)
@@ -336,7 +333,7 @@ struct ChartDataProviderTests {
 
     @Test("AutomaticPreview with zero filling: Three days uses day aggregation, with gaps filled with zero")
     func automaticPreviewThreeDays_withZeroFilling() {
-        let calendar = Calendar(identifier: .gregorian)
+        let calendar = defaultCalendar()
         let firstDay1 = date(2024, 11, 10, hour: 6, calendar: calendar)
         let firstDay2 = date(2024, 11, 10, hour: 12, calendar: calendar)
         let thirdDay = date(2024, 11, 12, hour: 12, calendar: calendar)
@@ -357,7 +354,7 @@ struct ChartDataProviderTests {
 
     @Test("AutomaticPreview: 10 weeks or less uses daily sum")
     func automaticPreview10Weeks_sum() {
-        let calendar = Calendar(identifier: .gregorian)
+        let calendar = defaultCalendar()
         let baseDate = date(2024, 9, 1, calendar: calendar)
 
         // 8 weeks of data (56 days)
@@ -381,7 +378,7 @@ struct ChartDataProviderTests {
 
     @Test("AutomaticPreview with zero filling: 10 weeks or less uses daily sum, with gaps filled up with zeroes")
     func automaticPreview10Weeks_sum_withZeroFilling() {
-        let calendar = Calendar(identifier: .gregorian)
+        let calendar = defaultCalendar()
         let baseDate = date(2024, 9, 1, calendar: calendar)
 
         // 8 weeks of data (56 days)
@@ -404,7 +401,7 @@ struct ChartDataProviderTests {
 
     @Test("AutomaticPreview: 10 weeks or less uses daily average")
     func automaticPreview10Weeks_average() {
-        let calendar = Calendar(identifier: .gregorian)
+        let calendar = defaultCalendar()
         let baseDate = date(2024, 9, 1, calendar: calendar)
 
         // 8 weeks of data (56 days)
@@ -428,7 +425,7 @@ struct ChartDataProviderTests {
 
     @Test("AutomaticPreview with zero filling: 10 weeks or less uses daily average, with gaps filled up with zeroes")
     func automaticPreview10Weeks_average_withZeroFilling() {
-        let calendar = Calendar(identifier: .gregorian)
+        let calendar = defaultCalendar()
         let baseDate = date(2024, 9, 1, calendar: calendar)
 
         // 8 weeks of data (56 days)
@@ -451,7 +448,7 @@ struct ChartDataProviderTests {
 
     @Test("AutomaticPreview: Up to 1 year uses weekly aggregation")
     func automaticPreviewOneYear() {
-        let calendar = Calendar(identifier: .gregorian)
+        let calendar = defaultCalendar()
         let baseDate = date(2024, 1, 1, calendar: calendar)
 
         // 6 months of weekly data
@@ -469,7 +466,7 @@ struct ChartDataProviderTests {
 
     @Test("AutomaticPreview with zero filling: Up to 1 year uses weekly aggregation, with gaps filled with zeroes")
     func automaticPreviewOneYear_withZeroFilling() {
-        let calendar = Calendar(identifier: .gregorian)
+        let calendar = defaultCalendar()
         let baseDate = date(2024, 1, 1, calendar: calendar)
 
         let indicesToExclude = [7, 14, 21]
@@ -489,7 +486,7 @@ struct ChartDataProviderTests {
 
     @Test("Zero filling only fills gaps in between, not start and end")
     func automaticPreviewOneYear_withZeroFilling_butNotAtStartOrEnd() {
-        let calendar = Calendar(identifier: .gregorian)
+        let calendar = defaultCalendar()
         let baseDate = date(2024, 1, 1, calendar: calendar)
 
         let indicesToExclude = [0, 1, 2, 14, 24, 25]
@@ -509,7 +506,7 @@ struct ChartDataProviderTests {
 
     @Test("AutomaticPreview: Up to 5 years uses monthly aggregation")
     func automaticPreview5Years_sum() {
-        let calendar = Calendar(identifier: .gregorian)
+        let calendar = defaultCalendar()
         let baseDate = date(2020, 1, 1, calendar: calendar)
 
         // 3 years of monthly data
@@ -526,7 +523,7 @@ struct ChartDataProviderTests {
 
     @Test("AutomaticPreview with zero filling: Up to 5 years uses monthly aggregation, with gaps filled up with zeroes")
     func automaticPreview5Years_sum_withZeroFilling() {
-        let calendar = Calendar(identifier: .gregorian)
+        let calendar = defaultCalendar()
         let baseDate = date(2020, 1, 1, calendar: calendar)
 
         let indicesToExclude = [7, 14, 21]
@@ -546,7 +543,7 @@ struct ChartDataProviderTests {
 
     @Test("AutomaticPreview: More than 5 years uses yearly aggregation")
     func automaticPreviewMoreThan5Years_sum() {
-        let calendar = Calendar(identifier: .gregorian)
+        let calendar = defaultCalendar()
         let baseDate = date(2015, 1, 1, calendar: calendar)
 
         // 8 years of data
@@ -563,7 +560,7 @@ struct ChartDataProviderTests {
 
     @Test("AutomaticPreview with zero filling: More than 5 years uses yearly aggregation, with gaps filled up with zeroes")
     func automaticPreviewMoreThan5Years_sum_withZeroFilling() {
-        let calendar = Calendar(identifier: .gregorian)
+        let calendar = defaultCalendar()
         let baseDate = date(2015, 1, 1, calendar: calendar)
 
         let indicesToExclude = [3, 5]
@@ -622,7 +619,7 @@ struct ChartDataProviderTests {
 
     @Test("AutomaticPreview: Empty entries returns empty")
     func automaticPreviewEmpty() {
-        let calendar = Calendar(identifier: .gregorian)
+        let calendar = defaultCalendar()
         let processed = ChartDataProvider.automaticPreview(treatsMissingAsZero: false, aggregator: .sum, calendar: calendar).processedEntries(from: [])
 
         #expect(processed.isEmpty)
@@ -630,7 +627,7 @@ struct ChartDataProviderTests {
 
     @Test("AutomaticPreview: Single entry returns raw")
     func automaticPreviewSingleEntry() {
-        let calendar = Calendar(identifier: .gregorian)
+        let calendar = defaultCalendar()
         let entry = RawEntry(value: 42, timestamp: date(2024, 11, 10, calendar: calendar))
 
         let processed = ChartDataProvider.automaticPreview(treatsMissingAsZero: false, aggregator: .sum, calendar: calendar).processedEntries(from: [entry])
@@ -641,7 +638,7 @@ struct ChartDataProviderTests {
 
     @Test("AutomaticPreview: Exactly at boundaries")
     func automaticPreviewBoundaries() {
-        let calendar = Calendar(identifier: .gregorian)
+        let calendar = defaultCalendar()
         let baseDate = date(2024, 1, 1, calendar: calendar)
 
         // Exactly 10 weeks apart
@@ -730,5 +727,13 @@ struct ChartDataProviderTests {
         components.timeZone = calendar.timeZone
 
         return calendar.date(from: components)!
+    }
+
+    private func defaultCalendar() -> Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+        calendar.locale = Locale(identifier: "en_US_POSIX")
+        calendar.firstWeekday = 2  // Monday
+        return calendar
     }
 }
