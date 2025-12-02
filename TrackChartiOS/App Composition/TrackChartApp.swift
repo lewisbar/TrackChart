@@ -85,12 +85,7 @@ struct TrackChartApp: App {
 
     private func makeSettingsView(for topic: TopicEntity) -> some View {
         SettingsView(
-            topic: SettingsTopic(
-                name: topic.name,
-                palette: .palette(named: topic.palette),
-                aggregator: .aggregator(named: topic.aggregator),
-                treatsMissingAsZero: topic.treatsMissingAsZero
-            ),
+            topic: topic.settingsViewTopic,
             save: {
                 topic.name = $0.name
                 topic.palette = $0.palette.name

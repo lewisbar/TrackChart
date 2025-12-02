@@ -8,16 +8,13 @@
 import SwiftUI
 import Foundation
 import Charts
-import DataProcessing
 import Presentation
 
 struct PagedChartView<Placeholder: View>: View {
-    @State private var pages: [ChartPage]
     @State private var selectedPage: String = ""
 
-    private let rawEntries: [ChartEntry]
-    private let span: TimeSpan
-    private let dataProvider: ChartDataProvider
+    private let pages: [ChartViewPage]
+    private let aggregator: ViewAggregator
     private let palette: Palette
     private let placeholder: () -> Placeholder
 
@@ -25,22 +22,15 @@ struct PagedChartView<Placeholder: View>: View {
     private let yLabel = String(localized: .value)
 
     init(
-        rawEntries: [ChartEntry],
-        span: TimeSpan,
-        dataProvider: ChartDataProvider,
+        pages: [ChartViewPage],
+        aggregator: ViewAggregator,
         palette: Palette,
         placeholder: @escaping () -> Placeholder = ChartPlaceholderView.init
     ) {
-        self.rawEntries = rawEntries
-        self.span = span
-        self.dataProvider = dataProvider
+        self.pages = pages
+        self.aggregator = aggregator
         self.palette = palette
         self.placeholder = placeholder
-        self._pages = State(initialValue: ChartPageProvider.pages(
-            for: rawEntries,
-            span: span,
-            dataProvider: dataProvider
-        ))
     }
 
     var body: some View {
@@ -50,14 +40,6 @@ struct PagedChartView<Placeholder: View>: View {
             } else {
                 pagedTabView
             }
-        }
-        .onChange(of: rawEntries) { _, _ in
-            updatePages()
-            selectedPage = pages.last?.id ?? ""
-        }
-        .onChange(of: dataProvider) { _, _ in
-            updatePages()
-            selectedPage = pages.last?.id ?? ""
         }
     }
 
@@ -74,18 +56,10 @@ struct PagedChartView<Placeholder: View>: View {
         }
     }
 
-    private func updatePages() {
-        pages = ChartPageProvider.pages(
-            for: rawEntries,
-            span: span,
-            dataProvider: dataProvider
-        )
-    }
-
     // MARK: – Chart
 
     @ViewBuilder
-    private func chart(for page: ChartPage) -> some View {
+    private func chart(for page: ChartViewPage) -> some View {
         VStack {
             titleRow(for: page)
                 .padding(.bottom)
@@ -104,7 +78,7 @@ struct PagedChartView<Placeholder: View>: View {
         .padding(.horizontal, 4)
     }
 
-    private func titleRow(for page: ChartPage) -> some View {
+    private func titleRow(for page: ChartViewPage) -> some View {
         HStack {
             Text(page.title)
                 .font(.caption).bold()
@@ -117,13 +91,13 @@ struct PagedChartView<Placeholder: View>: View {
         }
     }
 
-    private func areaMark(for entry: ProcessedEntry) -> some ChartContent {
+    private func areaMark(for entry: ViewEntry) -> some ChartContent {
         AreaMark(x: .value(xLabel, entry.timestamp), y: .value(yLabel, entry.value))
             .foregroundStyle(areaGradient)
             .interpolationMethod(.catmullRom)
     }
 
-    private func lineMark(for entry: ProcessedEntry) -> some ChartContent {
+    private func lineMark(for entry: ViewEntry) -> some ChartContent {
         LineMark(x: .value(xLabel, entry.timestamp), y: .value(yLabel, entry.value))
             .foregroundStyle(palette.primary)
             .lineStyle(StrokeStyle(lineWidth: 2))
@@ -173,42 +147,5 @@ struct PagedChartView<Placeholder: View>: View {
 private extension Double {
     var twoDecimals: String {
         formatted(.number.precision(.fractionLength(0...2)))
-    }
-}
-
-#Preview {
-    let entries: [ChartEntry] = [
-        .init(value: 2.3, timestamp: .now.advanced(by: -86_400 * 16)),
-        .init(value: -2.3, timestamp: .now.advanced(by: -86_400 * 15)),
-        .init(value: 2.5, timestamp: .now.advanced(by: -86_400 * 14)),
-        .init(value: 1.3, timestamp: .now.advanced(by: -86_400 * 13)),
-        .init(value: 0, timestamp: .now.advanced(by: -86_400 * 12)),
-        .init(value: -1, timestamp: .now.advanced(by: -86_400 * 11)),
-        .init(value: 2, timestamp: .now.advanced(by: -86_400 * 10)),
-        .init(value: 1, timestamp: .now.advanced(by: -86_400 * 9)),
-        .init(value: 2.3, timestamp: .now.advanced(by: -86_400 * 8)),
-        .init(value: -2.3, timestamp: .now.advanced(by: -86_400 * 7)),
-        .init(value: 2.5, timestamp: .now.advanced(by: -86_400 * 6)),
-        .init(value: 1.3, timestamp: .now.advanced(by: -86_400 * 5)),
-        .init(value: 0, timestamp: .now.advanced(by: -86_400 * 4)),
-        .init(value: -1, timestamp: .now.advanced(by: -86_400 * 3)),
-        .init(value: 0, timestamp: .now.advanced(by: -86_400 * 2)),
-        .init(value: 2, timestamp: .now.advanced(by: -86_400 * 1.8)),
-        .init(value: 4, timestamp: .now.advanced(by: -86_400 * 1.4)),
-        .init(value: 1, timestamp: .now.advanced(by: -86_400 * 1)),
-        .init(value: -1, timestamp: .now.advanced(by: -86_400 * 0.9)),
-        .init(value: 3, timestamp: .now.advanced(by: -86_400 * 0.4))
-    ]
-
-    ScrollView {
-        VStack {
-            PagedChartView(rawEntries: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false), palette: .arcticIce).card().frame(height: 250)
-            PagedChartView(rawEntries: entries, span: .month, dataProvider: .dailySum(treatsMissingAsZero: false), palette: .aurora).card().frame(height: 250)
-            PagedChartView(rawEntries: entries, span: .oneYear, dataProvider: .monthlySum(treatsMissingAsZero: false), palette: .desertDune).card().frame(height: 250)
-            PagedChartView(rawEntries: entries, span: .week, dataProvider: .dailyAverage(treatsMissingAsZero: false), palette: .fire).card().frame(height: 250)
-            PagedChartView(rawEntries: entries, span: .month, dataProvider: .dailyAverage(treatsMissingAsZero: false), palette: .fire).card().frame(height: 250)
-            PagedChartView(rawEntries: entries, span: .oneYear, dataProvider: .monthlyAverage(treatsMissingAsZero: false), palette: .meadow).card().frame(height: 250)
-        }
-        .padding()
     }
 }

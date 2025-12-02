@@ -10,19 +10,19 @@ import Presentation
 
 struct EntryListView: View {
     let topicName: String
-    let addEntry: (ListEntry) -> Void
-    let updateEntry: (ListEntry) -> Void
+    let addEntry: (ViewEntry) -> Void
+    let updateEntry: (ViewEntry) -> Void
     let deleteEntries: (IndexSet) -> Void
-    let entries: [ListEntry]
+    let entries: [ViewEntry]
     @State private var isShowingInput = false
-    @State private var selectedEntry: ListEntry?
+    @State private var selectedEntry: ViewEntry?
     @Environment(\.dismiss) private var dismiss
 
     init(
         topicName: String,
-        addEntry: @escaping (ListEntry) -> Void,
-        entries: [ListEntry],
-        updateEntry: @escaping (ListEntry) -> Void,
+        addEntry: @escaping (ViewEntry) -> Void,
+        entries: [ViewEntry],
+        updateEntry: @escaping (ViewEntry) -> Void,
         deleteEntries: @escaping (IndexSet) -> Void
     ) {
         self.topicName = topicName
@@ -75,7 +75,7 @@ struct EntryListView: View {
         }
     }
 
-    private func entryCell(for entry: ListEntry) -> some View {
+    private func entryCell(for entry: ViewEntry) -> some View {
         Button {
             selectedEntry = entry
         } label: {
@@ -99,7 +99,7 @@ struct EntryListView: View {
         .tint(.secondary)
     }
 
-    private func inputView(for entry: ListEntry?) -> some View {
+    private func inputView(for entry: ViewEntry?) -> some View {
         DecimalInputView(
             initialValue: entry?.value ?? 0,
             initialTimestamp: entry?.timestamp,
@@ -118,14 +118,14 @@ struct EntryListView: View {
     }
 
     private func updateEntry(atIndex index: Int, id: UUID, value: Double, timestamp: Date) {
-        let updatedEntry = ListEntry(id: id, value: value, timestamp: timestamp)
+        let updatedEntry = ViewEntry(id: id, value: value, timestamp: timestamp)
         withAnimation {
             updateEntry(updatedEntry)
         }
     }
 
     private func addEntry(withID id: UUID, value: Double, timestamp: Date) {
-        let newEntry = ListEntry(id: id, value: value, timestamp: timestamp)
+        let newEntry = ViewEntry(id: id, value: value, timestamp: timestamp)
         withAnimation {
             addEntry(newEntry)
         }
@@ -151,7 +151,7 @@ struct EntryListView: View {
 }
 
 #Preview {
-    @Previewable @State var entries: [ListEntry] = [
+    @Previewable @State var entries: [ViewEntry] = [
         .init(id: UUID(), value: 2.1, timestamp: .now.advanced(by: -800)),
         .init(id: UUID(), value: 1, timestamp: .now.advanced(by: -700)),
         .init(id: UUID(), value: -1, timestamp: .now.advanced(by: -600)),

@@ -8,7 +8,7 @@
 import Foundation
 
 @frozen
-public enum Aggregator: Sendable, CaseIterable {
+public enum Aggregator {
     case sum
     case average
 

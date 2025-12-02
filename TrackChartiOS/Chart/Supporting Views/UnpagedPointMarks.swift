@@ -7,7 +7,6 @@
 
 import SwiftUI
 import Charts
-import DataProcessing
 import Presentation
 
 struct UnpagedPointMarks {
@@ -16,7 +15,7 @@ struct UnpagedPointMarks {
     let yLabel: String
 
     @ChartContentBuilder
-    func pointMark(for entry: ProcessedEntry, in entries: [ProcessedEntry]) -> some ChartContent {
+    func pointMark(for entry: ViewEntry, in entries: [ViewEntry]) -> some ChartContent {
         if entries.count == 1 {
             PointMark(x: .value(xLabel, entry.timestamp), y: .value(yLabel, entry.value))
                 .symbol(symbol: pointSymbol)
