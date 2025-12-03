@@ -37,7 +37,7 @@ public extension TopicEntity {
     }
 }
 
-private extension EntryEntity {
+public extension EntryEntity {
     var viewEntry: ViewEntry {
         ViewEntry(id: id, value: value, timestamp: timestamp)
     }

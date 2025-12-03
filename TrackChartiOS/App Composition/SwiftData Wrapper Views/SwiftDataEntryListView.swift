@@ -9,40 +9,22 @@ import SwiftUI
 import Persistence
 import Presentation
 
+/// Wrapper to decouple the actual View from SwiftData
 struct SwiftDataEntryListView: View {
     @Bindable var topic: TopicEntity
-    @State private var viewEntries: [ViewEntry] = []
+    let viewModel: SwiftDataEntryListViewModel
 
     var body: some View {
         EntryListView(
             topicName: topic.name,
-            addEntry: addEntry,
-            entries: viewEntries,
-            updateEntry: updateEntry,
-            deleteEntries: deleteEntries
+            addEntry: { viewModel.addEntry($0, to: topic) },
+            entries: viewModel.viewEntries,
+            updateEntry: { viewModel.updateEntry($0, for: topic) },
+            deleteEntries: { viewModel.deleteEntries(at: $0, from: topic) }
         )
-        .onAppear(perform: syncFromModel)
+        .onAppear { viewModel.sync(from: topic) }
         .onChange(of: topic.entryCount) { _, _ in
-            syncFromModel()
+            viewModel.sync(from: topic)
         }
-    }
-
-    private func addEntry(_ newEntry: ViewEntry) {
-        topic.submit(newValue: newEntry.value, timestamp: newEntry.timestamp)
-        syncFromModel()
-    }
-
-    private func updateEntry(_ updatedEntry: ViewEntry) {
-        topic.updateEntry(withID: updatedEntry.id, value: updatedEntry.value, timestamp: updatedEntry.timestamp)
-        syncFromModel()
-    }
-
-    private func deleteEntries(at offsets: IndexSet) {
-        topic.deleteEntries(atOffsets: offsets, order: .reverse)
-        syncFromModel()
-    }
-
-    private func syncFromModel() {
-        viewEntries = topic.viewEntries.reversed()
     }
 }
