@@ -16,24 +16,30 @@ struct SwiftDataEntryListView: View {
     var body: some View {
         EntryListView(
             topicName: topic.name,
-            addEntry: { new in
-                topic.submit(newValue: new.value, timestamp: new.timestamp)
-                syncFromModel()
-            },
+            addEntry: addEntry,
             entries: viewEntries,
-            updateEntry: { updated in
-                topic.updateEntry(withID: updated.id, value: updated.value, timestamp: updated.timestamp)
-                syncFromModel()
-            },
-            deleteEntries: { offsets in
-                topic.deleteEntries(atOffsets: offsets, order: .reverse)
-                syncFromModel()
-            }
+            updateEntry: updateEntry,
+            deleteEntries: deleteEntries
         )
         .onAppear(perform: syncFromModel)
         .onChange(of: topic.entryCount) { _, _ in
             syncFromModel()
         }
+    }
+
+    private func addEntry(_ newEntry: ViewEntry) {
+        topic.submit(newValue: newEntry.value, timestamp: newEntry.timestamp)
+        syncFromModel()
+    }
+
+    private func updateEntry(_ updatedEntry: ViewEntry) {
+        topic.updateEntry(withID: updatedEntry.id, value: updatedEntry.value, timestamp: updatedEntry.timestamp)
+        syncFromModel()
+    }
+
+    private func deleteEntries(at offsets: IndexSet) {
+        topic.deleteEntries(atOffsets: offsets, order: .reverse)
+        syncFromModel()
     }
 
     private func syncFromModel() {
