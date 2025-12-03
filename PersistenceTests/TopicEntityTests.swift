@@ -60,11 +60,13 @@ struct TopicEntityTests {
         let topicEntity = makeTopicEntity(with: entries)
         try setUp(context: context, with: topicEntity)
 
+        let newID = UUID()
         let newValue = -1.2
         let newTimestamp = Date(timeIntervalSinceReferenceDate: 0)
-        topicEntity.submit(newValue: newValue, timestamp: newTimestamp)
+        topicEntity.submit(id: newID, newValue: newValue, timestamp: newTimestamp)
 
         #expect(topicEntity.entries?.count == 6)
+        #expect(topicEntity.sortedEntries.first?.id == newID)
         #expect(topicEntity.sortedEntries.first?.value == newValue)
         #expect(topicEntity.sortedEntries.first?.timestamp == newTimestamp)
     }

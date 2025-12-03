@@ -73,7 +73,7 @@ struct TrackChartApp: App {
                         showEntryList: { showEntryList(for: topic) }
                     )
                 case let .entryListView(topic):
-                    SwiftDataEntryListView(topic: topic)
+                    SwiftDataEntryListView(topic: topic, viewModel: SwiftDataEntryListViewModel())
                 }
             }
             .sheet(item: $newTopicSortIndex) {
