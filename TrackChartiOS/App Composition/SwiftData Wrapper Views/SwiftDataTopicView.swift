@@ -7,7 +7,6 @@
 
 import SwiftUI
 import Persistence
-import Presentation
 
 /// Wrapper to decouple the actual View from SwiftData
 struct SwiftDataTopicView<Settings: View>: View {
@@ -18,7 +17,7 @@ struct SwiftDataTopicView<Settings: View>: View {
     var body: some View {
         TopicView(
             topic: topic.viewTopic,
-            submitNewValue: { topic.submit(newValue: $0, timestamp: $1) },
+            submitNewValue: { topic.submit(id: UUID(), newValue: $0, timestamp: $1) },
             settingsView: settingsView,
             showEntryList: showEntryList
         )

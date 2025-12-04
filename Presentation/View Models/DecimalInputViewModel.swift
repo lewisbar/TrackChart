@@ -27,11 +27,13 @@ public class DecimalInputViewModel {
         }
     }
 
+    private static let decimalSeparator: String = Locale.current.decimalSeparator ?? "."
+
     public let keys = [
         ["1", "2", "3"],
         ["4", "5", "6"],
         ["7", "8", "9"],
-        [".", "0", "⌫"]
+        [decimalSeparator, "0", "⌫"]
     ]
 
     private let submit: (Double, Date) -> Void
@@ -61,8 +63,8 @@ public class DecimalInputViewModel {
             } else {
                 resetValue()
             }
-        case ".":
-            if !value.contains(".") { value += "." }
+        case Self.decimalSeparator:
+            if !value.contains(Self.decimalSeparator) { value += Self.decimalSeparator }
         default:
             if value == "0" { value = key }
             else if value == "-0" { value = "-" + key }
@@ -85,7 +87,7 @@ public class DecimalInputViewModel {
 
     // MARK: Submit – reset everything
     public func submitNumber() {
-        if let doubleValue = Double(value) {
+        if let doubleValue = try? FloatingPointFormatStyle<Double>().parseStrategy.parse(value) {
             let finalDate = selectedTimestamp ?? now()
             submit(doubleValue, finalDate)
         }

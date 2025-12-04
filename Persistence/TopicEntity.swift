@@ -44,8 +44,8 @@ public final class TopicEntity {
         self.sortIndex = sortIndex
     }
 
-    public func submit(newValue: Double, timestamp: Date) {
-        let newEntry = EntryEntity(value: newValue, timestamp: timestamp)
+    public func submit(id: UUID, newValue: Double, timestamp: Date) {
+        let newEntry = EntryEntity(id: id, value: newValue, timestamp: timestamp)
         entries?.append(newEntry)
     }
 

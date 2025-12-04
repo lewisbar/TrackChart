@@ -27,14 +27,14 @@ class DecimalInputViewModelTests {
             ["1", "2", "3"],
             ["4", "5", "6"],
             ["7", "8", "9"],
-            [".", "0", "⌫"]
+            [decimalSeparator, "0", "⌫"]
         ])
     }
 
     @Test func submitNumber() {
         var submittedValues = [(Double, Date)]()
         let sut = makeSUT(submit: { submittedValues.append(($0, $1)) })
-        sut.value = "-32.6"
+        sut.value = "-32\(decimalSeparator)6"
 
         sut.submitNumber()
 
@@ -56,7 +56,7 @@ class DecimalInputViewModelTests {
     @Test func submitNumber_whenThereIsATimeStampSet_usesThisTimestamp() {
         var submittedValues = [(Double, Date)]()
         let sut = makeSUT(submit: { submittedValues.append(($0, $1)) })
-        let newValue = "-32.6"
+        let newValue = "-32\(decimalSeparator)6"
         let newTimestamp = Date(timeIntervalSinceReferenceDate: 123)
 
         sut.value = newValue
@@ -73,7 +73,7 @@ class DecimalInputViewModelTests {
         var submittedValues = [(Double, Date)]()
         let now = { Date(timeIntervalSinceReferenceDate: 456) }
         let sut = makeSUT(submit: { submittedValues.append(($0, $1)) }, now: now)
-        let newValue = "-32.6"
+        let newValue = "-32\(decimalSeparator)6"
 
         sut.value = newValue
 
@@ -111,37 +111,37 @@ class DecimalInputViewModelTests {
         sut.toggleSign()
         #expect(sut.value == "10")
 
-        sut.value = "0.01"
+        sut.value = "0\(decimalSeparator)01"
         sut.toggleSign()
-        #expect(sut.value == "-0.01")
+        #expect(sut.value == "-0\(decimalSeparator)01")
 
-        sut.value = "-0.01"
+        sut.value = "-0\(decimalSeparator)01"
         sut.toggleSign()
-        #expect(sut.value == "0.01")
+        #expect(sut.value == "0\(decimalSeparator)01")
 
-        sut.value = "0."
+        sut.value = "0\(decimalSeparator)"
         sut.toggleSign()
-        #expect(sut.value == "-0.")
+        #expect(sut.value == "-0\(decimalSeparator)")
 
-        sut.value = "-0."
+        sut.value = "-0\(decimalSeparator)"
         sut.toggleSign()
-        #expect(sut.value == "0.")
+        #expect(sut.value == "0\(decimalSeparator)")
 
-        sut.value = "10."
+        sut.value = "10\(decimalSeparator)"
         sut.toggleSign()
-        #expect(sut.value == "-10.")
+        #expect(sut.value == "-10\(decimalSeparator)")
 
-        sut.value = "-10."
+        sut.value = "-10\(decimalSeparator)"
         sut.toggleSign()
-        #expect(sut.value == "10.")
+        #expect(sut.value == "10\(decimalSeparator)")
 
-        sut.value = "1.00"
+        sut.value = "1\(decimalSeparator)00"
         sut.toggleSign()
-        #expect(sut.value == "-1.00")
+        #expect(sut.value == "-1\(decimalSeparator)00")
 
-        sut.value = "-1.00"
+        sut.value = "-1\(decimalSeparator)00"
         sut.toggleSign()
-        #expect(sut.value == "1.00")
+        #expect(sut.value == "1\(decimalSeparator)00")
     }
 
     @Test func handleInput_backspace() {
@@ -164,45 +164,45 @@ class DecimalInputViewModelTests {
         sut.handleInput(backspace)
         #expect(sut.value == "0")
 
-        sut.value = "0."
+        sut.value = "0\(decimalSeparator)"
         sut.handleInput(backspace)
         #expect(sut.value == "0")
 
-        sut.value = "-0."
+        sut.value = "-0\(decimalSeparator)"
         sut.handleInput(backspace)
         #expect(sut.value == "-0")
 
-        sut.value = "1."
+        sut.value = "1\(decimalSeparator)"
         sut.handleInput(backspace)
         #expect(sut.value == "1")
 
-        sut.value = "-1."
+        sut.value = "-1\(decimalSeparator)"
         sut.handleInput(backspace)
         #expect(sut.value == "-1")
 
-        sut.value = "0.0"
+        sut.value = "0\(decimalSeparator)0"
         sut.handleInput(backspace)
-        #expect(sut.value == "0.")
+        #expect(sut.value == "0\(decimalSeparator)")
 
-        sut.value = "-0.0"
+        sut.value = "-0\(decimalSeparator)0"
         sut.handleInput(backspace)
-        #expect(sut.value == "-0.")
+        #expect(sut.value == "-0\(decimalSeparator)")
 
-        sut.value = "0.1"
+        sut.value = "0\(decimalSeparator)1"
         sut.handleInput(backspace)
-        #expect(sut.value == "0.")
+        #expect(sut.value == "0\(decimalSeparator)")
 
-        sut.value = "-0.1"
+        sut.value = "-0\(decimalSeparator)1"
         sut.handleInput(backspace)
-        #expect(sut.value == "-0.")
+        #expect(sut.value == "-0\(decimalSeparator)")
 
-        sut.value = "1.1"
+        sut.value = "1\(decimalSeparator)1"
         sut.handleInput(backspace)
-        #expect(sut.value == "1.")
+        #expect(sut.value == "1\(decimalSeparator)")
 
-        sut.value = "-1.1"
+        sut.value = "-1\(decimalSeparator)1"
         sut.handleInput(backspace)
-        #expect(sut.value == "-1.")
+        #expect(sut.value == "-1\(decimalSeparator)")
 
         sut.value = "78"
         sut.handleInput(backspace)
@@ -220,82 +220,81 @@ class DecimalInputViewModelTests {
         sut.handleInput(backspace)
         #expect(sut.value == "0")
 
-        sut.value = "-."
+        sut.value = "-\(decimalSeparator)"
         sut.handleInput(backspace)
         #expect(sut.value == "0")
 
-        sut.value = "."
+        sut.value = decimalSeparator
         sut.handleInput(backspace)
         #expect(sut.value == "0")
     }
 
     @Test func handleInput_decimalPoint() {
         let sut = makeSUT()
-        let decimalPoint = "."
 
         sut.value = "0"
-        sut.handleInput(decimalPoint)
-        #expect(sut.value == "0.")
+        sut.handleInput(decimalSeparator)
+        #expect(sut.value == "0\(decimalSeparator)")
 
         sut.value = "-0"
-        sut.handleInput(decimalPoint)
-        #expect(sut.value == "-0.")
+        sut.handleInput(decimalSeparator)
+        #expect(sut.value == "-0\(decimalSeparator)")
 
         sut.value = "12"
-        sut.handleInput(decimalPoint)
-        #expect(sut.value == "12.")
+        sut.handleInput(decimalSeparator)
+        #expect(sut.value == "12\(decimalSeparator)")
 
         sut.value = "-12"
-        sut.handleInput(decimalPoint)
-        #expect(sut.value == "-12.")
+        sut.handleInput(decimalSeparator)
+        #expect(sut.value == "-12\(decimalSeparator)")
 
-        sut.value = "0."
-        sut.handleInput(decimalPoint)
-        #expect(sut.value == "0.")
+        sut.value = "0\(decimalSeparator)"
+        sut.handleInput(decimalSeparator)
+        #expect(sut.value == "0\(decimalSeparator)")
 
-        sut.value = "-0."
-        sut.handleInput(decimalPoint)
-        #expect(sut.value == "-0.")
+        sut.value = "-0\(decimalSeparator)"
+        sut.handleInput(decimalSeparator)
+        #expect(sut.value == "-0\(decimalSeparator)")
 
-        sut.value = "12."
-        sut.handleInput(decimalPoint)
-        #expect(sut.value == "12.")
+        sut.value = "12\(decimalSeparator)"
+        sut.handleInput(decimalSeparator)
+        #expect(sut.value == "12\(decimalSeparator)")
 
-        sut.value = "-12."
-        sut.handleInput(decimalPoint)
-        #expect(sut.value == "-12.")
+        sut.value = "-12\(decimalSeparator)"
+        sut.handleInput(decimalSeparator)
+        #expect(sut.value == "-12\(decimalSeparator)")
 
-        sut.value = "0.0"
-        sut.handleInput(decimalPoint)
-        #expect(sut.value == "0.0")
+        sut.value = "0\(decimalSeparator)0"
+        sut.handleInput(decimalSeparator)
+        #expect(sut.value == "0\(decimalSeparator)0")
 
-        sut.value = "-0.0"
-        sut.handleInput(decimalPoint)
-        #expect(sut.value == "-0.0")
+        sut.value = "-0\(decimalSeparator)0"
+        sut.handleInput(decimalSeparator)
+        #expect(sut.value == "-0\(decimalSeparator)0")
 
-        sut.value = "12.0"
-        sut.handleInput(decimalPoint)
-        #expect(sut.value == "12.0")
+        sut.value = "12\(decimalSeparator)0"
+        sut.handleInput(decimalSeparator)
+        #expect(sut.value == "12\(decimalSeparator)0")
 
-        sut.value = "-12.0"
-        sut.handleInput(decimalPoint)
-        #expect(sut.value == "-12.0")
+        sut.value = "-12\(decimalSeparator)0"
+        sut.handleInput(decimalSeparator)
+        #expect(sut.value == "-12\(decimalSeparator)0")
 
-        sut.value = "0.01"
-        sut.handleInput(decimalPoint)
-        #expect(sut.value == "0.01")
+        sut.value = "0\(decimalSeparator)01"
+        sut.handleInput(decimalSeparator)
+        #expect(sut.value == "0\(decimalSeparator)01")
 
-        sut.value = "-0.01"
-        sut.handleInput(decimalPoint)
-        #expect(sut.value == "-0.01")
+        sut.value = "-0\(decimalSeparator)01"
+        sut.handleInput(decimalSeparator)
+        #expect(sut.value == "-0\(decimalSeparator)01")
 
-        sut.value = "12.11"
-        sut.handleInput(decimalPoint)
-        #expect(sut.value == "12.11")
+        sut.value = "12\(decimalSeparator)11"
+        sut.handleInput(decimalSeparator)
+        #expect(sut.value == "12\(decimalSeparator)11")
 
-        sut.value = "-12.11"
-        sut.handleInput(decimalPoint)
-        #expect(sut.value == "-12.11")
+        sut.value = "-12\(decimalSeparator)11"
+        sut.handleInput(decimalSeparator)
+        #expect(sut.value == "-12\(decimalSeparator)11")
     }
 
     @Test func handleInput_number() {
@@ -317,37 +316,37 @@ class DecimalInputViewModelTests {
         sut.handleInput("5")
         #expect(sut.value == "-15")
 
-        sut.value = "0."
+        sut.value = "0\(decimalSeparator)"
         sut.handleInput("5")
-        #expect(sut.value == "0.5")
+        #expect(sut.value == "0\(decimalSeparator)5")
 
-        sut.value = "-0."
+        sut.value = "-0\(decimalSeparator)"
         sut.handleInput("5")
-        #expect(sut.value == "-0.5")
+        #expect(sut.value == "-0\(decimalSeparator)5")
 
-        sut.value = "1."
+        sut.value = "1\(decimalSeparator)"
         sut.handleInput("5")
-        #expect(sut.value == "1.5")
+        #expect(sut.value == "1\(decimalSeparator)5")
 
-        sut.value = "-1."
+        sut.value = "-1\(decimalSeparator)"
         sut.handleInput("5")
-        #expect(sut.value == "-1.5")
+        #expect(sut.value == "-1\(decimalSeparator)5")
 
-        sut.value = "12.0"
+        sut.value = "12\(decimalSeparator)0"
         sut.handleInput("5")
-        #expect(sut.value == "12.05")
+        #expect(sut.value == "12\(decimalSeparator)05")
 
-        sut.value = "-12.0"
+        sut.value = "-12\(decimalSeparator)0"
         sut.handleInput("5")
-        #expect(sut.value == "-12.05")
+        #expect(sut.value == "-12\(decimalSeparator)05")
 
-        sut.value = "12.05"
+        sut.value = "12\(decimalSeparator)05"
         sut.handleInput("5")
-        #expect(sut.value == "12.055")
+        #expect(sut.value == "12\(decimalSeparator)055")
 
-        sut.value = "-12.05"
+        sut.value = "-12\(decimalSeparator)05"
         sut.handleInput("5")
-        #expect(sut.value == "-12.055")
+        #expect(sut.value == "-12\(decimalSeparator)055")
     }
 
     @Test func startsWithoutTimestamp() {
@@ -432,6 +431,7 @@ class DecimalInputViewModelTests {
     }
 
     private let nowTestDescription = "Now Test"
+    private let decimalSeparator = Locale.current.decimalSeparator ?? "."
 
     private weak var weakSUT: DecimalInputViewModel?
 
