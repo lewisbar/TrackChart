@@ -85,7 +85,7 @@ public struct ChartDataProvider: Sendable {
             // Choose aggregation level based on data span
             if daysBetween < 2 {
                 // Less than three days: show raw data without aggregation
-                return raw.processedEntries(from: rawEntries) // raw.map { ProcessedEntry(value: $0.value, timestamp: $0.timestamp) }
+                return raw.processedEntries(from: rawEntries)
             }
             if weeksBetween <= 10 {
                 // Up to 10 weeks: aggregate by day
