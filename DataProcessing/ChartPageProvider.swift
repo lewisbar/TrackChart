@@ -22,19 +22,20 @@ public final class ChartPageProvider {
         let sorted = raw.sorted { $0.timestamp < $1.timestamp }
         guard !sorted.isEmpty else { return [] }
 
-        let ranges = pageRanges(from: sorted, span: span, calendar: calendar)
+        let aggregatedEntries = dataProvider.processedEntries(from: sorted)
+
+        let ranges = pageRanges(from: aggregatedEntries, span: span, calendar: calendar)
 
         return ranges.compactMap { range -> ChartPage? in
-            let pageEntries = sorted.filter { range.contains($0.timestamp) }
+            let pageEntries = aggregatedEntries.filter { range.contains($0.timestamp) }
             guard !pageEntries.isEmpty else { return nil }
 
-            let aggregatedEntries = dataProvider.processedEntries(from: pageEntries)
             let title = formatPageTitle(start: range.lowerBound, end: range.upperBound, span: span, calendar: calendar)
 
             let pageAggregate = aggregated(values: pageEntries.map(\.value), using: dataProvider.aggregator)
 
             return ChartPage(
-                entries: aggregatedEntries,
+                entries: pageEntries,
                 span: span,
                 title: title,
                 aggregator: dataProvider.aggregator,
@@ -69,7 +70,7 @@ public final class ChartPageProvider {
     }
 
     private static func pageRanges(
-        from entries: [RawEntry],
+        from entries: [ProcessedEntry],
         span: TimeSpan,
         calendar: Calendar
     ) -> [Range<Date>] {

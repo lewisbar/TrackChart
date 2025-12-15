@@ -230,14 +230,15 @@ struct ChartPageProviderTests {
 
     @Test("Daily sum aggregation across week")
     func dailySumAggregation() {
-        let calendar = Calendar(identifier: .gregorian)
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2  // Monday
         let baseDate = date(2024, 11, 11, calendar: calendar)
 
         // Multiple entries on same day, plus another day
         let entries = [
             RawEntry(value: 10, timestamp: baseDate),
-            RawEntry(value: 20, timestamp: calendar.date(byAdding: .hour, value: 2, to: baseDate)!),
-            RawEntry(value: 30, timestamp: calendar.date(byAdding: .day, value: 1, to: baseDate)!)
+            RawEntry(value: 2, timestamp: calendar.date(byAdding: .hour, value: 2, to: baseDate)!),
+            RawEntry(value: 40, timestamp: calendar.date(byAdding: .day, value: 2, to: baseDate)!)
         ]
 
         let pages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
@@ -245,9 +246,34 @@ struct ChartPageProviderTests {
         #expect(pages.count == 1)
         #expect(pages[0].entries.count == 2)  // Two days
 
-        // First day should sum to 30
-        let firstDay = pages[0].entries.first { calendar.isDate($0.timestamp, inSameDayAs: baseDate) }
-        #expect(firstDay?.value == 30)
+        #expect(pages.first?.entries.map(\.value) == [12, 40])
+    }
+
+    @Test("Daily sum aggregation across week with zero filling")
+    func dailySumAggregation_withZeroFilling() {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2  // Monday
+        let baseDate = date(2025, 11, 5, calendar: calendar)  // Wednesday
+
+        // Multiple entries on same day, plus two other days in the next weeks, with empty days in between
+        let entries = [
+            RawEntry(value: 10, timestamp: baseDate),  // Wednesday
+            RawEntry(value: 20, timestamp: calendar.date(byAdding: .hour, value: 2, to: baseDate)!),  // same day
+            RawEntry(value: 30, timestamp: calendar.date(byAdding: .day, value: 8, to: baseDate)!),  // Thursday
+            RawEntry(value: 40, timestamp: calendar.date(byAdding: .day, value: 10, to: baseDate)!),  // Saturday
+            RawEntry(value: 50, timestamp: calendar.date(byAdding: .day, value: 16, to: baseDate)!)  // Friday
+        ]
+
+        let pages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: true, calendar: calendar), calendar: calendar)
+
+        #expect(pages.count == 3)
+        #expect(pages[0].entries.count == 5)  // Filled from the first entry on
+        #expect(pages[1].entries.count == 7)  // Fully filled, because there are weeks before and after
+        #expect(pages[2].entries.count == 5)  // Filled up to the last entry
+
+        #expect(pages[0].entries.map(\.value) == [30, 0, 0, 0, 0])  // Wednesday (first entry) through Sunday
+        #expect(pages[1].entries.map(\.value) == [0, 0, 0, 30, 0, 40, 0])  // Monday through Sunday
+        #expect(pages[2].entries.map(\.value) == [0, 0, 0, 0, 50])  // Monday through Friday (last entry)
     }
 
     @Test("Monthly average aggregation")
@@ -255,12 +281,12 @@ struct ChartPageProviderTests {
         let calendar = Calendar(identifier: .gregorian)
 
         let jan = date(2024, 1, 15, calendar: calendar)
-        let feb = date(2024, 2, 15, calendar: calendar)
+        let mar = date(2024, 3, 15, calendar: calendar)
 
         let entries = [
             RawEntry(value: 10, timestamp: jan),
-            RawEntry(value: 20, timestamp: calendar.date(byAdding: .day, value: 1, to: jan)!),
-            RawEntry(value: 30, timestamp: feb)
+            RawEntry(value: 2, timestamp: calendar.date(byAdding: .day, value: 1, to: jan)!),
+            RawEntry(value: 30, timestamp: mar)
         ]
 
         let pages = ChartPageProvider.pages(for: entries, span: .year, dataProvider: .monthlyAverage(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
@@ -268,11 +294,28 @@ struct ChartPageProviderTests {
         #expect(pages.count == 1)
 
         // Should have two months of data
-        #expect(pages[0].entries.count == 2)
+        #expect(pages.first?.entries.map(\.value) == [6, 30])
+    }
 
-        // January average should be 15
-        let janEntry = pages[0].entries.first
-        #expect(janEntry?.value == 15)
+    @Test("Monthly average aggregation with zero filling")
+    func monthlyAverageAggregation_withZeroFilling() {
+        let calendar = Calendar(identifier: .gregorian)
+
+        let jan = date(2024, 1, 15, calendar: calendar)
+        let mar = date(2024, 3, 15, calendar: calendar)
+
+        let entries = [
+            RawEntry(value: 10, timestamp: jan),
+            RawEntry(value: 2, timestamp: calendar.date(byAdding: .day, value: 1, to: jan)!),
+            RawEntry(value: 30, timestamp: mar)
+        ]
+
+        let pages = ChartPageProvider.pages(for: entries, span: .year, dataProvider: .monthlyAverage(treatsMissingAsZero: true, calendar: calendar), calendar: calendar)
+
+        #expect(pages.count == 1)
+
+        // Should have three months of data
+        #expect(pages.first?.entries.map(\.value) == [6, 0, 30])
     }
 
     @Test("Correct page aggregation (page total)")
