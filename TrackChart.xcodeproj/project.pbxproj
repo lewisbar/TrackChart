@@ -137,11 +137,6 @@
 			path = DataProcessingTests;
 			sourceTree = "<group>";
 		};
-		30438AD12E7990AF00F3C852 /* TrackChartiOSTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = TrackChartiOSTests;
-			sourceTree = "<group>";
-		};
 		30A31C702EA6D27C00DEB9EB /* Persistence */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -251,7 +246,6 @@
 				30F7B4122ED89ECC000200F4 /* Presentation.xctestplan */,
 				3038FE112ED2994A0092427C /* DataProcessing.xctestplan */,
 				30BDE0762E7854E000199C93 /* TrackChartiOS */,
-				30438AD12E7990AF00F3C852 /* TrackChartiOSTests */,
 				30A31C702EA6D27C00DEB9EB /* Persistence */,
 				30A31C7A2EA6D27C00DEB9EB /* PersistenceTests */,
 				3038FDDC2ED28F470092427C /* DataProcessing */,
