@@ -16,15 +16,14 @@ struct ChartPageProviderTests {
 
     @Test("Gregorian: Empty array returns empty pages")
     func gregorianEmptyArray() {
-        let calendar = Calendar(identifier: .gregorian)
+        let calendar = defaultCalendar()
         let pages = ChartPageProvider.pages(for: [], span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
         #expect(pages.isEmpty)
     }
 
     @Test("Gregorian: Week spanning year boundary")
     func gregorianWeekSpanningYear() {
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.firstWeekday = 2  // Monday
+        let calendar = defaultCalendar()
 
         // Dec 30, 2024 to Jan 5, 2025 should be in the same week
         let entries = [
@@ -42,7 +41,7 @@ struct ChartPageProviderTests {
 
     @Test("Gregorian: Month boundaries are respected")
     func gregorianMonthBoundaries() {
-        let calendar = Calendar(identifier: .gregorian)
+        let calendar = defaultCalendar()
         let entries = [
             RawEntry(value: 1, timestamp: date(2024, 10, 31, calendar: calendar)), // Last day of October
             RawEntry(value: 2, timestamp: date(2024, 11, 1, calendar: calendar))   // First day of November
@@ -209,16 +208,16 @@ struct ChartPageProviderTests {
 
     @Test("Leap year handling across calendars")
     func leapYearHandling() {
-        let gregorian = Calendar(identifier: .gregorian)
+        let calendar = defaultCalendar()
 
         // 2024 is a leap year
         let febEntries = [
-            RawEntry(value: 1, timestamp: date(2024, 2, 28, calendar: gregorian)),
-            RawEntry(value: 2, timestamp: date(2024, 2, 29, calendar: gregorian)),
-            RawEntry(value: 3, timestamp: date(2024, 3, 1, calendar: gregorian))
+            RawEntry(value: 1, timestamp: date(2024, 2, 28, calendar: calendar)),
+            RawEntry(value: 2, timestamp: date(2024, 2, 29, calendar: calendar)),
+            RawEntry(value: 3, timestamp: date(2024, 3, 1, calendar: calendar))
         ]
 
-        let pages = ChartPageProvider.pages(for: febEntries, span: .month, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: gregorian), calendar: gregorian)
+        let pages = ChartPageProvider.pages(for: febEntries, span: .month, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
 
         // Feb and March should be separate pages
         #expect(pages.count == 2)
@@ -230,8 +229,7 @@ struct ChartPageProviderTests {
 
     @Test("Daily sum aggregation across week")
     func dailySumAggregation() {
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.firstWeekday = 2  // Monday
+        let calendar = defaultCalendar()
         let baseDate = date(2024, 11, 11, calendar: calendar)
 
         // Multiple entries on same day, plus another day
@@ -251,8 +249,7 @@ struct ChartPageProviderTests {
 
     @Test("Daily sum aggregation across week with zero filling")
     func dailySumAggregation_withZeroFilling() {
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.firstWeekday = 2  // Monday
+        let calendar = defaultCalendar()
         let baseDate = date(2025, 11, 5, calendar: calendar)  // Wednesday
 
         // Multiple entries on same day, plus two other days in the next weeks, with empty days in between
@@ -278,7 +275,7 @@ struct ChartPageProviderTests {
 
     @Test("Monthly average aggregation")
     func monthlyAverageAggregation() {
-        let calendar = Calendar(identifier: .gregorian)
+        let calendar = defaultCalendar()
 
         let jan = date(2024, 1, 15, calendar: calendar)
         let mar = date(2024, 3, 15, calendar: calendar)
@@ -299,7 +296,7 @@ struct ChartPageProviderTests {
 
     @Test("Monthly average aggregation with zero filling")
     func monthlyAverageAggregation_withZeroFilling() {
-        let calendar = Calendar(identifier: .gregorian)
+        let calendar = defaultCalendar()
 
         let jan = date(2024, 1, 15, calendar: calendar)
         let mar = date(2024, 3, 15, calendar: calendar)
@@ -320,8 +317,7 @@ struct ChartPageProviderTests {
 
     @Test("Correct page aggregation (page total)")
     func pageAggregate_sum() {
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.firstWeekday = 2  // Monday
+        var calendar = defaultCalendar()
 
         // Dec 30, 2024 to Jan 5, 2025 should be in the same week
         let entries = [
@@ -341,8 +337,7 @@ struct ChartPageProviderTests {
 
     @Test("Correct page aggregation (page average)")
     func pageAggregate_average() {
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.firstWeekday = 2  // Monday
+        var calendar = defaultCalendar()
 
         // Dec 30, 2024 to Jan 5, 2025 should be in the same week
         let entries = [
@@ -371,5 +366,13 @@ struct ChartPageProviderTests {
         components.timeZone = calendar.timeZone
 
         return calendar.date(from: components)!
+    }
+
+    private func defaultCalendar() -> Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+        calendar.locale = Locale(identifier: "en_US_POSIX")
+        calendar.firstWeekday = 2  // Monday
+        return calendar
     }
 }
