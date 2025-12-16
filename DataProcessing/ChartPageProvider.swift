@@ -50,7 +50,7 @@ public final class ChartPageProvider {
 
         switch span {
         case .week:
-            let lastDay = calendar.date(byAdding: .second, value: -1, to: end) ?? end
+            let lastDay = calendar.date(byAdding: .day, value: -1, to: end) ?? end
             let first = start.formatted(formatStyle.day().month(.abbreviated))
             let last = lastDay.formatted(formatStyle.day().month(.abbreviated).year())
             return "\(first) – \(last)"

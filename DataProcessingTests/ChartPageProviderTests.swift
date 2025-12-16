@@ -36,7 +36,20 @@ struct ChartPageProviderTests {
 
         // All entries should be in the same week page
         #expect(pages.count == 1)
-        #expect(pages[0].entries.count == 3)
+        #expect(pages.first?.entries.map(\.value) == [1, 2, 3])
+
+        let expectedDates = [
+            date(2024, 12, 30, hour: 0, calendar: calendar),
+            date(2025, 1, 2, hour: 0, calendar: calendar),
+            date(2025, 1, 5, hour: 0, calendar: calendar)
+        ]
+        #expect(pages.first?.entries.map(\.timestamp) == expectedDates)
+
+        let formatStyle = Date.FormatStyle(calendar: calendar)
+        let first = expectedDates[0].formatted(formatStyle.day().month(.abbreviated))
+        let last = expectedDates[2].formatted(formatStyle.day().month(.abbreviated).year())
+        let expectedTitle = "\(first) – \(last)"
+        #expect(pages.first?.title == expectedTitle)
     }
 
     @Test("Gregorian: Month boundaries are respected")
@@ -317,7 +330,7 @@ struct ChartPageProviderTests {
 
     @Test("Correct page aggregation (page total)")
     func pageAggregate_sum() {
-        var calendar = defaultCalendar()
+        let calendar = defaultCalendar()
 
         // Dec 30, 2024 to Jan 5, 2025 should be in the same week
         let entries = [
@@ -337,7 +350,7 @@ struct ChartPageProviderTests {
 
     @Test("Correct page aggregation (page average)")
     func pageAggregate_average() {
-        var calendar = defaultCalendar()
+        let calendar = defaultCalendar()
 
         // Dec 30, 2024 to Jan 5, 2025 should be in the same week
         let entries = [
