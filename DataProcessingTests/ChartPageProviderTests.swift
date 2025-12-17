@@ -63,8 +63,8 @@ struct ChartPageProviderTests {
         let pages = ChartPageProvider.pages(for: entries, span: .month, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
 
         #expect(pages.count == 2)
-        #expect(pages[0].entries.count == 1)  // October
-        #expect(pages[1].entries.count == 1)  // November
+        #expect(pages[0].entries.map(\.value) == [1])  // October
+        #expect(pages[1].entries.map(\.value) == [2])  // November
     }
 
     // MARK: - Hebrew Calendar Tests
