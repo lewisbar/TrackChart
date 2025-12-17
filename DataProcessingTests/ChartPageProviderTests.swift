@@ -74,20 +74,25 @@ struct ChartPageProviderTests {
         var calendar = Calendar(identifier: .hebrew)
         calendar.timeZone = TimeZone(identifier: "UTC")!
 
-        // Create entries within the same Hebrew week
-        let baseDate = date(2024, 11, 10, calendar: calendar)
+        // Entries within the same Hebrew week
+        // Using actual Hebrew year/month/day values
+        // 1. Cheschwan 5785 until 7. Cheschwan 5785 → full week (Sunday to Saturday)
+        let baseDate = date(5785, 2, 2, calendar: calendar)  // 2. Cheschwan 5785 (Sunday – week start)
         let entries = [
-            RawEntry(value: 1, timestamp: baseDate),
-            RawEntry(value: 2, timestamp: calendar.date(byAdding: .day, value: 2, to: baseDate)!),
-            RawEntry(value: 3, timestamp: calendar.date(byAdding: .day, value: 4, to: baseDate)!)
+            RawEntry(value: 1, timestamp: baseDate),  // 1. Cheschwan (Sunday
+            RawEntry(value: 2, timestamp: calendar.date(byAdding: .day, value: 3, to: baseDate)!),  // 4. Cheschwan (Wednesday)
+            RawEntry(value: 3, timestamp: calendar.date(byAdding: .day, value: 6, to: baseDate)!)   // 7. Cheschwan (Saturday – week end)
         ]
 
-        let pages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
+        let pages = ChartPageProvider.pages(
+            for: entries,
+            span: .week,
+            dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar),
+            calendar: calendar
+        )
 
-        #expect(!pages.isEmpty)
-        // Verify entries are properly aggregated
-        let totalValue = pages.flatMap { $0.entries }.map(\.value).reduce(0, +)
-        #expect(totalValue == 6.0)
+        #expect(pages.count == 1)
+        #expect(pages[0].entries.map(\.value) == [1, 2, 3])
     }
 
     @Test("Hebrew: Month boundaries")
