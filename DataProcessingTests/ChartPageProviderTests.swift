@@ -75,7 +75,6 @@ struct ChartPageProviderTests {
         calendar.timeZone = TimeZone(identifier: "UTC")!
 
         // Entries within the same Hebrew week
-        // Using actual Hebrew year/month/day values
         // 1. Cheschwan 5785 until 7. Cheschwan 5785 → full week (Sunday to Saturday)
         let baseDate = date(5785, 2, 2, calendar: calendar)  // 2. Cheschwan 5785 (Sunday – week start)
         let entries = [
@@ -101,20 +100,21 @@ struct ChartPageProviderTests {
         calendar.timeZone = TimeZone(identifier: "UTC")!
 
         // Get two consecutive Hebrew months
-        let firstMonth = date(2024, 11, 1, calendar: calendar)
+        let firstMonth = date(5785, 11, 1, calendar: calendar)  // start of month
         let secondMonth = calendar.date(byAdding: .month, value: 1, to: firstMonth)!
+        let firstMonthEnd = calendar.date(byAdding: .day, value: -1, to: secondMonth)!  // end of first month
 
         let entries = [
             RawEntry(value: 1, timestamp: firstMonth),
+            RawEntry(value: 1.5, timestamp: firstMonthEnd),
             RawEntry(value: 2, timestamp: secondMonth)
         ]
 
         let pages = ChartPageProvider.pages(for: entries, span: .month, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
 
-        #expect(pages.count >= 1) // Should create at least one page
-        // Verify all values are accounted for
-        let totalValue = pages.flatMap { $0.entries }.map(\.value).reduce(0, +)
-        #expect(totalValue == 3.0)
+        #expect(pages.count == 2)
+        #expect(pages[0].entries.map(\.value) == [1, 1.5])
+        #expect(pages[1].entries.map(\.value) == [2])
     }
 
     @Test("Hebrew: Year grouping")
@@ -122,7 +122,7 @@ struct ChartPageProviderTests {
         var calendar = Calendar(identifier: .hebrew)
         calendar.timeZone = TimeZone(identifier: "UTC")!
 
-        let year1 = date(2024, 1, 15, calendar: calendar)
+        let year1 = date(5785, 1, 15, calendar: calendar)
         let year2 = calendar.date(byAdding: .year, value: 1, to: year1)!
 
         let entries = [
@@ -133,6 +133,8 @@ struct ChartPageProviderTests {
         let pages = ChartPageProvider.pages(for: entries, span: .year, dataProvider: .monthlySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
 
         #expect(pages.count == 2)
+        #expect(pages[0].entries.map(\.value) == [10])
+        #expect(pages[1].entries.map(\.value) == [20])
     }
 
     // MARK: - Islamic Calendar Tests
@@ -145,14 +147,15 @@ struct ChartPageProviderTests {
         let baseDate = date(2024, 11, 10, calendar: calendar)
         let entries = [
             RawEntry(value: 5, timestamp: baseDate),
-            RawEntry(value: 10, timestamp: calendar.date(byAdding: .day, value: 3, to: baseDate)!)
+            RawEntry(value: 5.5, timestamp: calendar.date(byAdding: .day, value: 6, to: baseDate)!),
+            RawEntry(value: 10, timestamp: calendar.date(byAdding: .day, value: 7, to: baseDate)!)
         ]
 
         let pages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
 
-        #expect(!pages.isEmpty)
-        let totalValue = pages.flatMap { $0.entries }.map(\.value).reduce(0, +)
-        #expect(totalValue == 15.0)
+        #expect(pages.count == 2)
+        #expect(pages[0].entries.map(\.value) == [5, 5.5])
+        #expect(pages[1].entries.map(\.value) == [10])
     }
 
     @Test("Islamic: Month boundaries")
@@ -171,6 +174,8 @@ struct ChartPageProviderTests {
         let pages = ChartPageProvider.pages(for: entries, span: .month, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
 
         #expect(pages.count == 2)
+        #expect(pages[0].entries.map(\.value) == [100])
+        #expect(pages[1].entries.map(\.value) == [200])
     }
 
     // MARK: - Edge Cases Across Calendars
@@ -204,38 +209,29 @@ struct ChartPageProviderTests {
         var mondayCalendar = Calendar(identifier: .gregorian)
         mondayCalendar.firstWeekday = 2  // Monday
 
-        // Entry on a Monday
-        let entries = [RawEntry(value: 10, timestamp: date(2024, 11, 11, calendar: sundayCalendar))]
+        let entries = [
+            RawEntry(value: 10, timestamp: date(2024, 11, 10, calendar: sundayCalendar)),  // Sunday
+            RawEntry(value: 11, timestamp: date(2024, 11, 11, calendar: sundayCalendar))  // Monday
+        ]
 
         let sundayPages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: sundayCalendar), calendar: sundayCalendar)
         let mondayPages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: mondayCalendar), calendar: mondayCalendar)
 
-        // Both should create pages
-        #expect(!sundayPages.isEmpty)
-        #expect(!mondayPages.isEmpty)
-
-        // Period starts differ
-        let sundayComponents = sundayCalendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: sundayPages[0].entries[0].timestamp)
-        let sundayWeekStart = sundayCalendar.date(from: sundayComponents)
-
-        let mondayComponents = mondayCalendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: mondayPages[0].entries[0].timestamp)
-        let mondayWeekStart = mondayCalendar.date(from: mondayComponents)
-
-        #expect(sundayWeekStart != mondayWeekStart)
+        #expect(sundayPages.count == 1)
+        #expect(mondayPages.count == 2)  // Sunday falls into previous week
     }
 
-    @Test("Leap year handling across calendars")
+    @Test("Leap year handling")
     func leapYearHandling() {
         let calendar = defaultCalendar()
 
-        // 2024 is a leap year
-        let febEntries = [
+        let entries = [
             RawEntry(value: 1, timestamp: date(2024, 2, 28, calendar: calendar)),
-            RawEntry(value: 2, timestamp: date(2024, 2, 29, calendar: calendar)),
+            RawEntry(value: 2, timestamp: date(2024, 2, 29, calendar: calendar)),  // 2024 is a leap year
             RawEntry(value: 3, timestamp: date(2024, 3, 1, calendar: calendar))
         ]
 
-        let pages = ChartPageProvider.pages(for: febEntries, span: .month, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
+        let pages = ChartPageProvider.pages(for: entries, span: .month, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
 
         // Feb and March should be separate pages
         #expect(pages.count == 2)
@@ -261,8 +257,7 @@ struct ChartPageProviderTests {
 
         #expect(pages.count == 1)
         #expect(pages[0].entries.count == 2)  // Two days
-
-        #expect(pages.first?.entries.map(\.value) == [12, 40])
+        #expect(pages[0].entries.map(\.value) == [12, 40])
     }
 
     @Test("Daily sum aggregation across week with zero filling")
