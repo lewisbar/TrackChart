@@ -16,8 +16,7 @@ struct ChartPageProviderTests {
 
     @Test("Gregorian: Empty array returns empty pages")
     func gregorianEmptyArray() {
-        let calendar = defaultCalendar()
-        let pages = ChartPageProvider.pages(for: [], span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
+        let pages = pages(for: [], .week, .dailySum, defaultCalendar())
         #expect(pages.isEmpty)
     }
 
@@ -32,17 +31,13 @@ struct ChartPageProviderTests {
             RawEntry(value: 3, timestamp: date(2025, 1, 5, calendar: calendar))
         ]
 
-        let pages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
+        let pages = pages(for: entries, .week, .dailySum, calendar)
 
         // All entries should be in the same week page
         #expect(pages.count == 1)
         #expect(pages.first?.entries.map(\.value) == [1, 2, 3])
 
-        let expectedDates = [
-            date(2024, 12, 30, hour: 0, calendar: calendar),
-            date(2025, 1, 2, hour: 0, calendar: calendar),
-            date(2025, 1, 5, hour: 0, calendar: calendar)
-        ]
+        let expectedDates = entries.map(\.timestamp).map { calendar.startOfDay(for: $0) }
         #expect(pages.first?.entries.map(\.timestamp) == expectedDates)
 
         let formatStyle = Date.FormatStyle(calendar: calendar)
@@ -60,7 +55,7 @@ struct ChartPageProviderTests {
             RawEntry(value: 2, timestamp: date(2024, 11, 1, calendar: calendar))   // First day of November
         ]
 
-        let pages = ChartPageProvider.pages(for: entries, span: .month, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
+        let pages = pages(for: entries, .month, .dailySum, calendar)
 
         #expect(pages.count == 2)
         #expect(pages[0].entries.map(\.value) == [1])  // October
@@ -83,12 +78,7 @@ struct ChartPageProviderTests {
             RawEntry(value: 3, timestamp: calendar.date(byAdding: .day, value: 6, to: baseDate)!)   // 7. Cheschwan (Saturday – week end)
         ]
 
-        let pages = ChartPageProvider.pages(
-            for: entries,
-            span: .week,
-            dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar),
-            calendar: calendar
-        )
+        let pages = pages(for: entries, .week, .dailySum, calendar)
 
         #expect(pages.count == 1)
         #expect(pages[0].entries.map(\.value) == [1, 2, 3])
@@ -110,7 +100,7 @@ struct ChartPageProviderTests {
             RawEntry(value: 2, timestamp: secondMonth)
         ]
 
-        let pages = ChartPageProvider.pages(for: entries, span: .month, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
+        let pages = pages(for: entries, .month, .dailySum, calendar)
 
         #expect(pages.count == 2)
         #expect(pages[0].entries.map(\.value) == [1, 1.5])
@@ -130,7 +120,7 @@ struct ChartPageProviderTests {
             RawEntry(value: 20, timestamp: year2)
         ]
 
-        let pages = ChartPageProvider.pages(for: entries, span: .year, dataProvider: .monthlySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
+        let pages = pages(for: entries, .year, .monthlySum, calendar)
 
         #expect(pages.count == 2)
         #expect(pages[0].entries.map(\.value) == [10])
@@ -151,7 +141,8 @@ struct ChartPageProviderTests {
             RawEntry(value: 10, timestamp: calendar.date(byAdding: .day, value: 7, to: baseDate)!)
         ]
 
-        let pages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
+        let pages = pages(for: entries, .week, .dailySum, calendar)
+
 
         #expect(pages.count == 2)
         #expect(pages[0].entries.map(\.value) == [5, 5.5])
@@ -171,7 +162,7 @@ struct ChartPageProviderTests {
             RawEntry(value: 200, timestamp: month2)
         ]
 
-        let pages = ChartPageProvider.pages(for: entries, span: .month, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
+        let pages = pages(for: entries, .month, .dailySum, calendar)
 
         #expect(pages.count == 2)
         #expect(pages[0].entries.map(\.value) == [100])
@@ -189,8 +180,8 @@ struct ChartPageProviderTests {
         let timestamp = Date(timeIntervalSince1970: 1700000000)  // Fixed point in time
         let entries = [RawEntry(value: 42, timestamp: timestamp)]
 
-        let gregorianPages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: gregorian), calendar: gregorian)
-        let hebrewPages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: hebrew), calendar: hebrew)
+        let gregorianPages = pages(for: entries, .week, .dailySum, gregorian)
+        let hebrewPages = pages(for: entries, .week, .dailySum, hebrew)
 
         // Both should create pages, but periods may differ
         #expect(!gregorianPages.isEmpty)
@@ -214,8 +205,8 @@ struct ChartPageProviderTests {
             RawEntry(value: 11, timestamp: date(2024, 11, 11, calendar: sundayCalendar))  // Monday
         ]
 
-        let sundayPages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: sundayCalendar), calendar: sundayCalendar)
-        let mondayPages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: mondayCalendar), calendar: mondayCalendar)
+        let sundayPages = pages(for: entries, .week, .dailySum, sundayCalendar)
+        let mondayPages = pages(for: entries, .week, .dailySum, mondayCalendar)
 
         #expect(sundayPages.count == 1)
         #expect(mondayPages.count == 2)  // Sunday falls into previous week
@@ -231,7 +222,7 @@ struct ChartPageProviderTests {
             RawEntry(value: 3, timestamp: date(2024, 3, 1, calendar: calendar))
         ]
 
-        let pages = ChartPageProvider.pages(for: entries, span: .month, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
+        let pages = pages(for: entries, .month, .dailySum, calendar)
 
         // Feb and March should be separate pages
         #expect(pages.count == 2)
@@ -253,7 +244,7 @@ struct ChartPageProviderTests {
             RawEntry(value: 40, timestamp: calendar.date(byAdding: .day, value: 2, to: baseDate)!)
         ]
 
-        let pages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
+        let pages = pages(for: entries, .week, .dailySum, calendar)
 
         #expect(pages.count == 1)
         #expect(pages[0].entries.count == 2)  // Two days
@@ -274,7 +265,7 @@ struct ChartPageProviderTests {
             RawEntry(value: 50, timestamp: calendar.date(byAdding: .day, value: 16, to: baseDate)!)  // Friday
         ]
 
-        let pages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: true, calendar: calendar), calendar: calendar)
+        let pages = pages(for: entries, .week, .dailySum, calendar, treatsMissingAsZero: true)
 
         #expect(pages.count == 3)
         #expect(pages[0].entries.count == 5)  // Filled from the first entry on
@@ -299,7 +290,7 @@ struct ChartPageProviderTests {
             RawEntry(value: 30, timestamp: mar)
         ]
 
-        let pages = ChartPageProvider.pages(for: entries, span: .year, dataProvider: .monthlyAverage(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
+        let pages = pages(for: entries, .year, .monthlyAverage, calendar)
 
         #expect(pages.count == 1)
 
@@ -320,7 +311,7 @@ struct ChartPageProviderTests {
             RawEntry(value: 30, timestamp: mar)
         ]
 
-        let pages = ChartPageProvider.pages(for: entries, span: .year, dataProvider: .monthlyAverage(treatsMissingAsZero: true, calendar: calendar), calendar: calendar)
+        let pages = pages(for: entries, .year, .monthlyAverage, calendar, treatsMissingAsZero: true)
 
         #expect(pages.count == 1)
 
@@ -339,7 +330,7 @@ struct ChartPageProviderTests {
             RawEntry(value: 3, timestamp: date(2025, 1, 5, calendar: calendar))
         ]
 
-        let pages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailySum(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
+        let pages = pages(for: entries, .week, .dailySum, calendar)
 
         // All entries should be in the same week page
         #expect(pages.count == 1)
@@ -359,7 +350,7 @@ struct ChartPageProviderTests {
             RawEntry(value: 3, timestamp: date(2025, 1, 5, calendar: calendar))
         ]
 
-        let pages = ChartPageProvider.pages(for: entries, span: .week, dataProvider: .dailyAverage(treatsMissingAsZero: false, calendar: calendar), calendar: calendar)
+        let pages = pages(for: entries, .week, .dailyAverage, calendar)
 
         // All entries should be in the same week page
         #expect(pages.count == 1)
@@ -369,6 +360,24 @@ struct ChartPageProviderTests {
     }
 
     // MARK: - Helpers
+
+    private enum Provider {
+        case dailySum
+        case dailyAverage
+        case monthlySum
+        case monthlyAverage
+    }
+
+    private func pages(for entries: [RawEntry], _ span: TimeSpan, _ dataProvider: Provider, _ calendar: Calendar, treatsMissingAsZero: Bool = false) -> [ChartPage] {
+        let provider: ChartDataProvider = switch dataProvider {
+        case .dailySum: .dailySum(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar)
+        case .dailyAverage: .dailyAverage(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar)
+        case .monthlySum: .monthlySum(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar)
+        case .monthlyAverage: .monthlyAverage(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar)
+        }
+
+        return ChartPageProvider.pages(for: entries, span: span, dataProvider: provider, calendar: calendar)
+    }
 
     private func date(_ year: Int, _ month: Int, _ day: Int, hour: Int = 12, calendar: Calendar) -> Date {
         var components = DateComponents()
