@@ -1034,8 +1034,7 @@ struct ChartPageProviderTests {
 
     // MARK: - Page Aggregate
 
-    @Test("Correct page aggregation (page total)")
-    func pageAggregate_sum() {
+    @Test func extraData_week_dailySum() {
         let calendar = Calendar.defaultCalendar()
 
         // Dec 30, 2024 to Jan 5, 2025 should be in the same week
@@ -1047,15 +1046,24 @@ struct ChartPageProviderTests {
 
         let pages = pages(for: entries, .week, .dailySum, calendar)
 
-        // All entries should be in the same week page
         #expect(pages.count == 1)
         #expect(pages.first?.entries.count == 3)
         #expect(pages.first?.aggregator == .sum)
         #expect(pages.first?.aggregate == 6)
+        #expect(pages.first?.span == .week)
+
+        let pageStart = date(2024, 12, 30, hour: 0, calendar: calendar)
+        let pageEnd = date(2025, 1, 5, hour: 0, calendar: calendar)
+        #expect(pages.first?.dateRange == pageStart...pageEnd)
+
+        let formatStyle = Date.FormatStyle(calendar: calendar)
+        let first = pageStart.formatted(formatStyle.day().month(.abbreviated))
+        let last = pageEnd.formatted(formatStyle.day().month(.abbreviated).year())
+        let expectedTitle = "\(first) – \(last)"
+        #expect(pages.first?.title == expectedTitle)
     }
 
-    @Test("Correct page aggregation (page average)")
-    func pageAggregate_average() {
+    @Test func extraData_week_dailyAverage() {
         let calendar = Calendar.defaultCalendar()
 
         // Dec 30, 2024 to Jan 5, 2025 should be in the same week
@@ -1067,11 +1075,125 @@ struct ChartPageProviderTests {
 
         let pages = pages(for: entries, .week, .dailyAverage, calendar)
 
-        // All entries should be in the same week page
         #expect(pages.count == 1)
         #expect(pages.first?.entries.count == 3)
         #expect(pages.first?.aggregator == .average)
         #expect(pages.first?.aggregate == 2)
+        #expect(pages.first?.span == .week)
+
+        let pageStart = date(2024, 12, 30, hour: 0, calendar: calendar)
+        let pageEnd = date(2025, 1, 5, hour: 0, calendar: calendar)
+        #expect(pages.first?.dateRange == pageStart...pageEnd)
+
+        let formatStyle = Date.FormatStyle(calendar: calendar)
+        let first = pageStart.formatted(formatStyle.day().month(.abbreviated))
+        let last = pageEnd.formatted(formatStyle.day().month(.abbreviated).year())
+        let expectedTitle = "\(first) – \(last)"
+        #expect(pages.first?.title == expectedTitle)
+    }
+
+    @Test func extraData_month_dailySum() {
+        let calendar = Calendar.defaultCalendar()
+
+        let entries = [
+            RawEntry(value: 1, timestamp: date(2025, 1, 1, calendar: calendar)),
+            RawEntry(value: 2, timestamp: date(2025, 1, 2, calendar: calendar)),
+            RawEntry(value: 3, timestamp: date(2025, 1, 9, calendar: calendar))
+        ]
+
+        let pages = pages(for: entries, .month, .dailySum, calendar)
+
+        #expect(pages.count == 1)
+        #expect(pages.first?.entries.count == 3)
+        #expect(pages.first?.aggregator == .sum)
+        #expect(pages.first?.aggregate == 6)
+        #expect(pages.first?.span == .month)
+
+        let pageStart = date(2025, 1, 1, hour: 0, calendar: calendar)
+        let pageEnd = date(2025, 1, 9, hour: 0, calendar: calendar)
+        #expect(pages.first?.dateRange == pageStart...pageEnd)
+
+        let formatStyle = Date.FormatStyle(calendar: calendar)
+        let expectedTitle = pageStart.formatted(formatStyle.month(.wide).year())
+        #expect(pages.first?.title == expectedTitle)
+    }
+
+    @Test func extraData_month_dailyAverage() {
+        let calendar = Calendar.defaultCalendar()
+
+        let entries = [
+            RawEntry(value: 1, timestamp: date(2025, 1, 1, calendar: calendar)),
+            RawEntry(value: 2, timestamp: date(2025, 1, 2, calendar: calendar)),
+            RawEntry(value: 3, timestamp: date(2025, 1, 9, calendar: calendar))
+        ]
+
+        let pages = pages(for: entries, .month, .dailyAverage, calendar)
+
+        #expect(pages.count == 1)
+        #expect(pages.first?.entries.count == 3)
+        #expect(pages.first?.aggregator == .average)
+        #expect(pages.first?.aggregate == 2)
+        #expect(pages.first?.span == .month)
+
+        let pageStart = date(2025, 1, 1, hour: 0, calendar: calendar)
+        let pageEnd = date(2025, 1, 9, hour: 0, calendar: calendar)
+        #expect(pages.first?.dateRange == pageStart...pageEnd)
+
+        let formatStyle = Date.FormatStyle(calendar: calendar)
+        let expectedTitle = pageStart.formatted(formatStyle.month(.wide).year())
+        #expect(pages.first?.title == expectedTitle)
+    }
+
+    @Test func extraData_year_monthlySum() {
+        let calendar = Calendar.defaultCalendar()
+
+        let entries = [
+            RawEntry(value: 1, timestamp: date(2025, 1, 1, calendar: calendar)),
+            RawEntry(value: 2, timestamp: date(2025, 5, 2, calendar: calendar)),
+            RawEntry(value: 3, timestamp: date(2025, 11, 19, calendar: calendar))
+        ]
+
+        let pages = pages(for: entries, .year, .monthlySum, calendar)
+
+        #expect(pages.count == 1)
+        #expect(pages.first?.entries.count == 3)
+        #expect(pages.first?.aggregator == .sum)
+        #expect(pages.first?.aggregate == 6)
+        #expect(pages.first?.span == .year)
+
+        let pageStart = date(2025, 1, 1, hour: 0, calendar: calendar)
+        let pageEnd = date(2025, 11, 1, hour: 0, calendar: calendar)
+        #expect(pages.first?.dateRange == pageStart...pageEnd)
+
+        let formatStyle = Date.FormatStyle(calendar: calendar)
+        let expectedTitle = pageStart.formatted(formatStyle.year())
+        #expect(pages.first?.title == expectedTitle)
+    }
+
+    @Test func extraData_year_monthlyAverage() {
+        let calendar = Calendar.defaultCalendar()
+
+        let entries = [
+            RawEntry(value: 1, timestamp: date(2025, 1, 1, calendar: calendar)),
+            RawEntry(value: 2, timestamp: date(2025, 5, 2, calendar: calendar)),
+            RawEntry(value: 3, timestamp: date(2025, 11, 19, calendar: calendar))
+        ]
+
+        let pages = pages(for: entries, .year, .monthlyAverage, calendar)
+
+        #expect(pages.count == 1)
+        #expect(pages.first?.entries.count == 3)
+        #expect(pages.first?.aggregator == .average)
+        #expect(pages.first?.aggregate == 2)
+        #expect(pages.first?.span == .year)
+
+        let pageStart = date(2025, 1, 1, hour: 0, calendar: calendar)
+        let pageEnd = date(2025, 11, 1, hour: 0, calendar: calendar)
+        #expect(pages.first?.dateRange == pageStart...pageEnd)
+
+        let formatStyle = Date.FormatStyle(calendar: calendar)
+        let expectedTitle = pageStart.formatted(formatStyle.year())
+        #expect(pages.first?.title == expectedTitle)
     }
 
     // MARK: - Helpers
