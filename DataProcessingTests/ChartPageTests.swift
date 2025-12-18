@@ -1,6 +1,6 @@
 //
 //  ChartPageTests.swift
-//  TrackChartiOSTests
+//  DataProcessingTests
 //
 //  Created by Lennart Wisbar on 06.11.25.
 //

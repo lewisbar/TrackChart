@@ -1,15 +1,20 @@
 //
 //  ChartPageProvider.swift
-//  TrackChartiOS
+//  DataProcessing
 //
 //  Created by Lennart Wisbar on 31.10.25.
 //
 
 import Foundation
 
-//@MainActor
 public final class ChartPageProvider {
-    public static func pages(for raw: [RawEntry], span: TimeSpan, aggregator: Aggregator, treatsMissingAsZero: Bool, calendar: Calendar = .current) -> [ChartPage] {
+    public static func pages(
+        for raw: [RawEntry],
+        span: TimeSpan,
+        aggregator: Aggregator,
+        treatsMissingAsZero: Bool,
+        calendar: Calendar = .current
+    ) -> [ChartPage] {
         let provider = ChartDataProvider.preset(for: span, aggregator: aggregator, treatsMissingAsZero: treatsMissingAsZero, calendar: calendar)
         return pages(for: raw, span: span, dataProvider: provider, calendar: calendar)
     }
@@ -19,27 +24,20 @@ public final class ChartPageProvider {
         dataProvider: ChartDataProvider,
         calendar: Calendar = .current
     ) -> [ChartPage] {
-        let sorted = raw.sorted { $0.timestamp < $1.timestamp }
-        guard !sorted.isEmpty else { return [] }
-
-        let aggregatedEntries = dataProvider.processedEntries(from: sorted)
-
+        let sortedEntries = raw.sorted { $0.timestamp < $1.timestamp }
+        let aggregatedEntries = dataProvider.processedEntries(from: sortedEntries)
         let ranges = pageRanges(from: aggregatedEntries, span: span, calendar: calendar)
 
         return ranges.compactMap { range -> ChartPage? in
             let pageEntries = aggregatedEntries.filter { range.contains($0.timestamp) }
             guard !pageEntries.isEmpty else { return nil }
 
-            let title = formatPageTitle(start: range.lowerBound, end: range.upperBound, span: span, calendar: calendar)
-
-            let pageAggregate = aggregated(values: pageEntries.map(\.value), using: dataProvider.aggregator)
-
             return ChartPage(
                 entries: pageEntries,
                 span: span,
-                title: title,
+                title: formatPageTitle(start: range.lowerBound, end: range.upperBound, span: span, calendar: calendar),
                 aggregator: dataProvider.aggregator,
-                aggregate: pageAggregate
+                aggregate: aggregated(values: pageEntries.map(\.value), using: dataProvider.aggregator)
             )
         }
     }
@@ -58,7 +56,7 @@ public final class ChartPageProvider {
 
         switch span {
         case .week:
-            let lastDay = calendar.date(byAdding: .second, value: -1, to: end) ?? end
+            let lastDay = calendar.date(byAdding: .day, value: -1, to: end) ?? end
             let first = start.formatted(formatStyle.day().month(.abbreviated))
             let last = lastDay.formatted(formatStyle.day().month(.abbreviated).year())
             return "\(first) – \(last)"

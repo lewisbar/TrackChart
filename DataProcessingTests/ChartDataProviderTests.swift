@@ -1,6 +1,6 @@
 //
 //  ChartDataProviderTests.swift
-//  TrackChartiOSTests
+//  DataProcessingTests
 //
 //  Created by Lennart Wisbar on 27.10.25.
 //
@@ -668,7 +668,7 @@ struct ChartDataProviderTests {
 
     // MARK: - Preset Tests
 
-    func preset_weekView_withSumAggregator_returnsDailySumProvider() {
+    @Test func preset_weekView_withSumAggregator_returnsDailySumProvider() {
         let provider = ChartDataProvider.preset(for: .week, aggregator: .sum, treatsMissingAsZero: false, calendar: Calendar(identifier: .gregorian))
 
         #expect(provider.name == "daily sum")
@@ -676,7 +676,7 @@ struct ChartDataProviderTests {
         #expect(provider.treatsMissingAsZero == false)
     }
 
-    func preset_weekView_withAverageAggregator_returnsDailyAverageProvider() {
+    @Test func preset_weekView_withAverageAggregator_returnsDailyAverageProvider() {
         let provider = ChartDataProvider.preset(for: .week, aggregator: .average, treatsMissingAsZero: true, calendar: Calendar(identifier: .gregorian))
 
         #expect(provider.name == "daily average")
@@ -684,7 +684,7 @@ struct ChartDataProviderTests {
         #expect(provider.treatsMissingAsZero == true)
     }
 
-    func preset_monthView_withSumAggregator_returnsDailySumProvider() {
+    @Test func preset_monthView_withSumAggregator_returnsDailySumProvider() {
         let provider = ChartDataProvider.preset(for: .month, aggregator: .sum, treatsMissingAsZero: true, calendar: Calendar(identifier: .gregorian))
 
         #expect(provider.name == "daily sum")
@@ -692,7 +692,7 @@ struct ChartDataProviderTests {
         #expect(provider.treatsMissingAsZero == true)
     }
 
-    func preset_monthView_withAverageAggregator_returnsDailyAverageProvider() {
+    @Test func preset_monthView_withAverageAggregator_returnsDailyAverageProvider() {
         let provider = ChartDataProvider.preset(for: .month, aggregator: .average, treatsMissingAsZero: false, calendar: Calendar(identifier: .gregorian))
 
         #expect(provider.name == "daily average")
@@ -700,7 +700,7 @@ struct ChartDataProviderTests {
         #expect(provider.treatsMissingAsZero == false)
     }
 
-    func preset_yearView_withSumAggregator_returnsMonthlySumProvider() {
+    @Test func preset_yearView_withSumAggregator_returnsMonthlySumProvider() {
         let provider = ChartDataProvider.preset(for: .year, aggregator: .sum, treatsMissingAsZero: false, calendar: Calendar(identifier: .gregorian))
 
         #expect(provider.name == "monthly sum")
@@ -708,7 +708,7 @@ struct ChartDataProviderTests {
         #expect(provider.treatsMissingAsZero == false)
     }
 
-    func preset_yearView_withAverageAggregator_returnsMonthlyAverageProvider() {
+    @Test func preset_yearView_withAverageAggregator_returnsMonthlyAverageProvider() {
         let provider = ChartDataProvider.preset(for: .year, aggregator: .average, treatsMissingAsZero: true, calendar: Calendar(identifier: .gregorian))
 
         #expect(provider.name == "monthly average")
