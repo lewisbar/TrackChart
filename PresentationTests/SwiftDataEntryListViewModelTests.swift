@@ -109,6 +109,7 @@ struct SwiftDataEntryListViewModelTests {
         TopicEntity(
             id: UUID(),
             name: "a topic",
+            details: "some details",
             entries: [
                 EntryEntity(value: 1, timestamp: .now.advanced(by: -400)),
                 EntryEntity(value: 2, timestamp: .now.advanced(by: -300)),

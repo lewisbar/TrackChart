@@ -88,6 +88,7 @@ struct TrackChartApp: App {
             topic: topic.settingsViewTopic,
             save: {
                 topic.name = $0.name
+                topic.details = $0.details.isEmpty ? nil : $0.details
                 topic.palette = $0.palette.name
                 topic.aggregator = $0.aggregator.name
                 topic.treatsMissingAsZero = $0.treatsMissingAsZero
@@ -100,12 +101,19 @@ struct TrackChartApp: App {
         SettingsView(
             topic: SettingsTopic(
                 name: "",
+                details: "",
                 palette: .random,
                 aggregator: .sum,
                 treatsMissingAsZero: false
             ),
             save: {
-                let newTopic = TopicEntity(name: $0.name, palette: $0.palette.name, aggregator: $0.aggregator.name, sortIndex: sortIndex)
+                let newTopic = TopicEntity(
+                    name: $0.name,
+                    details: $0.details.isEmpty ? nil : $0.details,
+                    palette: $0.palette.name,
+                    aggregator: $0.aggregator.name,
+                    sortIndex: sortIndex
+                )
                 modelContext.insert(newTopic)
                 showTopic(newTopic)
             }

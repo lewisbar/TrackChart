@@ -14,6 +14,7 @@ struct TopicEntityMappingTests {
         let sut = TopicEntity(
             id: UUID(),
             name: "a topic",
+            details: "some details",
             entries: [
                 EntryEntity(value: 1, timestamp: .now.advanced(by: -400)),
                 EntryEntity(value: -1, timestamp: .now.advanced(by: -300)),
@@ -29,6 +30,7 @@ struct TopicEntityMappingTests {
 
         #expect(result.id == sut.id)
         #expect(result.name == sut.name)
+        #expect(result.details == sut.details)
         #expect(result.entries == sut.sortedEntries.map {
             ViewEntry(id: $0.id, value: $0.value, timestamp: $0.timestamp)
         })
@@ -41,6 +43,7 @@ struct TopicEntityMappingTests {
         let sut = TopicEntity(
             id: UUID(),
             name: "a topic",
+            details: "some details",
             entries: [
                 EntryEntity(value: 1, timestamp: .now.advanced(by: -400)),
                 EntryEntity(value: -1, timestamp: .now.advanced(by: -300)),
@@ -55,6 +58,7 @@ struct TopicEntityMappingTests {
         let result = sut.settingsViewTopic
 
         #expect(result.name == sut.name)
+        #expect(result.details == sut.details)
         #expect(result.palette == .lavenderField)
         #expect(result.aggregator == .sum)
         #expect(result.treatsMissingAsZero == sut.treatsMissingAsZero)
@@ -64,6 +68,7 @@ struct TopicEntityMappingTests {
         let sut = TopicEntity(
             id: UUID(),
             name: "a topic",
+            details: "some details",
             entries: [
                 EntryEntity(value: 1, timestamp: .now.advanced(by: -400)),
                 EntryEntity(value: -1, timestamp: .now.advanced(by: -300)),

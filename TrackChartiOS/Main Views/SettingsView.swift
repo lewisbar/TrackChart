@@ -213,7 +213,7 @@ struct SettingsView: View {
 }
 
 #Preview {
-    let topic = SettingsTopic(name: "Topic 1", palette: .arcticIce, aggregator: .average, treatsMissingAsZero: false)
+    let topic = SettingsTopic(name: "Topic 1", details: "", palette: .arcticIce, aggregator: .average, treatsMissingAsZero: false)
 
     SettingsView(topic: topic, save: { _ in })
 }

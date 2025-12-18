@@ -13,6 +13,7 @@ public extension TopicEntity {
         ViewTopic(
             id: id,
             name: name,
+            details: details,
             entries: viewEntries,
             aggregator: viewAggregator,
             treatsMissingAsZero: treatsMissingAsZero,
@@ -21,7 +22,7 @@ public extension TopicEntity {
     }
 
     var settingsViewTopic: SettingsTopic {
-        SettingsTopic(name: name, palette: viewPalette, aggregator: viewAggregator, treatsMissingAsZero: treatsMissingAsZero)
+        SettingsTopic(name: name, details: details ?? "", palette: viewPalette, aggregator: viewAggregator, treatsMissingAsZero: treatsMissingAsZero)
     }
 
     var viewEntries: [ViewEntry] {
