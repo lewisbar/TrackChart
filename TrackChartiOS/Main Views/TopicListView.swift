@@ -33,6 +33,7 @@ struct TopicListView: View {
             .onDelete(perform: deleteTopics)
             .onMove(perform: moveTopics)
         }
+        .padding(.top, -16)
         .safeAreaInset(edge: .bottom) {
             // Make room for the plus button
             Color.clear.frame(height: 36)

@@ -34,7 +34,7 @@ struct EntryListView: View {
 
     var body: some View {
         ZStack {
-            VStack {
+            VStack(spacing: 0) {
                 explanationView
                 list
             }

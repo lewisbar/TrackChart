@@ -53,6 +53,7 @@ struct TopicView<Settings: View>: View {
             pagedCard(.month)
             pagedCard(.year)
         }
+        .padding(.top, -16)
         .safeAreaInset(edge: .bottom) {
             // Make room for the plus button
             Color.clear.frame(height: 36)
