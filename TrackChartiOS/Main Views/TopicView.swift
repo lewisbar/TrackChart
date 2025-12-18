@@ -46,6 +46,7 @@ struct TopicView<Settings: View>: View {
 
     private var chartList: some View {
         List {
+            if let details = topic.details { detailsView(with: details) }
             if topic.entries.isEmpty { tutorialView } else { overviewChart }
             entriesCell
             pagedCard(.week)
@@ -56,6 +57,13 @@ struct TopicView<Settings: View>: View {
             // Make room for the plus button
             Color.clear.frame(height: 36)
         }
+    }
+
+    private func detailsView(with details: String) -> some View {
+        Text(details)
+            .font(.footnote)
+            .foregroundStyle(.secondary)
+            .padding(.horizontal)
     }
 
     private var overviewChart: some View {
