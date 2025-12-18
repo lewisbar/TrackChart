@@ -14,6 +14,10 @@ struct ChartPageProviderTests {
         expect([], for: [], span: .week, provider: .dailySum)
     }
 
+    @Test func emptyInput_withZeroFilling_returnsEmpty() {
+        expect([], for: [], span: .week, provider: .dailySum, treatsMissingAsZero: true)
+    }
+
     // TODO: Test titles
     //        let calendar = Calendar.defaultCalendar()
     //
@@ -41,7 +45,85 @@ struct ChartPageProviderTests {
 
     // MARK: - Gregorian Calendar
 
-    @Test func sameWeekAcrossYearBoundary_returnsOneWeekPage() {
+    @Test func oneWeek_returnsOneWeekPage() {
+        expect(
+            [[
+                (value: 1, year: 2024, month: 7, day: 8, hour: 0),
+                (value: 2, year: 2024, month: 7, day: 10, hour: 0),
+                (value: 3, year: 2024, month: 7, day: 14, hour: 0)
+            ]],
+            for: [
+                (value: 1, year: 2024, month: 7, day: 8, hour: 12),
+                (value: 2, year: 2024, month: 7, day: 10, hour: 12),
+                (value: 3, year: 2024, month: 7, day: 14, hour: 12)
+            ],
+            span: .week,
+            provider: .dailySum
+        )
+    }
+
+    @Test func oneWeek_withZeroFilling() {
+        expect(
+            [[
+                (value: 1, year: 2024, month: 7, day: 8, hour: 0),
+                (value: 0, year: 2024, month: 7, day: 9, hour: 0),
+                (value: 2, year: 2024, month: 7, day: 10, hour: 0),
+                (value: 0, year: 2024, month: 7, day: 11, hour: 0),
+                (value: 0, year: 2024, month: 7, day: 12, hour: 0),
+                (value: 0, year: 2024, month: 7, day: 13, hour: 0),
+                (value: 3, year: 2024, month: 7, day: 14, hour: 0)
+            ]],
+            for: [
+                (value: 1, year: 2024, month: 7, day: 8, hour: 12),
+                (value: 2, year: 2024, month: 7, day: 10, hour: 12),
+                (value: 3, year: 2024, month: 7, day: 14, hour: 12)
+            ],
+            span: .week,
+            provider: .dailySum,
+            treatsMissingAsZero: true
+        )
+    }
+
+    @Test func oneWeek_acrossMonthBoundary_returnsOneWeekPage() {
+        expect(
+            [[
+                (value: 1, year: 2024, month: 7, day: 29, hour: 0),
+                (value: 2, year: 2024, month: 8, day: 1, hour: 0),
+                (value: 3, year: 2024, month: 8, day: 4, hour: 0)
+            ]],
+            for: [
+                (value: 1, year: 2024, month: 7, day: 29, hour: 12),
+                (value: 2, year: 2024, month: 8, day: 1, hour: 12),
+                (value: 3, year: 2024, month: 8, day: 4, hour: 12)
+            ],
+            span: .week,
+            provider: .dailySum
+        )
+    }
+
+    @Test func oneWeek_acrossMonthBoundary_withZeroFilling() {
+        expect(
+            [[
+                (value: 1, year: 2024, month: 7, day: 29, hour: 0),
+                (value: 0, year: 2024, month: 7, day: 30, hour: 0),
+                (value: 0, year: 2024, month: 7, day: 31, hour: 0),
+                (value: 2, year: 2024, month: 8, day: 1, hour: 0),
+                (value: 0, year: 2024, month: 8, day: 2, hour: 0),
+                (value: 0, year: 2024, month: 8, day: 3, hour: 0),
+                (value: 3, year: 2024, month: 8, day: 4, hour: 0)
+            ]],
+            for: [
+                (value: 1, year: 2024, month: 7, day: 29, hour: 12),
+                (value: 2, year: 2024, month: 8, day: 1, hour: 12),
+                (value: 3, year: 2024, month: 8, day: 4, hour: 12)
+            ],
+            span: .week,
+            provider: .dailySum,
+            treatsMissingAsZero: true
+        )
+    }
+
+    @Test func oneWeek_acrossYearBoundary_returnsOneWeekPage() {
         expect(
             [[
                 (value: 1, year: 2024, month: 12, day: 30, hour: 0),
@@ -58,18 +140,233 @@ struct ChartPageProviderTests {
         )
     }
 
-    @Test func crossingMonthBoundaries_returnsTwoMonthPages() {
+    @Test func oneWeek_acrossYearBoundary_withZeroFilling() {
+        expect(
+            [[
+                (value: 1, year: 2024, month: 12, day: 30, hour: 0),
+                (value: 0, year: 2024, month: 12, day: 31, hour: 0),
+                (value: 0, year: 2025, month: 1, day: 1, hour: 0),
+                (value: 2, year: 2025, month: 1, day: 2, hour: 0),
+                (value: 0, year: 2025, month: 1, day: 3, hour: 0),
+                (value: 0, year: 2025, month: 1, day: 4, hour: 0),
+                (value: 3, year: 2025, month: 1, day: 5, hour: 0)
+            ]],
+            for: [
+                (value: 1, year: 2024, month: 12, day: 30, hour: 12),
+                (value: 2, year: 2025, month: 1, day: 2, hour: 12),
+                (value: 3, year: 2025, month: 1, day: 5, hour: 12)
+            ],
+            span: .week,
+            provider: .dailySum,
+            treatsMissingAsZero: true
+        )
+    }
+
+    @Test func twoWeeks_returnsTwoWeekPages() {
         expect(
             [
-                [(value: 1, year: 2024, month: 10, day: 31, hour: 0)],
+                [
+                    (value: 1, year: 2024, month: 7, day: 8, hour: 0),
+                    (value: 2, year: 2024, month: 7, day: 10, hour: 0)
+                ],
+                [
+                    (value: 3, year: 2024, month: 7, day: 15, hour: 0)
+                ]
+            ],
+            for: [
+                (value: 1, year: 2024, month: 7, day: 8, hour: 12),
+                (value: 2, year: 2024, month: 7, day: 10, hour: 12),
+                (value: 3, year: 2024, month: 7, day: 15, hour: 12)
+            ],
+            span: .week,
+            provider: .dailySum
+        )
+    }
+
+    @Test func twoWeeks_withZeroFilling() {
+        expect(
+            [
+                [
+                    (value: 1, year: 2024, month: 7, day: 8, hour: 0),
+                    (value: 0, year: 2024, month: 7, day: 9, hour: 0),
+                    (value: 2, year: 2024, month: 7, day: 10, hour: 0),
+                    (value: 0, year: 2024, month: 7, day: 11, hour: 0),
+                    (value: 0, year: 2024, month: 7, day: 12, hour: 0),
+                    (value: 0, year: 2024, month: 7, day: 13, hour: 0),
+                    (value: 0, year: 2024, month: 7, day: 14, hour: 0),
+                ],
+                [
+                    (value: 0, year: 2024, month: 7, day: 15, hour: 0),
+                    (value: 3, year: 2024, month: 7, day: 16, hour: 0)
+                ]
+            ],
+            for: [
+                (value: 1, year: 2024, month: 7, day: 8, hour: 12),
+                (value: 2, year: 2024, month: 7, day: 10, hour: 12),
+                (value: 3, year: 2024, month: 7, day: 16, hour: 12)
+            ],
+            span: .week,
+            provider: .dailySum,
+            treatsMissingAsZero: true
+        )
+    }
+
+    @Test func oneMonth() {
+        expect(
+            [[
+                (value: 2.5, year: 2024, month: 10, day: 30, hour: 0),
+                (value: 2, year: 2024, month: 10, day: 31, hour: 0)
+            ]],
+            for: [
+                (value: 1, year: 2024, month: 10, day: 30, hour: 12),
+                (value: 1.5, year: 2024, month: 10, day: 30, hour: 12),
+                (value: 2, year: 2024, month: 10, day: 31, hour: 12)
+            ],
+            span: .month,
+            provider: .dailySum
+        )
+    }
+
+    @Test func oneMonth_withZeroFilling() {
+        expect(
+            [[
+                (value: 2.5, year: 2024, month: 10, day: 28, hour: 0),
+                (value: 0, year: 2024, month: 10, day: 29, hour: 0),
+                (value: 0, year: 2024, month: 10, day: 30, hour: 0),
+                (value: 2, year: 2024, month: 10, day: 31, hour: 0)
+            ]],
+            for: [
+                (value: 1, year: 2024, month: 10, day: 28, hour: 12),
+                (value: 1.5, year: 2024, month: 10, day: 28, hour: 12),
+                (value: 2, year: 2024, month: 10, day: 31, hour: 12)
+            ],
+            span: .month,
+            provider: .dailySum,
+            treatsMissingAsZero: true
+        )
+    }
+
+    @Test func twoMonths() {
+        expect(
+            [
+                [(value: 2.5, year: 2024, month: 10, day: 31, hour: 0)],
                 [(value: 2, year: 2024, month: 11, day: 1, hour: 0)]
             ],
             for: [
                 (value: 1, year: 2024, month: 10, day: 31, hour: 12),
+                (value: 1.5, year: 2024, month: 10, day: 31, hour: 12),
                 (value: 2, year: 2024, month: 11, day: 1, hour: 12)
             ],
             span: .month,
             provider: .dailySum
+        )
+    }
+
+    @Test func twoMonths_withZeroFilling() {
+        expect(
+            [
+                [
+                    (value: 2.5, year: 2024, month: 10, day: 29, hour: 0),
+                    (value: 0, year: 2024, month: 10, day: 30, hour: 0),
+                    (value: 0, year: 2024, month: 10, day: 31, hour: 0)
+                ],
+                [
+                    (value: 2, year: 2024, month: 11, day: 1, hour: 0)
+                ]
+            ],
+            for: [
+                (value: 1, year: 2024, month: 10, day: 29, hour: 12),
+                (value: 1.5, year: 2024, month: 10, day: 29, hour: 12),
+                (value: 2, year: 2024, month: 11, day: 1, hour: 12)
+            ],
+            span: .month,
+            provider: .dailySum,
+            treatsMissingAsZero: true
+        )
+    }
+
+    @Test func oneYear() {
+        expect(
+            [[
+                (value: 1, year: 2024, month: 1, day: 1, hour: 0),
+                (value: 4.5, year: 2024, month: 5, day: 1, hour: 0),
+                (value: 3, year: 2024, month: 12, day: 1, hour: 0)
+            ]],
+            for: [
+                (value: 1, year: 2024, month: 1, day: 10, hour: 12),
+                (value: 2, year: 2024, month: 5, day: 14, hour: 12),
+                (value: 2.5, year: 2024, month: 5, day: 19, hour: 12),
+                (value: 3, year: 2024, month: 12, day: 31, hour: 12)
+            ],
+            span: .year,
+            provider: .monthlySum
+        )
+    }
+
+    @Test func oneYear_withZeroFilling() {
+        expect(
+            [[
+                (value: 1, year: 2024, month: 1, day: 1, hour: 0),
+                (value: 0, year: 2024, month: 2, day: 1, hour: 0),
+                (value: 0, year: 2024, month: 3, day: 1, hour: 0),
+                (value: 0, year: 2024, month: 4, day: 1, hour: 0),
+                (value: 4.5, year: 2024, month: 5, day: 1, hour: 0),
+                (value: 0, year: 2024, month: 6, day: 1, hour: 0),
+                (value: 0, year: 2024, month: 7, day: 1, hour: 0),
+                (value: 0, year: 2024, month: 8, day: 1, hour: 0),
+                (value: 0, year: 2024, month: 9, day: 1, hour: 0),
+                (value: 0, year: 2024, month: 10, day: 1, hour: 0),
+                (value: 0, year: 2024, month: 11, day: 1, hour: 0),
+                (value: 3, year: 2024, month: 12, day: 1, hour: 0)
+            ]],
+            for: [
+                (value: 1, year: 2024, month: 1, day: 10, hour: 12),
+                (value: 2, year: 2024, month: 5, day: 14, hour: 12),
+                (value: 2.5, year: 2024, month: 5, day: 19, hour: 12),
+                (value: 3, year: 2024, month: 12, day: 31, hour: 12)
+            ],
+            span: .year,
+            provider: .monthlySum,
+            treatsMissingAsZero: true
+        )
+    }
+
+    @Test func twoYears() {
+        expect(
+            [
+                [(value: 2.5, year: 2024, month: 12, day: 1, hour: 0)],
+                [(value: 2, year: 2025, month: 1, day: 1, hour: 0)]
+            ],
+            for: [
+                (value: 1, year: 2024, month: 12, day: 10, hour: 12),
+                (value: 1.5, year: 2024, month: 12, day: 31, hour: 12),
+                (value: 2, year: 2025, month: 1, day: 1, hour: 12)
+            ],
+            span: .year,
+            provider: .monthlySum
+        )
+    }
+
+    @Test func twoYears_withZeroFilling() {
+        expect(
+            [
+                [
+                    (value: 2.5, year: 2024, month: 12, day: 1, hour: 0)
+                ],
+                [
+                    (value: 0, year: 2025, month: 1, day: 1, hour: 0),
+                    (value: 0, year: 2025, month: 2, day: 1, hour: 0),
+                    (value: 2, year: 2025, month: 3, day: 1, hour: 0)
+                ]
+            ],
+            for: [
+                (value: 1, year: 2024, month: 12, day: 10, hour: 12),
+                (value: 1.5, year: 2024, month: 12, day: 31, hour: 12),
+                (value: 2, year: 2025, month: 3, day: 1, hour: 12)
+            ],
+            span: .year,
+            provider: .monthlySum,
+            treatsMissingAsZero: true
         )
     }
 
@@ -94,6 +391,33 @@ struct ChartPageProviderTests {
             in: calendar,
             span: .week,
             provider: .dailySum
+        )
+    }
+
+    @Test func hebrewSameWeek_withZeroFilling() {
+        var calendar = Calendar(identifier: .hebrew)
+        calendar.timeZone = TimeZone(identifier: "UTC")!
+
+        expect(
+            [[
+                (value: 1, year: 5785, month: 2, day: 2, hour: 0),
+                (value: 0, year: 5785, month: 2, day: 3, hour: 0),
+                (value: 0, year: 5785, month: 2, day: 4, hour: 0),
+                (value: 4.5, year: 5785, month: 2, day: 5, hour: 0),
+                (value: 0, year: 5785, month: 2, day: 6, hour: 0),
+                (value: 0, year: 5785, month: 2, day: 7, hour: 0),
+                (value: 3, year: 5785, month: 2, day: 8, hour: 0)
+            ]],
+            for: [
+                (value: 1, year: 5785, month: 2, day: 2, hour: 12),
+                (value: 2, year: 5785, month: 2, day: 5, hour: 12),
+                (value: 2.5, year: 5785, month: 2, day: 5, hour: 14),
+                (value: 3, year: 5785, month: 2, day: 8, hour: 12)
+            ],
+            in: calendar,
+            span: .week,
+            provider: .dailySum,
+            treatsMissingAsZero: true
         )
     }
 
@@ -123,6 +447,38 @@ struct ChartPageProviderTests {
         )
     }
 
+    @Test func hebrewTwoWeeks_withZeroFilling() {
+        var calendar = Calendar(identifier: .hebrew)
+        calendar.timeZone = TimeZone(identifier: "UTC")!
+
+        expect(
+            [
+                [
+                    (value: 2.5, year: 5785, month: 2, day: 2, hour: 0),
+                    (value: 0, year: 5785, month: 2, day: 3, hour: 0),
+                    (value: 0, year: 5785, month: 2, day: 4, hour: 0),
+                    (value: 2, year: 5785, month: 2, day: 5, hour: 0),
+                    (value: 0, year: 5785, month: 2, day: 6, hour: 0),
+                    (value: 0, year: 5785, month: 2, day: 7, hour: 0),
+                    (value: 0, year: 5785, month: 2, day: 8, hour: 0),
+                ],
+                [
+                    (value: 3, year: 5785, month: 2, day: 9, hour: 0)
+                ]
+            ],
+            for: [
+                (value: 1, year: 5785, month: 2, day: 2, hour: 12),
+                (value: 1.5, year: 5785, month: 2, day: 2, hour: 15),
+                (value: 2, year: 5785, month: 2, day: 5, hour: 12),
+                (value: 3, year: 5785, month: 2, day: 9, hour: 12)
+            ],
+            in: calendar,
+            span: .week,
+            provider: .dailySum,
+            treatsMissingAsZero: true
+        )
+    }
+
     @Test func hebrewSameMonth() {
         var calendar = Calendar(identifier: .hebrew)
         calendar.timeZone = TimeZone(identifier: "UTC")!
@@ -140,6 +496,30 @@ struct ChartPageProviderTests {
             in: calendar,
             span: .month,
             provider: .dailySum
+        )
+    }
+
+    @Test func hebrewSameMonth_withZeroFilling() {
+        var calendar = Calendar(identifier: .hebrew)
+        calendar.timeZone = TimeZone(identifier: "UTC")!
+
+        expect(
+            [[
+                (value: 2.5, year: 5785, month: 11, day: 1, hour: 0),
+                (value: 0, year: 5785, month: 11, day: 2, hour: 0),
+                (value: 0, year: 5785, month: 11, day: 3, hour: 0),
+                (value: 0, year: 5785, month: 11, day: 4, hour: 0),
+                (value: 2, year: 5785, month: 11, day: 5, hour: 0)
+            ]],
+            for: [
+                (value: 1, year: 5785, month: 11, day: 1, hour: 12),
+                (value: 1.5, year: 5785, month: 11, day: 1, hour: 13),
+                (value: 2, year: 5785, month: 11, day: 5, hour: 12)
+            ],
+            in: calendar,
+            span: .month,
+            provider: .dailySum,
+            treatsMissingAsZero: true
         )
     }
 
@@ -163,6 +543,31 @@ struct ChartPageProviderTests {
         )
     }
 
+    @Test func hebrewTwoMonths_withZeroFilling() {
+        var calendar = Calendar(identifier: .hebrew)
+        calendar.timeZone = TimeZone(identifier: "UTC")!
+
+        expect(
+            [
+                [(value: 2.5, year: 5785, month: 11, day: 25, hour: 0),
+                (value: 0, year: 5785, month: 11, day: 26, hour: 0),
+                (value: 0, year: 5785, month: 11, day: 27, hour: 0),
+                (value: 0, year: 5785, month: 11, day: 28, hour: 0),
+                (value: 0, year: 5785, month: 11, day: 29, hour: 0)],
+                [(value: 2, year: 5785, month: 12, day: 1, hour: 0)]
+            ],
+            for: [
+                (value: 1, year: 5785, month: 11, day: 25, hour: 12),
+                (value: 1.5, year: 5785, month: 11, day: 25, hour: 13),
+                (value: 2, year: 5785, month: 12, day: 1, hour: 12)
+            ],
+            in: calendar,
+            span: .month,
+            provider: .dailySum,
+            treatsMissingAsZero: true
+        )
+    }
+
     @Test func hebrewSameYear() {
         var calendar = Calendar(identifier: .hebrew)
         calendar.timeZone = TimeZone(identifier: "UTC")!
@@ -180,6 +585,29 @@ struct ChartPageProviderTests {
             in: calendar,
             span: .year,
             provider: .monthlySum
+        )
+    }
+
+    @Test func hebrewSameYear_withZeroFilling() {
+        var calendar = Calendar(identifier: .hebrew)
+        calendar.timeZone = TimeZone(identifier: "UTC")!
+
+        expect(
+            [[
+                (value: 20.5, year: 5785, month: 3, day: 1, hour: 0),
+                (value: 0, year: 5785, month: 4, day: 1, hour: 0),
+                (value: 0, year: 5785, month: 5, day: 1, hour: 0),
+                (value: 20, year: 5785, month: 6, day: 1, hour: 0)
+            ]],
+            for: [
+                (value: 10, year: 5785, month: 3, day: 15, hour: 12),
+                (value: 10.5, year: 5785, month: 3, day: 30, hour: 12),
+                (value: 20, year: 5785, month: 6, day: 15, hour: 12)
+            ],
+            in: calendar,
+            span: .year,
+            provider: .monthlySum,
+            treatsMissingAsZero: true
         )
     }
 
@@ -209,6 +637,40 @@ struct ChartPageProviderTests {
         )
     }
 
+    @Test func hebrewTwoYears_withZeroFilling() {
+        var calendar = Calendar(identifier: .hebrew)
+        calendar.timeZone = TimeZone(identifier: "UTC")!
+
+        expect(
+            [
+                [
+                    (value: 20.5, year: 5785, month: 7, day: 1, hour: 0),
+                    (value: 0, year: 5785, month: 8, day: 1, hour: 0),
+                    (value: 11, year: 5785, month: 9, day: 1, hour: 0),
+                    (value: 0, year: 5785, month: 10, day: 1, hour: 0),
+                    (value: 0, year: 5785, month: 11, day: 1, hour: 0),
+                    (value: 0, year: 5785, month: 12, day: 1, hour: 0),
+                    (value: 0, year: 5785, month: 13, day: 1, hour: 0),
+                ],
+                [
+                    (value: 0, year: 5786, month: 1, day: 1, hour: 0),
+                    (value: 0, year: 5786, month: 2, day: 1, hour: 0),
+                    (value: 20, year: 5786, month: 3, day: 1, hour: 0)
+                ]
+            ],
+            for: [
+                (value: 10, year: 5785, month: 7, day: 15, hour: 12),
+                (value: 10.5, year: 5785, month: 7, day: 20, hour: 12),
+                (value: 11, year: 5785, month: 9, day: 15, hour: 12),
+                (value: 20, year: 5786, month: 3, day: 15, hour: 12)
+            ],
+            in: calendar,
+            span: .year,
+            provider: .monthlySum,
+            treatsMissingAsZero: true
+        )
+    }
+
     // MARK: - Islamic Calendar Tests
 
     @Test func islamicSameWeek() {
@@ -230,6 +692,33 @@ struct ChartPageProviderTests {
             in: calendar,
             span: .week,
             provider: .dailySum
+        )
+    }
+
+    @Test func islamicSameWeek_withZeroFilling() {
+        var calendar = Calendar(identifier: .islamic)
+        calendar.timeZone = TimeZone(identifier: "UTC")!
+
+        expect(
+            [[
+                (value: 5, year: 1447, month: 6, day: 17, hour: 0),
+                (value: 0, year: 1447, month: 6, day: 18, hour: 0),
+                (value: 0, year: 1447, month: 6, day: 19, hour: 0),
+                (value: 0, year: 1447, month: 6, day: 20, hour: 0),
+                (value: 0, year: 1447, month: 6, day: 21, hour: 0),
+                (value: 12.5, year: 1447, month: 6, day: 22, hour: 0),
+                (value: 10, year: 1447, month: 6, day: 23, hour: 0)
+            ]],
+            for: [
+                (value: 5, year: 1447, month: 6, day: 17, hour: 12),
+                (value: 6, year: 1447, month: 6, day: 22, hour: 12),
+                (value: 6.5, year: 1447, month: 6, day: 22, hour: 14),
+                (value: 10, year: 1447, month: 6, day: 23, hour: 12)
+            ],
+            in: calendar,
+            span: .week,
+            provider: .dailySum,
+            treatsMissingAsZero: true
         )
     }
 
@@ -259,6 +748,38 @@ struct ChartPageProviderTests {
         )
     }
 
+    @Test func islamicTwoWeeks_withZeroFilling() {
+        var calendar = Calendar(identifier: .islamic)
+        calendar.timeZone = TimeZone(identifier: "UTC")!
+
+        expect(
+            [
+                [
+                    (value: 5, year: 1447, month: 6, day: 17, hour: 0),
+                    (value: 0, year: 1447, month: 6, day: 18, hour: 0),
+                    (value: 0, year: 1447, month: 6, day: 19, hour: 0),
+                    (value: 0, year: 1447, month: 6, day: 20, hour: 0),
+                    (value: 0, year: 1447, month: 6, day: 21, hour: 0),
+                    (value: 0, year: 1447, month: 6, day: 22, hour: 0),
+                    (value: 12.5, year: 1447, month: 6, day: 23, hour: 0)
+                ],
+                [
+                    (value: 10, year: 1447, month: 6, day: 24, hour: 0)
+                ]
+            ],
+            for: [
+                (value: 5, year: 1447, month: 6, day: 17, hour: 12),
+                (value: 6, year: 1447, month: 6, day: 23, hour: 12),
+                (value: 6.5, year: 1447, month: 6, day: 23, hour: 14),
+                (value: 10, year: 1447, month: 6, day: 24, hour: 12)
+            ],
+            in: calendar,
+            span: .week,
+            provider: .dailySum,
+            treatsMissingAsZero: true
+        )
+    }
+
     @Test func islamicSameMonth() {
         var calendar = Calendar(identifier: .islamic)
         calendar.timeZone = TimeZone(identifier: "UTC")!
@@ -278,6 +799,32 @@ struct ChartPageProviderTests {
             in: calendar,
             span: .month,
             provider: .dailySum
+        )
+    }
+
+    @Test func islamicSameMonth_withZeroFilling() {
+        var calendar = Calendar(identifier: .islamic)
+        calendar.timeZone = TimeZone(identifier: "UTC")!
+
+        expect(
+            [[
+                (value: 100, year: 1447, month: 6, day: 12, hour: 0),
+                (value: 0, year: 1447, month: 6, day: 13, hour: 0),
+                (value: 0, year: 1447, month: 6, day: 14, hour: 0),
+                (value: 150, year: 1447, month: 6, day: 15, hour: 0),
+                (value: 0, year: 1447, month: 6, day: 16, hour: 0),
+                (value: 400.5, year: 1447, month: 6, day: 17, hour: 0)
+            ]],
+            for: [
+                (value: 100, year: 1447, month: 6, day: 12, hour: 12),
+                (value: 150, year: 1447, month: 6, day: 15, hour: 12),
+                (value: 200, year: 1447, month: 6, day: 17, hour: 12),
+                (value: 200.5, year: 1447, month: 6, day: 17, hour: 16)
+            ],
+            in: calendar,
+            span: .month,
+            provider: .dailySum,
+            treatsMissingAsZero: true
         )
     }
 
@@ -304,6 +851,38 @@ struct ChartPageProviderTests {
             in: calendar,
             span: .month,
             provider: .dailySum
+        )
+    }
+
+    @Test func islamicTwoMonths_withZeroFilling() {
+        var calendar = Calendar(identifier: .islamic)
+        calendar.timeZone = TimeZone(identifier: "UTC")!
+
+        expect(
+            [
+                [
+                    (value: 100, year: 1447, month: 6, day: 25, hour: 0),
+                    (value: 0, year: 1447, month: 6, day: 26, hour: 0),
+                    (value: 0, year: 1447, month: 6, day: 27, hour: 0),
+                    (value: 0, year: 1447, month: 6, day: 28, hour: 0),
+                    (value: 0, year: 1447, month: 6, day: 29, hour: 0),
+                    (value: 150, year: 1447, month: 6, day: 30, hour: 0)
+                ],
+                [
+                    (value: 0, year: 1447, month: 7, day: 1, hour: 0),
+                    (value: 400.5, year: 1447, month: 7, day: 2, hour: 0)
+                ]
+            ],
+            for: [
+                (value: 100, year: 1447, month: 6, day: 25, hour: 12),
+                (value: 150, year: 1447, month: 6, day: 30, hour: 12),
+                (value: 200, year: 1447, month: 7, day: 2, hour: 12),
+                (value: 200.5, year: 1447, month: 7, day: 2, hour: 16)
+            ],
+            in: calendar,
+            span: .month,
+            provider: .dailySum,
+            treatsMissingAsZero: true
         )
     }
 
@@ -368,94 +947,92 @@ struct ChartPageProviderTests {
         )
     }
 
-    // MARK: - Aggregation Tests
+    // MARK: - Average Aggregation
 
-    @Test("Daily sum aggregation across week")
-    func dailySumAggregation() {
-        let calendar = Calendar.defaultCalendar()
-        let baseDate = date(2024, 11, 11, calendar: calendar)
-
-        // Multiple entries on same day, plus another day
-        let entries = [
-            RawEntry(value: 10, timestamp: baseDate),
-            RawEntry(value: 2, timestamp: calendar.date(byAdding: .hour, value: 2, to: baseDate)!),
-            RawEntry(value: 40, timestamp: calendar.date(byAdding: .day, value: 2, to: baseDate)!)
-        ]
-
-        let pages = pages(for: entries, .week, .dailySum, calendar)
-
-        #expect(pages.count == 1)
-        #expect(pages[0].entries.count == 2)  // Two days
-        #expect(pages[0].entries.map(\.value) == [12, 40])
+    @Test func dailyAverageAggregation() {
+        expect(
+            [
+                [(value: 15, year: 2024, month: 3, day: 15, hour: 0)],
+                [(value: 16, year: 2024, month: 3, day: 20, hour: 0)]
+            ],
+            for: [
+                (value: 10, year: 2024, month: 3, day: 15, hour: 12),
+                (value: 20, year: 2024, month: 3, day: 15, hour: 12),
+                (value: 30, year: 2024, month: 3, day: 20, hour: 12),
+                (value: 2, year: 2024, month: 3, day: 20, hour: 12)
+            ],
+            in: Calendar.defaultCalendar(),
+            span: .week,
+            provider: .dailyAverage
+        )
     }
 
-    @Test("Daily sum aggregation across week with zero filling")
-    func dailySumAggregation_withZeroFilling() {
-        let calendar = Calendar.defaultCalendar()
-        let baseDate = date(2025, 11, 5, calendar: calendar)  // Wednesday
-
-        // Multiple entries on same day, plus two other days in the next weeks, with empty days in between
-        let entries = [
-            RawEntry(value: 10, timestamp: baseDate),  // Wednesday
-            RawEntry(value: 20, timestamp: calendar.date(byAdding: .hour, value: 2, to: baseDate)!),  // same day
-            RawEntry(value: 30, timestamp: calendar.date(byAdding: .day, value: 8, to: baseDate)!),  // Thursday
-            RawEntry(value: 40, timestamp: calendar.date(byAdding: .day, value: 10, to: baseDate)!),  // Saturday
-            RawEntry(value: 50, timestamp: calendar.date(byAdding: .day, value: 16, to: baseDate)!)  // Friday
-        ]
-
-        let pages = pages(for: entries, .week, .dailySum, calendar, treatsMissingAsZero: true)
-
-        #expect(pages.count == 3)
-        #expect(pages[0].entries.count == 5)  // Filled from the first entry on
-        #expect(pages[1].entries.count == 7)  // Fully filled, because there are weeks before and after
-        #expect(pages[2].entries.count == 5)  // Filled up to the last entry
-
-        #expect(pages[0].entries.map(\.value) == [30, 0, 0, 0, 0])  // Wednesday (first entry) through Sunday
-        #expect(pages[1].entries.map(\.value) == [0, 0, 0, 30, 0, 40, 0])  // Monday through Sunday
-        #expect(pages[2].entries.map(\.value) == [0, 0, 0, 0, 50])  // Monday through Friday (last entry)
+    @Test func dailyAverageAggregation_withZeroFilling() {
+        expect(
+            [
+                [
+                    (value: 15, year: 2024, month: 3, day: 15, hour: 0),
+                    (value: 0, year: 2024, month: 3, day: 16, hour: 0),
+                    (value: 0, year: 2024, month: 3, day: 17, hour: 0)
+                ],
+                [
+                    (value: 0, year: 2024, month: 3, day: 18, hour: 0),
+                    (value: 0, year: 2024, month: 3, day: 19, hour: 0),
+                    (value: 16, year: 2024, month: 3, day: 20, hour: 0)
+                ]
+            ],
+            for: [
+                (value: 10, year: 2024, month: 3, day: 15, hour: 12),
+                (value: 20, year: 2024, month: 3, day: 15, hour: 12),
+                (value: 30, year: 2024, month: 3, day: 20, hour: 12),
+                (value: 2, year: 2024, month: 3, day: 20, hour: 12)
+            ],
+            in: Calendar.defaultCalendar(),
+            span: .week,
+            provider: .dailyAverage,
+            treatsMissingAsZero: true
+        )
     }
 
-    @Test("Monthly average aggregation")
-    func monthlyAverageAggregation() {
-        let calendar = Calendar.defaultCalendar()
-
-        let jan = date(2024, 1, 15, calendar: calendar)
-        let mar = date(2024, 3, 15, calendar: calendar)
-
-        let entries = [
-            RawEntry(value: 10, timestamp: jan),
-            RawEntry(value: 2, timestamp: calendar.date(byAdding: .day, value: 1, to: jan)!),
-            RawEntry(value: 30, timestamp: mar)
-        ]
-
-        let pages = pages(for: entries, .year, .monthlyAverage, calendar)
-
-        #expect(pages.count == 1)
-
-        // Should have two months of data
-        #expect(pages.first?.entries.map(\.value) == [6, 30])
+    @Test func monthlyAverageAggregation() {
+        expect(
+            [[
+                (value: 6, year: 2024, month: 1, day: 1, hour: 0),
+                (value: 16, year: 2024, month: 3, day: 1, hour: 0)
+            ]],
+            for: [
+                (value: 10, year: 2024, month: 1, day: 15, hour: 12),
+                (value: 2, year: 2024, month: 1, day: 16, hour: 12),
+                (value: 30, year: 2024, month: 3, day: 15, hour: 12),
+                (value: 2, year: 2024, month: 3, day: 28, hour: 12)
+            ],
+            in: Calendar.defaultCalendar(),
+            span: .year,
+            provider: .monthlyAverage
+        )
     }
 
-    @Test("Monthly average aggregation with zero filling")
-    func monthlyAverageAggregation_withZeroFilling() {
-        let calendar = Calendar.defaultCalendar()
-
-        let jan = date(2024, 1, 15, calendar: calendar)
-        let mar = date(2024, 3, 15, calendar: calendar)
-
-        let entries = [
-            RawEntry(value: 10, timestamp: jan),
-            RawEntry(value: 2, timestamp: calendar.date(byAdding: .day, value: 1, to: jan)!),
-            RawEntry(value: 30, timestamp: mar)
-        ]
-
-        let pages = pages(for: entries, .year, .monthlyAverage, calendar, treatsMissingAsZero: true)
-
-        #expect(pages.count == 1)
-
-        // Should have three months of data
-        #expect(pages.first?.entries.map(\.value) == [6, 0, 30])
+    @Test func monthlyAverageAggregation_withZeroFilling() {
+        expect(
+            [[
+                (value: 6, year: 2024, month: 1, day: 1, hour: 0),
+                (value: 0, year: 2024, month: 2, day: 1, hour: 0),
+                (value: 16, year: 2024, month: 3, day: 1, hour: 0)
+            ]],
+            for: [
+                (value: 10, year: 2024, month: 1, day: 15, hour: 12),
+                (value: 2, year: 2024, month: 1, day: 16, hour: 12),
+                (value: 30, year: 2024, month: 3, day: 15, hour: 12),
+                (value: 2, year: 2024, month: 3, day: 28, hour: 12)
+            ],
+            in: Calendar.defaultCalendar(),
+            span: .year,
+            provider: .monthlyAverage,
+            treatsMissingAsZero: true
+        )
     }
+
+    // MARK: - Page Aggregate
 
     @Test("Correct page aggregation (page total)")
     func pageAggregate_sum() {
