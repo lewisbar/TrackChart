@@ -33,6 +33,12 @@ struct SettingsView: View {
                 }
 
                 Section {
+                    detailsSetting
+                } header: {
+                    Text(.description)
+                }
+
+                Section {
                     aggregatorSetting
                 } header: {
                     Text(.aggregationMethod)
@@ -96,6 +102,26 @@ struct SettingsView: View {
 
             palettePicker
         }
+    }
+
+    private var detailsSetting: some View {
+        ZStack(alignment: .topLeading) {
+            TextEditor(text: $topic.details)
+                .frame(minHeight: 60)
+                .focused($isTextFieldFocused)
+
+            if topic.details.isEmpty {
+                detailsPlaceholder
+            }
+        }
+    }
+
+    private var detailsPlaceholder: some View {
+        Text(.enterADescription)
+            .foregroundStyle(.secondary)
+            .padding(.horizontal, 5)
+            .padding(.top, 8)
+            .allowsHitTesting(false)
     }
 
     private var palettePicker: some View {
