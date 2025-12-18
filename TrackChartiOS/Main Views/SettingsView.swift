@@ -53,14 +53,11 @@ struct SettingsView: View {
                 }
             }
             .formStyle(.grouped)
-            .padding(.top, -24)
+            .padding(.top, -16)
             .scrollDismissesKeyboard(.interactively)
-            .overlay(alignment: .top) {
-                if isTextFieldFocused {
-                    Color.clear
-                        .contentShape(Rectangle())
-                        .onTapGesture { isTextFieldFocused = false }
-                        .allowsHitTesting(true)
+            .onTapGesture {
+                withAnimation {
+                    isTextFieldFocused = false
                 }
             }
             .toolbar {
