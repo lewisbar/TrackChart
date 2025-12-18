@@ -8,7 +8,13 @@
 import Foundation
 
 public final class ChartPageProvider {
-    public static func pages(for raw: [RawEntry], span: TimeSpan, aggregator: Aggregator, treatsMissingAsZero: Bool, calendar: Calendar = .current) -> [ChartPage] {
+    public static func pages(
+        for raw: [RawEntry],
+        span: TimeSpan,
+        aggregator: Aggregator,
+        treatsMissingAsZero: Bool,
+        calendar: Calendar = .current
+    ) -> [ChartPage] {
         let provider = ChartDataProvider.preset(for: span, aggregator: aggregator, treatsMissingAsZero: treatsMissingAsZero, calendar: calendar)
         return pages(for: raw, span: span, dataProvider: provider, calendar: calendar)
     }

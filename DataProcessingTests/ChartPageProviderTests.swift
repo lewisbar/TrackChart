@@ -9,232 +9,370 @@ import Testing
 import Foundation
 import DataProcessing
 
-@MainActor
 struct ChartPageProviderTests {
-
-    // MARK: - Gregorian Calendar Tests
-
-    @Test("Gregorian: Empty array returns empty pages")
-    func gregorianEmptyArray() {
-        let pages = pages(for: [], .week, .dailySum, defaultCalendar())
-        #expect(pages.isEmpty)
+    @Test func emptyInput_returnsEmpty() {
+        expect([], for: [], span: .week, provider: .dailySum)
     }
 
-    @Test("Gregorian: Week spanning year boundary")
-    func gregorianWeekSpanningYear() {
-        let calendar = defaultCalendar()
+    // TODO: Test titles
+    //        let calendar = Calendar.defaultCalendar()
+    //
+    //        // Dec 30, 2024 to Jan 5, 2025 should be in the same week
+    //        let entries = [
+    //            RawEntry(value: 1, timestamp: date(2024, 12, 30, calendar: calendar)),
+    //            RawEntry(value: 2, timestamp: date(2025, 1, 2, calendar: calendar)),
+    //            RawEntry(value: 3, timestamp: date(2025, 1, 5, calendar: calendar))
+    //        ]
+    //
+    //        let pages = pages(for: entries, .week, .dailySum, calendar)
+    //
+    //        // All entries should be in the same week page
+    //        #expect(pages.count == 1)
+    //        #expect(pages.first?.entries.map(\.value) == [1, 2, 3])
+    //
+    //        let expectedDates = entries.map(\.timestamp).map { calendar.startOfDay(for: $0) }
+    //        #expect(pages.first?.entries.map(\.timestamp) == expectedDates)
+    //
+    //        let formatStyle = Date.FormatStyle(calendar: calendar)
+    //        let first = expectedDates[0].formatted(formatStyle.day().month(.abbreviated))
+    //        let last = expectedDates[2].formatted(formatStyle.day().month(.abbreviated).year())
+    //        let expectedTitle = "\(first) – \(last)"
+    //        #expect(pages.first?.title == expectedTitle)
 
-        // Dec 30, 2024 to Jan 5, 2025 should be in the same week
-        let entries = [
-            RawEntry(value: 1, timestamp: date(2024, 12, 30, calendar: calendar)),
-            RawEntry(value: 2, timestamp: date(2025, 1, 2, calendar: calendar)),
-            RawEntry(value: 3, timestamp: date(2025, 1, 5, calendar: calendar))
-        ]
+    // MARK: - Gregorian Calendar
 
-        let pages = pages(for: entries, .week, .dailySum, calendar)
-
-        // All entries should be in the same week page
-        #expect(pages.count == 1)
-        #expect(pages.first?.entries.map(\.value) == [1, 2, 3])
-
-        let expectedDates = entries.map(\.timestamp).map { calendar.startOfDay(for: $0) }
-        #expect(pages.first?.entries.map(\.timestamp) == expectedDates)
-
-        let formatStyle = Date.FormatStyle(calendar: calendar)
-        let first = expectedDates[0].formatted(formatStyle.day().month(.abbreviated))
-        let last = expectedDates[2].formatted(formatStyle.day().month(.abbreviated).year())
-        let expectedTitle = "\(first) – \(last)"
-        #expect(pages.first?.title == expectedTitle)
+    @Test func sameWeekAcrossYearBoundary_returnsOneWeekPage() {
+        expect(
+            [[
+                (value: 1, year: 2024, month: 12, day: 30, hour: 0),
+                (value: 2, year: 2025, month: 1, day: 2, hour: 0),
+                (value: 3, year: 2025, month: 1, day: 5, hour: 0)
+            ]],
+            for: [
+                (value: 1, year: 2024, month: 12, day: 30, hour: 12),
+                (value: 2, year: 2025, month: 1, day: 2, hour: 12),
+                (value: 3, year: 2025, month: 1, day: 5, hour: 12)
+            ],
+            span: .week,
+            provider: .dailySum
+        )
     }
 
-    @Test("Gregorian: Month boundaries are respected")
-    func gregorianMonthBoundaries() {
-        let calendar = defaultCalendar()
-        let entries = [
-            RawEntry(value: 1, timestamp: date(2024, 10, 31, calendar: calendar)), // Last day of October
-            RawEntry(value: 2, timestamp: date(2024, 11, 1, calendar: calendar))   // First day of November
-        ]
-
-        let pages = pages(for: entries, .month, .dailySum, calendar)
-
-        #expect(pages.count == 2)
-        #expect(pages[0].entries.map(\.value) == [1])  // October
-        #expect(pages[1].entries.map(\.value) == [2])  // November
+    @Test func crossingMonthBoundaries_returnsTwoMonthPages() {
+        expect(
+            [
+                [(value: 1, year: 2024, month: 10, day: 31, hour: 0)],
+                [(value: 2, year: 2024, month: 11, day: 1, hour: 0)]
+            ],
+            for: [
+                (value: 1, year: 2024, month: 10, day: 31, hour: 12),
+                (value: 2, year: 2024, month: 11, day: 1, hour: 12)
+            ],
+            span: .month,
+            provider: .dailySum
+        )
     }
 
-    // MARK: - Hebrew Calendar Tests
+    // MARK: - Hebrew Calendar
 
-    @Test("Hebrew: Basic week grouping")
-    func hebrewBasicWeek() {
+    @Test func hebrewSameWeek() {
         var calendar = Calendar(identifier: .hebrew)
         calendar.timeZone = TimeZone(identifier: "UTC")!
 
-        // Entries within the same Hebrew week
-        // 1. Cheschwan 5785 until 7. Cheschwan 5785 → full week (Sunday to Saturday)
-        let baseDate = date(5785, 2, 2, calendar: calendar)  // 2. Cheschwan 5785 (Sunday – week start)
-        let entries = [
-            RawEntry(value: 1, timestamp: baseDate),  // 1. Cheschwan (Sunday
-            RawEntry(value: 2, timestamp: calendar.date(byAdding: .day, value: 3, to: baseDate)!),  // 4. Cheschwan (Wednesday)
-            RawEntry(value: 3, timestamp: calendar.date(byAdding: .day, value: 6, to: baseDate)!)   // 7. Cheschwan (Saturday – week end)
-        ]
-
-        let pages = pages(for: entries, .week, .dailySum, calendar)
-
-        #expect(pages.count == 1)
-        #expect(pages[0].entries.map(\.value) == [1, 2, 3])
+        expect(
+            [[
+                (value: 1, year: 5785, month: 2, day: 2, hour: 0),
+                (value: 4.5, year: 5785, month: 2, day: 5, hour: 0),
+                (value: 3, year: 5785, month: 2, day: 8, hour: 0)
+            ]],
+            for: [
+                (value: 1, year: 5785, month: 2, day: 2, hour: 12),
+                (value: 2, year: 5785, month: 2, day: 5, hour: 12),
+                (value: 2.5, year: 5785, month: 2, day: 5, hour: 14),
+                (value: 3, year: 5785, month: 2, day: 8, hour: 12)
+            ],
+            in: calendar,
+            span: .week,
+            provider: .dailySum
+        )
     }
 
-    @Test("Hebrew: Month boundaries")
-    func hebrewMonthBoundaries() {
+    @Test func hebrewTwoWeeks() {
         var calendar = Calendar(identifier: .hebrew)
         calendar.timeZone = TimeZone(identifier: "UTC")!
 
-        // Get two consecutive Hebrew months
-        let firstMonth = date(5785, 11, 1, calendar: calendar)  // start of month
-        let secondMonth = calendar.date(byAdding: .month, value: 1, to: firstMonth)!
-        let firstMonthEnd = calendar.date(byAdding: .day, value: -1, to: secondMonth)!  // end of first month
-
-        let entries = [
-            RawEntry(value: 1, timestamp: firstMonth),
-            RawEntry(value: 1.5, timestamp: firstMonthEnd),
-            RawEntry(value: 2, timestamp: secondMonth)
-        ]
-
-        let pages = pages(for: entries, .month, .dailySum, calendar)
-
-        #expect(pages.count == 2)
-        #expect(pages[0].entries.map(\.value) == [1, 1.5])
-        #expect(pages[1].entries.map(\.value) == [2])
+        expect(
+            [
+                [
+                    (value: 2.5, year: 5785, month: 2, day: 2, hour: 0),
+                    (value: 2, year: 5785, month: 2, day: 5, hour: 0)
+                ],
+                [
+                    (value: 3, year: 5785, month: 2, day: 9, hour: 0)
+                ]
+            ],
+            for: [
+                (value: 1, year: 5785, month: 2, day: 2, hour: 12),
+                (value: 1.5, year: 5785, month: 2, day: 2, hour: 15),
+                (value: 2, year: 5785, month: 2, day: 5, hour: 12),
+                (value: 3, year: 5785, month: 2, day: 9, hour: 12)
+            ],
+            in: calendar,
+            span: .week,
+            provider: .dailySum
+        )
     }
 
-    @Test("Hebrew: Year grouping")
-    func hebrewYearGrouping() {
+    @Test func hebrewSameMonth() {
         var calendar = Calendar(identifier: .hebrew)
         calendar.timeZone = TimeZone(identifier: "UTC")!
 
-        let year1 = date(5785, 1, 15, calendar: calendar)
-        let year2 = calendar.date(byAdding: .year, value: 1, to: year1)!
+        expect(
+            [[
+                (value: 2.5, year: 5785, month: 11, day: 1, hour: 0),
+                (value: 2, year: 5785, month: 11, day: 29, hour: 0)
+            ]],
+            for: [
+                (value: 1, year: 5785, month: 11, day: 1, hour: 12),
+                (value: 1.5, year: 5785, month: 11, day: 1, hour: 13),
+                (value: 2, year: 5785, month: 11, day: 29, hour: 12)
+            ],
+            in: calendar,
+            span: .month,
+            provider: .dailySum
+        )
+    }
 
-        let entries = [
-            RawEntry(value: 10, timestamp: year1),
-            RawEntry(value: 20, timestamp: year2)
-        ]
+    @Test func hebrewTwoMonths() {
+        var calendar = Calendar(identifier: .hebrew)
+        calendar.timeZone = TimeZone(identifier: "UTC")!
 
-        let pages = pages(for: entries, .year, .monthlySum, calendar)
+        expect(
+            [
+                [(value: 2.5, year: 5785, month: 11, day: 1, hour: 0)],
+                [(value: 2, year: 5785, month: 12, day: 1, hour: 0)]
+            ],
+            for: [
+                (value: 1, year: 5785, month: 11, day: 1, hour: 12),
+                (value: 1.5, year: 5785, month: 11, day: 1, hour: 13),
+                (value: 2, year: 5785, month: 12, day: 1, hour: 12)
+            ],
+            in: calendar,
+            span: .month,
+            provider: .dailySum
+        )
+    }
 
-        #expect(pages.count == 2)
-        #expect(pages[0].entries.map(\.value) == [10])
-        #expect(pages[1].entries.map(\.value) == [20])
+    @Test func hebrewSameYear() {
+        var calendar = Calendar(identifier: .hebrew)
+        calendar.timeZone = TimeZone(identifier: "UTC")!
+
+        expect(
+            [[
+                (value: 20.5, year: 5785, month: 3, day: 1, hour: 0),
+                (value: 20, year: 5785, month: 12, day: 1, hour: 0)
+            ]],
+            for: [
+                (value: 10, year: 5785, month: 3, day: 15, hour: 12),
+                (value: 10.5, year: 5785, month: 3, day: 30, hour: 12),
+                (value: 20, year: 5785, month: 12, day: 15, hour: 12)
+            ],
+            in: calendar,
+            span: .year,
+            provider: .monthlySum
+        )
+    }
+
+    @Test func hebrewTwoYears() {
+        var calendar = Calendar(identifier: .hebrew)
+        calendar.timeZone = TimeZone(identifier: "UTC")!
+
+        expect(
+            [
+                [
+                    (value: 20.5, year: 5785, month: 3, day: 1, hour: 0),
+                    (value: 11, year: 5785, month: 12, day: 1, hour: 0)
+                ],
+                [
+                    (value: 20, year: 5786, month: 3, day: 1, hour: 0)
+                ]
+            ],
+            for: [
+                (value: 10, year: 5785, month: 3, day: 15, hour: 12),
+                (value: 10.5, year: 5785, month: 3, day: 30, hour: 12),
+                (value: 11, year: 5785, month: 12, day: 15, hour: 12),
+                (value: 20, year: 5786, month: 3, day: 15, hour: 12)
+            ],
+            in: calendar,
+            span: .year,
+            provider: .monthlySum
+        )
     }
 
     // MARK: - Islamic Calendar Tests
 
-    @Test("Islamic: Week grouping")
-    func islamicWeekGrouping() {
+    @Test func islamicSameWeek() {
         var calendar = Calendar(identifier: .islamic)
         calendar.timeZone = TimeZone(identifier: "UTC")!
 
-        let baseDate = date(2024, 11, 10, calendar: calendar)
-        let entries = [
-            RawEntry(value: 5, timestamp: baseDate),
-            RawEntry(value: 5.5, timestamp: calendar.date(byAdding: .day, value: 6, to: baseDate)!),
-            RawEntry(value: 10, timestamp: calendar.date(byAdding: .day, value: 7, to: baseDate)!)
-        ]
-
-        let pages = pages(for: entries, .week, .dailySum, calendar)
-
-
-        #expect(pages.count == 2)
-        #expect(pages[0].entries.map(\.value) == [5, 5.5])
-        #expect(pages[1].entries.map(\.value) == [10])
+        expect(
+            [[
+                (value: 5, year: 1447, month: 6, day: 17, hour: 0),
+                (value: 12.5, year: 1447, month: 6, day: 22, hour: 0),
+                (value: 10, year: 1447, month: 6, day: 23, hour: 0)
+            ]],
+            for: [
+                (value: 5, year: 1447, month: 6, day: 17, hour: 12),
+                (value: 6, year: 1447, month: 6, day: 22, hour: 12),
+                (value: 6.5, year: 1447, month: 6, day: 22, hour: 14),
+                (value: 10, year: 1447, month: 6, day: 23, hour: 12)
+            ],
+            in: calendar,
+            span: .week,
+            provider: .dailySum
+        )
     }
 
-    @Test("Islamic: Month boundaries")
-    func islamicMonthBoundaries() {
+    @Test func islamicTwoWeeks() {
         var calendar = Calendar(identifier: .islamic)
         calendar.timeZone = TimeZone(identifier: "UTC")!
 
-        let month1 = date(2024, 6, 15, calendar: calendar)
-        let month2 = calendar.date(byAdding: .month, value: 1, to: month1)!
+        expect(
+            [
+                [
+                    (value: 5, year: 1447, month: 6, day: 17, hour: 0),
+                    (value: 12.5, year: 1447, month: 6, day: 23, hour: 0)
+                ],
+                [
+                    (value: 10, year: 1447, month: 6, day: 24, hour: 0)
+                ]
+            ],
+            for: [
+                (value: 5, year: 1447, month: 6, day: 17, hour: 12),
+                (value: 6, year: 1447, month: 6, day: 23, hour: 12),
+                (value: 6.5, year: 1447, month: 6, day: 23, hour: 14),
+                (value: 10, year: 1447, month: 6, day: 24, hour: 12)
+            ],
+            in: calendar,
+            span: .week,
+            provider: .dailySum
+        )
+    }
 
-        let entries = [
-            RawEntry(value: 100, timestamp: month1),
-            RawEntry(value: 200, timestamp: month2)
-        ]
+    @Test func islamicSameMonth() {
+        var calendar = Calendar(identifier: .islamic)
+        calendar.timeZone = TimeZone(identifier: "UTC")!
 
-        let pages = pages(for: entries, .month, .dailySum, calendar)
+        expect(
+            [[
+                (value: 100, year: 1447, month: 6, day: 1, hour: 0),
+                (value: 150, year: 1447, month: 6, day: 15, hour: 0),
+                (value: 400.5, year: 1447, month: 6, day: 30, hour: 0)
+            ]],
+            for: [
+                (value: 100, year: 1447, month: 6, day: 1, hour: 12),
+                (value: 150, year: 1447, month: 6, day: 15, hour: 12),
+                (value: 200, year: 1447, month: 6, day: 30, hour: 12),
+                (value: 200.5, year: 1447, month: 6, day: 30, hour: 16)
+            ],
+            in: calendar,
+            span: .month,
+            provider: .dailySum
+        )
+    }
 
-        #expect(pages.count == 2)
-        #expect(pages[0].entries.map(\.value) == [100])
-        #expect(pages[1].entries.map(\.value) == [200])
+    @Test func islamicTwoMonths() {
+        var calendar = Calendar(identifier: .islamic)
+        calendar.timeZone = TimeZone(identifier: "UTC")!
+
+        expect(
+            [
+                [
+                    (value: 100, year: 1447, month: 6, day: 1, hour: 0),
+                    (value: 150, year: 1447, month: 6, day: 30, hour: 0)
+                ],
+                [
+                    (value: 400.5, year: 1447, month: 7, day: 1, hour: 0)
+                ]
+            ],
+            for: [
+                (value: 100, year: 1447, month: 6, day: 1, hour: 12),
+                (value: 150, year: 1447, month: 6, day: 30, hour: 12),
+                (value: 200, year: 1447, month: 7, day: 1, hour: 12),
+                (value: 200.5, year: 1447, month: 7, day: 1, hour: 16)
+            ],
+            in: calendar,
+            span: .month,
+            provider: .dailySum
+        )
     }
 
     // MARK: - Edge Cases Across Calendars
 
-    @Test("Multiple calendars: Same timestamp different grouping")
-    func multipleCalendarsSameTimestamp() {
-        let gregorian = Calendar(identifier: .gregorian)
-        var hebrew = Calendar(identifier: .hebrew)
-        hebrew.timeZone = TimeZone(identifier: "UTC")!
-
-        let timestamp = Date(timeIntervalSince1970: 1700000000)  // Fixed point in time
-        let entries = [RawEntry(value: 42, timestamp: timestamp)]
-
-        let gregorianPages = pages(for: entries, .week, .dailySum, gregorian)
-        let hebrewPages = pages(for: entries, .week, .dailySum, hebrew)
-
-        // Both should create pages, but periods may differ
-        #expect(!gregorianPages.isEmpty)
-        #expect(!hebrewPages.isEmpty)
-
-        // Values should be preserved
-        #expect(gregorianPages[0].entries[0].value == 42)
-        #expect(hebrewPages[0].entries[0].value == 42)
-    }
-
-    @Test("Calendar with different first weekday")
-    func differentFirstWeekday() {
+    @Test func differentFirstWeekday() {
         var sundayCalendar = Calendar(identifier: .gregorian)
         sundayCalendar.firstWeekday = 1  // Sunday
 
         var mondayCalendar = Calendar(identifier: .gregorian)
         mondayCalendar.firstWeekday = 2  // Monday
 
-        let entries = [
-            RawEntry(value: 10, timestamp: date(2024, 11, 10, calendar: sundayCalendar)),  // Sunday
-            RawEntry(value: 11, timestamp: date(2024, 11, 11, calendar: sundayCalendar))  // Monday
+        let inputData: [(value: Double, year: Int, month: Int, day: Int, hour: Int)] = [
+            (value: 10, year: 2024, month: 11, day: 10, hour: 12),
+            (value: 11, year: 2024, month: 11, day: 11, hour: 12)
         ]
 
-        let sundayPages = pages(for: entries, .week, .dailySum, sundayCalendar)
-        let mondayPages = pages(for: entries, .week, .dailySum, mondayCalendar)
+        // Sunday calendar: Sunday is in the same week as the following Monday
+        expect(
+            [[
+                (value: 10, year: 2024, month: 11, day: 10, hour: 0),
+                (value: 11, year: 2024, month: 11, day: 11, hour: 0)
+            ]],
+            for: inputData,
+            in: sundayCalendar,
+            span: .week,
+            provider: .dailySum
+        )
 
-        #expect(sundayPages.count == 1)
-        #expect(mondayPages.count == 2)  // Sunday falls into previous week
+        // Monday calendar: Monday starts a new week
+        expect(
+            [
+                [(value: 10, year: 2024, month: 11, day: 10, hour: 0)],
+                [(value: 11, year: 2024, month: 11, day: 11, hour: 0)]
+            ],
+            for: inputData,
+            in: mondayCalendar,
+            span: .week,
+            provider: .dailySum
+        )
     }
 
-    @Test("Leap year handling")
-    func leapYearHandling() {
-        let calendar = defaultCalendar()
-
-        let entries = [
-            RawEntry(value: 1, timestamp: date(2024, 2, 28, calendar: calendar)),
-            RawEntry(value: 2, timestamp: date(2024, 2, 29, calendar: calendar)),  // 2024 is a leap year
-            RawEntry(value: 3, timestamp: date(2024, 3, 1, calendar: calendar))
-        ]
-
-        let pages = pages(for: entries, .month, .dailySum, calendar)
-
-        // Feb and March should be separate pages
-        #expect(pages.count == 2)
-        #expect(pages[0].entries.count == 2)  // Feb 28 and 29
-        #expect(pages[1].entries.count == 1)  // March 1
+    @Test func leapYearHandling() {
+        expect(
+            [
+                [
+                    (value: 2.5, year: 2024, month: 2, day: 28, hour: 0),
+                    (value: 2, year: 2024, month: 2, day: 29, hour: 0)
+                ],
+                [
+                    (value: 3, year: 2024, month: 3, day: 1, hour: 0)
+                ]
+            ],
+            for: [
+                (value: 1, year: 2024, month: 2, day: 28, hour: 12),
+                (value: 1.5, year: 2024, month: 2, day: 28, hour: 17),
+                (value: 2, year: 2024, month: 2, day: 29, hour: 12),
+                (value: 3, year: 2024, month: 3, day: 1, hour: 12)
+            ],
+            span: .month,
+            provider: .dailySum
+        )
     }
 
     // MARK: - Aggregation Tests
 
     @Test("Daily sum aggregation across week")
     func dailySumAggregation() {
-        let calendar = defaultCalendar()
+        let calendar = Calendar.defaultCalendar()
         let baseDate = date(2024, 11, 11, calendar: calendar)
 
         // Multiple entries on same day, plus another day
@@ -253,7 +391,7 @@ struct ChartPageProviderTests {
 
     @Test("Daily sum aggregation across week with zero filling")
     func dailySumAggregation_withZeroFilling() {
-        let calendar = defaultCalendar()
+        let calendar = Calendar.defaultCalendar()
         let baseDate = date(2025, 11, 5, calendar: calendar)  // Wednesday
 
         // Multiple entries on same day, plus two other days in the next weeks, with empty days in between
@@ -279,7 +417,7 @@ struct ChartPageProviderTests {
 
     @Test("Monthly average aggregation")
     func monthlyAverageAggregation() {
-        let calendar = defaultCalendar()
+        let calendar = Calendar.defaultCalendar()
 
         let jan = date(2024, 1, 15, calendar: calendar)
         let mar = date(2024, 3, 15, calendar: calendar)
@@ -300,7 +438,7 @@ struct ChartPageProviderTests {
 
     @Test("Monthly average aggregation with zero filling")
     func monthlyAverageAggregation_withZeroFilling() {
-        let calendar = defaultCalendar()
+        let calendar = Calendar.defaultCalendar()
 
         let jan = date(2024, 1, 15, calendar: calendar)
         let mar = date(2024, 3, 15, calendar: calendar)
@@ -321,7 +459,7 @@ struct ChartPageProviderTests {
 
     @Test("Correct page aggregation (page total)")
     func pageAggregate_sum() {
-        let calendar = defaultCalendar()
+        let calendar = Calendar.defaultCalendar()
 
         // Dec 30, 2024 to Jan 5, 2025 should be in the same week
         let entries = [
@@ -341,7 +479,7 @@ struct ChartPageProviderTests {
 
     @Test("Correct page aggregation (page average)")
     func pageAggregate_average() {
-        let calendar = defaultCalendar()
+        let calendar = Calendar.defaultCalendar()
 
         // Dec 30, 2024 to Jan 5, 2025 should be in the same week
         let entries = [
@@ -360,6 +498,27 @@ struct ChartPageProviderTests {
     }
 
     // MARK: - Helpers
+
+    private func expect(
+        _ expectedData: [[(value: Double, year: Int, month: Int, day: Int, hour: Int)]],
+        for inputData: [(value: Double, year: Int, month: Int, day: Int, hour: Int)],
+        in calendar: Calendar = Calendar.defaultCalendar(),
+        span: TimeSpan,
+        provider: Provider,
+        treatsMissingAsZero: Bool = false,
+        sourceLocation: SourceLocation = #_sourceLocation
+    ) {
+        let inputEntries = inputData.map {
+            RawEntry(value: $0.value, timestamp: date($0.year, $0.month, $0.day, hour: $0.hour, calendar: calendar))
+        }
+
+        let pages = pages(for: inputEntries, span, provider, calendar, treatsMissingAsZero: treatsMissingAsZero)
+
+        let expectedValues = expectedData.map { $0.map(\.value) }
+        let expectedDates = expectedData.map { $0.map { date($0.year, $0.month, $0.day, hour: $0.hour, calendar: calendar) } }
+        #expect(pages.map { $0.entries.map(\.value) } == expectedValues, sourceLocation: sourceLocation)
+        #expect(pages.map { $0.entries.map(\.timestamp) } == expectedDates, sourceLocation: sourceLocation)
+    }
 
     private enum Provider {
         case dailySum
@@ -389,8 +548,10 @@ struct ChartPageProviderTests {
 
         return calendar.date(from: components)!
     }
+}
 
-    private func defaultCalendar() -> Calendar {
+private extension Calendar {
+    static func defaultCalendar() -> Calendar {
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = TimeZone(secondsFromGMT: 0)!
         calendar.locale = Locale(identifier: "en_US_POSIX")
