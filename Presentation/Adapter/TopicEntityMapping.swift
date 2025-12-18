@@ -36,6 +36,14 @@ public extension TopicEntity {
     var viewPalette: Palette {
         .palette(named: palette)
     }
+
+    func apply(_ settingsViewTopic: SettingsTopic) {
+        name = settingsViewTopic.name
+        details = settingsViewTopic.details.isEmpty ? nil : settingsViewTopic.details
+        palette = settingsViewTopic.palette.name
+        aggregator = settingsViewTopic.aggregator.name
+        treatsMissingAsZero = settingsViewTopic.treatsMissingAsZero
+    }
 }
 
 public extension EntryEntity {

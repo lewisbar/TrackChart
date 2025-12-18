@@ -86,4 +86,31 @@ struct TopicEntityMappingTests {
         #expect(sut.viewAggregator == .average)
         #expect(sut.viewPalette == .fire)
     }
+
+    @Test func apply() {
+        let sut = TopicEntity(
+            id: UUID(),
+            name: "a topic",
+            details: "some details",
+            entries: [
+                EntryEntity(value: 1, timestamp: .now.advanced(by: -400)),
+                EntryEntity(value: -1, timestamp: .now.advanced(by: -300)),
+                EntryEntity(value: 10, timestamp: .now.advanced(by: -200)),
+            ],
+            palette: "Ocean",
+            aggregator: "Sum",
+            treatsMissingAsZero: false,
+            sortIndex: 0
+        )
+
+        let settingsTopic = SettingsTopic(name: "new name", details: "new details", palette: .lavenderField, aggregator: .average, treatsMissingAsZero: true)
+
+        sut.apply(settingsTopic)
+
+        #expect(sut.name == settingsTopic.name)
+        #expect(sut.details == settingsTopic.details)
+        #expect(sut.palette == Palette.lavenderField.name)
+        #expect(sut.aggregator == ViewAggregator.average.name)
+        #expect(sut.treatsMissingAsZero == sut.treatsMissingAsZero)
+    }
 }

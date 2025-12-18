@@ -86,13 +86,7 @@ struct TrackChartApp: App {
     private func makeSettingsView(for topic: TopicEntity) -> some View {
         SettingsView(
             topic: topic.settingsViewTopic,
-            save: {
-                topic.name = $0.name
-                topic.details = $0.details.isEmpty ? nil : $0.details
-                topic.palette = $0.palette.name
-                topic.aggregator = $0.aggregator.name
-                topic.treatsMissingAsZero = $0.treatsMissingAsZero
-            }
+            save: topic.apply
         )
         .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
     }
