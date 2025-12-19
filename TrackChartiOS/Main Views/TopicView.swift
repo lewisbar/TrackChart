@@ -46,7 +46,7 @@ struct TopicView<Settings: View>: View {
 
     private var chartList: some View {
         List {
-            if let details = topic.details { detailsView(with: details) }
+            if hasDetails, let details = topic.details { detailsView(with: details) }
             if topic.entries.isEmpty { tutorialView } else { overviewChart }
             entriesCell
             pagedCard(.week)
@@ -60,6 +60,11 @@ struct TopicView<Settings: View>: View {
         }
     }
 
+    private var hasDetails: Bool {
+        guard let details = topic.details, !details.isEmpty else { return false }
+        return true
+    }
+
     private func detailsView(with details: String) -> some View {
         Text(details)
             .font(.footnote)
@@ -71,7 +76,7 @@ struct TopicView<Settings: View>: View {
     private var overviewChart: some View {
         ChartView(topic: topic, mode: .overview)
             .frame(height: 150)
-            .padding(.top)
+            .padding(.top, hasDetails ? 0 : nil)
             .padding(.horizontal)
             .listRowSeparator(.hidden)
     }
