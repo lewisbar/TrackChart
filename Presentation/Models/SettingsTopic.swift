@@ -1,5 +1,5 @@
 //
-//  SettingsViewTopic.swift
+//  SettingsTopic.swift
 //  Presentation
 //
 //  Created by Lennart Wisbar on 01.12.25.
@@ -18,5 +18,15 @@ public struct SettingsTopic {
         self.palette = palette
         self.aggregator = aggregator
         self.treatsMissingAsZero = treatsMissingAsZero
+    }
+
+    public static var new: SettingsTopic {
+        SettingsTopic(
+            name: "",
+            details: "",
+            palette: .random,
+            aggregator: .sum,
+            treatsMissingAsZero: false
+        )
     }
 }

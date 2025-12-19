@@ -85,7 +85,7 @@ struct TrackChartApp: App {
 
     private func makeSettingsView(for topic: TopicEntity) -> some View {
         SettingsView(
-            topic: topic.settingsViewTopic,
+            topic: topic.settingsTopic,
             save: topic.apply
         )
         .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
@@ -93,21 +93,9 @@ struct TrackChartApp: App {
 
     private func makeSettingsViewForNewTopic(withSortIndex sortIndex: Int) -> some View {
         SettingsView(
-            topic: SettingsTopic(
-                name: "",
-                details: "",
-                palette: .random,
-                aggregator: .sum,
-                treatsMissingAsZero: false
-            ),
+            topic: .new,
             save: {
-                let newTopic = TopicEntity(
-                    name: $0.name,
-                    details: $0.details.isEmpty ? nil : $0.details,
-                    palette: $0.palette.name,
-                    aggregator: $0.aggregator.name,
-                    sortIndex: sortIndex
-                )
+                let newTopic = TopicEntity(from: $0, at: sortIndex)
                 modelContext.insert(newTopic)
                 showTopic(newTopic)
             }

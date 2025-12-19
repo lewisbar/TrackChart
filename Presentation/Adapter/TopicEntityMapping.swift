@@ -21,7 +21,7 @@ public extension TopicEntity {
         )
     }
 
-    var settingsViewTopic: SettingsTopic {
+    var settingsTopic: SettingsTopic {
         SettingsTopic(name: name, details: details ?? "", palette: viewPalette, aggregator: viewAggregator, treatsMissingAsZero: treatsMissingAsZero)
     }
 
@@ -37,12 +37,23 @@ public extension TopicEntity {
         .palette(named: palette)
     }
 
-    func apply(_ settingsViewTopic: SettingsTopic) {
-        name = settingsViewTopic.name
-        details = settingsViewTopic.details.isEmpty ? nil : settingsViewTopic.details
-        palette = settingsViewTopic.palette.name
-        aggregator = settingsViewTopic.aggregator.name
-        treatsMissingAsZero = settingsViewTopic.treatsMissingAsZero
+    func apply(_ settingsTopic: SettingsTopic) {
+        name = settingsTopic.name
+        details = settingsTopic.details.isEmpty ? nil : settingsTopic.details
+        palette = settingsTopic.palette.name
+        aggregator = settingsTopic.aggregator.name
+        treatsMissingAsZero = settingsTopic.treatsMissingAsZero
+    }
+
+    convenience init(from settingsTopic: SettingsTopic, at sortIndex: Int) {
+        self.init(
+            name: settingsTopic.name,
+            details: settingsTopic.details.isEmpty ? nil : settingsTopic.details,
+            palette: settingsTopic.palette.name,
+            aggregator: settingsTopic.aggregator.name,
+            treatsMissingAsZero: settingsTopic.treatsMissingAsZero,
+            sortIndex: sortIndex
+        )
     }
 }
 
