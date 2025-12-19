@@ -65,6 +65,7 @@ struct TopicView<Settings: View>: View {
             .font(.footnote)
             .foregroundStyle(.secondary)
             .padding(.horizontal)
+            .listRowSeparator(.hidden)
     }
 
     private var overviewChart: some View {
@@ -72,12 +73,14 @@ struct TopicView<Settings: View>: View {
             .frame(height: 150)
             .padding(.top)
             .padding(.horizontal)
+            .listRowSeparator(.hidden)
     }
 
     private var tutorialView: some View {
         Text(.noEntriesYet)
             .foregroundColor(.secondary)
             .padding()
+            .listRowSeparator(.hidden)
     }
 
     private var entriesCell: some View {
@@ -92,6 +95,7 @@ struct TopicView<Settings: View>: View {
             .padding()
             .card()
         }
+        .listRowSeparator(.hidden)
     }
 
     private func pagedCard(_ span: ViewTimeSpan) -> some View {
