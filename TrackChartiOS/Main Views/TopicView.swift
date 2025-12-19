@@ -46,8 +46,8 @@ struct TopicView<Settings: View>: View {
 
     private var chartList: some View {
         List {
-            if hasDetails, let details = topic.details { detailsView(with: details) }
-            if topic.entries.isEmpty { tutorialView } else { overviewChart }
+            if hasDetails { detailsView }
+            if hasEntries { overviewChart } else { tutorialView }
             entriesCell
             pagedCard(.week)
             pagedCard(.month)
@@ -61,12 +61,15 @@ struct TopicView<Settings: View>: View {
     }
 
     private var hasDetails: Bool {
-        guard let details = topic.details, !details.isEmpty else { return false }
-        return true
+        !topic.details.isEmpty
     }
 
-    private func detailsView(with details: String) -> some View {
-        Text(details)
+    private var hasEntries: Bool {
+        !topic.entries.isEmpty
+    }
+
+    private var detailsView: some View {
+        Text(topic.details)
             .font(.footnote)
             .foregroundStyle(.secondary)
             .padding(.horizontal)

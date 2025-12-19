@@ -22,7 +22,7 @@ public extension TopicEntity {
     }
 
     var settingsTopic: SettingsTopic {
-        SettingsTopic(name: name, details: details ?? "", palette: viewPalette, aggregator: viewAggregator, treatsMissingAsZero: treatsMissingAsZero)
+        SettingsTopic(name: name, details: details, palette: viewPalette, aggregator: viewAggregator, treatsMissingAsZero: treatsMissingAsZero)
     }
 
     var viewEntries: [ViewEntry] {
@@ -39,7 +39,7 @@ public extension TopicEntity {
 
     func apply(_ settingsTopic: SettingsTopic) {
         name = settingsTopic.name
-        details = settingsTopic.details.isEmpty ? nil : settingsTopic.details
+        details = settingsTopic.details
         palette = settingsTopic.palette.name
         aggregator = settingsTopic.aggregator.name
         treatsMissingAsZero = settingsTopic.treatsMissingAsZero
@@ -48,7 +48,7 @@ public extension TopicEntity {
     convenience init(from settingsTopic: SettingsTopic, at sortIndex: Int) {
         self.init(
             name: settingsTopic.name,
-            details: settingsTopic.details.isEmpty ? nil : settingsTopic.details,
+            details: settingsTopic.details,
             palette: settingsTopic.palette.name,
             aggregator: settingsTopic.aggregator.name,
             treatsMissingAsZero: settingsTopic.treatsMissingAsZero,
