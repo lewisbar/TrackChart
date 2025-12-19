@@ -17,6 +17,7 @@ struct ViewTimeSpanAdapterTests {
         let topic = ViewTopic(
             id: UUID(),
             name: "a name",
+            details: "some details",
             entries: [
                 ViewEntry(id: UUID(), value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 0)),
                 ViewEntry(id: UUID(), value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 10)),

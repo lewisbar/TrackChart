@@ -46,29 +46,49 @@ struct TopicView<Settings: View>: View {
 
     private var chartList: some View {
         List {
-            if topic.entries.isEmpty { tutorialView } else { overviewChart }
+            if hasDetails { detailsView }
+            if hasEntries { overviewChart } else { tutorialView }
             entriesCell
             pagedCard(.week)
             pagedCard(.month)
             pagedCard(.year)
         }
+        .padding(.top, -16)
         .safeAreaInset(edge: .bottom) {
             // Make room for the plus button
             Color.clear.frame(height: 36)
         }
     }
 
+    private var hasDetails: Bool {
+        !topic.details.isEmpty
+    }
+
+    private var hasEntries: Bool {
+        !topic.entries.isEmpty
+    }
+
+    private var detailsView: some View {
+        Text(topic.details)
+            .font(.footnote)
+            .foregroundStyle(.secondary)
+            .padding(.horizontal)
+            .listRowSeparator(.hidden)
+    }
+
     private var overviewChart: some View {
         ChartView(topic: topic, mode: .overview)
             .frame(height: 150)
-            .padding(.top)
+            .padding(.top, hasDetails ? 0 : nil)
             .padding(.horizontal)
+            .listRowSeparator(.hidden)
     }
 
     private var tutorialView: some View {
         Text(.noEntriesYet)
             .foregroundColor(.secondary)
             .padding()
+            .listRowSeparator(.hidden)
     }
 
     private var entriesCell: some View {
@@ -83,6 +103,7 @@ struct TopicView<Settings: View>: View {
             .padding()
             .card()
         }
+        .listRowSeparator(.hidden)
     }
 
     private func pagedCard(_ span: ViewTimeSpan) -> some View {
@@ -138,7 +159,7 @@ struct TopicView<Settings: View>: View {
     }
 
     TopicView(
-        topic: ViewTopic(id: UUID(), name: "Topic 1", entries: entries, aggregator: .average, treatsMissingAsZero: true, palette: .arcticIce),
+        topic: ViewTopic(id: UUID(), name: "Topic 1", details: "Some details", entries: entries, aggregator: .average, treatsMissingAsZero: true, palette: .arcticIce),
         submitNewValue: { _, _ in },
         settingsView: EmptyView.init,
         showEntryList: {}

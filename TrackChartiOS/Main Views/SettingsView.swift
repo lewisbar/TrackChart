@@ -33,6 +33,12 @@ struct SettingsView: View {
                 }
 
                 Section {
+                    detailsSetting
+                } header: {
+                    Text(.description)
+                }
+
+                Section {
                     aggregatorSetting
                 } header: {
                     Text(.aggregationMethod)
@@ -47,14 +53,11 @@ struct SettingsView: View {
                 }
             }
             .formStyle(.grouped)
-            .padding(.top, -24)
+            .padding(.top, -16)
             .scrollDismissesKeyboard(.interactively)
-            .overlay(alignment: .top) {
-                if isTextFieldFocused {
-                    Color.clear
-                        .contentShape(Rectangle())
-                        .onTapGesture { isTextFieldFocused = false }
-                        .allowsHitTesting(true)
+            .onTapGesture {
+                withAnimation {
+                    isTextFieldFocused = false
                 }
             }
             .toolbar {
@@ -96,6 +99,26 @@ struct SettingsView: View {
 
             palettePicker
         }
+    }
+
+    private var detailsSetting: some View {
+        ZStack(alignment: .topLeading) {
+            TextEditor(text: $topic.details)
+                .frame(minHeight: 60)
+                .focused($isTextFieldFocused)
+
+            if topic.details.isEmpty {
+                detailsPlaceholder
+            }
+        }
+    }
+
+    private var detailsPlaceholder: some View {
+        Text(.enterADescription)
+            .foregroundStyle(.secondary)
+            .padding(.horizontal, 5)
+            .padding(.top, 8)
+            .allowsHitTesting(false)
     }
 
     private var palettePicker: some View {
@@ -213,7 +236,7 @@ struct SettingsView: View {
 }
 
 #Preview {
-    let topic = SettingsTopic(name: "Topic 1", palette: .arcticIce, aggregator: .average, treatsMissingAsZero: false)
+    let topic = SettingsTopic(name: "Topic 1", details: "", palette: .arcticIce, aggregator: .average, treatsMissingAsZero: false)
 
     SettingsView(topic: topic, save: { _ in })
 }
