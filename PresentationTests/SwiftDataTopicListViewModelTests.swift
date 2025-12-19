@@ -61,7 +61,7 @@ class SwiftDataTopicListViewModelTests {
                 ViewEntry(id: entry.id, value: entry.value, timestamp: entry.timestamp)
             }
 
-            return ViewTopic(id: topic.id, name: topic.name, entries: entries, aggregator: .sum, treatsMissingAsZero: true, palette: .ocean)
+            return ViewTopic(id: topic.id, name: topic.name, details: topic.details, entries: entries, aggregator: .sum, treatsMissingAsZero: true, palette: .ocean)
         }
 
         #expect(result.map(\.id) == expectedCellModels.map(\.id))
@@ -78,7 +78,7 @@ class SwiftDataTopicListViewModelTests {
         let topics = makeTopicEntities(names: ["0", "1", "2", "3", "4"])
         let (sut, _) = try makeSUT(topics: topics, showTopic: { shownTopics.append($0) })
         let selectedTopic = topics[3]
-        let cellModel = ViewTopic(id: selectedTopic.id, name: selectedTopic.name, entries: selectedTopic.entries?.map {
+        let cellModel = ViewTopic(id: selectedTopic.id, name: selectedTopic.name, details: selectedTopic.details, entries: selectedTopic.entries?.map {
             ViewEntry(id: $0.id, value: $0.value, timestamp: $0.timestamp)
         } ?? [], aggregator: .average, treatsMissingAsZero: false, palette: .ocean)
 
@@ -135,6 +135,7 @@ class SwiftDataTopicListViewModelTests {
             TopicEntity(
                 id: UUID(),
                 name: name,
+                details: "Some details about \(name)",
                 entries: makeEntryEntities(from: Array(-1...Int.random(in: 3...10))),
                 palette: "Ocean",
                 aggregator: aggregator.name,

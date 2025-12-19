@@ -14,6 +14,7 @@ struct TopicEntityMappingTests {
         let sut = TopicEntity(
             id: UUID(),
             name: "a topic",
+            details: "some details",
             entries: [
                 EntryEntity(value: 1, timestamp: .now.advanced(by: -400)),
                 EntryEntity(value: -1, timestamp: .now.advanced(by: -300)),
@@ -29,6 +30,7 @@ struct TopicEntityMappingTests {
 
         #expect(result.id == sut.id)
         #expect(result.name == sut.name)
+        #expect(result.details == sut.details)
         #expect(result.entries == sut.sortedEntries.map {
             ViewEntry(id: $0.id, value: $0.value, timestamp: $0.timestamp)
         })
@@ -37,10 +39,11 @@ struct TopicEntityMappingTests {
         #expect(result.treatsMissingAsZero == sut.treatsMissingAsZero)
     }
 
-    @Test func settingsViewTopic() {
+    @Test func settingsTopic() {
         let sut = TopicEntity(
             id: UUID(),
             name: "a topic",
+            details: "some details",
             entries: [
                 EntryEntity(value: 1, timestamp: .now.advanced(by: -400)),
                 EntryEntity(value: -1, timestamp: .now.advanced(by: -300)),
@@ -52,9 +55,10 @@ struct TopicEntityMappingTests {
             sortIndex: 0
         )
 
-        let result = sut.settingsViewTopic
+        let result = sut.settingsTopic
 
         #expect(result.name == sut.name)
+        #expect(result.details == sut.details)
         #expect(result.palette == .lavenderField)
         #expect(result.aggregator == .sum)
         #expect(result.treatsMissingAsZero == sut.treatsMissingAsZero)
@@ -64,6 +68,7 @@ struct TopicEntityMappingTests {
         let sut = TopicEntity(
             id: UUID(),
             name: "a topic",
+            details: "some details",
             entries: [
                 EntryEntity(value: 1, timestamp: .now.advanced(by: -400)),
                 EntryEntity(value: -1, timestamp: .now.advanced(by: -300)),
@@ -80,5 +85,47 @@ struct TopicEntityMappingTests {
         })
         #expect(sut.viewAggregator == .average)
         #expect(sut.viewPalette == .fire)
+    }
+
+    @Test func apply() {
+        let sut = TopicEntity(
+            id: UUID(),
+            name: "a topic",
+            details: "some details",
+            entries: [
+                EntryEntity(value: 1, timestamp: .now.advanced(by: -400)),
+                EntryEntity(value: -1, timestamp: .now.advanced(by: -300)),
+                EntryEntity(value: 10, timestamp: .now.advanced(by: -200)),
+            ],
+            palette: "Ocean",
+            aggregator: "Sum",
+            treatsMissingAsZero: false,
+            sortIndex: 0
+        )
+
+        let settingsTopic = SettingsTopic(name: "new name", details: "new details", palette: .lavenderField, aggregator: .average, treatsMissingAsZero: true)
+
+        sut.apply(settingsTopic)
+
+        #expect(sut.name == settingsTopic.name)
+        #expect(sut.details == settingsTopic.details)
+        #expect(sut.palette == settingsTopic.palette.name)
+        #expect(sut.aggregator == settingsTopic.aggregator.name)
+        #expect(sut.treatsMissingAsZero == settingsTopic.treatsMissingAsZero)
+    }
+
+    @Test func initFromSettingsTopic() {
+        let settingsTopic = SettingsTopic(name: "a topic", details: "some details", palette: .arcticIce, aggregator: .average, treatsMissingAsZero: true)
+        let sortIndex = 11
+
+        let sut = TopicEntity(from: settingsTopic, at: sortIndex)
+
+        #expect(sut.name == settingsTopic.name)
+        #expect(sut.details == settingsTopic.details)
+        #expect(sut.palette == settingsTopic.palette.name)
+        #expect(sut.aggregator == settingsTopic.aggregator.name)
+        #expect(sut.treatsMissingAsZero == settingsTopic.treatsMissingAsZero)
+        #expect(sut.sortIndex == sortIndex)
+
     }
 }

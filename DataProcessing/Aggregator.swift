@@ -1,6 +1,6 @@
 //
 //  Aggregator.swift
-//  TrackChartiOS
+//  DataProcessing
 //
 //  Created by Lennart Wisbar on 07.11.25.
 //

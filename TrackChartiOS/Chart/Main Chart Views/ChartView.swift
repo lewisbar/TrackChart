@@ -56,7 +56,7 @@ struct ChartView<Placeholder: View>: View {
         .init(id: UUID(), value: -1, timestamp: .now.advanced(by: -86_400 * 0.9)),
         .init(id: UUID(), value: 3, timestamp: .now.advanced(by: -86_400 * 0.4))
     ]
-    let topic = ViewTopic(id: UUID(), name: "A Topic", entries: entries, aggregator: .average, treatsMissingAsZero: true, palette: .arcticIce)
+    let topic = ViewTopic(id: UUID(), name: "A Topic", details: "Some details", entries: entries, aggregator: .average, treatsMissingAsZero: true, palette: .arcticIce)
 
     ScrollView {
         VStack {

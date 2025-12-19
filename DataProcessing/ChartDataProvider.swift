@@ -1,6 +1,6 @@
 //
 //  ChartDataProvider.swift
-//  TrackChartiOS
+//  DataProcessing
 //
 //  Created by Lennart Wisbar on 24.10.25.
 //

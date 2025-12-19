@@ -75,6 +75,7 @@ struct TopicCell: View {
         topic: ViewTopic(
             id: UUID(),
             name: "Topic 1",
+            details: "Some details for topic 1",
             entries: [
                 .init(id: UUID(), value: 0, timestamp: .now.advanced(by: -800)),
                 .init(id: UUID(), value: -3, timestamp: .now.advanced(by: -700)),
@@ -96,6 +97,7 @@ struct TopicCell: View {
         topic: ViewTopic(
             id: UUID(),
             name: "Topic 2",
+            details: "Some details for topic 2",
             entries: [],
             aggregator: .sum,
             treatsMissingAsZero: false,
