@@ -92,10 +92,22 @@ struct ChartPageTests {
         #expect(!sut.isMaxPositiveEntry(other1))
     }
 
+    @Test func isMaxPositive_withZeroAsHighest_picksZero() {
+        let other1 = ProcessedEntry(value: -5, timestamp: Date(timeIntervalSinceReferenceDate: 100))
+        let highest = ProcessedEntry(value: 0, timestamp: Date(timeIntervalSinceReferenceDate: 200))
+        let lowest = ProcessedEntry(value: -2, timestamp: Date(timeIntervalSinceReferenceDate: 300))
+
+        let sut = makeSUT(entries: [other1, highest, lowest])
+
+        #expect(sut.isMaxPositiveEntry(highest))
+        #expect(!sut.isMaxPositiveEntry(lowest))
+        #expect(!sut.isMaxPositiveEntry(other1))
+    }
+
     @Test func isMinNegative_withOnlyPositiveValues_picksNone() {
         let highest = ProcessedEntry(value: 5, timestamp: Date(timeIntervalSinceReferenceDate: 100))
         let other1 = ProcessedEntry(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 200))
-        let other2 = ProcessedEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 300))
+        let other2 = ProcessedEntry(value: 0, timestamp: Date(timeIntervalSinceReferenceDate: 300))
 
         let sut = makeSUT(entries: [other1, highest, other2])
 
