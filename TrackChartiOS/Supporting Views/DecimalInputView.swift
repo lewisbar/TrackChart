@@ -125,7 +125,7 @@ struct DecimalInputView: View {
     }
 
     private func dismissAfterDelay() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
             dismiss()
         }
     }
