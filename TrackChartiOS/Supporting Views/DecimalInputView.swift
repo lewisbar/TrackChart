@@ -7,11 +7,16 @@
 
 import SwiftUI
 import Presentation
+import AudioToolbox
 
 struct DecimalInputView: View {
     @State private var model: DecimalInputViewModel
     private let dismiss: () -> Void
     private let dismissesOnSubmit: Bool
+
+    @State private var flyingValue: Double? = nil
+    @State private var isSubmitting = false
+    @State private var isDimmed = false
 
     // Controls whether the date picker is shown
     @State private var isEditingTimestamp = false
@@ -29,6 +34,17 @@ struct DecimalInputView: View {
     }
 
     var body: some View {
+        mainView
+            .presentationDetents([.fraction(0.54)])
+            .sensoryFeedback(.increase, trigger: flyingValue, condition: { isPositive($1) })
+            .sensoryFeedback(.decrease, trigger: flyingValue, condition: { !isPositive($1) })
+    }
+
+    func isPositive(_ number: Double?) -> Bool {
+        number ?? -1 >= 0
+    }
+
+    private var mainView: some View {
         VStack {
             displayLabel
                 .padding(.top, 16)
@@ -44,13 +60,81 @@ struct DecimalInputView: View {
                 .padding(.bottom, 16)
         }
         .background(Color(uiColor: .systemBackground))
-        .presentationDetents([.fraction(0.54)])
     }
 
     private var displayLabel: some View {
-        Text(model.value)
-            .font(.largeTitle)
-            .frame(maxHeight: 40)
+        ZStack {
+            Text(model.value)
+                .font(.largeTitle)
+                .opacity(isDimmed ? 0.3 : 1.0)
+                .animation(.easeOut(duration: 0.2), value: isDimmed)
+
+            flyingText
+        }
+        .frame(maxHeight: 40)
+    }
+
+    @ViewBuilder
+    private var flyingText: some View {
+        if let flying = formattedFlyingValue {
+            Text(flying)
+                .font(.largeTitle)
+                .foregroundColor(flying.hasPrefix("-") ? .red : .green)
+                .scaleEffect(isSubmitting ? 1.2 : 1)
+                .offset(y: isSubmitting ? -20 : 0)   // Fly upward
+                .opacity(isSubmitting ? 0 : 1)
+                .shadow(color: .black.opacity(0.2), radius: 10, x: 0, y: 10)
+                .animation(.easeOut(duration: 0.5), value: isSubmitting)
+                .onAppear(perform: giveSubmissionFeedback)
+        }
+    }
+
+    private func giveSubmissionFeedback() {
+        startDisplayDimmingAnimation()
+        startFlyingNumberAnimation()
+        giveAudioFeedback()
+        if dismissesOnSubmit { dismissAfterDelay() }
+    }
+
+    private func startDisplayDimmingAnimation() {
+        isDimmed = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            withAnimation(.easeOut(duration: 0.5)) {
+                isDimmed = false
+            }
+        }
+    }
+
+    private func startFlyingNumberAnimation() {
+        withAnimation(.easeOut(duration: 0.5)) {
+            isSubmitting = true
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            flyingValue = nil
+            isSubmitting = false
+        }
+    }
+
+    private func giveAudioFeedback() {
+        let value = flyingValue ?? 0
+        if value >= 0 {
+            AudioServicesPlaySystemSound(1103)
+        } else if value < 0 {
+            AudioServicesPlaySystemSound(1105)
+        }
+    }
+
+    private func dismissAfterDelay() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+            dismiss()
+        }
+    }
+
+    private var formattedFlyingValue: String? {
+        flyingValue?.formatted(.number
+            .sign(strategy: .always())
+            .precision(.fractionLength(0...2))
+        )
     }
 
     private var timestampEditor: some View {
@@ -160,32 +244,50 @@ struct DecimalInputView: View {
 
     private var controlButtons: some View {
         HStack(spacing: 10) {
-            Button(action: model.toggleSign) {
-                Text("+/-")
-                    .frame(maxWidth: .infinity, maxHeight: 80)
-            }
-            .buttonStyle(.bordered)
-            .accessibilityLabel(.changeSign)
-
-            Button {
-                model.submitNumber()
-                if dismissesOnSubmit { dismiss() }
-                // Collapse picker after submit
-                withAnimation(.easeInOut) {
-                    isEditingTimestamp = false
-                }
-            } label: {
-                Text(.submit)
-                    .frame(maxWidth: .infinity, maxHeight: 80)
-            }
-            .buttonStyle(.borderedProminent)
-
-            Button(action: dismiss) {
-                Text(.hide)
-                    .frame(maxWidth: .infinity, maxHeight: 80)
-            }
-            .buttonStyle(.bordered)
+            toggleSignButton
+            submitButton
+            hideButton
         }
+    }
+
+    private var toggleSignButton: some View {
+        Button(action: model.toggleSign) {
+            Text("+/-")
+                .frame(maxWidth: .infinity, maxHeight: 80)
+        }
+        .buttonStyle(.bordered)
+        .accessibilityLabel(.changeSign)
+    }
+
+    private var submitButton: some View {
+        Button {
+            submit()
+        } label: {
+            Text(.submit)
+                .frame(maxWidth: .infinity, maxHeight: 80)
+        }
+        .buttonStyle(.borderedProminent)
+    }
+
+    private func submit() {
+        model.submitNumber { submittedDouble in
+            DispatchQueue.main.async {
+                flyingValue = submittedDouble
+            }
+        }
+
+        // Collapse picker after submit
+        withAnimation(.easeInOut) {
+            isEditingTimestamp = false
+        }
+    }
+
+    private var hideButton: some View {
+        Button(action: dismiss) {
+            Text(.hide)
+                .frame(maxWidth: .infinity, maxHeight: 80)
+        }
+        .buttonStyle(.bordered)
     }
 }
 

@@ -30,7 +30,7 @@ public struct ChartPage: Equatable {
     }
 
     public func isMaxPositiveEntry(_ entry: ProcessedEntry) -> Bool {
-        entry.value > 0 && entry.value == entries.map(\.value).max()
+        entry.value >= 0 && entry.value == entries.map(\.value).max()
     }
 
     public func isMinNegativeEntry(_ entry: ProcessedEntry) -> Bool {

@@ -17,11 +17,16 @@ struct PagedPointMarks {
 
     @ChartContentBuilder
     func pointMark(for entry: ViewEntry, on page: ChartViewPage) -> some ChartContent {
-        if page.isExtremum(entry) {
+        if page.isMaxEntry(entry) || isPositiveAndToday(entry) {
             PointMark(x: .value(xLabel, entry.timestamp), y: .value(yLabel, entry.value))
                 .symbol(symbol: pointSymbol)
-                .annotation(position: .top, spacing: 2) { maxPositiveValueAnnotation(for: entry, on: page) }
-                .annotation(position: .bottom, spacing: 2) { minNegativeValueAnnotation(for: entry, on: page) }
+                .annotation(position: .top, spacing: 2) { highValueAnnotation(for: entry, on: page) }
+        }
+
+        if page.isMinEntry(entry) || isNegativeAndToday(entry) {
+            PointMark(x: .value(xLabel, entry.timestamp), y: .value(yLabel, entry.value))
+                .symbol(symbol: pointSymbol)
+                .annotation(position: .bottom, spacing: 2) { lowValueAnnotation(for: entry, on: page) }
         }
     }
 
@@ -34,17 +39,25 @@ struct PagedPointMarks {
     }
 
     @ViewBuilder
-    private func maxPositiveValueAnnotation(for entry: ViewEntry, on page: ChartViewPage) -> some View {
-        if page.isMaxEntry(entry) {
-            annotation(for: entry.value)
-        }
+    private func highValueAnnotation(for entry: ViewEntry, on page: ChartViewPage) -> some View {
+        annotation(for: entry.value)
     }
 
     @ViewBuilder
-    private func minNegativeValueAnnotation(for entry: ViewEntry, on page: ChartViewPage) -> some View {
-        if page.isMinEntry(entry) {
-            annotation(for: entry.value)
-        }
+    private func lowValueAnnotation(for entry: ViewEntry, on page: ChartViewPage) -> some View {
+        annotation(for: entry.value)
+    }
+
+    private func isPositiveAndToday(_ entry: ViewEntry) -> Bool {
+        isToday(entry) && entry.value >= 0
+    }
+
+    private func isNegativeAndToday(_ entry: ViewEntry) -> Bool {
+        isToday(entry) && entry.value < 0
+    }
+
+    private func isToday(_ entry: ViewEntry) -> Bool {
+        Calendar.current.isDateInToday(entry.timestamp)
     }
 
     private func annotation(for value: Double) -> some View {
