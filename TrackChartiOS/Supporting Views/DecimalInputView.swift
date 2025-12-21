@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Presentation
+import AudioToolbox
 
 struct DecimalInputView: View {
     @State private var model: DecimalInputViewModel
@@ -84,31 +85,40 @@ struct DecimalInputView: View {
                 .opacity(isSubmitting ? 0 : 1)
                 .shadow(color: .black.opacity(0.2), radius: 10, x: 0, y: 10)
                 .animation(.easeOut(duration: 0.5), value: isSubmitting)
-                .onAppear {
-                    // Display dim animation
-                    isDimmed = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        withAnimation(.easeOut(duration: 0.5)) {
-                            isDimmed = false
-                        }
-                    }
+                .onAppear(perform: giveSubmissionFeedback)
+        }
+    }
 
-                    // Flying number animation
-                    withAnimation(.easeOut(duration: 0.5)) {
-                        isSubmitting = true
-                    }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        flyingValue = nil
-                        isSubmitting = false
-                    }
+    private func giveSubmissionFeedback() {
+        // Display dim animation
+        isDimmed = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            withAnimation(.easeOut(duration: 0.5)) {
+                isDimmed = false
+            }
+        }
 
-                    if dismissesOnSubmit {
-                        // Delay dismiss to see animation
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                            dismiss()
-                        }
-                    }
-                }
+        // Flying number animation
+        withAnimation(.easeOut(duration: 0.5)) {
+            isSubmitting = true
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            flyingValue = nil
+            isSubmitting = false
+        }
+
+        let value = flyingValue ?? 0
+        if value >= 0 {
+            AudioServicesPlaySystemSound(1103)
+        } else if value < 0 {
+            AudioServicesPlaySystemSound(1105)
+        }
+
+        if dismissesOnSubmit {
+            // Delay dismiss to see animation
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                dismiss()
+            }
         }
     }
 
