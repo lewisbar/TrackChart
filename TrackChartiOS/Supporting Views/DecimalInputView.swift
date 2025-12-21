@@ -13,7 +13,7 @@ struct DecimalInputView: View {
     private let dismiss: () -> Void
     private let dismissesOnSubmit: Bool
 
-    @State private var flyingValue: String? = nil
+    @State private var flyingValue: Double? = nil
     @State private var isSubmitting = false
     @State private var isDimmed = false
 
@@ -35,6 +35,14 @@ struct DecimalInputView: View {
     var body: some View {
         mainView
             .presentationDetents([.fraction(0.54)])
+            .sensoryFeedback(.increase, trigger: flyingValue, condition: { _, newValue in
+                if let newValue, newValue >= 0 { return true }
+                return false
+            })
+            .sensoryFeedback(.decrease, trigger: flyingValue, condition: { _, newValue in
+                if let newValue, newValue < 0 { return true }
+                return false
+            })
     }
 
     private var mainView: some View {
@@ -69,7 +77,7 @@ struct DecimalInputView: View {
 
     @ViewBuilder
     private var flyingText: some View {
-        if let flying = flyingValue {
+        if let flying = formattedFlyingValue {
             Text(flying)
                 .font(.largeTitle)
                 .foregroundColor(flying.hasPrefix("-") ? .red : .green)
@@ -104,6 +112,13 @@ struct DecimalInputView: View {
                     }
                 }
         }
+    }
+
+    private var formattedFlyingValue: String? {
+        flyingValue?.formatted(.number
+            .sign(strategy: .always())
+            .precision(.fractionLength(0...2))
+        )
     }
 
     private var timestampEditor: some View {
@@ -241,11 +256,7 @@ struct DecimalInputView: View {
     private func submit() {
         model.submitNumber { submittedDouble in
             DispatchQueue.main.async {
-                let formatted = submittedDouble.formatted(.number
-                    .sign(strategy: .always())
-                    .precision(.fractionLength(0...2))
-                )
-                flyingValue = formatted
+                flyingValue = submittedDouble
             }
         }
 
