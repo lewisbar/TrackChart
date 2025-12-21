@@ -13,6 +13,10 @@ struct DecimalInputView: View {
     private let dismiss: () -> Void
     private let dismissesOnSubmit: Bool
 
+    @State private var flyingValue: String? = nil
+    @State private var isSubmitting = false
+    @State private var isDimmed = false
+
     // Controls whether the date picker is shown
     @State private var isEditingTimestamp = false
 
@@ -29,6 +33,11 @@ struct DecimalInputView: View {
     }
 
     var body: some View {
+        mainView
+            .presentationDetents([.fraction(0.54)])
+    }
+
+    private var mainView: some View {
         VStack {
             displayLabel
                 .padding(.top, 16)
@@ -44,13 +53,57 @@ struct DecimalInputView: View {
                 .padding(.bottom, 16)
         }
         .background(Color(uiColor: .systemBackground))
-        .presentationDetents([.fraction(0.54)])
     }
 
     private var displayLabel: some View {
-        Text(model.value)
-            .font(.largeTitle)
-            .frame(maxHeight: 40)
+        ZStack {
+            Text(model.value)
+                .font(.largeTitle)
+                .opacity(isDimmed ? 0.3 : 1.0)
+                .animation(.easeOut(duration: 0.2), value: isDimmed)
+
+            flyingText
+        }
+        .frame(maxHeight: 40)
+    }
+
+    @ViewBuilder
+    private var flyingText: some View {
+        if let flying = flyingValue {
+            Text(flying)
+                .font(.largeTitle)
+                .foregroundColor(flying.hasPrefix("-") ? .red : .green)
+                .scaleEffect(isSubmitting ? 1.2 : 1)
+                .offset(y: isSubmitting ? -20 : 0)   // Fly upward
+                .opacity(isSubmitting ? 0 : 1)
+                .shadow(color: .black.opacity(0.2), radius: 10, x: 0, y: 10)
+                .animation(.easeOut(duration: 0.5), value: isSubmitting)
+                .onAppear {
+                    // Display dim animation
+                    isDimmed = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        withAnimation(.easeOut(duration: 0.5)) {
+                            isDimmed = false
+                        }
+                    }
+
+                    // Flying number animation
+                    withAnimation(.easeOut(duration: 0.5)) {
+                        isSubmitting = true
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        flyingValue = nil
+                        isSubmitting = false
+                    }
+
+                    if dismissesOnSubmit {
+                        // Delay dismiss to see animation
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                            dismiss()
+                        }
+                    }
+                }
+        }
     }
 
     private var timestampEditor: some View {
@@ -160,32 +213,54 @@ struct DecimalInputView: View {
 
     private var controlButtons: some View {
         HStack(spacing: 10) {
-            Button(action: model.toggleSign) {
-                Text("+/-")
-                    .frame(maxWidth: .infinity, maxHeight: 80)
-            }
-            .buttonStyle(.bordered)
-            .accessibilityLabel(.changeSign)
-
-            Button {
-                model.submitNumber()
-                if dismissesOnSubmit { dismiss() }
-                // Collapse picker after submit
-                withAnimation(.easeInOut) {
-                    isEditingTimestamp = false
-                }
-            } label: {
-                Text(.submit)
-                    .frame(maxWidth: .infinity, maxHeight: 80)
-            }
-            .buttonStyle(.borderedProminent)
-
-            Button(action: dismiss) {
-                Text(.hide)
-                    .frame(maxWidth: .infinity, maxHeight: 80)
-            }
-            .buttonStyle(.bordered)
+            toggleSignButton
+            submitButton
+            hideButton
         }
+    }
+
+    private var toggleSignButton: some View {
+        Button(action: model.toggleSign) {
+            Text("+/-")
+                .frame(maxWidth: .infinity, maxHeight: 80)
+        }
+        .buttonStyle(.bordered)
+        .accessibilityLabel(.changeSign)
+    }
+
+    private var submitButton: some View {
+        Button {
+            submit()
+        } label: {
+            Text(.submit)
+                .frame(maxWidth: .infinity, maxHeight: 80)
+        }
+        .buttonStyle(.borderedProminent)
+    }
+
+    private func submit() {
+        model.submitNumber { submittedDouble in
+            DispatchQueue.main.async {
+                let formatted = submittedDouble.formatted(.number
+                    .sign(strategy: .always())
+                    .precision(.fractionLength(0...2))
+                )
+                flyingValue = formatted
+            }
+        }
+
+        // Collapse picker after submit
+        withAnimation(.easeInOut) {
+            isEditingTimestamp = false
+        }
+    }
+
+    private var hideButton: some View {
+        Button(action: dismiss) {
+            Text(.hide)
+                .frame(maxWidth: .infinity, maxHeight: 80)
+        }
+        .buttonStyle(.bordered)
     }
 }
 

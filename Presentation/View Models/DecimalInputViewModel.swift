@@ -86,10 +86,13 @@ public class DecimalInputViewModel {
     }
 
     // MARK: Submit – reset everything
-    public func submitNumber() {
+    public func submitNumber(onSuccess: (Double) -> Void = { _ in }) {
         if let doubleValue = try? FloatingPointFormatStyle<Double>().parseStrategy.parse(value) {
             let finalDate = selectedTimestamp ?? now()
             submit(doubleValue, finalDate)
+
+            // Notify the view of the exact submitted value
+            onSuccess(doubleValue)
         }
         resetValue()
         clearTimestamp()
