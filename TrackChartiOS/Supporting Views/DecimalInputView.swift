@@ -90,15 +90,22 @@ struct DecimalInputView: View {
     }
 
     private func giveSubmissionFeedback() {
-        // Display dim animation
+        startDisplayDimmingAnimation()
+        startFlyingNumberAnimation()
+        giveAudioFeedback()
+        if dismissesOnSubmit { dismissAfterDelay() }
+    }
+
+    private func startDisplayDimmingAnimation() {
         isDimmed = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             withAnimation(.easeOut(duration: 0.5)) {
                 isDimmed = false
             }
         }
+    }
 
-        // Flying number animation
+    private func startFlyingNumberAnimation() {
         withAnimation(.easeOut(duration: 0.5)) {
             isSubmitting = true
         }
@@ -106,19 +113,20 @@ struct DecimalInputView: View {
             flyingValue = nil
             isSubmitting = false
         }
+    }
 
+    private func giveAudioFeedback() {
         let value = flyingValue ?? 0
         if value >= 0 {
             AudioServicesPlaySystemSound(1103)
         } else if value < 0 {
             AudioServicesPlaySystemSound(1105)
         }
+    }
 
-        if dismissesOnSubmit {
-            // Delay dismiss to see animation
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                dismiss()
-            }
+    private func dismissAfterDelay() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+            dismiss()
         }
     }
 
