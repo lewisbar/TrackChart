@@ -35,14 +35,12 @@ struct DecimalInputView: View {
     var body: some View {
         mainView
             .presentationDetents([.fraction(0.54)])
-            .sensoryFeedback(.increase, trigger: flyingValue, condition: { _, newValue in
-                if let newValue, newValue >= 0 { return true }
-                return false
-            })
-            .sensoryFeedback(.decrease, trigger: flyingValue, condition: { _, newValue in
-                if let newValue, newValue < 0 { return true }
-                return false
-            })
+            .sensoryFeedback(.increase, trigger: flyingValue, condition: { isPositive($1) })
+            .sensoryFeedback(.decrease, trigger: flyingValue, condition: { !isPositive($1) })
+    }
+
+    func isPositive(_ number: Double?) -> Bool {
+        number ?? -1 >= 0
     }
 
     private var mainView: some View {
