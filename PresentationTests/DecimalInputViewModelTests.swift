@@ -35,22 +35,26 @@ class DecimalInputViewModelTests {
         var submittedValues = [(Double, Date)]()
         let sut = makeSUT(submit: { submittedValues.append(($0, $1)) })
         sut.value = "-32\(decimalSeparator)6"
+        var callbackValues: [Double] = []
 
-        sut.submitNumber()
+        sut.submitNumber(onSuccess: { callbackValues.append($0) })
 
         #expect(submittedValues.map(\.0) == [-32.6])
         #expect(sut.value == "0")
+        #expect(callbackValues == [-32.6])
     }
 
     @Test func submitNumber_withInvalidValue_resetsValueToZeroAndDoesNotSubmit() {
         var submittedValues = [(Double, Date)]()
         let sut = makeSUT(submit: { submittedValues.append(($0, $1)) })
         sut.value = "not a number"
+        var callbackValues: [Double] = []
 
-        sut.submitNumber()
+        sut.submitNumber(onSuccess: { callbackValues.append($0) })
 
         #expect(submittedValues.isEmpty)
         #expect(sut.value == "0")
+        #expect(callbackValues.isEmpty)
     }
 
     @Test func submitNumber_whenThereIsATimeStampSet_usesThisTimestamp() {
