@@ -12,7 +12,8 @@ struct SettingsView: View {
     @State private var topic: SettingsTopic
     let save: (SettingsTopic) -> Void
 
-    @FocusState private var isTextFieldFocused: Bool
+    @FocusState private var isTitleFieldFocused: Bool
+    @FocusState private var isDetailsFieldFocused: Bool
     @Environment(\.dismiss) var dismiss
     @State private var isShowingLongAggregationExplanation = false
 
@@ -57,7 +58,8 @@ struct SettingsView: View {
             .scrollDismissesKeyboard(.interactively)
             .onTapGesture {
                 withAnimation {
-                    isTextFieldFocused = false
+                    isTitleFieldFocused = false
+                    isDetailsFieldFocused = false
                 }
             }
             .toolbar {
@@ -66,7 +68,7 @@ struct SettingsView: View {
             }
             .onAppear {
                 if topic.name.isEmpty {
-                    isTextFieldFocused = true
+                    isTitleFieldFocused = true
                 }
             }
         }
@@ -76,10 +78,10 @@ struct SettingsView: View {
         LabeledContent {
             TextField(.topicName, text: $topic.name, prompt: Text(.topicName).foregroundColor(.secondary))
                 .multilineTextAlignment(.trailing)
-                .focused($isTextFieldFocused)
+                .focused($isTitleFieldFocused)
                 .submitLabel(.done)
                 .onSubmit {
-                    isTextFieldFocused = false
+                    isTitleFieldFocused = false
                 }
         } label: {
             Text(.name)
@@ -105,7 +107,7 @@ struct SettingsView: View {
         ZStack(alignment: .topLeading) {
             TextEditor(text: $topic.details)
                 .frame(minHeight: 60)
-                .focused($isTextFieldFocused)
+                .focused($isDetailsFieldFocused)
 
             if topic.details.isEmpty {
                 detailsPlaceholder
