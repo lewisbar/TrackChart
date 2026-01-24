@@ -224,13 +224,19 @@ struct SettingsView: View {
     }
 
     private var cancelButton: some View {
-        Button(.cancel, role: .cancel) { dismiss() }
+        Button(role: .cancel) {
+            dismiss()
+        } label: {
+            Label(.cancel, systemImage: "multiply")
+        }
     }
 
     private var doneButton: some View {
-        Button(.done, role: .none) {
+        Button(role: .done) {
             save(topic)
             dismiss()
+        } label: {
+            Label(.done, systemImage: "checkmark")
         }
         .bold()
         .disabled(topic.name.isEmpty)
@@ -241,4 +247,14 @@ struct SettingsView: View {
     let topic = SettingsTopic(name: "Topic 1", details: "", palette: .arcticIce, aggregator: .average, treatsMissingAsZero: false)
 
     SettingsView(topic: topic, save: { _ in })
+}
+
+private extension ButtonRole {
+    static var done: ButtonRole? {
+        if #available(iOS 26, *) {
+            .confirm
+        } else {
+            .none
+        }
+    }
 }
