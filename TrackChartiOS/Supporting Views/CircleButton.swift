@@ -20,8 +20,26 @@ struct CircleButton: View {
                 .font(.title2)
                 .frame(minWidth: baseSize, minHeight: baseSize)
                 .padding(10)
-                .background(Circle().fill(.white).shadow(radius: 2))
+                .background(background)
         }
+    }
+    
+    @ViewBuilder
+    private var background: some View {
+        if #available(iOS 26, *) {
+            glassBackground
+        } else {
+            baseBackground
+        }
+    }
+    
+    private var baseBackground: some View {
+        Circle().fill(.white).shadow(radius: 2)
+    }
+    
+    @available(iOS 26, *)
+    private var glassBackground: some View {
+        baseBackground.glassEffect()
     }
 }
 
