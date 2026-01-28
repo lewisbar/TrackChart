@@ -6,13 +6,14 @@
 //
 
 import Testing
+import Foundation
 import DataProcessing
 
 public struct Topic {
     public let entries: [RawEntry]
     
     public var sum: Double {
-        0
+        entries.map(\.value).reduce(0, +)
     }
 }
 
@@ -20,5 +21,15 @@ struct TopicTests {
     @Test func sum_whenEmpty_returnsZero() {
         let sut = Topic(entries: [])
         #expect(sut.sum == 0)
+    }
+    
+    @Test func sum_returnsSumOfEntryValues() {
+        let sut = Topic(entries: [
+            RawEntry(value: 5.5, timestamp: .now),
+            RawEntry(value: 0.6, timestamp: .now),
+            RawEntry(value: -4.1, timestamp: .now)
+        ])
+        
+        #expect(sut.sum == 2)
     }
 }
