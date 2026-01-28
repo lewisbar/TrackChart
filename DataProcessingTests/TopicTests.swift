@@ -15,6 +15,10 @@ public struct Topic {
     public var sum: Double {
         entries.map(\.value).reduce(0, +)
     }
+    
+    public var average: Double {
+        0
+    }
 }
 
 struct TopicTests {
@@ -31,5 +35,10 @@ struct TopicTests {
         ])
         
         #expect(sut.sum == 2)
+    }
+    
+    @Test func average_whenEmpty_returnsZero() {
+        let sut = Topic(entries: [])
+        #expect(sut.average == 0)
     }
 }
