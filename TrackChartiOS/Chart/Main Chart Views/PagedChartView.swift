@@ -85,7 +85,7 @@ struct PagedChartView<Placeholder: View>: View {
 
             Spacer()
 
-            Text(page.aggregator == .sum ? .pageTotal(page.aggregate.compactTwoDecimals) : .avg(page.aggregate.compactTwoDecimals))
+            Text(page.aggregator == .sum ? .pageTotal(page.aggregate.compact()) : .avg(page.aggregate.compact()))
                 .font(.caption2)
                 .foregroundStyle(.secondary)
         }

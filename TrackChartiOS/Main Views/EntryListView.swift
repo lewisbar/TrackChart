@@ -84,7 +84,7 @@ struct EntryListView: View {
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                 Spacer()
-                Text(entry.value.compactTwoDecimals)
+                Text(entry.value.compact())
             }
             .contentShape(Rectangle())
         }

@@ -126,7 +126,7 @@ struct TopicView<Settings: View>: View {
             Text(title)
                 .font(.footnote)
                 .foregroundStyle(.secondary)
-            Text(value?.compactTwoDecimals ?? "-")
+            Text(value?.compact() ?? "-")
         }
     }
 
