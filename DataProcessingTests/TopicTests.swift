@@ -26,7 +26,7 @@ public struct Topic {
     }
     
     public var lowest: Double? {
-        nil
+        entries.map(\.value).min()
     }
 }
 
@@ -64,6 +64,11 @@ struct TopicTests {
     @Test func lowest_whenEmpty_returnsNil() {
         let sut = topic(from: [])
         #expect(sut.lowest == nil)
+    }
+    
+    @Test func lowest_returnsLowestValue() {
+        let sut = topic(from: [5.5, 6.5, -3])
+        #expect(sut.lowest == -3)
     }
     
     // MARK: - Helpers
