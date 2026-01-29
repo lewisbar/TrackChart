@@ -72,6 +72,7 @@ struct PagedChartView<Placeholder: View>: View {
             }
             .chartXScale(domain: page.dateRange)
             .chartXAxis(content: xAxisContent)
+            .chartYAxis(content: yAxisContent)
         }
         .padding()
         .padding(.bottom, 24)
@@ -141,5 +142,10 @@ struct PagedChartView<Placeholder: View>: View {
                     }
                 }
         }
+    }
+
+    @AxisContentBuilder
+    private func yAxisContent() -> some AxisContent {
+        AxisMarks(format: Decimal.FormatStyle.number.notation(.compactName))
     }
 }
