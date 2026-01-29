@@ -49,6 +49,7 @@ struct TopicView<Settings: View>: View {
             if hasDetails { detailsView }
             if hasEntries { overviewChart } else { tutorialView }
             entriesCell
+            summaryCard
             pagedCard(.week)
             pagedCard(.month)
             pagedCard(.year)
@@ -105,6 +106,29 @@ struct TopicView<Settings: View>: View {
         }
         .listRowSeparator(.hidden)
     }
+    
+    private var summaryCard: some View {
+        HStack {
+            summaryCategoryView(title: "Sum", value: topic.sum)
+            Spacer()
+            summaryCategoryView(title: "Average", value: topic.average)
+            Spacer()
+            summaryCategoryView(title: "Highest", value: topic.highest)
+            Spacer()
+            summaryCategoryView(title: "Lowest", value: topic.lowest)
+        }
+        .padding()
+        .card()
+    }
+    
+    private func summaryCategoryView(title: String, value: Double?) -> some View {
+        VStack {
+            Text(title)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+            Text(value?.twoDecimals ?? "-")
+        }
+    }
 
     private func pagedCard(_ span: ViewTimeSpan) -> some View {
         ChartView(
@@ -146,6 +170,12 @@ struct TopicView<Settings: View>: View {
 
     private func showSettings() {
         isShowingSettings = true
+    }
+}
+
+private extension Double {
+    var twoDecimals: String {
+        formatted(.number.precision(.fractionLength(0...2)))
     }
 }
 
