@@ -24,6 +24,10 @@ public struct Topic {
     public var highest: Double? {
         entries.map(\.value).max()
     }
+    
+    public var lowest: Double? {
+        nil
+    }
 }
 
 struct TopicTests {
@@ -55,6 +59,11 @@ struct TopicTests {
     @Test func highest_returnsHighestValue() {
         let sut = topic(from: [5.5, 6.5, -3])
         #expect(sut.highest == 6.5)
+    }
+    
+    @Test func lowest_whenEmpty_returnsNil() {
+        let sut = topic(from: [])
+        #expect(sut.lowest == nil)
     }
     
     // MARK: - Helpers
