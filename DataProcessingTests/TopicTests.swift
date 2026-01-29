@@ -28,47 +28,41 @@ public struct Topic {
 
 struct TopicTests {
     @Test func sum_whenEmpty_returnsZero() {
-        let sut = Topic(entries: [])
+        let sut = topic(from: [])
         #expect(sut.sum == 0)
     }
     
     @Test func sum_returnsSumOfEntryValues() {
-        let sut = Topic(entries: [
-            RawEntry(value: 5.5, timestamp: .now),
-            RawEntry(value: 6.5, timestamp: .now),
-            RawEntry(value: -3, timestamp: .now)
-        ])
-        
+        let sut = topic(from: [5.5, 6.5, -3])
         #expect(sut.sum == 9)
     }
     
     @Test func average_whenEmpty_returnsNil() {
-        let sut = Topic(entries: [])
+        let sut = topic(from: [])
         #expect(sut.average == nil)
     }
     
     @Test func average_returnsAverageOfEntryValues() {
-        let sut = Topic(entries: [
-            RawEntry(value: 5.5, timestamp: .now),
-            RawEntry(value: 6.5, timestamp: .now),
-            RawEntry(value: -3, timestamp: .now)
-        ])
-        
+        let sut = topic(from: [5.5, 6.5, -3])
         #expect(sut.average == 3)
     }
     
     @Test func highest_whenEmpty_returnsNil() {
-        let sut = Topic(entries: [])
+        let sut = topic(from: [])
         #expect(sut.highest == nil)
     }
     
     @Test func highest_returnsHighestValue() {
-        let sut = Topic(entries: [
-            RawEntry(value: 5.5, timestamp: .now),
-            RawEntry(value: 6.5, timestamp: .now),
-            RawEntry(value: -3, timestamp: .now)
-        ])
-        
+        let sut = topic(from: [5.5, 6.5, -3])
         #expect(sut.highest == 6.5)
+    }
+    
+    // MARK: - Helpers
+    
+    private func topic(from values: [Double]) -> Topic {
+        let entries = values.map {
+            RawEntry(value: $0, timestamp: .now)
+        }
+        return Topic(entries: entries)
     }
 }
