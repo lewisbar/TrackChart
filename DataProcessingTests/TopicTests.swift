@@ -16,8 +16,9 @@ public struct Topic {
         entries.map(\.value).reduce(0, +)
     }
     
-    public var average: Double {
-        0
+    public var average: Double? {
+        let count = Double(entries.count)
+        return count > 0 ? sum / count : nil
     }
 }
 
@@ -30,15 +31,25 @@ struct TopicTests {
     @Test func sum_returnsSumOfEntryValues() {
         let sut = Topic(entries: [
             RawEntry(value: 5.5, timestamp: .now),
-            RawEntry(value: 0.6, timestamp: .now),
-            RawEntry(value: -4.1, timestamp: .now)
+            RawEntry(value: 6.5, timestamp: .now),
+            RawEntry(value: -3, timestamp: .now)
         ])
         
-        #expect(sut.sum == 2)
+        #expect(sut.sum == 9)
     }
     
-    @Test func average_whenEmpty_returnsZero() {
+    @Test func average_whenEmpty_returnsNil() {
         let sut = Topic(entries: [])
-        #expect(sut.average == 0)
+        #expect(sut.average == nil)
+    }
+    
+    @Test func average_returnsAverageOfEntryValues() {
+        let sut = Topic(entries: [
+            RawEntry(value: 5.5, timestamp: .now),
+            RawEntry(value: 6.5, timestamp: .now),
+            RawEntry(value: -3, timestamp: .now)
+        ])
+        
+        #expect(sut.average == 3)
     }
 }
