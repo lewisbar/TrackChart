@@ -109,13 +109,13 @@ struct TopicView<Settings: View>: View {
     
     private var summaryCard: some View {
         HStack {
-            summaryCategoryView(title: "Sum", value: topic.sum)
+            summaryCategoryView(title: String(localized: .summaryTotal), value: topic.sum)
             Spacer()
-            summaryCategoryView(title: "Average", value: topic.average)
+            summaryCategoryView(title: String(localized: .summaryAverage), value: topic.average)
             Spacer()
-            summaryCategoryView(title: "Highest", value: topic.highest)
+            summaryCategoryView(title: String(localized: .summaryHighest), value: topic.highest)
             Spacer()
-            summaryCategoryView(title: "Lowest", value: topic.lowest)
+            summaryCategoryView(title: String(localized: .summaryLowest), value: topic.lowest)
         }
         .padding()
         .card()
