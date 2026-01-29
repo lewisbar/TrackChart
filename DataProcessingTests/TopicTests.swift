@@ -9,27 +9,6 @@ import Testing
 import Foundation
 import DataProcessing
 
-public struct Topic {
-    public let entries: [RawEntry]
-    
-    public var sum: Double {
-        entries.map(\.value).reduce(0, +)
-    }
-    
-    public var average: Double? {
-        let count = Double(entries.count)
-        return count > 0 ? sum / count : nil
-    }
-    
-    public var highest: Double? {
-        entries.map(\.value).max()
-    }
-    
-    public var lowest: Double? {
-        entries.map(\.value).min()
-    }
-}
-
 struct TopicTests {
     @Test func sum_whenEmpty_returnsZero() {
         let sut = topic(from: [])
