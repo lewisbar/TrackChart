@@ -61,7 +61,7 @@ struct PagedPointMarks {
     }
 
     private func annotation(for value: Double) -> some View {
-        let formattedValue = value.formatted(.number.precision(.fractionLength(0...2)))
+        let formattedValue = value.compactTwoDecimals
 
         return Text(formattedValue)
             .font(.caption)

@@ -126,7 +126,7 @@ struct TopicView<Settings: View>: View {
             Text(title)
                 .font(.footnote)
                 .foregroundStyle(.secondary)
-            Text(value?.twoDecimals ?? "-")
+            Text(value?.compactTwoDecimals ?? "-")
         }
     }
 
@@ -173,12 +173,6 @@ struct TopicView<Settings: View>: View {
     }
 }
 
-private extension Double {
-    var twoDecimals: String {
-        formatted(.number.precision(.fractionLength(0...2)))
-    }
-}
-
 #Preview {
     let entries = [1, 2, 4, 8, 17, 3, 0, -2, -8, -3, 1].enumerated().map { index, value in
         ViewEntry(
@@ -196,7 +190,7 @@ private extension Double {
             entries: entries,
             aggregator: .average,
             treatsMissingAsZero: true,
-            sum: 100,
+            sum: 1000000,
             average: 50,
             highest: 75,
             lowest: -12,

@@ -85,7 +85,7 @@ struct PagedChartView<Placeholder: View>: View {
 
             Spacer()
 
-            Text(page.aggregator == .sum ? .pageTotal(page.aggregate.twoDecimals) : .avg(page.aggregate.twoDecimals))
+            Text(page.aggregator == .sum ? .pageTotal(page.aggregate.compactTwoDecimals) : .avg(page.aggregate.compactTwoDecimals))
                 .font(.caption2)
                 .foregroundStyle(.secondary)
         }
@@ -141,11 +141,5 @@ struct PagedChartView<Placeholder: View>: View {
                     }
                 }
         }
-    }
-}
-
-private extension Double {
-    var twoDecimals: String {
-        formatted(.number.precision(.fractionLength(0...2)))
     }
 }
