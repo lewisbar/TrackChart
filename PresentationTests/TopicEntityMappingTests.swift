@@ -8,6 +8,7 @@
 import Testing
 import Presentation
 import Persistence
+import DataProcessing
 
 struct TopicEntityMappingTests {
     @Test func viewTopic() {
@@ -17,7 +18,7 @@ struct TopicEntityMappingTests {
             details: "some details",
             entries: [
                 EntryEntity(value: 1, timestamp: .now.advanced(by: -400)),
-                EntryEntity(value: -1, timestamp: .now.advanced(by: -300)),
+                EntryEntity(value: -2, timestamp: .now.advanced(by: -300)),
                 EntryEntity(value: 10, timestamp: .now.advanced(by: -200)),
             ],
             palette: "Ocean",
@@ -34,9 +35,13 @@ struct TopicEntityMappingTests {
         #expect(result.entries == sut.sortedEntries.map {
             ViewEntry(id: $0.id, value: $0.value, timestamp: $0.timestamp)
         })
-        #expect(result.palette == .ocean)
         #expect(result.aggregator == .sum)
         #expect(result.treatsMissingAsZero == sut.treatsMissingAsZero)
+        #expect(result.sum == 9)
+        #expect(result.average == 3)
+        #expect(result.highest == 10)
+        #expect(result.lowest == -2)
+        #expect(result.palette == .ocean)
     }
 
     @Test func settingsTopic() {
@@ -62,6 +67,34 @@ struct TopicEntityMappingTests {
         #expect(result.palette == .lavenderField)
         #expect(result.aggregator == .sum)
         #expect(result.treatsMissingAsZero == sut.treatsMissingAsZero)
+    }
+    
+    @Test func processingTopic() {
+        let sut = TopicEntity(
+            id: UUID(),
+            name: "a topic",
+            details: "some details",
+            entries: [
+                EntryEntity(value: 1, timestamp: .now.advanced(by: -400)),
+                EntryEntity(value: -2, timestamp: .now.advanced(by: -300)),
+                EntryEntity(value: 10, timestamp: .now.advanced(by: -200)),
+            ],
+            palette: "Lavender Field",
+            aggregator: "Sum",
+            treatsMissingAsZero: false,
+            sortIndex: 0
+        )
+        
+        let result = sut.processingTopic
+        
+        #expect(result.entries.count == 3)
+        #expect(result.entries[0] == Entry(value: 1, timestamp: sut.sortedEntries[0].timestamp))
+        #expect(result.entries[1] == Entry(value: -2, timestamp: sut.sortedEntries[1].timestamp))
+        #expect(result.entries[2] == Entry(value: 10, timestamp: sut.sortedEntries[2].timestamp))
+        #expect(result.sum == 9)
+        #expect(result.average == 3)
+        #expect(result.highest == 10)
+        #expect(result.lowest == -2)
     }
 
     @Test func minorMappings() {

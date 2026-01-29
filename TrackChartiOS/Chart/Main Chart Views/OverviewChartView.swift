@@ -39,6 +39,7 @@ struct OverviewChartView<Placeholder: View>: View {
                     .pointMark(for: entry, in: entries)
             }
             .chartXAxis(content: xAxisContent)
+            .chartYAxis(content: yAxisContent)
         }
     }
 
@@ -60,5 +61,10 @@ struct OverviewChartView<Placeholder: View>: View {
         AxisMarks(preset: .aligned, values: .automatic(desiredCount: 3)) { _ in
             AxisValueLabel(collisionResolution: .greedy())
         }
+    }
+
+    @AxisContentBuilder
+    private func yAxisContent() -> some AxisContent {
+        AxisMarks(format: Decimal.FormatStyle.number.notation(.compactName))
     }
 }

@@ -9,7 +9,7 @@ import Foundation
 
 public final class ChartPageProvider {
     public static func pages(
-        for raw: [RawEntry],
+        for raw: [Entry],
         span: TimeSpan,
         aggregator: Aggregator,
         treatsMissingAsZero: Bool,
@@ -19,7 +19,7 @@ public final class ChartPageProvider {
         return pages(for: raw, span: span, dataProvider: provider, calendar: calendar)
     }
     public static func pages(
-        for raw: [RawEntry],
+        for raw: [Entry],
         span: TimeSpan,
         dataProvider: ChartDataProvider,
         calendar: Calendar = .current

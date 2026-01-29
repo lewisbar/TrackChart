@@ -10,8 +10,8 @@ import Presentation
 extension ViewAggregator {
     var localizedName: String {
         switch self {
-        case .sum: return String(localized: .sum)
-        case .average: return String(localized: .average)
+        case .sum: return String(localized: .sumAggregator)
+        case .average: return String(localized: .averageAggregator)
         }
     }
 }
