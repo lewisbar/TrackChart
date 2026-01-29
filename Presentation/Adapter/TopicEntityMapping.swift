@@ -17,12 +17,20 @@ public extension TopicEntity {
             entries: viewEntries,
             aggregator: viewAggregator,
             treatsMissingAsZero: treatsMissingAsZero,
+            sum: processingTopic.sum,
+            average: processingTopic.average,
+            highest: processingTopic.highest,
+            lowest: processingTopic.lowest,
             palette: viewPalette
         )
     }
 
     var settingsTopic: SettingsTopic {
         SettingsTopic(name: name, details: details, palette: viewPalette, aggregator: viewAggregator, treatsMissingAsZero: treatsMissingAsZero)
+    }
+    
+    var processingTopic: Topic {
+        Topic(entries: sortedEntries.map(\.processingEntry))
     }
 
     var viewEntries: [ViewEntry] {
@@ -60,5 +68,9 @@ public extension TopicEntity {
 public extension EntryEntity {
     var viewEntry: ViewEntry {
         ViewEntry(id: id, value: value, timestamp: timestamp)
+    }
+    
+    var processingEntry: Entry {
+        Entry(value: value, timestamp: timestamp)
     }
 }

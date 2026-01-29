@@ -49,6 +49,7 @@ struct TopicView<Settings: View>: View {
             if hasDetails { detailsView }
             if hasEntries { overviewChart } else { tutorialView }
             entriesCell
+            summaryCard
             pagedCard(.week)
             pagedCard(.month)
             pagedCard(.year)
@@ -105,6 +106,29 @@ struct TopicView<Settings: View>: View {
         }
         .listRowSeparator(.hidden)
     }
+    
+    private var summaryCard: some View {
+        HStack {
+            summaryCategoryView(title: String(localized: .summaryTotal), value: topic.sum)
+            Spacer()
+            summaryCategoryView(title: String(localized: .summaryAverage), value: topic.average)
+            Spacer()
+            summaryCategoryView(title: String(localized: .summaryHighest), value: topic.highest)
+            Spacer()
+            summaryCategoryView(title: String(localized: .summaryLowest), value: topic.lowest)
+        }
+        .padding()
+        .card()
+    }
+    
+    private func summaryCategoryView(title: String, value: Double?) -> some View {
+        VStack {
+            Text(title)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+            Text(value?.compact() ?? "-")
+        }
+    }
 
     private func pagedCard(_ span: ViewTimeSpan) -> some View {
         ChartView(
@@ -159,7 +183,19 @@ struct TopicView<Settings: View>: View {
     }
 
     TopicView(
-        topic: ViewTopic(id: UUID(), name: "Topic 1", details: "Some details", entries: entries, aggregator: .average, treatsMissingAsZero: true, palette: .arcticIce),
+        topic: ViewTopic(
+            id: UUID(),
+            name: "Topic 1",
+            details: "Some details",
+            entries: entries,
+            aggregator: .average,
+            treatsMissingAsZero: true,
+            sum: 1000000,
+            average: 50,
+            highest: 75,
+            lowest: -12,
+            palette: .arcticIce
+        ),
         submitNewValue: { _, _ in },
         settingsView: EmptyView.init,
         showEntryList: {}

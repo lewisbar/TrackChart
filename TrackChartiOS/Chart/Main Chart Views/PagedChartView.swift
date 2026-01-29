@@ -72,6 +72,7 @@ struct PagedChartView<Placeholder: View>: View {
             }
             .chartXScale(domain: page.dateRange)
             .chartXAxis(content: xAxisContent)
+            .chartYAxis(content: yAxisContent)
         }
         .padding()
         .padding(.bottom, 24)
@@ -85,7 +86,7 @@ struct PagedChartView<Placeholder: View>: View {
 
             Spacer()
 
-            Text(page.aggregator == .sum ? .total(page.aggregate.twoDecimals) : .avg(page.aggregate.twoDecimals))
+            Text(page.aggregator == .sum ? .pageTotal(page.aggregate.compact()) : .avg(page.aggregate.compact()))
                 .font(.caption2)
                 .foregroundStyle(.secondary)
         }
@@ -142,10 +143,9 @@ struct PagedChartView<Placeholder: View>: View {
                 }
         }
     }
-}
 
-private extension Double {
-    var twoDecimals: String {
-        formatted(.number.precision(.fractionLength(0...2)))
+    @AxisContentBuilder
+    private func yAxisContent() -> some AxisContent {
+        AxisMarks(format: Decimal.FormatStyle.number.notation(.compactName))
     }
 }

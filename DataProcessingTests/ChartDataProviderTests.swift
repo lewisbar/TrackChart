@@ -11,8 +11,8 @@ import DataProcessing
 
 struct ChartDataProviderTests {
     @Test func raw() {
-        let entry1 = RawEntry(value: 1.1, timestamp: .now.advanced(by: -200))
-        let entry2 = RawEntry(value: -2.2, timestamp: .now.advanced(by: -100))
+        let entry1 = Entry(value: 1.1, timestamp: .now.advanced(by: -200))
+        let entry2 = Entry(value: -2.2, timestamp: .now.advanced(by: -100))
         let originalEntries = [entry1, entry2]
 
         let sut = ChartDataProvider.raw
@@ -23,10 +23,10 @@ struct ChartDataProviderTests {
     }
 
     @Test func dailySum() {
-        let entry1a = RawEntry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 1))
-        let entry1b = RawEntry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 2))
-        let entry2a = RawEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 100_000))
-        let entry2b = RawEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 100_001))
+        let entry1a = Entry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 1))
+        let entry1b = Entry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 2))
+        let entry2a = Entry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 100_000))
+        let entry2b = Entry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 100_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
         let calendar = defaultCalendar()
@@ -42,10 +42,10 @@ struct ChartDataProviderTests {
     }
 
     @Test func dailySum_withZeroFilling() {
-        let entry1a = RawEntry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 1))
-        let entry1b = RawEntry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 2))
-        let entry2a = RawEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 200_000))
-        let entry2b = RawEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 200_001))
+        let entry1a = Entry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 1))
+        let entry1b = Entry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 2))
+        let entry2a = Entry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 200_000))
+        let entry2b = Entry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 200_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
         let calendar = defaultCalendar()
@@ -63,10 +63,10 @@ struct ChartDataProviderTests {
     }
 
     @Test func dailyAverage() {
-        let entry1a = RawEntry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 1))
-        let entry1b = RawEntry(value: 3, timestamp: Date(timeIntervalSinceReferenceDate: 2))
-        let entry2a = RawEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 100_000))
-        let entry2b = RawEntry(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 100_001))
+        let entry1a = Entry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 1))
+        let entry1b = Entry(value: 3, timestamp: Date(timeIntervalSinceReferenceDate: 2))
+        let entry2a = Entry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 100_000))
+        let entry2b = Entry(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 100_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
         let calendar = defaultCalendar()
@@ -82,10 +82,10 @@ struct ChartDataProviderTests {
     }
 
     @Test func dailyAverage_withZeroFilling() {
-        let entry1a = RawEntry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 1))
-        let entry1b = RawEntry(value: 3, timestamp: Date(timeIntervalSinceReferenceDate: 2))
-        let entry2a = RawEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 200_000))
-        let entry2b = RawEntry(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 200_001))
+        let entry1a = Entry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 1))
+        let entry1b = Entry(value: 3, timestamp: Date(timeIntervalSinceReferenceDate: 2))
+        let entry2a = Entry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 200_000))
+        let entry2b = Entry(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 200_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
         let calendar = defaultCalendar()
@@ -103,10 +103,10 @@ struct ChartDataProviderTests {
     }
 
     @Test func weeklySum() {
-        let entry1a = RawEntry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 1))
-        let entry1b = RawEntry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 2))
-        let entry2a = RawEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 800_000))
-        let entry2b = RawEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 800_001))
+        let entry1a = Entry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 1))
+        let entry1b = Entry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 2))
+        let entry2a = Entry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 800_000))
+        let entry2b = Entry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 800_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
         let calendar = defaultCalendar()
@@ -123,10 +123,10 @@ struct ChartDataProviderTests {
     }
 
     @Test func weeklySum_withZeroFilling() {
-        let entry1a = RawEntry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 1))
-        let entry1b = RawEntry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 2))
-        let entry2a = RawEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 1_600_000))
-        let entry2b = RawEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 1_600_001))
+        let entry1a = Entry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 1))
+        let entry1b = Entry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 2))
+        let entry2a = Entry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 1_600_000))
+        let entry2b = Entry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 1_600_001))
 
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
@@ -147,10 +147,10 @@ struct ChartDataProviderTests {
     }
 
     @Test func weeklyAverage() {
-        let entry1a = RawEntry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 1))
-        let entry1b = RawEntry(value: 3, timestamp: Date(timeIntervalSinceReferenceDate: 2))
-        let entry2a = RawEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 800_000))
-        let entry2b = RawEntry(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 800_001))
+        let entry1a = Entry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 1))
+        let entry1b = Entry(value: 3, timestamp: Date(timeIntervalSinceReferenceDate: 2))
+        let entry2a = Entry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 800_000))
+        let entry2b = Entry(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 800_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
         let calendar = defaultCalendar()
@@ -166,10 +166,10 @@ struct ChartDataProviderTests {
     }
 
     @Test func weeklyAverage_withZeroFilling() {
-        let entry1a = RawEntry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 1))
-        let entry1b = RawEntry(value: 3, timestamp: Date(timeIntervalSinceReferenceDate: 2))
-        let entry2a = RawEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 1_600_000))
-        let entry2b = RawEntry(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 1_600_001))
+        let entry1a = Entry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 1))
+        let entry1b = Entry(value: 3, timestamp: Date(timeIntervalSinceReferenceDate: 2))
+        let entry2a = Entry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 1_600_000))
+        let entry2b = Entry(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 1_600_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
         let calendar = defaultCalendar()
@@ -187,10 +187,10 @@ struct ChartDataProviderTests {
     }
 
     @Test func monthlySum() {
-        let entry1a = RawEntry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 1))
-        let entry1b = RawEntry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 2))
-        let entry2a = RawEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 4_000_000))
-        let entry2b = RawEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 4_000_001))
+        let entry1a = Entry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 1))
+        let entry1b = Entry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 2))
+        let entry2a = Entry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 4_000_000))
+        let entry2b = Entry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 4_000_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
         let calendar = defaultCalendar()
@@ -206,10 +206,10 @@ struct ChartDataProviderTests {
     }
 
     @Test func monthlySum_withZeroFilling() {
-        let entry1a = RawEntry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 1))
-        let entry1b = RawEntry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 2))
-        let entry2a = RawEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 6_000_000))
-        let entry2b = RawEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 6_000_001))
+        let entry1a = Entry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 1))
+        let entry1b = Entry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 2))
+        let entry2a = Entry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 6_000_000))
+        let entry2b = Entry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 6_000_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
         let calendar = defaultCalendar()
@@ -227,10 +227,10 @@ struct ChartDataProviderTests {
     }
 
     @Test func monthlyAverage() {
-        let entry1a = RawEntry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 1))
-        let entry1b = RawEntry(value: 3, timestamp: Date(timeIntervalSinceReferenceDate: 2))
-        let entry2a = RawEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 4_000_000))
-        let entry2b = RawEntry(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 4_000_001))
+        let entry1a = Entry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 1))
+        let entry1b = Entry(value: 3, timestamp: Date(timeIntervalSinceReferenceDate: 2))
+        let entry2a = Entry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 4_000_000))
+        let entry2b = Entry(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 4_000_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
         let calendar = defaultCalendar()
@@ -246,10 +246,10 @@ struct ChartDataProviderTests {
     }
 
     @Test func monthlyAverage_withZeroFilling() {
-        let entry1a = RawEntry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 1))
-        let entry1b = RawEntry(value: 3, timestamp: Date(timeIntervalSinceReferenceDate: 2))
-        let entry2a = RawEntry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 6_000_000))
-        let entry2b = RawEntry(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 6_000_001))
+        let entry1a = Entry(value: 1, timestamp: Date(timeIntervalSinceReferenceDate: 1))
+        let entry1b = Entry(value: 3, timestamp: Date(timeIntervalSinceReferenceDate: 2))
+        let entry2a = Entry(value: 2, timestamp: Date(timeIntervalSinceReferenceDate: 6_000_000))
+        let entry2b = Entry(value: 4, timestamp: Date(timeIntervalSinceReferenceDate: 6_000_001))
         let originalEntries = [entry1a, entry1b, entry2a, entry2b]
 
         let calendar = defaultCalendar()
@@ -275,10 +275,10 @@ struct ChartDataProviderTests {
 
         // 2 days of data with multiple entries per day
         let entries = [
-            RawEntry(value: 1, timestamp: baseDate),
-            RawEntry(value: 2, timestamp: calendar.date(byAdding: .hour, value: 6, to: baseDate)!),
-            RawEntry(value: 3, timestamp: calendar.date(byAdding: .day, value: 1, to: baseDate)!),
-            RawEntry(value: 4, timestamp: calendar.date(byAdding: .hour, value: 4, to: baseDate)!)
+            Entry(value: 1, timestamp: baseDate),
+            Entry(value: 2, timestamp: calendar.date(byAdding: .hour, value: 6, to: baseDate)!),
+            Entry(value: 3, timestamp: calendar.date(byAdding: .day, value: 1, to: baseDate)!),
+            Entry(value: 4, timestamp: calendar.date(byAdding: .hour, value: 4, to: baseDate)!)
         ]
 
         let processed = ChartDataProvider.automaticPreview(treatsMissingAsZero: false, aggregator: .sum, calendar: calendar).processedEntries(from: entries)
@@ -295,10 +295,10 @@ struct ChartDataProviderTests {
 
         // 2 days of data with multiple entries per day
         let entries = [
-            RawEntry(value: 1, timestamp: baseDate),
-            RawEntry(value: 2, timestamp: calendar.date(byAdding: .hour, value: 6, to: baseDate)!),
-            RawEntry(value: 3, timestamp: calendar.date(byAdding: .day, value: 1, to: baseDate)!),
-            RawEntry(value: 4, timestamp: calendar.date(byAdding: .hour, value: 4, to: baseDate)!)
+            Entry(value: 1, timestamp: baseDate),
+            Entry(value: 2, timestamp: calendar.date(byAdding: .hour, value: 6, to: baseDate)!),
+            Entry(value: 3, timestamp: calendar.date(byAdding: .day, value: 1, to: baseDate)!),
+            Entry(value: 4, timestamp: calendar.date(byAdding: .hour, value: 4, to: baseDate)!)
         ]
 
         let processed = ChartDataProvider.automaticPreview(treatsMissingAsZero: true, aggregator: .sum, calendar: calendar).processedEntries(from: entries)
@@ -318,10 +318,10 @@ struct ChartDataProviderTests {
 
         // 2 days of data with multiple entries per day
         let entries = [
-            RawEntry(value: 1, timestamp: firstDay1),
-            RawEntry(value: 2, timestamp: firstDay2),
-            RawEntry(value: 3, timestamp: secondDay),
-            RawEntry(value: 4, timestamp: thirdDay)
+            Entry(value: 1, timestamp: firstDay1),
+            Entry(value: 2, timestamp: firstDay2),
+            Entry(value: 3, timestamp: secondDay),
+            Entry(value: 4, timestamp: thirdDay)
         ]
 
         let processed = ChartDataProvider.automaticPreview(treatsMissingAsZero: false, aggregator: .sum, calendar: calendar).processedEntries(from: entries)
@@ -340,9 +340,9 @@ struct ChartDataProviderTests {
 
         // 2 days of data with multiple entries per day
         let entries = [
-            RawEntry(value: 1, timestamp: firstDay1),
-            RawEntry(value: 2, timestamp: firstDay2),
-            RawEntry(value: 4, timestamp: thirdDay)
+            Entry(value: 1, timestamp: firstDay1),
+            Entry(value: 2, timestamp: firstDay2),
+            Entry(value: 4, timestamp: thirdDay)
         ]
 
         let processed = ChartDataProvider.automaticPreview(treatsMissingAsZero: true, aggregator: .sum, calendar: calendar).processedEntries(from: entries)
@@ -361,10 +361,10 @@ struct ChartDataProviderTests {
         let endDate = calendar.date(byAdding: .weekOfYear, value: 8, to: baseDate)!
 
         let entries = [
-            RawEntry(value: 10, timestamp: baseDate),
-            RawEntry(value: 20, timestamp: calendar.date(byAdding: .hour, value: 6, to: baseDate)!),  // Same day
-            RawEntry(value: 30, timestamp: calendar.date(byAdding: .day, value: 10, to: baseDate)!),
-            RawEntry(value: 40, timestamp: endDate)
+            Entry(value: 10, timestamp: baseDate),
+            Entry(value: 20, timestamp: calendar.date(byAdding: .hour, value: 6, to: baseDate)!),  // Same day
+            Entry(value: 30, timestamp: calendar.date(byAdding: .day, value: 10, to: baseDate)!),
+            Entry(value: 40, timestamp: endDate)
         ]
 
         let processed = ChartDataProvider.automaticPreview(treatsMissingAsZero: false, aggregator: .sum, calendar: calendar).processedEntries(from: entries)
@@ -385,10 +385,10 @@ struct ChartDataProviderTests {
         let endDate = calendar.date(byAdding: .weekOfYear, value: 8, to: baseDate)!
 
         let entries = [
-            RawEntry(value: 10, timestamp: baseDate),
-            RawEntry(value: 20, timestamp: calendar.date(byAdding: .hour, value: 6, to: baseDate)!),  // Same day
-            RawEntry(value: 30, timestamp: calendar.date(byAdding: .day, value: 10, to: baseDate)!),
-            RawEntry(value: 40, timestamp: endDate)
+            Entry(value: 10, timestamp: baseDate),
+            Entry(value: 20, timestamp: calendar.date(byAdding: .hour, value: 6, to: baseDate)!),  // Same day
+            Entry(value: 30, timestamp: calendar.date(byAdding: .day, value: 10, to: baseDate)!),
+            Entry(value: 40, timestamp: endDate)
         ]
 
         let processed = ChartDataProvider.automaticPreview(treatsMissingAsZero: true, aggregator: .sum, calendar: calendar).processedEntries(from: entries)
@@ -408,10 +408,10 @@ struct ChartDataProviderTests {
         let endDate = calendar.date(byAdding: .weekOfYear, value: 8, to: baseDate)!
 
         let entries = [
-            RawEntry(value: 10, timestamp: baseDate),
-            RawEntry(value: 20, timestamp: calendar.date(byAdding: .hour, value: 6, to: baseDate)!),  // Same day
-            RawEntry(value: 30, timestamp: calendar.date(byAdding: .day, value: 10, to: baseDate)!),
-            RawEntry(value: 40, timestamp: endDate)
+            Entry(value: 10, timestamp: baseDate),
+            Entry(value: 20, timestamp: calendar.date(byAdding: .hour, value: 6, to: baseDate)!),  // Same day
+            Entry(value: 30, timestamp: calendar.date(byAdding: .day, value: 10, to: baseDate)!),
+            Entry(value: 40, timestamp: endDate)
         ]
 
         let processed = ChartDataProvider.automaticPreview(treatsMissingAsZero: false, aggregator: .average, calendar: calendar).processedEntries(from: entries)
@@ -432,10 +432,10 @@ struct ChartDataProviderTests {
         let endDate = calendar.date(byAdding: .weekOfYear, value: 8, to: baseDate)!
 
         let entries = [
-            RawEntry(value: 10, timestamp: baseDate),
-            RawEntry(value: 20, timestamp: calendar.date(byAdding: .hour, value: 6, to: baseDate)!),  // Same day
-            RawEntry(value: 30, timestamp: calendar.date(byAdding: .day, value: 10, to: baseDate)!),
-            RawEntry(value: 40, timestamp: endDate)
+            Entry(value: 10, timestamp: baseDate),
+            Entry(value: 20, timestamp: calendar.date(byAdding: .hour, value: 6, to: baseDate)!),  // Same day
+            Entry(value: 30, timestamp: calendar.date(byAdding: .day, value: 10, to: baseDate)!),
+            Entry(value: 40, timestamp: endDate)
         ]
 
         let processed = ChartDataProvider.automaticPreview(treatsMissingAsZero: true, aggregator: .average, calendar: calendar).processedEntries(from: entries)
@@ -454,7 +454,7 @@ struct ChartDataProviderTests {
         // 6 months of weekly data
         let entries = (0..<26).map { weekOffset in
             let date = calendar.date(byAdding: .weekOfYear, value: weekOffset, to: baseDate)!
-            return RawEntry(value: Double(weekOffset + 1), timestamp: date)
+            return Entry(value: Double(weekOffset + 1), timestamp: date)
         }
 
         let processed = ChartDataProvider.automaticPreview(treatsMissingAsZero: false, aggregator: .sum, calendar: calendar).processedEntries(from: entries)
@@ -472,10 +472,10 @@ struct ChartDataProviderTests {
         let indicesToExclude = [7, 14, 21]
 
         // 6 months of weekly data
-        let entries = (0..<26).compactMap { weekOffset -> RawEntry? in
+        let entries = (0..<26).compactMap { weekOffset -> Entry? in
             guard !indicesToExclude.contains(weekOffset) else { return nil }
             let date = calendar.date(byAdding: .weekOfYear, value: weekOffset, to: baseDate)!
-            return RawEntry(value: Double(weekOffset + 1), timestamp: date)
+            return Entry(value: Double(weekOffset + 1), timestamp: date)
         }
 
         let processed = ChartDataProvider.automaticPreview(treatsMissingAsZero: true, aggregator: .sum, calendar: calendar).processedEntries(from: entries)
@@ -492,10 +492,10 @@ struct ChartDataProviderTests {
         let indicesToExclude = [0, 1, 2, 14, 24, 25]
 
         // 6 months of weekly data
-        let entries = (0..<26).compactMap { weekOffset -> RawEntry? in
+        let entries = (0..<26).compactMap { weekOffset -> Entry? in
             guard !indicesToExclude.contains(weekOffset) else { return nil }
             let date = calendar.date(byAdding: .weekOfYear, value: weekOffset, to: baseDate)!
-            return RawEntry(value: Double(weekOffset + 1), timestamp: date)
+            return Entry(value: Double(weekOffset + 1), timestamp: date)
         }
 
         let processed = ChartDataProvider.automaticPreview(treatsMissingAsZero: true, aggregator: .sum, calendar: calendar).processedEntries(from: entries)
@@ -512,7 +512,7 @@ struct ChartDataProviderTests {
         // 3 years of monthly data
         let entries = (0..<36).map { monthOffset in
             let date = calendar.date(byAdding: .month, value: monthOffset, to: baseDate)!
-            return RawEntry(value: 100, timestamp: date)
+            return Entry(value: 100, timestamp: date)
         }
 
         let processed = ChartDataProvider.automaticPreview(treatsMissingAsZero: false, aggregator: .average, calendar: calendar).processedEntries(from: entries)
@@ -529,10 +529,10 @@ struct ChartDataProviderTests {
         let indicesToExclude = [7, 14, 21]
 
         // 3 years of monthly data
-        let entries = (0..<36).compactMap { monthOffset -> RawEntry? in
+        let entries = (0..<36).compactMap { monthOffset -> Entry? in
             guard !indicesToExclude.contains(monthOffset) else { return nil }
             let date = calendar.date(byAdding: .month, value: monthOffset, to: baseDate)!
-            return RawEntry(value: 100, timestamp: date)
+            return Entry(value: 100, timestamp: date)
         }
 
         let processed = ChartDataProvider.automaticPreview(treatsMissingAsZero: true, aggregator: .average, calendar: calendar).processedEntries(from: entries)
@@ -549,7 +549,7 @@ struct ChartDataProviderTests {
         // 8 years of data
         let entries = (0..<8).map { yearOffset in
             let date = calendar.date(byAdding: .year, value: yearOffset, to: baseDate)!
-            return RawEntry(value: 1000, timestamp: date)
+            return Entry(value: 1000, timestamp: date)
         }
 
         let processed = ChartDataProvider.automaticPreview(treatsMissingAsZero: false, aggregator: .sum, calendar: calendar).processedEntries(from: entries)
@@ -566,10 +566,10 @@ struct ChartDataProviderTests {
         let indicesToExclude = [3, 5]
 
         // 8 years of data
-        let entries = (0..<8).compactMap { yearOffset -> RawEntry? in
+        let entries = (0..<8).compactMap { yearOffset -> Entry? in
             guard !indicesToExclude.contains(yearOffset) else { return nil }
             let date = calendar.date(byAdding: .year, value: yearOffset, to: baseDate)!
-            return RawEntry(value: 1000, timestamp: date)
+            return Entry(value: 1000, timestamp: date)
         }
 
         let processed = ChartDataProvider.automaticPreview(treatsMissingAsZero: true, aggregator: .sum, calendar: calendar).processedEntries(from: entries)
@@ -588,7 +588,7 @@ struct ChartDataProviderTests {
         // Create entries spanning multiple Hebrew weeks but less than 10
         let entries = (0..<6).map { weekOffset in
             let date = calendar.date(byAdding: .weekOfYear, value: weekOffset, to: baseDate)!
-            return RawEntry(value: 5, timestamp: date)
+            return Entry(value: 5, timestamp: date)
         }
 
         let processed = ChartDataProvider.automaticPreview(treatsMissingAsZero: false, aggregator: .sum, calendar: calendar).processedEntries(from: entries)
@@ -607,7 +607,7 @@ struct ChartDataProviderTests {
         // 3 Islamic years of data
         let entries = (0..<3).map { yearOffset in
             let date = calendar.date(byAdding: .year, value: yearOffset, to: baseDate)!
-            return RawEntry(value: 500, timestamp: date)
+            return Entry(value: 500, timestamp: date)
         }
 
         let processed = ChartDataProvider.automaticPreview(treatsMissingAsZero: false, aggregator: .sum, calendar: calendar).processedEntries(from: entries)
@@ -628,7 +628,7 @@ struct ChartDataProviderTests {
     @Test("AutomaticPreview: Single entry returns raw")
     func automaticPreviewSingleEntry() {
         let calendar = defaultCalendar()
-        let entry = RawEntry(value: 42, timestamp: date(2024, 11, 10, calendar: calendar))
+        let entry = Entry(value: 42, timestamp: date(2024, 11, 10, calendar: calendar))
 
         let processed = ChartDataProvider.automaticPreview(treatsMissingAsZero: false, aggregator: .sum, calendar: calendar).processedEntries(from: [entry])
 
@@ -644,8 +644,8 @@ struct ChartDataProviderTests {
         // Exactly 10 weeks apart
         let endDate = calendar.date(byAdding: .weekOfYear, value: 10, to: baseDate)!
         let entries = [
-            RawEntry(value: 10, timestamp: baseDate),
-            RawEntry(value: 20, timestamp: endDate)
+            Entry(value: 10, timestamp: baseDate),
+            Entry(value: 20, timestamp: endDate)
         ]
 
         let processed = ChartDataProvider.automaticPreview(treatsMissingAsZero: false, aggregator: .sum, calendar: calendar).processedEntries(from: entries)
@@ -656,8 +656,8 @@ struct ChartDataProviderTests {
         // Exactly 1 year apart
         let yearEndDate = calendar.date(byAdding: .year, value: 1, to: baseDate)!
         let yearEntries = [
-            RawEntry(value: 100, timestamp: baseDate),
-            RawEntry(value: 200, timestamp: yearEndDate)
+            Entry(value: 100, timestamp: baseDate),
+            Entry(value: 200, timestamp: yearEndDate)
         ]
 
         let yearProcessed = ChartDataProvider.automaticPreview(treatsMissingAsZero: false, aggregator: .sum, calendar: calendar).processedEntries(from: yearEntries)

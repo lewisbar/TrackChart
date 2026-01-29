@@ -39,6 +39,10 @@ struct ViewTimeSpanAdapterTests {
             ],
             aggregator: .sum,
             treatsMissingAsZero: false,
+            sum: 100,
+            average: 50,
+            highest: 75,
+            lowest: 2,
             palette: .arcticIce
         )
 

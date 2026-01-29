@@ -87,6 +87,10 @@ struct TopicCell: View {
             ],
             aggregator: .sum,
             treatsMissingAsZero: true,
+            sum: 200,
+            average: 20,
+            highest: 120,
+            lowest: -20,
             palette: .sunset
         ),
         showTopic: {}
@@ -101,6 +105,10 @@ struct TopicCell: View {
             entries: [],
             aggregator: .sum,
             treatsMissingAsZero: false,
+            sum: 200,
+            average: 20,
+            highest: 120,
+            lowest: -20,
             palette: .coralReef
         ),
         showTopic: {}

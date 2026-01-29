@@ -65,17 +65,17 @@ struct TopicListView: View {
             ViewEntry(id: UUID(), value: 2.1, timestamp: .now.advanced(by: -300)),
             ViewEntry(id: UUID(), value: 4, timestamp: .now.advanced(by: -200)),
             ViewEntry(id: UUID(), value: 3, timestamp: .now.advanced(by: -100))
-        ], aggregator: .sum, treatsMissingAsZero: true, palette: .fire),
+        ], aggregator: .sum, treatsMissingAsZero: true, sum: 200, average: 12, highest: 120, lowest: -10, palette: .fire),
         ViewTopic(id: UUID(), name: "Topic 2", details: "Some details", entries: [
             ViewEntry(id: UUID(), value: 1, timestamp: .now.advanced(by: -300)),
             ViewEntry(id: UUID(), value: -4, timestamp: .now.advanced(by: -200)),
             ViewEntry(id: UUID(), value: 30, timestamp: .now.advanced(by: -100))
-        ], aggregator: .sum, treatsMissingAsZero: false, palette: .forest),
+        ], aggregator: .sum, treatsMissingAsZero: false, sum: 200, average: 12, highest: 120, lowest: -10, palette: .forest),
         ViewTopic(id: UUID(), name: "Topic 3", details: "Some details", entries: [
             ViewEntry(id: UUID(), value: 2, timestamp: .now.advanced(by: -300)),
             ViewEntry(id: UUID(), value: 40, timestamp: .now.advanced(by: -200)),
             ViewEntry(id: UUID(), value: -13, timestamp: .now.advanced(by: -100))
-        ], aggregator: .sum, treatsMissingAsZero: false, palette: .sunset),
+        ], aggregator: .sum, treatsMissingAsZero: false, sum: 200, average: 12, highest: 120, lowest: -10, palette: .sunset),
     ]
     
     TopicListView(topics: topics + topics, deleteTopics: { _ in }, moveTopics: { _, _ in }, showTopic: { _ in }, createNewTopic: {})

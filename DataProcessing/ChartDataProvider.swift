@@ -11,16 +11,16 @@ public struct ChartDataProvider: Sendable {
     public let name: String
     public let aggregator: Aggregator
     public let treatsMissingAsZero: Bool
-    private let process: @Sendable ([RawEntry]) -> [ProcessedEntry]
+    private let process: @Sendable ([Entry]) -> [ProcessedEntry]
 
-    private init(name: String, aggregator: Aggregator, treatsMissingAsZero: Bool, process: @escaping @Sendable ([RawEntry]) -> [ProcessedEntry]) {
+    private init(name: String, aggregator: Aggregator, treatsMissingAsZero: Bool, process: @escaping @Sendable ([Entry]) -> [ProcessedEntry]) {
         self.name = name
         self.aggregator = aggregator
         self.treatsMissingAsZero = treatsMissingAsZero
         self.process = process
     }
 
-    public func processedEntries(from rawEntries: [RawEntry]) -> [ProcessedEntry] {
+    public func processedEntries(from rawEntries: [Entry]) -> [ProcessedEntry] {
         process(rawEntries)
     }
 
@@ -152,7 +152,7 @@ public struct ChartDataProvider: Sendable {
         from bucketDates: [Date],
         unit: Calendar.Component,
         calendar: Calendar,
-        grouped: [Date: [RawEntry]],
+        grouped: [Date: [Entry]],
         aggregator: Aggregator
     ) -> [ProcessedEntry] {
         guard

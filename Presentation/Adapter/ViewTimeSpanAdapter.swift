@@ -29,7 +29,7 @@ public extension ViewTimeSpan {
 }
 
 private extension ViewEntry {
-    var rawEntry: RawEntry {
-        RawEntry(value: value, timestamp: timestamp)
+    var rawEntry: Entry {
+        Entry(value: value, timestamp: timestamp)
     }
 }
