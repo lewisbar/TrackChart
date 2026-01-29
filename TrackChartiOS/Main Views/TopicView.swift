@@ -159,7 +159,19 @@ struct TopicView<Settings: View>: View {
     }
 
     TopicView(
-        topic: ViewTopic(id: UUID(), name: "Topic 1", details: "Some details", entries: entries, aggregator: .average, treatsMissingAsZero: true, palette: .arcticIce),
+        topic: ViewTopic(
+            id: UUID(),
+            name: "Topic 1",
+            details: "Some details",
+            entries: entries,
+            aggregator: .average,
+            treatsMissingAsZero: true,
+            sum: 100,
+            average: 50,
+            highest: 75,
+            lowest: -12,
+            palette: .arcticIce
+        ),
         submitNewValue: { _, _ in },
         settingsView: EmptyView.init,
         showEntryList: {}
