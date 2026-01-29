@@ -20,6 +20,10 @@ public struct Topic {
         let count = Double(entries.count)
         return count > 0 ? sum / count : nil
     }
+    
+    public var highest: Double? {
+        nil
+    }
 }
 
 struct TopicTests {
@@ -51,5 +55,10 @@ struct TopicTests {
         ])
         
         #expect(sut.average == 3)
+    }
+    
+    @Test func highest_whenEmpty_returnsNil() {
+        let sut = Topic(entries: [])
+        #expect(sut.highest == nil)
     }
 }
