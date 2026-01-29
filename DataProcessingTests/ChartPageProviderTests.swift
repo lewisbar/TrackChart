@@ -1169,7 +1169,7 @@ struct ChartPageProviderTests {
         sourceLocation: SourceLocation = #_sourceLocation
     ) {
         let inputEntries = inputData.map {
-            RawEntry(value: $0.value, timestamp: date($0.year, $0.month, $0.day, hour: $0.hour, calendar: calendar))
+            Entry(value: $0.value, timestamp: date($0.year, $0.month, $0.day, hour: $0.hour, calendar: calendar))
         }
 
         let pages = pages(for: inputEntries, span, provider, calendar, treatsMissingAsZero: treatsMissingAsZero)
@@ -1194,7 +1194,7 @@ struct ChartPageProviderTests {
         sourceLocation: SourceLocation = #_sourceLocation
     ) {
         let inputEntries = inputData.map {
-            RawEntry(value: $0.value, timestamp: date($0.year, $0.month, $0.day, calendar: calendar))
+            Entry(value: $0.value, timestamp: date($0.year, $0.month, $0.day, calendar: calendar))
         }
 
         let pages = pages(for: inputEntries, expected.span, provider, calendar)
@@ -1213,7 +1213,7 @@ struct ChartPageProviderTests {
         case monthlyAverage
     }
 
-    private func pages(for entries: [RawEntry], _ span: TimeSpan, _ dataProvider: Provider, _ calendar: Calendar, treatsMissingAsZero: Bool = false) -> [ChartPage] {
+    private func pages(for entries: [Entry], _ span: TimeSpan, _ dataProvider: Provider, _ calendar: Calendar, treatsMissingAsZero: Bool = false) -> [ChartPage] {
         let provider: ChartDataProvider = switch dataProvider {
         case .dailySum: .dailySum(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar)
         case .dailyAverage: .dailyAverage(treatsMissingAsZero: treatsMissingAsZero, calendar: calendar)

@@ -54,7 +54,7 @@ struct TopicTests {
     
     private func topic(from values: [Double]) -> Topic {
         let entries = values.map {
-            RawEntry(value: $0, timestamp: .now)
+            Entry(value: $0, timestamp: .now)
         }
         return Topic(entries: entries)
     }

@@ -6,9 +6,9 @@
 //
 
 public struct Topic {
-    public let entries: [RawEntry]
+    public let entries: [Entry]
     
-    public init(entries: [RawEntry]) {
+    public init(entries: [Entry]) {
         self.entries = entries
     }
     
