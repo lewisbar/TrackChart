@@ -46,22 +46,23 @@ struct ViewTimeSpanAdapterTests {
             palette: .arcticIce
         )
 
-        let pages = sut.pages(for: topic)
+        let now = Date(timeIntervalSinceReferenceDate: 2*oneWeekInSeconds + oneDayInSeconds + 10)
+        let pages = sut.pages(for: topic, now: now)
 
         #expect(pages.count == 3)
-        #expect(pages[0].entries.count == 2)  // one per day
-        #expect(pages[1].entries.count == 3)
-        #expect(pages[2].entries.count == 2)
+        #expect(pages[0].entries.count == 2)
+        #expect(pages[1].entries.count == 2)
+        #expect(pages[2].entries.count == 3)
 
         #expect(pages.map(\.aggregator) == [.sum, .sum, .sum])
 
         #expect(pages[0].aggregate == 10)
-        #expect(pages[1].aggregate == -45)
-        #expect(pages[2].aggregate == -65)
+        #expect(pages[1].aggregate == -26)
+        #expect(pages[2].aggregate == -84)
 
         #expect(pages[0].entries.map(\.value) == [3, 7])
-        #expect(pages[1].entries.map(\.value) == [-11, -15, -19])
-        #expect(pages[2].entries.map(\.value) == [-36, -29])
+        #expect(pages[1].entries.map(\.value) == [-11, -15])
+        #expect(pages[2].entries.map(\.value) == [-19, -36, -29])
     }
 
 }

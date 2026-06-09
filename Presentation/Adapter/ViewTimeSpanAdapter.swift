@@ -9,13 +9,14 @@ import Foundation
 import DataProcessing
 
 public extension ViewTimeSpan {
-    func pages(for topic: ViewTopic, calendar: Calendar = .current) -> [ChartViewPage] {
+    func pages(for topic: ViewTopic, calendar: Calendar = .current, now: Date = .now) -> [ChartViewPage] {
         ChartPageProvider.pages(
             for: topic.entries.map(\.rawEntry),
             span: span,
             aggregator: topic.aggregator.aggregator,
             treatsMissingAsZero: topic.treatsMissingAsZero,
-            calendar: calendar
+            calendar: calendar,
+            now: now
         ).map(\.chartViewPage)
     }
 
