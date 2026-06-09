@@ -13,20 +13,22 @@ public final class ChartPageProvider {
         span: TimeSpan,
         aggregator: Aggregator,
         treatsMissingAsZero: Bool,
-        calendar: Calendar = .current
+        calendar: Calendar = .current,
+        now: Date = .now
     ) -> [ChartPage] {
         let provider = ChartDataProvider.preset(for: span, aggregator: aggregator, treatsMissingAsZero: treatsMissingAsZero, calendar: calendar)
-        return pages(for: raw, span: span, dataProvider: provider, calendar: calendar)
+        return pages(for: raw, span: span, dataProvider: provider, calendar: calendar, now: now)
     }
     public static func pages(
         for raw: [Entry],
         span: TimeSpan,
         dataProvider: ChartDataProvider,
-        calendar: Calendar = .current
+        calendar: Calendar = .current,
+        now: Date = .now
     ) -> [ChartPage] {
         let sortedEntries = raw.sorted { $0.timestamp < $1.timestamp }
         let aggregatedEntries = dataProvider.processedEntries(from: sortedEntries)
-        let ranges = pageRanges(from: aggregatedEntries, span: span, calendar: calendar)
+        let ranges = pageRanges(from: aggregatedEntries, span: span, calendar: calendar, now: now)
 
         return ranges.compactMap { range -> ChartPage? in
             let pageEntries = aggregatedEntries.filter { range.contains($0.timestamp) }
@@ -70,30 +72,32 @@ public final class ChartPageProvider {
     private static func pageRanges(
         from entries: [ProcessedEntry],
         span: TimeSpan,
-        calendar: Calendar
+        calendar: Calendar,
+        now: Date
     ) -> [Range<Date>] {
-        guard let minDate = entries.min(by: { $0.timestamp < $1.timestamp })?.timestamp,
-              let maxDate = entries.max(by: { $0.timestamp < $1.timestamp })?.timestamp
-        else { return [] }
+        guard let minDate = entries.min(by: { $0.timestamp < $1.timestamp })?.timestamp else { return [] }
 
-        let start = calendar.startOfPeriod(span, for: minDate)
-        let endPeriodStart = calendar.startOfPeriod(span, for: maxDate)
+        guard let lastPageEnd = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: now)) else { return [] }
 
         var ranges: [Range<Date>] = []
-        var current = start
+        var currentEnd = lastPageEnd
 
-        while current <= endPeriodStart {
-            guard let next = calendar.date(
+        while true {
+            guard let currentStart = calendar.date(
                 byAdding: span.calendarComponent,
-                value: span.componentCount,
-                to: current
+                value: -span.componentCount,
+                to: currentEnd
             ) else { break }
 
-            ranges.append(current ..< next)
-            current = next
+            ranges.append(currentStart ..< currentEnd)
+            currentEnd = currentStart
+
+            if currentEnd <= minDate {
+                break
+            }
         }
 
-        return ranges
+        return ranges.reversed()
     }
 }
 

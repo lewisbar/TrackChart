@@ -59,6 +59,7 @@ struct EntryListView: View {
             .font(.caption)
             .foregroundColor(.secondary)
             .frame(maxWidth: .infinity, alignment: .center)
+            .padding(.bottom)
     }
 
     private var list: some View {
