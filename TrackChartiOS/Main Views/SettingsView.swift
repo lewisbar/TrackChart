@@ -68,7 +68,7 @@ struct SettingsView: View {
                         shareURL = exportURL
                     } label: {
                         HStack {
-                            Label(String(localized: "Export Data (CSV)"), systemImage: "square.and.arrow.up")
+                            Label(String(localized: .exportDataCsv), systemImage: "square.and.arrow.up")
                             Spacer()
                         }
                     }
