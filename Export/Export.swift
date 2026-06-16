@@ -18,23 +18,26 @@ public struct ExportEntry: Sendable {
 }
 
 /// Generates CSV with "timestamp,value" header.
-/// The caller (Composition Root) must inject a configured DateFormatter so the
-/// Export module remains device-agnostic (timezone/locale decided outside).
-public func csvString(from entries: [ExportEntry], dateFormatter: DateFormatter) -> String {
+/// The caller (Composition Root) must inject a configured Date.FormatStyle so the
+/// Export module remains device-agnostic (timezone decided outside).
+public func csvString(from entries: [ExportEntry], dateStyle: Date.FormatStyle) -> String {
     var lines: [String] = ["timestamp,value"]
     for entry in entries {
-        let ts = dateFormatter.string(from: entry.timestamp)
+        let ts = entry.timestamp.formatted(dateStyle)
         lines.append("\(ts),\(entry.value)")
     }
     return lines.joined(separator: "\n")
 }
 
 /// Suggested filename for the exported CSV (sanitized topic name + date).
-/// Caller controls the date (and thus any timezone) if desired.
+/// Caller controls the date if desired.
 public func suggestedFilename(for topicName: String, at date: Date = .now) -> String {
-    let df = DateFormatter()
-    df.dateFormat = "yyyy-MM-dd"
-    let datePart = df.string(from: date)
+    let datePart = date.formatted(
+        .dateTime
+            .year(.defaultDigits)
+            .month(.twoDigits)
+            .day(.twoDigits)
+    )
     let safe = topicName
         .replacingOccurrences(of: "/", with: "-")
         .replacingOccurrences(of: ":", with: "-")

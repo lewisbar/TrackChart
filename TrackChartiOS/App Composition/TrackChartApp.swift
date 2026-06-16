@@ -90,10 +90,15 @@ struct TrackChartApp: App {
             save: topic.apply,
             onExport: {
                 let entries = topic.sortedEntries.map { Export.ExportEntry(timestamp: $0.timestamp, value: $0.value) }
-                let df = DateFormatter()
-                df.dateFormat = "yyyy-MM-dd HH:mm:ss"
-                df.timeZone = .current  // Device timezone injected here from Composition Root (Export module stays agnostic)
-                let csv = Export.csvString(from: entries, dateFormatter: df)
+                let style = Date.FormatStyle()
+                    .year(.defaultDigits)
+                    .month(.twoDigits)
+                    .day(.twoDigits)
+                    .hour(.twoDigits(amPM: .omitted))
+                    .minute(.twoDigits)
+                    .second(.twoDigits)
+                    .timeZone(.current)  // Device timezone injected here from Composition Root (Export module stays agnostic)
+                let csv = Export.csvString(from: entries, dateStyle: style)
                 let filename = Export.suggestedFilename(for: topic.name)
                 let url = FileManager.default.temporaryDirectory.appendingPathComponent(filename)
                 try? csv.write(to: url, atomically: true, encoding: .utf8)

@@ -12,15 +12,20 @@ import Foundation
 struct ExportTests {
 
     @Test func csvString_producesHeaderAndFormattedRows() {
-        // Fixed formatter injected by caller (Composition Root controls timezone/locale)
-        let df = DateFormatter()
-        df.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        df.timeZone = TimeZone(secondsFromGMT: 0)!
+        // Fixed style injected by caller (Composition Root controls timezone)
+        let style = Date.FormatStyle()
+            .year(.defaultDigits)
+            .month(.twoDigits)
+            .day(.twoDigits)
+            .hour(.twoDigits(amPM: .omitted))
+            .minute(.twoDigits)
+            .second(.twoDigits)
+            .timeZone(TimeZone(secondsFromGMT: 0)!)
 
         let e1 = ExportEntry(timestamp: Date(timeIntervalSinceReferenceDate: 0), value: 42.5)
         let e2 = ExportEntry(timestamp: Date(timeIntervalSinceReferenceDate: 86400), value: -3)
 
-        let csv = Export.csvString(from: [e1, e2], dateFormatter: df)
+        let csv = Export.csvString(from: [e1, e2], dateStyle: style)
 
         let expected = """
         timestamp,value
