@@ -17,7 +17,7 @@ struct SettingsView: View {
     @FocusState private var isDetailsFieldFocused: Bool
     @Environment(\.dismiss) var dismiss
     @State private var isShowingLongAggregationExplanation = false
-    @State private var shareURL: URL?
+    @State private var exportURL: URL?
 
     init(
         topic: SettingsTopic,
@@ -58,15 +58,21 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    Button {
-                        shareURL = onExport()
-                    } label: {
+                    ShareLink(
+                        item: exportURL ?? URL(fileURLWithPath: ""),
+                        preview: SharePreview(exportURL?.lastPathComponent ?? "export.csv", image: Image(systemName: "doc.text"))
+                    ) {
                         HStack {
-                            Label("Export Data (CSV)", systemImage: "square.and.arrow.up")
+                            Label(String(localized: "Export Data (CSV)"), systemImage: "square.and.arrow.up")
                             Spacer()
                         }
                     }
                     .foregroundStyle(.primary)
+                    .onAppear {
+                        if exportURL == nil {
+                            exportURL = onExport()
+                        }
+                    }
                 }
             }
             .formStyle(.grouped)
@@ -85,17 +91,6 @@ struct SettingsView: View {
             .onAppear {
                 if topic.name.isEmpty {
                     isTitleFieldFocused = true
-                }
-            }
-            .sheet(isPresented: Binding(
-                get: { shareURL != nil },
-                set: { if !$0 { shareURL = nil } }
-            )) {
-                if let url = shareURL {
-                    ShareLink(
-                        item: url,
-                        preview: SharePreview(url.lastPathComponent, image: Image(systemName: "doc.text"))
-                    )
                 }
             }
         }
@@ -273,7 +268,7 @@ struct SettingsView: View {
 #Preview {
     let topic = SettingsTopic(name: "Topic 1", details: "", palette: .arcticIce, aggregator: .average, treatsMissingAsZero: false)
 
-    SettingsView(topic: topic, save: { _ in })
+    SettingsView(topic: topic, save: { _ in }, onExport: { URL(fileURLWithPath: "/tmp/preview-export.csv") })
 }
 
 private extension ButtonRole {
