@@ -28,16 +28,3 @@ public func csvString(from entries: [ExportEntry], dateFormatter: DateFormatter)
     }
     return lines.joined(separator: "\n")
 }
-
-/// Suggested filename for the exported CSV (sanitized topic name + date).
-/// The date part uses a simple format; caller controls any timezone via the provided date if needed.
-public func suggestedFilename(for topicName: String, at date: Date = .now) -> String {
-    let df = DateFormatter()
-    df.dateFormat = "yyyy-MM-dd"
-    let datePart = df.string(from: date)
-    let safe = topicName
-        .replacingOccurrences(of: "/", with: "-")
-        .replacingOccurrences(of: ":", with: "-")
-        .replacingOccurrences(of: "\\", with: "-")
-    return "\(safe) - \(datePart).csv"
-}

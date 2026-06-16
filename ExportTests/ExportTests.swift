@@ -30,11 +30,4 @@ struct ExportTests {
         #expect(csv == expected)
     }
 
-    @Test func suggestedFilename_usesTopicAndDate() {
-        let date = Date(timeIntervalSinceReferenceDate: 0) // 2001-01-01
-        let name = "My Weight / Progress: 2025"
-        let filename = Export.suggestedFilename(for: name, at: date)
-        #expect(filename == "My Weight - Progress- 2025 - 2001-01-01.csv")
-    }
-
 }
