@@ -90,14 +90,13 @@ struct TrackChartApp: App {
             save: topic.apply,
             onExport: {
                 let entries = topic.sortedEntries.map { Export.ExportEntry(timestamp: $0.timestamp, value: $0.value) }
-                let style = Date.FormatStyle()
+                let style = Date.FormatStyle(timeZone: .current)
                     .year(.defaultDigits)
                     .month(.twoDigits)
                     .day(.twoDigits)
                     .hour(.twoDigits(amPM: .omitted))
                     .minute(.twoDigits)
                     .second(.twoDigits)
-                    .timeZone(.current)  // Device timezone injected here from Composition Root (Export module stays agnostic)
                 let csv = Export.csvString(from: entries, dateStyle: style)
                 let filename = Export.suggestedFilename(for: topic.name)
                 let url = FileManager.default.temporaryDirectory.appendingPathComponent(filename)
