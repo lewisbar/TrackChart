@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 import Presentation
 
 struct SettingsView: View {
@@ -18,6 +19,7 @@ struct SettingsView: View {
     @Environment(\.dismiss) var dismiss
     @State private var isShowingLongAggregationExplanation = false
     @State private var exportURL: URL?
+    @State private var shareURL: URL?
 
     init(
         topic: SettingsTopic,
@@ -58,27 +60,25 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    ShareLink(
-                        item: exportURL ?? URL(fileURLWithPath: ""),
-                        preview: SharePreview(exportURL?.lastPathComponent ?? "export.csv", image: Image(systemName: "doc.text"))
-                    ) {
+                    Button {
+                        if exportURL == nil {
+                            exportURL = onExport()
+                        }
+                        shareURL = exportURL
+                    } label: {
                         HStack {
                             Label(String(localized: "Export Data (CSV)"), systemImage: "square.and.arrow.up")
                             Spacer()
                         }
                     }
                     .foregroundStyle(.primary)
+                    .buttonStyle(.plain)
+                    .contentShape(Rectangle())
                 }
             }
             .formStyle(.grouped)
             .padding(.top, -16)
             .scrollDismissesKeyboard(.interactively)
-            .onTapGesture {
-                withAnimation {
-                    isTitleFieldFocused = false
-                    isDetailsFieldFocused = false
-                }
-            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { cancelButton }
                 ToolbarItem(placement: .confirmationAction) { doneButton }
@@ -89,6 +89,12 @@ struct SettingsView: View {
                 }
                 if exportURL == nil {
                     exportURL = onExport()
+                }
+            }
+            .sheet(isPresented: Binding(get: { shareURL != nil }, set: { if !$0 { shareURL = nil } })) {
+                if let url = shareURL {
+                    ActivityView(activityItems: [url])
+                        .ignoresSafeArea()
                 }
             }
         }
@@ -261,6 +267,21 @@ struct SettingsView: View {
         .bold()
         .disabled(topic.name.isEmpty)
     }
+}
+
+struct ActivityView: UIViewControllerRepresentable {
+    let activityItems: [Any]
+    let applicationActivities: [UIActivity]? = nil
+
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        let controller = UIActivityViewController(
+            activityItems: activityItems,
+            applicationActivities: applicationActivities
+        )
+        return controller
+    }
+
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
 
 #Preview {
