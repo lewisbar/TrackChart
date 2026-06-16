@@ -7,6 +7,7 @@
 
 import SwiftUI
 import UIKit
+import UniformTypeIdentifiers
 import Presentation
 
 struct SettingsView: View {
@@ -93,7 +94,8 @@ struct SettingsView: View {
             }
             .sheet(isPresented: Binding(get: { shareURL != nil }, set: { if !$0 { shareURL = nil } })) {
                 if let url = shareURL {
-                    ActivityView(activityItems: [url])
+                    let source = CSVItemSource(url: url, subject: url.lastPathComponent)
+                    ActivityView(activityItems: [source])
                         .ignoresSafeArea()
                 }
             }
@@ -282,6 +284,34 @@ struct ActivityView: UIViewControllerRepresentable {
     }
 
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+}
+
+final class CSVItemSource: NSObject, UIActivityItemSource {
+    private let fileURL: URL
+    private let subject: String
+
+    init(url: URL, subject: String) {
+        self.fileURL = url
+        self.subject = subject
+    }
+
+    func activityViewControllerPlaceholderItem(_ activityViewController: UIActivityViewController) -> Any {
+        return subject
+    }
+
+    func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivity.ActivityType?) -> Any? {
+        // Provide the content as string so the system doesn't need to "open" the file URL itself.
+        // This avoids the "could not open file" and "failed to request default share mode" errors.
+        return (try? String(contentsOf: fileURL)) ?? ""
+    }
+
+    func activityViewController(_ activityViewController: UIActivityViewController, subjectForActivityType activityType: UIActivity.ActivityType?) -> String {
+        return subject
+    }
+
+    func activityViewController(_ activityViewController: UIActivityViewController, dataTypeIdentifierForActivityType activityType: UIActivity.ActivityType?) -> String {
+        return UTType.commaSeparatedText.identifier
+    }
 }
 
 #Preview {
