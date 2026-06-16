@@ -68,11 +68,6 @@ struct SettingsView: View {
                         }
                     }
                     .foregroundStyle(.primary)
-                    .onAppear {
-                        if exportURL == nil {
-                            exportURL = onExport()
-                        }
-                    }
                 }
             }
             .formStyle(.grouped)
@@ -91,6 +86,9 @@ struct SettingsView: View {
             .onAppear {
                 if topic.name.isEmpty {
                     isTitleFieldFocused = true
+                }
+                if exportURL == nil {
+                    exportURL = onExport()
                 }
             }
         }

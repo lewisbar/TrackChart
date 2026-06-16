@@ -85,21 +85,28 @@ struct TrackChartApp: App {
     }
 
     private func makeSettingsView(for topic: TopicEntity) -> some View {
+        // Snapshot the export payload as pure value types *here* (in the root),
+        // so the closure we pass down never captures the live SwiftData model.
+        // This is the key to keeping the settings Form responsive.
+        let exportEntries = topic.sortedEntries.map { Export.ExportEntry(timestamp: $0.timestamp, value: $0.value) }
+        let exportTopicName = topic.name
+        let style = Date.FormatStyle(timeZone: .current)
+            .year(.defaultDigits)
+            .month(.twoDigits)
+            .day(.twoDigits)
+            .hour(.twoDigits(amPM: .omitted))
+            .minute(.twoDigits)
+            .second(.twoDigits)
+
         SettingsView(
             topic: topic.settingsTopic,
             save: topic.apply,
             onExport: {
-                let entries = topic.sortedEntries.map { Export.ExportEntry(timestamp: $0.timestamp, value: $0.value) }
-                let style = Date.FormatStyle(timeZone: .current)
-                    .year(.defaultDigits)
-                    .month(.twoDigits)
-                    .day(.twoDigits)
-                    .hour(.twoDigits(amPM: .omitted))
-                    .minute(.twoDigits)
-                    .second(.twoDigits)
-                let csv = Export.csvString(from: entries, dateStyle: style)
-                let filename = Export.suggestedFilename(for: topic.name)
-                let url = FileManager.default.temporaryDirectory.appendingPathComponent(filename)
+                let csv = Export.csvString(from: exportEntries, dateStyle: style)
+                let filename = Export.suggestedFilename(for: exportTopicName)
+                // Prefer Documents over tmp for share sheet / Files app compatibility.
+                let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+                let url = docs.appendingPathComponent(filename)
                 try? csv.write(to: url, atomically: true, encoding: .utf8)
                 return url
             }
