@@ -104,11 +104,10 @@ struct TrackChartApp: App {
             onExport: {
                 let csv = Export.csvString(from: exportEntries, dateStyle: style)
                 let filename = Export.suggestedFilename(for: exportTopicName)
-                // Prefer Documents over tmp for share sheet / Files app compatibility.
-                let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-                let url = docs.appendingPathComponent(filename)
-                try? csv.write(to: url, atomically: true, encoding: .utf8)
-                return url
+                // No file is written here. The CSVItemSource will provide the content
+                // as a string. A persistent file is only created if the user explicitly
+                // chooses "Save to Files" (the system handles it in the location they pick).
+                return Export.CSVExport(content: csv, filename: filename)
             }
         )
         .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
@@ -121,8 +120,10 @@ struct TrackChartApp: App {
                 let newTopic = TopicEntity(from: $0, at: sortIndex)
                 modelContext.insert(newTopic)
                 showTopic(newTopic)
+            },
+            onExport: {
+                Export.CSVExport(content: "", filename: "export.csv")
             }
-            // onExport uses default (dummy URL) for new topics
         )
         .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
     }

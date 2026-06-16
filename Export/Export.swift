@@ -17,6 +17,16 @@ public struct ExportEntry: Sendable {
     }
 }
 
+public struct CSVExport {
+    public let content: String
+    public let filename: String
+
+    public init(content: String, filename: String) {
+        self.content = content
+        self.filename = filename
+    }
+}
+
 /// Generates CSV with "timestamp,value" header.
 /// The caller (Composition Root) must inject a configured Date.FormatStyle so the
 /// Export module remains device-agnostic (timezone decided outside).

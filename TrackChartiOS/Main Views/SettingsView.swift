@@ -9,23 +9,24 @@ import SwiftUI
 import UIKit
 import UniformTypeIdentifiers
 import Presentation
+import Export
 
 struct SettingsView: View {
     @State private var topic: SettingsTopic
     let save: (SettingsTopic) -> Void
-    let onExport: () -> URL
+    let onExport: () -> Export.CSVExport
 
     @FocusState private var isTitleFieldFocused: Bool
     @FocusState private var isDetailsFieldFocused: Bool
     @Environment(\.dismiss) var dismiss
     @State private var isShowingLongAggregationExplanation = false
-    @State private var exportURL: URL?
-    @State private var shareURL: URL?
+    @State private var exportData: Export.CSVExport?
+    @State private var shareData: Export.CSVExport?
 
     init(
         topic: SettingsTopic,
         save: @escaping (SettingsTopic) -> Void,
-        onExport: @escaping () -> URL = { URL(fileURLWithPath: "/dev/null") }
+        onExport: @escaping () -> Export.CSVExport = { Export.CSVExport(content: "", filename: "export.csv") }
     ) {
         self.topic = topic
         self.save = save
@@ -62,10 +63,10 @@ struct SettingsView: View {
 
                 Section {
                     Button {
-                        if exportURL == nil {
-                            exportURL = onExport()
+                        if exportData == nil {
+                            exportData = onExport()
                         }
-                        shareURL = exportURL
+                        shareData = exportData
                     } label: {
                         HStack {
                             Label(String(localized: .exportDataCsv), systemImage: "square.and.arrow.up")
@@ -88,13 +89,13 @@ struct SettingsView: View {
                 if topic.name.isEmpty {
                     isTitleFieldFocused = true
                 }
-                if exportURL == nil {
-                    exportURL = onExport()
+                if exportData == nil {
+                    exportData = onExport()
                 }
             }
-            .sheet(isPresented: Binding(get: { shareURL != nil }, set: { if !$0 { shareURL = nil } })) {
-                if let url = shareURL {
-                    let source = CSVItemSource(url: url, subject: url.lastPathComponent)
+            .sheet(isPresented: Binding(get: { shareData != nil }, set: { if !$0 { shareData = nil } })) {
+                if let data = shareData {
+                    let source = CSVItemSource(content: data.content, filename: data.filename)
                     ActivityView(activityItems: [source])
                         .ignoresSafeArea()
                 }
@@ -287,26 +288,28 @@ struct ActivityView: UIViewControllerRepresentable {
 }
 
 final class CSVItemSource: NSObject, UIActivityItemSource {
-    private let fileURL: URL
-    private let subject: String
+    private let content: String
+    private let filename: String
 
-    init(url: URL, subject: String) {
-        self.fileURL = url
-        self.subject = subject
+    init(content: String, filename: String) {
+        self.content = content
+        self.filename = filename
     }
 
     func activityViewControllerPlaceholderItem(_ activityViewController: UIActivityViewController) -> Any {
-        return subject
+        return filename
     }
 
     func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivity.ActivityType?) -> Any? {
-        // Provide the content as string so the system doesn't need to "open" the file URL itself.
-        // This avoids the "could not open file" and "failed to request default share mode" errors.
-        return (try? String(contentsOf: fileURL)) ?? ""
+        // Return the CSV text directly. The system gets the data without needing
+        // to read a file URL. This avoids "could not open file" and share mode errors
+        // for "Copy", Mail, Messages, etc. "Save to Files" will prompt the user and
+        // create the file only where they choose.
+        return content
     }
 
     func activityViewController(_ activityViewController: UIActivityViewController, subjectForActivityType activityType: UIActivity.ActivityType?) -> String {
-        return subject
+        return filename
     }
 
     func activityViewController(_ activityViewController: UIActivityViewController, dataTypeIdentifierForActivityType activityType: UIActivity.ActivityType?) -> String {
@@ -317,7 +320,7 @@ final class CSVItemSource: NSObject, UIActivityItemSource {
 #Preview {
     let topic = SettingsTopic(name: "Topic 1", details: "", palette: .arcticIce, aggregator: .average, treatsMissingAsZero: false)
 
-    SettingsView(topic: topic, save: { _ in }, onExport: { URL(fileURLWithPath: "/tmp/preview-export.csv") })
+    SettingsView(topic: topic, save: { _ in }, onExport: { Export.CSVExport(content: "", filename: "preview.csv") })
 }
 
 private extension ButtonRole {
