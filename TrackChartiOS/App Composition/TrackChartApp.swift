@@ -98,7 +98,7 @@ struct TrackChartApp: App {
             .minute(.twoDigits)
             .second(.twoDigits)
 
-        SettingsView(
+        return SettingsView(
             topic: topic.settingsTopic,
             save: topic.apply,
             onExport: {
