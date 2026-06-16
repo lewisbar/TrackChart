@@ -10,6 +10,7 @@ import SwiftData
 import Persistence
 import DataProcessing
 import Presentation
+import Export
 
 private enum Destination: Hashable {
     case topicView(TopicEntity)
@@ -86,7 +87,18 @@ struct TrackChartApp: App {
     private func makeSettingsView(for topic: TopicEntity) -> some View {
         SettingsView(
             topic: topic.settingsTopic,
-            save: topic.apply
+            save: topic.apply,
+            onExport: {
+                let entries = topic.sortedEntries.map { Export.ExportEntry(timestamp: $0.timestamp, value: $0.value) }
+                let df = DateFormatter()
+                df.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                df.timeZone = .current  // Device timezone injected here from Composition Root (Export module stays agnostic)
+                let csv = Export.csvString(from: entries, dateFormatter: df)
+                let filename = Export.suggestedFilename(for: topic.name)
+                let url = FileManager.default.temporaryDirectory.appendingPathComponent(filename)
+                try? csv.write(to: url, atomically: true, encoding: .utf8)
+                return url
+            }
         )
         .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
     }
@@ -99,6 +111,7 @@ struct TrackChartApp: App {
                 modelContext.insert(newTopic)
                 showTopic(newTopic)
             }
+            // onExport uses default (dummy URL) for new topics
         )
         .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
     }

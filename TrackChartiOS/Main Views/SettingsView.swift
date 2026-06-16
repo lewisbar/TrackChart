@@ -11,18 +11,22 @@ import Presentation
 struct SettingsView: View {
     @State private var topic: SettingsTopic
     let save: (SettingsTopic) -> Void
+    let onExport: () -> URL
 
     @FocusState private var isTitleFieldFocused: Bool
     @FocusState private var isDetailsFieldFocused: Bool
     @Environment(\.dismiss) var dismiss
     @State private var isShowingLongAggregationExplanation = false
+    @State private var shareURL: URL?
 
     init(
         topic: SettingsTopic,
-        save: @escaping (SettingsTopic) -> Void
+        save: @escaping (SettingsTopic) -> Void,
+        onExport: @escaping () -> URL = { URL(fileURLWithPath: "/dev/null") }
     ) {
         self.topic = topic
         self.save = save
+        self.onExport = onExport
     }
 
     var body: some View {
@@ -52,6 +56,18 @@ struct SettingsView: View {
                 } footer: {
                     Text(.zeroFillingExplanationShort)
                 }
+
+                Section {
+                    Button {
+                        shareURL = onExport()
+                    } label: {
+                        HStack {
+                            Label("Export Data (CSV)", systemImage: "square.and.arrow.up")
+                            Spacer()
+                        }
+                    }
+                    .foregroundStyle(.primary)
+                }
             }
             .formStyle(.grouped)
             .padding(.top, -16)
@@ -69,6 +85,17 @@ struct SettingsView: View {
             .onAppear {
                 if topic.name.isEmpty {
                     isTitleFieldFocused = true
+                }
+            }
+            .sheet(isPresented: Binding(
+                get: { shareURL != nil },
+                set: { if !$0 { shareURL = nil } }
+            )) {
+                if let url = shareURL {
+                    ShareLink(
+                        item: url,
+                        preview: SharePreview(url.lastPathComponent, image: Image(systemName: "doc.text"))
+                    )
                 }
             }
         }
