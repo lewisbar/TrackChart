@@ -97,9 +97,9 @@ struct TrackChartApp: App {
             onExport: {
                 let csv = Export.csvString(from: exportEntries, timeZone: .current)
                 let filename = Export.suggestedFilename(for: exportTopicName)
-                // No file is written here. The CSVItemSource will provide the content
-                // as a string. A persistent file is only created if the user explicitly
-                // chooses "Save to Files" (the system handles it in the location they pick).
+                // No file is written here. The CSVItemSource will provide either the
+                // content or a temporary file URL (with proper .csv name). A persistent
+                // file is only created if the user explicitly chooses "Save to Files".
                 return Export.CSVExport(content: csv, filename: filename)
             }
         )
