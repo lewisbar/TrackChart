@@ -10,6 +10,7 @@ import SwiftData
 import Persistence
 import DataProcessing
 import Presentation
+import Export
 
 private enum Destination: Hashable {
     case topicView(TopicEntity)
@@ -84,9 +85,23 @@ struct TrackChartApp: App {
     }
 
     private func makeSettingsView(for topic: TopicEntity) -> some View {
-        SettingsView(
+        // Snapshot the export payload as pure value types *here* (in the root),
+        // so the closure we pass down never captures the live SwiftData model.
+        // This is the key to keeping the settings Form responsive.
+        let exportEntries = topic.sortedEntries.map { Export.ExportEntry(timestamp: $0.timestamp, value: $0.value) }
+        let exportTopicName = topic.name
+
+        return SettingsView(
             topic: topic.settingsTopic,
-            save: topic.apply
+            save: topic.apply,
+            onExport: {
+                let csv = Export.csvString(from: exportEntries, timeZone: .current)
+                let filename = Export.suggestedFilename(for: exportTopicName)
+                // No file is written here. The CSVItemSource will provide either the
+                // content or a temporary file URL (with proper .csv name). A persistent
+                // file is only created if the user explicitly chooses "Save to Files".
+                return Export.CSVExport(content: csv, filename: filename)
+            }
         )
         .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
     }
@@ -98,6 +113,9 @@ struct TrackChartApp: App {
                 let newTopic = TopicEntity(from: $0, at: sortIndex)
                 modelContext.insert(newTopic)
                 showTopic(newTopic)
+            },
+            onExport: {
+                Export.CSVExport(content: "", filename: "export.csv")
             }
         )
         .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
