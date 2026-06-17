@@ -70,10 +70,7 @@ struct SettingsView: View {
                         prepareExportDataIfNeeded()
                         shareData = exportData
                     } label: {
-                        HStack {
-                            Label(String(localized: .exportDataCsv), systemImage: "square.and.arrow.up")
-                            Spacer()
-                        }
+                        Text(.exportDataCsv)
                     }
                     .foregroundStyle(.primary)
                     .buttonStyle(.plain)
