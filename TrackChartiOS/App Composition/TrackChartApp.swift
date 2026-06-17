@@ -90,19 +90,12 @@ struct TrackChartApp: App {
         // This is the key to keeping the settings Form responsive.
         let exportEntries = topic.sortedEntries.map { Export.ExportEntry(timestamp: $0.timestamp, value: $0.value) }
         let exportTopicName = topic.name
-        let style = Date.FormatStyle(timeZone: .current)
-            .year(.defaultDigits)
-            .month(.twoDigits)
-            .day(.twoDigits)
-            .hour(.twoDigits(amPM: .omitted))
-            .minute(.twoDigits)
-            .second(.twoDigits)
 
         return SettingsView(
             topic: topic.settingsTopic,
             save: topic.apply,
             onExport: {
-                let csv = Export.csvString(from: exportEntries, dateStyle: style)
+                let csv = Export.csvString(from: exportEntries, timeZone: .current)
                 let filename = Export.suggestedFilename(for: exportTopicName)
                 // No file is written here. The CSVItemSource will provide the content
                 // as a string. A persistent file is only created if the user explicitly

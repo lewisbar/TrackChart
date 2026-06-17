@@ -28,12 +28,20 @@ public struct CSVExport {
 }
 
 /// Generates CSV with "timestamp,value" header.
-/// The caller (Composition Root) must inject a configured Date.FormatStyle so the
-/// Export module remains device-agnostic (timezone decided outside).
-public func csvString(from entries: [ExportEntry], dateStyle: Date.FormatStyle) -> String {
+/// Timestamps are formatted as "yyyy-MM-dd HH:mm:ss" (fixed, no locale commas or other separators).
+/// Caller provides the timeZone (e.g. .current) so the wall-clock time matches the user's device.
+public func csvString(from entries: [ExportEntry], timeZone: TimeZone) -> String {
     var lines: [String] = ["timestamp,value"]
+    let iso = Date.ISO8601FormatStyle(timeZone: timeZone)
+        .year()
+        .month()
+        .day()
+        .dateSeparator(.dash)
+        .time(includingFractionalSeconds: false)
+        .timeSeparator(.colon)
+        .dateTimeSeparator(.space)
     for entry in entries {
-        let ts = entry.timestamp.formatted(dateStyle)
+        let ts = entry.timestamp.formatted(iso)
         lines.append("\(ts),\(entry.value)")
     }
     return lines.joined(separator: "\n")
