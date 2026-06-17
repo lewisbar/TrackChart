@@ -66,15 +66,7 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    Button {
-                        prepareExportDataIfNeeded()
-                        shareData = exportData
-                    } label: {
-                        Text(.exportDataCsv)
-                    }
-                    .foregroundStyle(.primary)
-                    .buttonStyle(.plain)
-                    .contentShape(Rectangle())
+                    exportButton
                 }
             }
             .formStyle(.grouped)
@@ -171,7 +163,6 @@ struct SettingsView: View {
                 withAnimation {
                     proxy.scrollTo(newPalette, anchor: .center)
                 }
-
             }
         }
     }
@@ -247,6 +238,18 @@ struct SettingsView: View {
         VStack(alignment: .leading) {
             Toggle(.displayEmptyPeriodsAsZero, isOn: $topic.treatsMissingAsZero)
         }
+    }
+
+    private var exportButton: some View {
+        Button {
+            prepareExportDataIfNeeded()
+            shareData = exportData
+        } label: {
+            Text(.exportDataCsv)
+        }
+        .foregroundStyle(.primary)
+        .buttonStyle(.plain)
+        .contentShape(Rectangle())
     }
 
     private var cancelButton: some View {
