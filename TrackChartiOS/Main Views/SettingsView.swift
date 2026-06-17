@@ -301,11 +301,13 @@ final class CSVItemSource: NSObject, UIActivityItemSource {
     }
 
     func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivity.ActivityType?) -> Any? {
-        // Return the CSV text directly. The system gets the data without needing
-        // to read a file URL. This avoids "could not open file" and share mode errors
-        // for "Copy", Mail, Messages, etc. "Save to Files" will prompt the user and
-        // create the file only where they choose.
-        return content
+        // Write to a temporary file with the exact desired filename (including .csv).
+        // This ensures "Save to Files", AirDrop, etc. receive a properly named file.
+        // Using temporaryDirectory means the file is not a permanent user document
+        // and will be cleaned up by the system.
+        let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(filename)
+        try? content.write(to: tempURL, atomically: true, encoding: .utf8)
+        return tempURL
     }
 
     func activityViewController(_ activityViewController: UIActivityViewController, subjectForActivityType activityType: UIActivity.ActivityType?) -> String {
