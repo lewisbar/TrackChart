@@ -50,13 +50,16 @@ public func csvString(from entries: [ExportEntry], timeZone: TimeZone) -> String
 }
 
 /// Suggested filename for the exported CSV (sanitized topic name + date).
+/// Uses a fixed date format so the filename is consistent and safe across locales
+/// (avoids locale-specific separators like "/" that would break the filename on some systems).
 /// Caller controls the date if desired.
 public func suggestedFilename(for topicName: String, at date: Date = .now) -> String {
     let datePart = date.formatted(
-        .dateTime
-            .year(.defaultDigits)
-            .month(.twoDigits)
-            .day(.twoDigits)
+        Date.ISO8601FormatStyle()
+            .year()
+            .month()
+            .day()
+            .dateSeparator(.dash)
     )
     let safe = topicName
         .replacingOccurrences(of: "/", with: "-")
