@@ -12,15 +12,17 @@ import Foundation
 struct ExportTests {
 
     @Test func csvString_producesHeaderAndFormattedRows() {
-        // Fixed style injected by caller (Composition Root controls timezone)
-        let style = Date.FormatStyle()
+        // Fixed style injected by caller (Composition Root controls timezone).
+        // NOTE: Using Date.FormatStyle(timeZone:) + components (current approach) is locale-sensitive
+        // and produces separators like "," or "/" (e.g. under de_DE: "01.01.2001, 00:00:00").
+        // This test currently demonstrates the bug (will fail until csvString uses fixed format).
+        let style = Date.FormatStyle(timeZone: TimeZone(secondsFromGMT: 0)!)
             .year(.defaultDigits)
             .month(.twoDigits)
             .day(.twoDigits)
             .hour(.twoDigits(amPM: .omitted))
             .minute(.twoDigits)
             .second(.twoDigits)
-            .timeZone(TimeZone(secondsFromGMT: 0)!)
 
         let e1 = ExportEntry(timestamp: Date(timeIntervalSinceReferenceDate: 0), value: 42.5)
         let e2 = ExportEntry(timestamp: Date(timeIntervalSinceReferenceDate: 86400), value: -3)
