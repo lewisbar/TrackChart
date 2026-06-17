@@ -6,8 +6,6 @@
 //
 
 import SwiftUI
-import UIKit
-import UniformTypeIdentifiers
 import Presentation
 import Export
 
@@ -22,6 +20,12 @@ struct SettingsView: View {
     @State private var isShowingLongAggregationExplanation = false
     @State private var exportData: Export.CSVExport?
     @State private var shareData: Export.CSVExport?
+
+    private func prepareExportDataIfNeeded() {
+        if exportData == nil {
+            exportData = onExport()
+        }
+    }
 
     init(
         topic: SettingsTopic,
@@ -63,9 +67,7 @@ struct SettingsView: View {
 
                 Section {
                     Button {
-                        if exportData == nil {
-                            exportData = onExport()
-                        }
+                        prepareExportDataIfNeeded()
                         shareData = exportData
                     } label: {
                         HStack {
@@ -89,9 +91,7 @@ struct SettingsView: View {
                 if topic.name.isEmpty {
                     isTitleFieldFocused = true
                 }
-                if exportData == nil {
-                    exportData = onExport()
-                }
+                prepareExportDataIfNeeded()
             }
             .sheet(isPresented: Binding(get: { shareData != nil }, set: { if !$0 { shareData = nil } })) {
                 if let data = shareData {
@@ -269,53 +269,6 @@ struct SettingsView: View {
         }
         .bold()
         .disabled(topic.name.isEmpty)
-    }
-}
-
-struct ActivityView: UIViewControllerRepresentable {
-    let activityItems: [Any]
-    let applicationActivities: [UIActivity]? = nil
-
-    func makeUIViewController(context: Context) -> UIActivityViewController {
-        let controller = UIActivityViewController(
-            activityItems: activityItems,
-            applicationActivities: applicationActivities
-        )
-        return controller
-    }
-
-    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
-}
-
-final class CSVItemSource: NSObject, UIActivityItemSource {
-    private let content: String
-    private let filename: String
-
-    init(content: String, filename: String) {
-        self.content = content
-        self.filename = filename
-    }
-
-    func activityViewControllerPlaceholderItem(_ activityViewController: UIActivityViewController) -> Any {
-        return filename
-    }
-
-    func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivity.ActivityType?) -> Any? {
-        // Write to a temporary file with the exact desired filename (including .csv).
-        // This ensures "Save to Files", AirDrop, etc. receive a properly named file.
-        // Using temporaryDirectory means the file is not a permanent user document
-        // and will be cleaned up by the system.
-        let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(filename)
-        try? content.write(to: tempURL, atomically: true, encoding: .utf8)
-        return tempURL
-    }
-
-    func activityViewController(_ activityViewController: UIActivityViewController, subjectForActivityType activityType: UIActivity.ActivityType?) -> String {
-        return filename
-    }
-
-    func activityViewController(_ activityViewController: UIActivityViewController, dataTypeIdentifierForActivityType activityType: UIActivity.ActivityType?) -> String {
-        return UTType.commaSeparatedText.identifier
     }
 }
 
