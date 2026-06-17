@@ -29,6 +29,7 @@ public struct CSVExport {
 
 /// Generates CSV with "timestamp,value" header.
 /// Timestamps are formatted as "yyyy-MM-dd HH:mm:ss" (fixed, no locale commas or other separators).
+/// A UTF-8 BOM is prefixed so spreadsheet apps (Numbers, Excel) reliably detect UTF-8.
 /// Caller provides the timeZone (e.g. .current) so the wall-clock time matches the user's device.
 public func csvString(from entries: [ExportEntry], timeZone: TimeZone) -> String {
     var lines: [String] = ["timestamp,value"]
@@ -44,7 +45,8 @@ public func csvString(from entries: [ExportEntry], timeZone: TimeZone) -> String
         let ts = entry.timestamp.formatted(iso)
         lines.append("\(ts),\(entry.value)")
     }
-    return lines.joined(separator: "\n")
+    let body = lines.joined(separator: "\n")
+    return "\u{FEFF}" + body
 }
 
 /// Suggested filename for the exported CSV (sanitized topic name + date).

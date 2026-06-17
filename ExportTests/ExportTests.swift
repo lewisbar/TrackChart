@@ -22,11 +22,7 @@ struct ExportTests {
 
         let csv = Export.csvString(from: [e1, e2], timeZone: tz)
 
-        let expected = """
-        timestamp,value
-        2001-01-01 00:00:00,42.5
-        2001-01-02 00:00:00,-3.0
-        """
+        let expected = "\u{FEFF}timestamp,value\n2001-01-01 00:00:00,42.5\n2001-01-02 00:00:00,-3.0"
         #expect(csv == expected)
     }
 
@@ -36,7 +32,9 @@ struct ExportTests {
         let tz = TimeZone(identifier: "Europe/Berlin")!
         let entry = ExportEntry(timestamp: Date(timeIntervalSinceReferenceDate: 0), value: 7.0)
         let csv = Export.csvString(from: [entry], timeZone: tz)
-        let dataRow = csv.split(separator: "\n")[1]
+        // Note: leading BOM is present; split on \n and take the data line.
+        let lines = csv.split(separator: "\n", omittingEmptySubsequences: false)
+        let dataRow = lines[1]
         let fields = dataRow.split(separator: ",")
         #expect(fields.count == 2)
         #expect(fields[0] == "2001-01-01 01:00:00")
