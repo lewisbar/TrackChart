@@ -7,22 +7,34 @@
 
 import SwiftUI
 import Presentation
+import Export
 
 struct SettingsView: View {
     @State private var topic: SettingsTopic
     let save: (SettingsTopic) -> Void
+    let onExport: () -> Export.CSVExport
 
     @FocusState private var isTitleFieldFocused: Bool
     @FocusState private var isDetailsFieldFocused: Bool
     @Environment(\.dismiss) var dismiss
     @State private var isShowingLongAggregationExplanation = false
+    @State private var exportData: Export.CSVExport?
+    @State private var shareData: Export.CSVExport?
+
+    private func prepareExportDataIfNeeded() {
+        if exportData == nil {
+            exportData = onExport()
+        }
+    }
 
     init(
         topic: SettingsTopic,
-        save: @escaping (SettingsTopic) -> Void
+        save: @escaping (SettingsTopic) -> Void,
+        onExport: @escaping () -> Export.CSVExport = { Export.CSVExport(content: "", filename: "export.csv") }
     ) {
         self.topic = topic
         self.save = save
+        self.onExport = onExport
     }
 
     var body: some View {
@@ -52,16 +64,25 @@ struct SettingsView: View {
                 } footer: {
                     Text(.zeroFillingExplanationShort)
                 }
+
+                Section {
+                    Button {
+                        prepareExportDataIfNeeded()
+                        shareData = exportData
+                    } label: {
+                        HStack {
+                            Label(String(localized: .exportDataCsv), systemImage: "square.and.arrow.up")
+                            Spacer()
+                        }
+                    }
+                    .foregroundStyle(.primary)
+                    .buttonStyle(.plain)
+                    .contentShape(Rectangle())
+                }
             }
             .formStyle(.grouped)
             .padding(.top, -16)
             .scrollDismissesKeyboard(.interactively)
-            .onTapGesture {
-                withAnimation {
-                    isTitleFieldFocused = false
-                    isDetailsFieldFocused = false
-                }
-            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { cancelButton }
                 ToolbarItem(placement: .confirmationAction) { doneButton }
@@ -69,6 +90,14 @@ struct SettingsView: View {
             .onAppear {
                 if topic.name.isEmpty {
                     isTitleFieldFocused = true
+                }
+                prepareExportDataIfNeeded()
+            }
+            .sheet(isPresented: Binding(get: { shareData != nil }, set: { if !$0 { shareData = nil } })) {
+                if let data = shareData {
+                    let source = CSVItemSource(content: data.content, filename: data.filename)
+                    ActivityView(activityItems: [source])
+                        .ignoresSafeArea()
                 }
             }
         }
@@ -246,7 +275,7 @@ struct SettingsView: View {
 #Preview {
     let topic = SettingsTopic(name: "Topic 1", details: "", palette: .arcticIce, aggregator: .average, treatsMissingAsZero: false)
 
-    SettingsView(topic: topic, save: { _ in })
+    SettingsView(topic: topic, save: { _ in }, onExport: { Export.CSVExport(content: "", filename: "preview.csv") })
 }
 
 private extension ButtonRole {

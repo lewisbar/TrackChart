@@ -422,6 +422,24 @@
         }
       }
     },
+    "Export Data (CSV)" : {
+      "comment" : "A button that triggers the share sheet to export all entries of a topic (timestamp and value) as CSV.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daten exportieren (CSV)"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export Data (CSV)"
+          }
+        }
+      }
+    },
     "Hide" : {
       "comment" : "A button that dismisses a custom decimal keyboard when pressed.",
       "extractionState" : "manual",
